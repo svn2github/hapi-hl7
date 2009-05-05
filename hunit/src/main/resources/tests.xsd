@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://hl7api.sourceforge.net/hunit/tests" xmlns:tns="http://hl7api.sourceforge.net/hunit/tests" elementFormDefault="qualified">
+	
+	<complexType name="TestBattery">
+		<sequence>
+			<element name="interfaces" minOccurs="1" maxOccurs="1">
+				<complexType>
+					<sequence>
+						<element name="interface" type="tns:AnyInterface" minOccurs="1" maxOccurs="unbounded"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="events" minOccurs="1" maxOccurs="1">
+				<complexType>
+					<sequence>
+						<element name="event" type="tns:Event" minOccurs="1" maxOccurs="unbounded"/>
+					</sequence>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
+	
+	<complexType name="AnyInterface">
+		<choice>
+			<element name="mllpInterface" type="tns:MllpInterface"/>
+			<element name="jmsQueueInterface" type="tns:JmsQueueInterface"/>
+			<element name="jmsTopicInterface" type="tns:JmsTopicInterface"/>
+		</choice>
+	</complexType>
+	
+	<complexType name="Interface" abstract="true">
+		<attribute name="autostart" type="boolean"/>
+		<attribute name="id" type="ID" use="required"/>
+	</complexType>
+
+	<complexType name="MllpInterface">
+		<complexContent>
+			<extension base="tns:Interface">
+				<sequence>
+					<element name="ip" type="string"/>
+					<element name="port" type="string"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="JmsQueueInterface">
+		<complexContent>
+			<extension base="tns:Interface">
+				<sequence>
+					<element name="queue_connection_factory_id" type="string"></element>
+					<element name="queue_name" type="string"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="JmsTopicInterface">
+		<complexContent>
+			<extension base="tns:Interface">
+				<sequence>
+					<element name="topic_connection_factory_id" type="string"></element>
+					<element name="topic_name" type="string"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="Event">
+		<choice>
+			<element name="send_message" type="tns:SendMessage"/>
+			<element name="expect_message" type="tns:ExpectMessage"/>
+		</choice>
+	</complexType>
+	
+	<complexType name="SendMessage">
+		<sequence>
+			<element name="message" type="tns:Message"/>
+		</sequence>
+	</complexType>
+	
+	<complexType name="Message">
+		<choice minOccurs="1" maxOccurs="1">
+			<element name="hl7v2" minOccurs="1" maxOccurs="1" type="string"/>
+			<element name="xml" minOccurs="1" maxOccurs="1" type="string"/>
+		</choice>
+	</complexType>
+	
+</schema>
