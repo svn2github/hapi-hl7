@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://hl7api.sourceforge.net/hunit/tests" xmlns:tns="http://hl7api.sourceforge.net/hunit/tests" elementFormDefault="qualified">
 	
+	<element name="battery" type="tns:TestBattery"/>
+	
 	<complexType name="TestBattery">
 		<sequence>
 			<element name="interfaces" minOccurs="1" maxOccurs="1">
@@ -74,16 +76,54 @@
 	</complexType>
 	
 	<complexType name="SendMessage">
+		<choice minOccurs="1" maxOccurs="1">
+			<element name="hl7v2" minOccurs="1" maxOccurs="1" type="tns:Hl7V2SendMessage"/>
+			<element name="xml" minOccurs="1" maxOccurs="1" type="tns:XMLSendMessage"/>
+		</choice>
+		<attribute name="interface_id" type="string" use="required"></attribute>
+	</complexType>
+
+	<complexType name="ExpectMessage">
+		<choice minOccurs="1" maxOccurs="1">
+			<element name="hl7v2" minOccurs="1" maxOccurs="1" type="tns:Hl7V2ExpectMessage"/>
+			<element name="xml" minOccurs="1" maxOccurs="1" type="tns:XMLExpectMessage"/>
+		</choice>
+		<attribute name="interface_id" type="string" use="required"></attribute>
+	</complexType>
+	
+	<complexType name="Hl7V2SendMessage">
 		<sequence>
-			<element name="message" type="tns:Message"/>
+			<element name="message" type="string" minOccurs="1" maxOccurs="1"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="XMLSendMessage">
+		<sequence>
+			<element name="message" type="string" minOccurs="1" maxOccurs="1"></element>
+		</sequence>
+	</complexType>
+
+	<complexType name="Hl7V2ExpectMessage">
+		<choice>
+			<sequence>
+				<element name="message" type="string" minOccurs="1" maxOccurs="1"></element>
+			</sequence>
+			<sequence>
+				<element name="ack" minOccurs="1" maxOccurs="1"></element>
+			</sequence>
+			<sequence>
+				<element name="nak" minOccurs="1" maxOccurs="1"></element>
+			</sequence>
+		</choice>
+	</complexType>
+
+	<complexType name="XMLExpectMessage">
+		<sequence>
+			<element name="message" type="string" minOccurs="1" maxOccurs="1"></element>
 		</sequence>
 	</complexType>
 	
-	<complexType name="Message">
-		<choice minOccurs="1" maxOccurs="1">
-			<element name="hl7v2" minOccurs="1" maxOccurs="1" type="string"/>
-			<element name="xml" minOccurs="1" maxOccurs="1" type="string"/>
-		</choice>
+	<complexType name="AckMessage">
 	</complexType>
 	
 </schema>
