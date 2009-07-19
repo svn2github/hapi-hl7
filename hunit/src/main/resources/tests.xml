@@ -1,13 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hu:battery xmlns:hu="http://hl7api.sourceforge.net/hunit/tests" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://hl7api.sourceforge.net/hunit/tests tests.xsd ">
+<hu:battery xmlns:hu="http://hl7api.sourceforge.net/hunit/tests" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://hl7api.sourceforge.net/hunit/tests hunit_tests.xsd ">
+    <hu:name>OLIS UHN Ultra</hu:name>
 	<hu:interfaces>
 		<hu:interface>
 			<hu:mllpInterface id="olis_uhn_ultra_in">
 				<hu:ip>hu:ip</hu:ip>
-				<hu:port>hu:port</hu:port>
+				<hu:port>123</hu:port>
+				<hu:mode>client</hu:mode>
 			</hu:mllpInterface>
 		</hu:interface>
 	</hu:interfaces>
+	<hu:tests>
+	   <hu:test>
+	       <hu:name>aaa</hu:name>
+	       <hu:send_message>
+	           <hu:hl7v2 interface_id="aa">
+	               <hu:source>
+	                   <hu:ref></hu:ref>
+	               </hu:source>
+	           </hu:hl7v2>
+	       </hu:send_message>
+	   </hu:test>
+	</hu:tests>
 	<hu:events>
 		<hu:event>
 			<hu:send_message interface_id="olis_uhn_ultra_in">

@@ -1,0 +1,230 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>ca.uhn.hunit</groupId>
+	<artifactId>hunit</artifactId>
+	<packaging>jar</packaging>
+	<version>1.0-beta1</version>
+	<name>hUnit</name>
+	<url>http://hl7api.sourceforge.net/</url>
+	<description>
+	   TBA
+	</description>
+	
+	<mailingLists>
+        <mailingList>
+            <name>HAPI Developers Mailing List</name>
+            <subscribe>http://lists.sourceforge.net/mailman/listinfo/hl7api-devel</subscribe>
+            <unsubscribe>http://lists.sourceforge.net/mailman/listinfo/hl7api-devel</unsubscribe>
+            <archive>http://www.nabble.com/HAPI-f3467.html</archive>
+            <post>mailto:hl7api-devel@lists.sourceforge.net</post>
+        </mailingList>
+	</mailingLists>
+	
+	<developers>
+		<developer>
+			<name>Bryan Tripp</name>
+			<email>bryan_tripp@users.sourceforge.net</email>
+		</developer>
+		<developer>
+			<name>James Agnew</name>
+			<email>jamesagnew@users.sourceforge.net</email>
+		</developer>
+		<developer>
+			<name>Alexei Guevara</name>
+			<email>aguevara@users.sourceforge.net</email>
+		</developer>
+		<developer>
+			<name>Charles D. Fisher</name>
+			<email>cdfisher@users.sourceforge.net</email>
+		</developer>
+		<developer>
+			<name>Abraham Tio</name>
+			<email>jazzhammer@users.sourceforge.net</email>
+		</developer>
+		<developer>
+			<name>Leslie Mann</name>
+			<email>lmann@users.sourceforge.net</email>
+		</developer>
+		<developer>
+			<name>Neal Acharya</name>
+			<email>nacharya@users.sourceforge.net</email>
+		</developer>
+		<developer>
+			<name>Nico Vannieuwenhuyze</name>
+			<email>nicovn@users.sourceforge.net</email>
+		</developer>
+	</developers>
+	<inceptionYear>2001</inceptionYear>
+
+	<issueManagement>
+		<system>sourceforge</system>
+		<url>http://sourceforge.net/tracker/?group_id=38899</url>
+	</issueManagement>		
+	
+	<ciManagement>
+	</ciManagement>
+	
+	<licenses>
+	    <license>
+            <name>HAPI is dual licensed (MPL, GPL)</name>
+			<comments><![CDATA[
+			   HAPI is dual licensed under both the Mozilla Public License and the GNU General Public License.
+			   What this means is that you may choose to use HAPI under the terms of either license.
+			   You are both permitted and encouraged to use HAPI, royalty-free, within your applications,
+			   whether they are free/open-source or commercial/closed-source, provided you abide by the 
+			   terms of one of the licenses below.
+			   You are under no obligations to inform the HAPI project about what you are doing with
+			   HAPI, but we would love to hear about it anyway!
+			]]></comments>
+	    </license>
+		<license>
+			<name>Mozilla Public License 1.1</name>
+			<url>http://www.mozilla.org/MPL/MPL-1.1.txt</url>
+		</license>
+		<license>
+			<name>GNU General Public License</name>
+			<url>http://www.gnu.org/licenses/gpl.txt</url>
+		</license>
+	</licenses>	
+	
+	
+	<scm>
+		<connection>scm:cvs:pserver:anonymous:anonymous@hl7api.cvs.sourceforge.net:/cvsroot/hl7api:hapi</connection>
+		<url>http://hl7api.cvs.sourceforge.net/hl7api/</url>
+		<tag>HEAD</tag>
+	</scm>
+	
+	<repositories>
+		<repository>
+			<id>hapi-sf</id>
+			<name>HAPI Sourceforge Repository</name>
+			<url>http://hl7api.sourceforge.net/m2</url>
+		</repository>
+		<repository>
+			<id>java.net</id>
+			<name>java.net Maven Repository</name>
+			<url>https://maven-repository.dev.java.net/nonav/repository</url>
+			<layout>legacy</layout>
+		</repository>
+		<repository>
+            <id>jboss</id>
+            <name>jboss</name>
+            <url>http://repository.jboss.org/maven2</url>
+		</repository>
+	</repositories>
+	
+	<organization>
+		<name>University Health Network</name>
+		<url>http://www.uhn.ca</url>
+	</organization>
+		
+	<pluginRepositories>
+       <pluginRepository>
+           <id>codehaus</id>
+           <name>Codehaus Repo</name>
+           <url>http://repository.codehaus.org/org/codehaus/mojo/</url>
+       </pluginRepository>
+       <pluginRepository>
+			<id>java.net</id>
+			<name>java.net Maven Repository</name>
+			<url>https://maven-repository.dev.java.net/nonav/repository</url>
+			<layout>legacy</layout>
+       </pluginRepository>
+	</pluginRepositories>
+	
+	<dependencies>
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.0</version>
+		</dependency>
+        <dependency>
+            <groupId>sun-jaxb</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.1.9</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi</groupId>
+            <artifactId>hapi-base</artifactId>
+            <version>1.0-beta1</version>
+        </dependency>
+	</dependencies>
+	
+	<modules>
+	</modules>
+	
+	<distributionManagement>
+		<repository>
+			<id>hapi</id>
+			<name>HAPI Sourceforge</name>
+			<!-- <url>file://C:/wagon</url> -->
+			<url>scp://web.sourceforge.net/home/groups/h/hl/hl7api/htdocs/m2</url>
+		</repository>
+		<snapshotRepository>
+			<id>hapi</id>
+			<name>HAPI Sourceforge</name>
+			<url>scp://web.sourceforge.net/home/groups/h/hl/hl7api/htdocs/m2</url>
+		</snapshotRepository>
+	</distributionManagement>
+	
+	<build>
+		<defaultGoal>install</defaultGoal>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+					<fork>true</fork>
+					<maxmem>1024m</maxmem>
+				</configuration>
+			</plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <inherited>false</inherited>
+				<configuration>
+					<descriptors>
+						<descriptor>src/assembly/hapi-all.xml</descriptor>
+						<descriptor>src/assembly/hapi-src.xml</descriptor>
+					</descriptors>
+				</configuration>
+            </plugin>
+            
+            
+			<plugin>
+				<groupId>com.sun.tools.xjc.maven2</groupId>
+				<artifactId>maven-jaxb-plugin</artifactId>
+				<executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <generatePackage>ca.uhn.hunit.xsd</generatePackage>
+                        </configuration>
+                    </execution>
+				</executions>
+			</plugin>
+            
+		</plugins>
+	</build>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+	
+</project>

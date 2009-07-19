@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://hl7api.sourceforge.net/hunit/tests" xmlns:tns="http://hl7api.sourceforge.net/hunit/tests" elementFormDefault="qualified">
+	
+	<element name="battery" type="tns:TestBattery"/>
+
+    <simpleType name="requiredString">
+        <restriction base="string">
+            <pattern value=".+"></pattern>
+        </restriction>
+    </simpleType>
+	
+	<complexType name="TestBattery">
+		<sequence>
+            <element name="name" type="tns:requiredString" minOccurs="1" maxOccurs="1"/>
+            
+			<element name="interfaces" minOccurs="1" maxOccurs="1">
+				<complexType>
+					<sequence>
+						<element name="interface" type="tns:AnyInterface" minOccurs="1" maxOccurs="unbounded"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="tests" minOccurs="1" maxOccurs="1">
+				<complexType>
+					<sequence>
+						<element name="test" type="tns:Test" minOccurs="1" maxOccurs="unbounded"/>
+					</sequence>
+				</complexType>
+			</element>
+            <element name="messages" minOccurs="1" maxOccurs="1" type="tns:AnyMessageDefinitions">
+            </element>
+			
+		</sequence>
+	</complexType>
+	
+	<complexType name="AnyInterface">
+		<choice>
+			<element name="mllpInterface" type="tns:MllpInterface"/>
+			<element name="jmsQueueInterface" type="tns:JmsQueueInterface"/>
+			<element name="jmsTopicInterface" type="tns:JmsTopicInterface"/>
+		</choice>
+	</complexType>
+	
+	<complexType name="Interface" abstract="true">
+		<attribute name="autostart" type="boolean"/>
+		<attribute name="id" type="ID" use="required"/>
+	</complexType>
+
+	<complexType name="MllpInterface">
+		<complexContent>
+			<extension base="tns:Interface">
+				<sequence>
+					<element name="ip" type="string"/>
+					<element name="port" type="int"/>
+                    <element name="connectionTimeoutMillis" type="int" minOccurs="0"/>
+                    <element name="receiveTimeoutMillis" type="int" minOccurs="0"/>
+                    <element name="mode" minOccurs="1" maxOccurs="1">
+                        <simpleType>
+                            <restriction base="string">
+                                <enumeration value="client"></enumeration>
+                                <enumeration value="server"></enumeration>
+                            </restriction>
+                        </simpleType>
+                    </element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="JmsQueueInterface">
+		<complexContent>
+			<extension base="tns:Interface">
+				<sequence>
+					<element name="queue_connection_factory_id" type="string"></element>
+					<element name="queue_name" type="string"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="JmsTopicInterface">
+		<complexContent>
+			<extension base="tns:Interface">
+				<sequence>
+					<element name="topic_connection_factory_id" type="string"></element>
+					<element name="topic_name" type="string"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="Test">
+        <sequence>
+			<element name="name" type="tns:requiredString" minOccurs="1" maxOccurs="1"></element>
+			<choice minOccurs="1" maxOccurs="unbounded">
+				<element name="send_message" type="tns:SendMessageAny"/>
+				<element name="expect_message" type="tns:ExpectMessageAny"/>
+			</choice>
+        </sequence>
+	</complexType>
+	
+	<complexType name="SendMessageAny">
+		<choice minOccurs="1" maxOccurs="1">
+			<element name="hl7v2" minOccurs="1" maxOccurs="1" type="tns:Hl7V2SendMessage"/>
+			<element name="xml" minOccurs="1" maxOccurs="1" type="tns:XMLSendMessage"/>
+		</choice>
+	</complexType>
+
+    <complexType name="Event" abstract="true">
+        <sequence>
+            <element name="source" type="tns:MessageSource"/>
+        </sequence>        
+        <attribute name="interface_id" type="string" use="required"></attribute>
+    </complexType>
+
+    <complexType name="SendMessage">
+        <complexContent>
+            <extension base="tns:Event"></extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="Hl7V2SendMessage">
+        <complexContent>
+            <extension base="tns:SendMessage"></extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="ExpectMessage" abstract="true">
+        <complexContent>
+            <extension base="tns:Event"></extension>
+        </complexContent>
+    </complexType>
+
+	<complexType name="ExpectMessageAny" abstract="true">
+		<choice minOccurs="1" maxOccurs="1">
+			<element name="hl7v2_specific" minOccurs="1" maxOccurs="1" type="tns:Hl7V2ExpectSpecificMessage"/>
+            <element name="hl7v2_ack" minOccurs="1" maxOccurs="1" type="tns:Hl7V2ExpectAck"/>
+            <element name="hl7v2_nak" minOccurs="1" maxOccurs="1" type="tns:Hl7V2ExpectNak"/>
+            <element name="hl7v2_rules" minOccurs="1" maxOccurs="1" type="tns:Hl7V2ExpectRules"/>
+			<element name="xml" minOccurs="1" maxOccurs="1" type="tns:XMLExpectMessage"/>
+		</choice>
+	</complexType>
+	
+	<complexType name="XMLSendMessage">
+        <complexContent>
+            <extension base="tns:SendMessage">
+            </extension>
+        </complexContent>
+	</complexType>
+
+    <complexType name="MessageSource">
+        <choice>
+            <element name="ref" type="IDREF" minOccurs="1" maxOccurs="1"></element>
+        </choice>
+    </complexType>
+
+	<complexType name="Hl7V2ExpectSpecificMessage" abstract="true">
+        <complexContent>
+            <extension base="tns:ExpectMessage">
+                <sequence>
+                    <element name="specificMessage" minOccurs="1" maxOccurs="1" type="tns:MessageSource"/>
+                </sequence>
+            </extension>
+        </complexContent>
+	</complexType>
+
+    <complexType name="Hl7V2ExpectAck">
+        <complexContent>
+            <extension base="tns:Hl7V2ExpectRules">
+                <sequence>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="Hl7V2ExpectNak">
+        <complexContent>
+            <extension base="tns:Hl7V2ExpectRules">
+                <sequence>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="Hl7V2ExpectRules">
+        <complexContent>
+            <extension base="tns:ExpectMessage">
+                <sequence>
+                    <element name="rule" type="tns:TerserMessageRule" minOccurs="0" maxOccurs="unbounded"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="TerserMessageRule">
+        <sequence>
+            <element name="path" type="tns:requiredString"/>
+            <element name="value" type="string" minOccurs="1" maxOccurs="unbounded"/>
+            <element name="pattern" type="string" minOccurs="1" maxOccurs="unbounded"/>
+            <element name="notValue" type="string" minOccurs="1" maxOccurs="unbounded"/>
+            <element name="notPattern" type="string" minOccurs="1" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+
+	<complexType name="XMLExpectMessage">
+        <complexContent>
+            <extension base="tns:ExpectMessage">
+                <choice>
+                    <element name="specificMessage" minOccurs="1" maxOccurs="1" type="tns:MessageSource"/>
+                </choice>
+            </extension>
+        </complexContent>
+	</complexType>
+	
+	<complexType name="AckMessage">
+	</complexType>
+
+    <complexType name="NakMessage">
+    </complexType>
+
+    <complexType name="AnyMessageDefinitions">
+        <sequence>
+	        <choice minOccurs="0" maxOccurs="unbounded">
+	            <element name="hl7v2" type="tns:Hl7V2MessageDefinition"></element>
+	        </choice>
+        </sequence>
+    </complexType>
+
+    <complexType name="MessageDefinition">
+		<choice>
+		    <element name="text" type="tns:requiredString"></element>
+		</choice>
+        <attribute name="id" type="ID"/>
+    </complexType>
+	
+	<complexType name="Hl7V2MessageDefinition">
+	   <complexContent>
+	       <extension base="tns:MessageDefinition">
+	       </extension>
+	   </complexContent>
+	</complexType>
+	
+</schema>
