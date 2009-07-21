@@ -107,10 +107,8 @@
 	</complexType>
 
     <complexType name="Event" abstract="true">
-        <sequence>
-            <element name="source" type="tns:MessageSource"/>
-        </sequence>        
-        <attribute name="interface_id" type="string" use="required"></attribute>
+        <attribute name="message_id" type="IDREF" use="required"></attribute>
+        <attribute name="interface_id" type="IDREF" use="required"></attribute>
     </complexType>
 
     <complexType name="SendMessage">
@@ -131,7 +129,7 @@
         </complexContent>
     </complexType>
 
-	<complexType name="ExpectMessageAny" abstract="true">
+	<complexType name="ExpectMessageAny">
 		<choice minOccurs="1" maxOccurs="1">
 			<element name="hl7v2_specific" minOccurs="1" maxOccurs="1" type="tns:Hl7V2ExpectSpecificMessage"/>
             <element name="hl7v2_ack" minOccurs="1" maxOccurs="1" type="tns:Hl7V2ExpectAck"/>
@@ -154,12 +152,27 @@
         </choice>
     </complexType>
 
-	<complexType name="Hl7V2ExpectSpecificMessage" abstract="true">
+    <complexType name="HL7V2ExpectAbstract" abstract="true">
         <complexContent>
             <extension base="tns:ExpectMessage">
                 <sequence>
-                    <element name="specificMessage" minOccurs="1" maxOccurs="1" type="tns:MessageSource"/>
-                </sequence>
+                    <element name="encoding" minOccurs="0" maxOccurs="1" default="ER7">
+                        <simpleType>
+                            <restriction base="string">
+                                <enumeration value="ER7"></enumeration>
+                                <enumeration value="XML"></enumeration>
+                            </restriction>
+                        </simpleType>
+                    </element>
+                    <element name="autoAck" type="boolean" minOccurs="0" default="true"></element>
+                </sequence>                    
+            </extension>
+        </complexContent>
+    </complexType>
+
+	<complexType name="Hl7V2ExpectSpecificMessage">
+        <complexContent>
+            <extension base="tns:HL7V2ExpectAbstract">
             </extension>
         </complexContent>
 	</complexType>
@@ -184,7 +197,7 @@
 
     <complexType name="Hl7V2ExpectRules">
         <complexContent>
-            <extension base="tns:ExpectMessage">
+            <extension base="tns:HL7V2ExpectAbstract">
                 <sequence>
                     <element name="rule" type="tns:TerserMessageRule" minOccurs="0" maxOccurs="unbounded"/>
                 </sequence>
@@ -228,9 +241,9 @@
 
     <complexType name="MessageDefinition">
 		<choice>
-		    <element name="text" type="tns:requiredString"></element>
+		    <element name="text" type="string"></element>
 		</choice>
-        <attribute name="id" type="ID"/>
+        <attribute name="id" type="ID" use="required"/>
     </complexType>
 	
 	<complexType name="Hl7V2MessageDefinition">

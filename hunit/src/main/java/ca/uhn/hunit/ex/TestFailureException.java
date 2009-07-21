@@ -1,6 +1,8 @@
 package ca.uhn.hunit.ex;
 
-public class TestFailureException extends Exception {
+public abstract class TestFailureException extends Exception {
+
+	private static final long serialVersionUID = 2609790450076964563L;
 
 	public TestFailureException() {
 	}
@@ -16,5 +18,7 @@ public class TestFailureException extends Exception {
 	public TestFailureException(String theMessage, Throwable theCause) {
 		super(theMessage, theCause);
 	}
+
+	public abstract String describeReason();
 
 }

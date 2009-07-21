@@ -25,13 +25,13 @@ public class Hl7V2ExpectRulesImpl extends AbstractHl7V2ExpectMessage {
 	public Hl7V2ExpectRulesImpl(TestBatteryImpl theBattery, Hl7V2ExpectAck theConfig) {
 		this(theBattery, (Hl7V2ExpectRules)theConfig);
 
-		addRule(TerserRuleImpl.getValuesInstance(this, "/.MSA-1", "AA"));
+		addRule(TerserRuleImpl.getValuesInstance(this, "/MSA-1", "AA"));
 	}
 
 	public Hl7V2ExpectRulesImpl(TestBatteryImpl theBattery, Hl7V2ExpectNak theConfig) {
 		this(theBattery, (Hl7V2ExpectRules)theConfig);
 		
-		addRule(TerserRuleImpl.getNotValuesInstance(this, "/.MSA-1", "AA"));
+		addRule(TerserRuleImpl.getNotValuesInstance(this, "/MSA-1", "AA"));
 	}
 
 	protected void addRule(TerserRuleImpl theTerserRuleImpl) {

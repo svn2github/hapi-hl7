@@ -3,11 +3,9 @@ package ca.uhn.hunit.test;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 import ca.uhn.hunit.ex.ConfigurationException;
-import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
-import ca.uhn.hunit.ex.InterfaceException;
+import ca.uhn.hunit.ex.TestFailureException;
+import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.xsd.ExpectMessageAny;
 import ca.uhn.hunit.xsd.SendMessageAny;
@@ -15,12 +13,10 @@ import ca.uhn.hunit.xsd.Test;
 
 public class TestImpl {
 
-	private Test myConfig;
 	private String myName;
 	private List<AbstractEvent> myEvents = new ArrayList<AbstractEvent>(); 
 	
 	public TestImpl(TestBatteryImpl theBattery, Test theConfig) throws ConfigurationException {
-		myConfig = theConfig;
 		myName = theConfig.getName();
 		
 		for (Object next : theConfig.getSendMessageOrExpectMessage()) {
@@ -47,10 +43,22 @@ public class TestImpl {
 	}
 	
 	
-	public void execute(ExecutionContext theCtx) throws InterfaceException, IncorrectMessageReceivedException {
+	public void execute(ExecutionContext theCtx) throws TestFailureException {
+		theCtx.getLog().info(this, "About to execute test");
+		
 		for (AbstractEvent next : myEvents) {
-			next.execute(theCtx);
+			try {
+				next.execute(theCtx);
+			} catch (TestFailureException e) {
+				theCtx.getLog().error(this, "Test failed with message: " + e.getMessage());
+				throw e;
+			} catch (Exception e) {
+				theCtx.getLog().error(this, "Test failed with message: " + e.getMessage());
+				throw new UnexpectedTestFailureException(e);
+			}
 		}
+		
+		theCtx.getLog().info(this, "Test passed");
 	}
 
 

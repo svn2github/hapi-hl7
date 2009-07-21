@@ -2,9 +2,12 @@ package ca.uhn.hunit.test;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -15,6 +18,7 @@ import javax.xml.transform.stream.StreamSource;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
+import ca.uhn.hunit.ex.InterfaceWontStopException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.iface.MllpInterfaceImpl;
@@ -24,7 +28,6 @@ import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.xsd.AnyInterface;
 import ca.uhn.hunit.xsd.AnyMessageDefinitions;
 import ca.uhn.hunit.xsd.Hl7V2MessageDefinition;
-import ca.uhn.hunit.xsd.MessageSource;
 import ca.uhn.hunit.xsd.Test;
 import ca.uhn.hunit.xsd.TestBattery;
 
@@ -35,9 +38,9 @@ public class TestBatteryImpl {
 	private Map<String, AbstractMessage> myId2Message = new HashMap<String, AbstractMessage>();
 	private String myName;
 	private List<TestImpl> myTests = new ArrayList<TestImpl>();
+	private HashMap<String, TestImpl> myTestNames2Tests = new HashMap<String, TestImpl>();
 
-	public TestBatteryImpl(TestBattery theConfig)
-			throws ConfigurationException, InterfaceWontStartException {
+	public TestBatteryImpl(TestBattery theConfig) throws ConfigurationException, InterfaceWontStartException {
 		myConfig = theConfig;
 		myName = theConfig.getName();
 		initInterfaces();
@@ -45,16 +48,14 @@ public class TestBatteryImpl {
 		initMessages();
 	}
 
-	public TestBatteryImpl(File theDefFile) throws InterfaceWontStartException,
-			ConfigurationException, JAXBException {
+	public TestBatteryImpl(File theDefFile) throws InterfaceWontStartException, ConfigurationException, JAXBException {
 		this(unmarshal(theDefFile));
 	}
 
 	private static TestBattery unmarshal(File theDefFile) throws JAXBException {
 		JAXBContext jaxbContext = JAXBContext.newInstance("ca.uhn.hunit.xsd");
 		Unmarshaller u = jaxbContext.createUnmarshaller();
-		JAXBElement<TestBattery> root = u.unmarshal(
-				new StreamSource(theDefFile), TestBattery.class);
+		JAXBElement<TestBattery> root = u.unmarshal(new StreamSource(theDefFile), TestBattery.class);
 		TestBattery battery = root.getValue();
 		return battery;
 	}
@@ -69,13 +70,17 @@ public class TestBatteryImpl {
 		}
 	}
 
-	public AbstractMessage getMessage(MessageSource theSource) {
-		return myId2Message.get(theSource.getRef());
+	public AbstractMessage getMessage(String theId) {
+		return myId2Message.get(theId);
 	}
 
 	private void initTests() throws ConfigurationException {
 		for (Test next : myConfig.getTests().getTest()) {
 			TestImpl nextTest = new TestImpl(this, next);
+			if (myTestNames2Tests.containsKey(nextTest.getName())) {
+				throw new ConfigurationException("Duplicate test name detected: " + nextTest.getName());
+			}
+			myTestNames2Tests.put(nextTest.getName(), nextTest);
 			myTests.add(nextTest);
 		}
 
@@ -85,16 +90,14 @@ public class TestBatteryImpl {
 		return myId2Interface.get(theId);
 	}
 
-	private void initInterfaces() throws ConfigurationException,
-			InterfaceWontStartException {
+	private void initInterfaces() throws ConfigurationException, InterfaceWontStartException {
 		for (AnyInterface next : myConfig.getInterfaces().getInterface()) {
 
 			AbstractInterface nextIf;
 			if (next.getMllpInterface() != null) {
 				nextIf = new MllpInterfaceImpl(next.getMllpInterface());
 			} else {
-				throw new ConfigurationException(
-						"Unknown interface type in battery " + myName);
+				throw new ConfigurationException("Unknown interface type in battery " + myName);
 			}
 
 			myId2Interface.put(nextIf.getId(), nextIf);
@@ -106,6 +109,17 @@ public class TestBatteryImpl {
 	}
 
 	public void execute(ExecutionContext theCtx) {
+		execute(theCtx, myTestNames2Tests.keySet());
+	}
+
+	
+	
+	public void execute(ExecutionContext theCtx, String... theTestNamesToExecute) {
+		Set<String> testNames = new HashSet<String>(Arrays.asList(theTestNamesToExecute));
+		execute(theCtx, testNames);
+	}
+
+	public void execute(ExecutionContext theCtx, Set<String> theTestNamesToExecute) {
 		theCtx.getLog().info(this, "About to execute battery");
 
 		for (AbstractInterface next : myId2Interface.values()) {
@@ -117,26 +131,40 @@ public class TestBatteryImpl {
 				}
 			}
 		}
-		
+
 		for (TestImpl next : myTests) {
+			if (!theTestNamesToExecute.contains(next.getName())) {
+				continue;
+			}
+			
 			try {
 				next.execute(theCtx);
+				theCtx.addSuccess(next);
 			} catch (InterfaceException e) {
-				theCtx.getLog().error(
-						this,
-						"Test " + next.getName() + " failed with message: "
-								+ e.getMessage());
+				theCtx.getLog().error(this, "Test " + next.getName() + " failed with message: " + e.getMessage());
 				theCtx.addFailure(next, e);
 			} catch (TestFailureException e) {
-				theCtx.getLog().error(
-						this,
-						"Test " + next.getName() + " failed with message: "
-								+ e.getMessage());
+				theCtx.getLog().error(this, "Test " + next.getName() + " failed with message: " + e.getMessage());
 				theCtx.addFailure(next, e);
+			}
+		}
+		
+		for (AbstractInterface next : myId2Interface.values()) {
+			if (next.isStarted()) {
+				try {
+					next.stop(theCtx);
+				} catch (InterfaceWontStopException e) {
+					theCtx.getLog().error(this, "Failed to stop interface " + next.getId() + ": " + e.getMessage());
+					theCtx.addFailure(this, e);
+				}
 			}
 		}
 
 		theCtx.getLog().info(this, "Finished executing battery");
+	}
+
+	public HashMap<String, TestImpl> getTestNames2Tests() {
+		return myTestNames2Tests;
 	}
 
 }

@@ -1,30 +1,29 @@
 package ca.uhn.hunit.test;
 
-import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
-import ca.uhn.hunit.ex.InterfaceException;
+import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.run.ExecutionContext;
-import ca.uhn.hunit.xsd.MessageSource;
+import ca.uhn.hunit.xsd.MessageDefinition;
 import ca.uhn.hunit.xsd.SendMessage;
 
 public abstract class AbstractSendMessage extends AbstractEvent {
 
 
-	private MessageSource mySource;
+	private String myMessageId;
 
 
 	public AbstractSendMessage(TestBatteryImpl theBattery, SendMessage theConfig) {
 		super(theBattery, theConfig);
 		
-		mySource = theConfig.getSource();
+		MessageDefinition message = (MessageDefinition)theConfig.getMessageId();
+		myMessageId = message.getId();
 	}
 
 	@Override
-	public void execute(ExecutionContext theCtx) throws InterfaceException,
-			IncorrectMessageReceivedException {
+	public void execute(ExecutionContext theCtx) throws TestFailureException {
 
-		AbstractMessage messageProvider = getBattery().getMessage(mySource);
+		AbstractMessage messageProvider = getBattery().getMessage(myMessageId);
 		String message = messageProvider.getText();
 		message = massageMessage(message);
 		

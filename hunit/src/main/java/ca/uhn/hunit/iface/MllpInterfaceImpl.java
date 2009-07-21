@@ -13,6 +13,8 @@ import ca.uhn.hunit.ex.InterfaceException;
 import ca.uhn.hunit.ex.InterfaceWontReceiveException;
 import ca.uhn.hunit.ex.InterfaceWontSendException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
+import ca.uhn.hunit.ex.InterfaceWontStopException;
+import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.xsd.MllpInterface;
 
@@ -28,6 +30,7 @@ public class MllpInterfaceImpl extends AbstractInterface {
 	private MinLLPReader myReader;
 	private MinLLPWriter myWriter;
 	private Integer myReceiveTimeout;
+	private boolean myBound;
 
 	public MllpInterfaceImpl(MllpInterface theConfig) {
 		super(theConfig);
@@ -37,47 +40,75 @@ public class MllpInterfaceImpl extends AbstractInterface {
 		myStarted = false;
 		myConnectionTimeout = theConfig.getConnectionTimeoutMillis();
 		myReceiveTimeout = theConfig.getReceiveTimeoutMillis();
-		
+
 		if (myConnectionTimeout == null) {
 			myConnectionTimeout = 10000;
 		}
 		if (myReceiveTimeout == null) {
 			myReceiveTimeout = 10000;
 		}
+				
 	}
 
 	@Override
-	public String receiveMessage(ExecutionContext theCtx) throws InterfaceException {
+	public String receiveMessage(ExecutionContext theCtx) throws TestFailureException {
 		start(theCtx);
+		bind();
 		
 		theCtx.getLog().info(this, "Waiting to receive message");
 		
+		String message;
 		try {
-			String message = myReader.getMessage();
+			message = myReader.getMessage();
 
 			theCtx.getLog().info(this, "Received message (" + message.length() + " bytes)");
 
-			return message;
 		} catch (LLPException e) {
-			throw new InterfaceWontReceiveException(this, e);
+			throw new InterfaceWontReceiveException(this, e.getMessage(), e);
 		} catch (IOException e) {
-			throw new InterfaceWontReceiveException(this, e);
+			throw new InterfaceWontReceiveException(this, e.getMessage(), e);
+		}
+				
+		return message;
+
+	}
+
+	private void bind() throws InterfaceWontStartException {
+		if (myBound && mySocket.isConnected()) {
+			return;
+		}
+		
+		myBound = true;
+		
+		try {
+			if (myClientMode == false) {
+				mySocket = myServerSocket.accept();
+			}
+			
+			mySocket.setSoTimeout(myReceiveTimeout);
+			myReader = new MinLLPReader(mySocket.getInputStream());
+			myWriter = new MinLLPWriter(mySocket.getOutputStream());
+		} catch (SocketException e) {
+			throw new InterfaceWontStartException(this,e.getMessage(), e);
+		} catch (IOException e) {
+			throw new InterfaceWontStartException(this, e.getMessage(), e);
 		}
 	}
 
 	@Override
 	public void sendMessage(ExecutionContext theCtx, String theMessage) throws InterfaceException {
 		start(theCtx);
-
+		bind();
+		
 		theCtx.getLog().info(this, "Sending message (" + theMessage.length() + " bytes)");
 		
 		try {
 			myWriter.writeMessage(theMessage);
 			theCtx.getLog().info(this, "Sent message");
 		} catch (LLPException e) {
-			throw new InterfaceWontSendException(this, e);
+			throw new InterfaceWontSendException(this,e.getMessage(), e);
 		} catch (IOException e) {
-			throw new InterfaceWontSendException(this, e);
+			throw new InterfaceWontSendException(this, e.getMessage(), e);
 		}
 		
 	}
@@ -94,35 +125,24 @@ public class MllpInterfaceImpl extends AbstractInterface {
 			try {
 				mySocket.connect(new InetSocketAddress(myIp, myPort), myConnectionTimeout);
 			} catch (IOException e) {
-				throw new InterfaceWontStartException(this, e);
+				throw new InterfaceWontStartException(this, e.getMessage(), e);
 			}
 		} else {
 			theCtx.getLog().info(this, "Starting SERVER interface on port " + myPort);
 			try {
 				myServerSocket = new ServerSocket(myPort);
 				myServerSocket.setSoTimeout(myConnectionTimeout);
-				mySocket = myServerSocket.accept();				
 			} catch (IOException e) {
-				throw new InterfaceWontStartException(this, e);
+				throw new InterfaceWontStartException(this, e.getMessage(), e);
 			}
 		}
-		
-		try {
-			mySocket.setSoTimeout(myReceiveTimeout);
-			myReader = new MinLLPReader(mySocket.getInputStream());
-			myWriter = new MinLLPWriter(mySocket.getOutputStream());
-		} catch (SocketException e) {
-			throw new InterfaceWontStartException(this, e);
-		} catch (IOException e) {
-			throw new InterfaceWontStartException(this, e);
-		}
-		
+				
 		theCtx.getLog().info(this, "Started interface successfully");
 		myStarted = true;
 	}
 
 	@Override
-	public void stop(ExecutionContext theCtx) {
+	public void stop(ExecutionContext theCtx) throws InterfaceWontStopException {
 		if (!myStarted) {
 			return;
 		}
@@ -133,12 +153,19 @@ public class MllpInterfaceImpl extends AbstractInterface {
 			if (myServerSocket != null) {
 				myServerSocket.close();
 			}
-			mySocket.close();
+			if (mySocket != null) {
+				mySocket.close();
+			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new InterfaceWontStopException(this, e.getMessage(), e);
 		}
 		
 		myStarted = false;
+	}
+
+	@Override
+	public boolean isStarted() {
+		return myStarted;
 	}
 
 }

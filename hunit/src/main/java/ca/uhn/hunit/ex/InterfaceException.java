@@ -2,10 +2,14 @@ package ca.uhn.hunit.ex;
 
 import ca.uhn.hunit.iface.AbstractInterface;
 
-public class InterfaceException extends Exception {
+public abstract class InterfaceException extends TestFailureException {
 
 
 	private AbstractInterface myInterface;
+
+	public AbstractInterface getInterface() {
+		return myInterface;
+	}
 
 	public InterfaceException(AbstractInterface theInterface, Throwable theCause) {
 		super(theCause);

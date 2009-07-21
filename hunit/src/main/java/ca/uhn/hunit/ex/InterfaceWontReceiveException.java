@@ -13,9 +13,9 @@ public class InterfaceWontReceiveException extends InterfaceException {
 		super(theInterface, theString);
 	}
 
-	public InterfaceWontReceiveException(AbstractInterface theInterface,
-			Throwable theCause) {
-		super(theInterface, theCause);
+	@Override
+	public String describeReason() {
+		return "Interface " + getInterface().getId() + " did not receive expected message - " + getMessage();
 	}
 
 }

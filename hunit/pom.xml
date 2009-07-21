@@ -8,7 +8,7 @@
 	<packaging>jar</packaging>
 	<version>1.0-beta1</version>
 	<name>hUnit</name>
-	<url>http://hl7api.sourceforge.net/</url>
+	<url>http://hl7api.sourceforge.net/hunit</url>
 	<description>
 	   TBA
 	</description>
@@ -25,39 +25,11 @@
 	
 	<developers>
 		<developer>
-			<name>Bryan Tripp</name>
-			<email>bryan_tripp@users.sourceforge.net</email>
-		</developer>
-		<developer>
 			<name>James Agnew</name>
 			<email>jamesagnew@users.sourceforge.net</email>
 		</developer>
-		<developer>
-			<name>Alexei Guevara</name>
-			<email>aguevara@users.sourceforge.net</email>
-		</developer>
-		<developer>
-			<name>Charles D. Fisher</name>
-			<email>cdfisher@users.sourceforge.net</email>
-		</developer>
-		<developer>
-			<name>Abraham Tio</name>
-			<email>jazzhammer@users.sourceforge.net</email>
-		</developer>
-		<developer>
-			<name>Leslie Mann</name>
-			<email>lmann@users.sourceforge.net</email>
-		</developer>
-		<developer>
-			<name>Neal Acharya</name>
-			<email>nacharya@users.sourceforge.net</email>
-		</developer>
-		<developer>
-			<name>Nico Vannieuwenhuyze</name>
-			<email>nicovn@users.sourceforge.net</email>
-		</developer>
 	</developers>
-	<inceptionYear>2001</inceptionYear>
+	<inceptionYear>2009</inceptionYear>
 
 	<issueManagement>
 		<system>sourceforge</system>

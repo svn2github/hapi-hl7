@@ -13,9 +13,9 @@ public class InterfaceWontSendException extends InterfaceException {
 		super(theInterface, theString);
 	}
 
-	public InterfaceWontSendException(AbstractInterface theInterface,
-			Throwable theCause) {
-		super(theInterface, theCause);
+	@Override
+	public String describeReason() {
+		return "Interface " + getInterface().getId() + " could not send message - " + getMessage();
 	}
 
 }
