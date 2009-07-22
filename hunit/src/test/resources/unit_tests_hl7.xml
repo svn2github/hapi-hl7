@@ -8,6 +8,8 @@
 			<hu:mllpInterface id="test_in_interface" autostart="true">
 				<hu:ip>localhost</hu:ip>
 				<hu:port>10200</hu:port>
+                <hu:connectionTimeoutMillis>999999</hu:connectionTimeoutMillis>
+                <hu:receiveTimeoutMillis>999999</hu:receiveTimeoutMillis>
 				<hu:mode>server</hu:mode>
 			</hu:mllpInterface>
 		</hu:interface>
@@ -15,6 +17,8 @@
 			<hu:mllpInterface id="test_out_interface">
 				<hu:ip>localhost</hu:ip>
 				<hu:port>10201</hu:port>
+                <hu:connectionTimeoutMillis>999999</hu:connectionTimeoutMillis>
+                <hu:receiveTimeoutMillis>999999</hu:receiveTimeoutMillis>
 				<hu:mode>client</hu:mode>
 			</hu:mllpInterface>
 		</hu:interface>

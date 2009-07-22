@@ -33,8 +33,8 @@ public class Hl7V2Test {
 		ExecutionContext ctx = new ExecutionContext();
 		battery.execute(ctx, "ExpectSpecific Test");
 		
-		Assert.assertTrue(ctx.getTestSuccesses().contains(battery.getTestNames2Tests().get("ExpectSpecific Test")));
 		Assert.assertFalse(ctx.getBatteryFailures().containsKey(battery.getTestNames2Tests().get("ExpectSpecific Test")));
+		Assert.assertTrue(ctx.getTestSuccesses().contains(battery.getTestNames2Tests().get("ExpectSpecific Test")));
 	}
 
 	@Test
@@ -46,7 +46,7 @@ public class Hl7V2Test {
 		ExecutionContext ctx = new ExecutionContext();
 		battery.execute(ctx, "ExpectSpecific Test");
 		
-		TestImpl test = battery.getTestNames2Tests().get("ExpectSpecific Test");
+		ITest test = battery.getTestNames2Tests().get("ExpectSpecific Test");
 		Assert.assertFalse(ctx.getTestSuccesses().contains(test));
 		Assert.assertTrue(ctx.getTestFailures().containsKey(test));
 	}
@@ -63,7 +63,14 @@ public class Hl7V2Test {
 				try {
 					ServerSocket serverSocket = new ServerSocket(10201);
 					socket = serverSocket.accept();
-					String messageText = new MinLLPReader(socket.getInputStream()).getMessage();
+					MinLLPReader minLLPReader = new MinLLPReader(socket.getInputStream());
+					
+					String messageText;
+					do {
+						messageText = minLLPReader.getMessage();
+						Thread.sleep(250);
+					} while (messageText == null);
+					
 					Message replyAck = DefaultApplication.makeACK((Segment) myParser.parse(messageText).get("MSH"));
 					new MinLLPWriter(socket.getOutputStream()).writeMessage(myParser.encode(replyAck));
 					

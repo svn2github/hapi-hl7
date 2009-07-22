@@ -1,8 +1,8 @@
 package ca.uhn.hunit.util;
 
 import ca.uhn.hunit.iface.AbstractInterface;
+import ca.uhn.hunit.test.ITest;
 import ca.uhn.hunit.test.TestBatteryImpl;
-import ca.uhn.hunit.test.TestImpl;
 
 public class Log {
 
@@ -28,11 +28,11 @@ public class Log {
 		error("BATTERY[" + theTestBatteryImpl.getName() + "] " + theMessage);
 	}
 
-	public void info(TestImpl theTestImpl, String theMessage) {
+	public void info(ITest theTestImpl, String theMessage) {
 		info("TEST[" + theTestImpl.getName() + "] " + theMessage);
 	}
 
-	public void error(TestImpl theTestImpl, String theMessage) {
+	public void error(ITest theTestImpl, String theMessage) {
 		error("TEST[" + theTestImpl.getName() + "] " + theMessage);
 	}
 	

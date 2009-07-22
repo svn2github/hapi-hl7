@@ -31,7 +31,7 @@ import ca.uhn.hunit.xsd.Hl7V2MessageDefinition;
 import ca.uhn.hunit.xsd.Test;
 import ca.uhn.hunit.xsd.TestBattery;
 
-public class TestBatteryImpl {
+public class TestBatteryImpl implements ITest {
 
 	private TestBattery myConfig;
 	private Map<String, AbstractInterface> myId2Interface = new HashMap<String, AbstractInterface>();
@@ -122,31 +122,12 @@ public class TestBatteryImpl {
 	public void execute(ExecutionContext theCtx, Set<String> theTestNamesToExecute) {
 		theCtx.getLog().info(this, "About to execute battery");
 
-		for (AbstractInterface next : myId2Interface.values()) {
-			if (next.isAutostart()) {
-				try {
-					next.start(theCtx);
-				} catch (InterfaceWontStartException e) {
-					theCtx.addFailure(this, e);
-				}
-			}
-		}
-
 		for (TestImpl next : myTests) {
 			if (!theTestNamesToExecute.contains(next.getName())) {
 				continue;
 			}
 			
-			try {
-				next.execute(theCtx);
-				theCtx.addSuccess(next);
-			} catch (InterfaceException e) {
-				theCtx.getLog().error(this, "Test " + next.getName() + " failed with message: " + e.getMessage());
-				theCtx.addFailure(next, e);
-			} catch (TestFailureException e) {
-				theCtx.getLog().error(this, "Test " + next.getName() + " failed with message: " + e.getMessage());
-				theCtx.addFailure(next, e);
-			}
+			next.execute(theCtx);
 		}
 		
 		for (AbstractInterface next : myId2Interface.values()) {
@@ -165,6 +146,11 @@ public class TestBatteryImpl {
 
 	public HashMap<String, TestImpl> getTestNames2Tests() {
 		return myTestNames2Tests;
+	}
+
+	@Override
+	public Set<String> getInterfacesUsed() {
+		return myId2Interface.keySet();
 	}
 
 }
