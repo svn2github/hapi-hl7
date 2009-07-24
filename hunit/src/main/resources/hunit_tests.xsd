@@ -54,7 +54,18 @@
 					<element name="port" type="int"/>
                     <element name="connectionTimeoutMillis" type="int" minOccurs="0"/>
                     <element name="receiveTimeoutMillis" type="int" minOccurs="0"/>
-                    <element name="clearMillis" type="int" minOccurs="0"/>
+                    <element name="clearMillis" type="int" minOccurs="0">
+                    	<annotation>
+                    		<documentation>
+                    			If present, specifies the number of milliseconds hUnit 
+                    			should listen on this interface for messages to ignore 
+                    			when the interface starts before continuing. This is
+                    			useful for instance if there is a chance old stale messages
+                    			may be waiting on a given interface, and you want to allow 
+                    			them to be processed before beginning your unit testing. 
+                    		</documentation>
+                    	</annotation>
+                    </element>
                     <element name="mode" minOccurs="1" maxOccurs="1">
                         <simpleType>
                             <restriction base="string">
@@ -77,28 +88,21 @@
 		</complexContent>
 	</complexType>
 
-	<complexType name="JmsQueueInterface">
+	<complexType name="JmsHl7V2Interface">
 		<complexContent>
 			<extension base="tns:Interface">
 				<sequence>
-					<element name="queue_connection_factory_id" type="string"></element>
+					<element name="connection_factory" type="string"></element>
+					<sequence>
+					</sequence>
 					<element name="queue_name" type="string"></element>
+					<element name="user_name" type="string"></element>
+					<element name="password" type="string"></element>
 				</sequence>
 			</extension>
 		</complexContent>
 	</complexType>
 
-	<complexType name="JmsTopicInterface">
-		<complexContent>
-			<extension base="tns:Interface">
-				<sequence>
-					<element name="topic_connection_factory_id" type="string"></element>
-					<element name="topic_name" type="string"></element>
-				</sequence>
-			</extension>
-		</complexContent>
-	</complexType>
-	
 	<complexType name="Test">
         <sequence>
 			<element name="name" type="tns:requiredString" minOccurs="1" maxOccurs="1"></element>

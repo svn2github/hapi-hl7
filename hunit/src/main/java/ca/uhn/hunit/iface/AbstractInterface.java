@@ -44,7 +44,6 @@ public abstract class AbstractInterface implements Comparable<AbstractInterface>
 		return myAutostart;
 	}
 	
-	@Override
 	public int compareTo(AbstractInterface theO) {
 		return myId.compareTo(theO.myId);
 	}

@@ -23,6 +23,7 @@ public class TestBatteryExecutionThread extends Thread {
 	private TestBatteryImpl myBattery;
 	private List<AbstractEvent> myEvents = new LinkedList<AbstractEvent>();
 	private AbstractEvent myCurrentEvent;
+    private boolean myReady;
 
 	public TestBatteryExecutionThread(ExecutionContext theCtx, TestBatteryImpl theBattery, TestImpl theTest, String theInterfaceId) {
 		super(theInterfaceId);
@@ -34,11 +35,19 @@ public class TestBatteryExecutionThread extends Thread {
 		myStopped = false;
 	}
 
-	@Override
+	
+	/**
+     * @return Returns the waiting.
+     */
+    public boolean isReady() {
+        return myReady;
+    }
+
+    @Override
 	public void run() {
 
 		try {
-			if (myInterface.isAutostart()) {
+			if (myInterface.isAutostart() && !myInterface.isStarted()) {
 				myInterface.start(myCtx);
 			}
 		} catch (InterfaceWontStartException e) {
@@ -46,6 +55,8 @@ public class TestBatteryExecutionThread extends Thread {
 			myFailed = true;
 		}
 
+		myReady = true;
+		
 		while (!myStopped) {
 
 			try {
@@ -76,19 +87,18 @@ public class TestBatteryExecutionThread extends Thread {
 				}
 			}
 
-			try {
-				myInterface.stop(myCtx);
-			} catch (InterfaceWontStopException e) {
-				myCtx.addFailure(myBattery, e);
-			}
-			
-			myStopped = true;
 		}
 
+        try {
+            myInterface.stop(myCtx);
+        } catch (InterfaceWontStopException e) {
+            myCtx.addFailure(myBattery, e);
+        }
+        
 	}
 
 	public void addEvents(List<AbstractEvent> theEvents) {
-		synchronized (myEvents) {
+	    synchronized (myEvents) {
 			myEvents.addAll(theEvents);
 		}
 	}
@@ -101,6 +111,10 @@ public class TestBatteryExecutionThread extends Thread {
 
 	public boolean isFailed() {
 		return myFailed;
+	}
+	
+	public void finish() {
+	    myStopped = true;
 	}
 	
 }

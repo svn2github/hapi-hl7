@@ -147,7 +147,6 @@ public class TestBatteryImpl implements ITest {
 		return myTestNames2Tests;
 	}
 
-	@Override
 	public Set<String> getInterfacesUsed() {
 		return myId2Interface.keySet();
 	}

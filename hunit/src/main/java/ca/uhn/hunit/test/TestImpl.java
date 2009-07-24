@@ -68,6 +68,18 @@ public class TestImpl implements ITest {
 			thread.start();
 		}
 
+		// Wait until all threads are ready to start
+		for (TestBatteryExecutionThread next : interface2thread.values()) {
+		    if (!next.isReady() && !next.isFailed()) {
+		        try {
+                    Thread.sleep(250);
+                } catch (InterruptedException e) {
+                    // nothing
+                }
+		    }
+		}
+		
+		
 		for (String nextInterfaceId : myEvents.keySet()) {
 			ArrayList<AbstractEvent> nextEvents = myEvents.get(nextInterfaceId);
 			TestBatteryExecutionThread nextThread = interface2thread.get(nextInterfaceId);
@@ -107,7 +119,6 @@ public class TestImpl implements ITest {
 	}
 
 
-	@Override
 	public Set<String> getInterfacesUsed() {
 		return myEvents.keySet();
 	}

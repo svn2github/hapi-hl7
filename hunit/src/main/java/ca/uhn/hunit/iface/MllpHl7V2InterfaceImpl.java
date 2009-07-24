@@ -181,7 +181,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 				while (!myStopped && !(mySocket != null && mySocket.isConnected()) && System.currentTimeMillis() < endTime) {
 					mySocket = new Socket();
 					try {
-						mySocket.connect(new InetSocketAddress(myIp, myPort), 250);
+						mySocket.connect(new InetSocketAddress(myIp, myPort), 500);
 					} catch (SocketTimeoutException e) {
 						// ignore
 					}
@@ -236,13 +236,23 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 			int cleared = 0;
 			while (System.currentTimeMillis() < readUntil) {
 				try {
-					myReader.getMessage();
+					String message = myReader.getMessage();
+					if (message == null) {
+					    break;
+					}
+					Message parsedMessage = myParser.parse(message);
+					Message response = DefaultApplication.makeACK((Segment)parsedMessage.get("MSH"));
+					myWriter.writeMessage(message);
 					cleared++;
 				} catch (LLPException e) {
 					// ignore
 				} catch (IOException e) {
-					// ignore
-				}
+					break;
+				} catch (EncodingNotSupportedException e) {
+                    // ignore
+                } catch (HL7Exception e) {
+                    // ignore
+                }
 			}
 			theCtx.getLog().info(this, "Cleared " + cleared + " messages from interface before starting");			
 		}
