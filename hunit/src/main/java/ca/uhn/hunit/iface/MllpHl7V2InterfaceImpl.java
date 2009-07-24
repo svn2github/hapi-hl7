@@ -131,14 +131,16 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 				}
 				
 			}
-			
+
+		     return new TestMessage(myParser.encode(parsedMessage), parsedMessage);
+
 		} catch (LLPException e) {
 			throw new InterfaceWontReceiveException(this, e.getMessage(), e);
 		} catch (IOException e) {
 			throw new InterfaceWontReceiveException(this, e.getMessage(), e);
-		}
-
-		return new TestMessage(message, parsedMessage);
+		} catch (HL7Exception e) {
+            throw new InterfaceWontReceiveException(this, e.getMessage(), e);
+        }
 
 	}
 
@@ -238,12 +240,25 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 				try {
 					String message = myReader.getMessage();
 					if (message == null) {
-					    break;
+					    try {
+                            Thread.sleep(250);
+                        } catch (InterruptedException e) {
+                            // nothing
+                        }
+                        continue;
 					}
 					Message parsedMessage = myParser.parse(message);
 					Message response = DefaultApplication.makeACK((Segment)parsedMessage.get("MSH"));
+					message = myParser.encode(response);
 					myWriter.writeMessage(message);
 					cleared++;
+					theCtx.getLog().info(this, "Cleared message");
+                    try {
+                        Thread.sleep(250);
+                    } catch (InterruptedException e) {
+                        // nothing
+                    }
+                    readUntil = System.currentTimeMillis() + myClearMillis;
 				} catch (LLPException e) {
 					// ignore
 				} catch (IOException e) {

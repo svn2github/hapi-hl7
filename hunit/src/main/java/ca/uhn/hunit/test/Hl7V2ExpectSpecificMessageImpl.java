@@ -24,7 +24,7 @@ public class Hl7V2ExpectSpecificMessageImpl extends AbstractHl7V2ExpectMessage {
 		
 		String expectMessage = getBattery().getMessage(myMessageId).getText();
 		
-		if (!expectMessage.equals(theMessage.getRawMessage())) {
+		if (!expectMessage.trim().equals(theMessage.getRawMessage().trim())) {
 			throw new IncorrectMessageReceivedException(myTest, expectMessage, theMessage.getRawMessage(), "Message did not match"); 
 		}
 		

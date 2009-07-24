@@ -59,7 +59,7 @@ public class TestBatteryImpl implements ITest {
 		return battery;
 	}
 
-	private void initMessages() {
+	private void initMessages() throws ConfigurationException {
 		AnyMessageDefinitions messages = myConfig.getMessages();
 		if (messages != null) {
 			for (Hl7V2MessageDefinition next : messages.getHl7V2()) {
