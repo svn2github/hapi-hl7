@@ -7,19 +7,31 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.app.DefaultApplication;
 import ca.uhn.hl7v2.llp.LLPException;
 import ca.uhn.hl7v2.llp.MinLLPReader;
 import ca.uhn.hl7v2.llp.MinLLPWriter;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.Segment;
+import ca.uhn.hl7v2.parser.DefaultXMLParser;
+import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
+import ca.uhn.hl7v2.parser.Parser;
+import ca.uhn.hl7v2.parser.PipeParser;
+import ca.uhn.hl7v2.validation.impl.ValidationContextImpl;
+import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.ex.InterfaceException;
 import ca.uhn.hunit.ex.InterfaceWontReceiveException;
 import ca.uhn.hunit.ex.InterfaceWontSendException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.ex.InterfaceWontStopException;
 import ca.uhn.hunit.ex.TestFailureException;
+import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.run.ExecutionContext;
-import ca.uhn.hunit.xsd.MllpInterface;
+import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.xsd.MllpHl7V2Interface;
 
-public class MllpInterfaceImpl extends AbstractInterface {
+public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 
 	private String myIp;
 	private int myPort;
@@ -32,8 +44,11 @@ public class MllpInterfaceImpl extends AbstractInterface {
 	private MinLLPWriter myWriter;
 	private Integer myReceiveTimeout;
 	private boolean myStopped;
+	private Parser myParser;
+	private Boolean myAutoAck;
+	private Integer myClearMillis;
 
-	public MllpInterfaceImpl(MllpInterface theConfig) {
+	public MllpHl7V2InterfaceImpl(MllpHl7V2Interface theConfig) {
 		super(theConfig);
 		myIp = theConfig.getIp();
 		myPort = theConfig.getPort();
@@ -42,23 +57,37 @@ public class MllpInterfaceImpl extends AbstractInterface {
 		myConnectionTimeout = theConfig.getConnectionTimeoutMillis();
 		myReceiveTimeout = theConfig.getReceiveTimeoutMillis();
 		myStopped = false;
-
+		myClearMillis = theConfig.getClearMillis();
+		
 		if (myConnectionTimeout == null) {
 			myConnectionTimeout = 10000;
 		}
 		if (myReceiveTimeout == null) {
 			myReceiveTimeout = 10000;
 		}
+		if ("XML".equals(theConfig.getEncoding())) {
+			myParser = new DefaultXMLParser();
+		} else {
+			myParser = new PipeParser();
+		}
+		myParser.setValidationContext(new ValidationContextImpl());
+
+		myAutoAck = theConfig.isAutoAck();
+		
+		if (myAutoAck == null) {
+			myAutoAck = true;
+		}
 
 	}
 
 	@Override
-	public String receiveMessage(ExecutionContext theCtx) throws TestFailureException {
+	public TestMessage receiveMessage(TestImpl theTest, ExecutionContext theCtx) throws TestFailureException {
 		start(theCtx);
 
 		theCtx.getLog().info(this, "Waiting to receive message");
 
 		String message = null;
+		Message parsedMessage;
 		try {
 			long endTime = System.currentTimeMillis() + myReceiveTimeout;
 			while (!myStopped && message == null && System.currentTimeMillis() < endTime) {
@@ -69,7 +98,7 @@ public class MllpInterfaceImpl extends AbstractInterface {
 				}
 			}
 			if (myStopped) {
-				return "";
+				return null;
 			}
 			
 			if (message == null) {
@@ -78,24 +107,57 @@ public class MllpInterfaceImpl extends AbstractInterface {
 			
 			theCtx.getLog().info(this, "Received message (" + message.length() + " bytes)");
 
+			try {
+				parsedMessage = myParser.parse(message);
+			} catch (EncodingNotSupportedException e) {
+				throw new IncorrectMessageReceivedException(theTest, message, e.getMessage());
+			} catch (HL7Exception e) {
+				throw new IncorrectMessageReceivedException(theTest, message, e.getMessage());
+			}
+
+			if (myAutoAck) {
+				try {
+					Message ack = DefaultApplication.makeACK((Segment) parsedMessage.get("MSH"));
+					String reply = myParser.encode(ack);
+
+					theCtx.getLog().info(this, "Sending HL7 v2 ACK (" + reply.length() + " bytes)");
+					sendMessage(theTest, theCtx, new TestMessage(reply));
+				} catch (EncodingNotSupportedException e) {
+					throw new IncorrectMessageReceivedException(theTest, e, message, "Problem generating ACK - " + e.getMessage());
+				} catch (HL7Exception e) {
+					throw new IncorrectMessageReceivedException(theTest, e, message, "Problem generating ACK - " + e.getMessage());
+				} catch (IOException e) {
+					throw new IncorrectMessageReceivedException(theTest, e, message, "Problem generating ACK - " + e.getMessage());
+				}
+				
+			}
+			
 		} catch (LLPException e) {
 			throw new InterfaceWontReceiveException(this, e.getMessage(), e);
 		} catch (IOException e) {
 			throw new InterfaceWontReceiveException(this, e.getMessage(), e);
 		}
 
-		return message;
+		return new TestMessage(message, parsedMessage);
 
 	}
 
 	@Override
-	public void sendMessage(ExecutionContext theCtx, String theMessage) throws InterfaceException {
+	public void sendMessage(TestImpl theTest, ExecutionContext theCtx, TestMessage theMessage) throws InterfaceException, UnexpectedTestFailureException {
 		start(theCtx);
 
-		theCtx.getLog().info(this, "Sending message (" + theMessage.length() + " bytes)");
+		if (theMessage.getRawMessage() == null) {
+			try {
+				theMessage.setRawMessage(myParser.encode((Message) theMessage.getParsedMessage()));
+			} catch (HL7Exception e) {
+				throw new UnexpectedTestFailureException("Can't encode message to send it: " + e.getMessage());
+			}
+		}
+		
+		theCtx.getLog().info(this, "Sending message (" + theMessage.getRawMessage().length() + " bytes)");
 
 		try {
-			myWriter.writeMessage(theMessage);
+			myWriter.writeMessage(theMessage.getRawMessage());
 			theCtx.getLog().info(this, "Sent message");
 		} catch (LLPException e) {
 			throw new InterfaceWontSendException(this, e.getMessage(), e);
@@ -169,6 +231,22 @@ public class MllpInterfaceImpl extends AbstractInterface {
 			throw new InterfaceWontStartException(this, e.getMessage(), e);
 		}
 
+		if (myClearMillis != null) {
+			long readUntil = System.currentTimeMillis() + myClearMillis;
+			int cleared = 0;
+			while (System.currentTimeMillis() < readUntil) {
+				try {
+					myReader.getMessage();
+					cleared++;
+				} catch (LLPException e) {
+					// ignore
+				} catch (IOException e) {
+					// ignore
+				}
+			}
+			theCtx.getLog().info(this, "Cleared " + cleared + " messages from interface before starting");			
+		}
+		
 		theCtx.getLog().info(this, "Started interface successfully");
 		myStarted = true;
 	}

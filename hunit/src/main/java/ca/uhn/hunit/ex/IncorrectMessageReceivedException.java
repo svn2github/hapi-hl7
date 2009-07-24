@@ -1,45 +1,45 @@
 package ca.uhn.hunit.ex;
 
-import ca.uhn.hunit.test.AbstractExpectMessage;
+import ca.uhn.hunit.test.TestImpl;
 
 
 public class IncorrectMessageReceivedException extends TestFailureException {
 
-	private AbstractExpectMessage myExpect;
+	private TestImpl myTest;
 	private String myMessageReceived;
 	private String myProblem;
 	private String myMessageExpected;
 
-	public IncorrectMessageReceivedException(AbstractExpectMessage theExpect, String theMessageReceived, String theProblem) {
-		myExpect = theExpect;
+	public IncorrectMessageReceivedException(TestImpl theExpect, String theMessageReceived, String theProblem) {
+		myTest = theExpect;
 		myMessageReceived = theMessageReceived;
 		myProblem = theProblem;
 	}
 
-	public IncorrectMessageReceivedException(AbstractExpectMessage theExpect, String theMessageExpected, String theMessageReceived, String theProblem) {
-		myExpect = theExpect;
+	public IncorrectMessageReceivedException(TestImpl theExpect, String theMessageExpected, String theMessageReceived, String theProblem) {
+		myTest = theExpect;
 		myMessageExpected = theMessageExpected;
 		myMessageReceived = theMessageReceived;
 		myProblem = theProblem;
 	}
 
-	public IncorrectMessageReceivedException(AbstractExpectMessage theExpect, Throwable theCause, String theMessageReceived, String theProblem) {
+	public IncorrectMessageReceivedException(TestImpl theExpect, Throwable theCause, String theMessageReceived, String theProblem) {
 		super(theCause);
-		myExpect = theExpect;
+		myTest = theExpect;
 		myMessageReceived = theMessageReceived;
 		myProblem = theProblem;
 	}
 
-	public IncorrectMessageReceivedException(AbstractExpectMessage theExpect, Throwable theCause, String theMessageExpected, String theMessageReceived, String theProblem) {
+	public IncorrectMessageReceivedException(TestImpl theExpect, Throwable theCause, String theMessageExpected, String theMessageReceived, String theProblem) {
 		super(theCause);
-		myExpect = theExpect;
+		myTest = theExpect;
 		myMessageExpected = theMessageExpected;
 		myMessageReceived = theMessageReceived;
 		myProblem = theProblem;
 	}
 
-	public AbstractExpectMessage getExpect() {
-		return myExpect;
+	public TestImpl getTest() {
+		return myTest;
 	}
 
 	public String getMessageReceived() {
@@ -58,11 +58,15 @@ public class IncorrectMessageReceivedException extends TestFailureException {
 	public String describeReason() {
 		StringBuilder retVal = new StringBuilder();
 		retVal.append(myProblem).append("\r\n");
-		retVal.append("Received: \r\n").append(myMessageReceived).append("\r\n");
+		retVal.append("Received: \r\n").append(formatMsg(myMessageReceived)).append("\r\n");
 		if (myMessageExpected != null) {
-			retVal.append("Expected: \r\n").append(myMessageExpected).append("\r\n");
+			retVal.append("Expected: \r\n").append(formatMsg(myMessageExpected)).append("\r\n");
 		}
 		return retVal.toString();
+	}
+
+	private String formatMsg(String theMessageExpected) {
+		return "  " + theMessageExpected.replaceAll("(\\r|\\n)+", "\r\n  ");
 	}
 
 }

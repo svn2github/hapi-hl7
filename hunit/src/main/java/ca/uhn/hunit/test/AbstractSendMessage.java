@@ -2,6 +2,7 @@ package ca.uhn.hunit.test;
 
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
+import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.xsd.MessageDefinition;
@@ -11,13 +12,15 @@ public abstract class AbstractSendMessage extends AbstractEvent {
 
 
 	private String myMessageId;
+	private TestImpl myTest;
 
 
-	public AbstractSendMessage(TestBatteryImpl theBattery, SendMessage theConfig) {
+	public AbstractSendMessage(TestBatteryImpl theBattery, TestImpl theTest, SendMessage theConfig) {
 		super(theBattery, theConfig);
 		
 		MessageDefinition message = (MessageDefinition)theConfig.getMessageId();
 		myMessageId = message.getId();
+		myTest = theTest;
 	}
 
 	@Override
@@ -28,7 +31,7 @@ public abstract class AbstractSendMessage extends AbstractEvent {
 		message = massageMessage(message);
 		
 		AbstractInterface iface = getBattery().getInterface(getInterfaceId());
-		iface.sendMessage(theCtx, message);
+		iface.sendMessage(myTest, theCtx, new TestMessage(message));
 		
 	}
 

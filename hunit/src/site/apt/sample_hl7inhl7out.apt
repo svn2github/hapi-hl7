@@ -1,0 +1,131 @@
+Simple HL7-in and HL7-out example
+
+  In this example, consider an HL7 v2 interface, residing in an interface engine, which accepts
+  messages from one system, translates them in some way, and then sends them out to another
+  application. This example builds a unit test to verify the correct action of that interface
+  engine, and the translations which have been built within it.
+
+  For simplicity, let's suppose that all the engine is doing is converting the patient's
+  last name (PID-5-1) to lower case.
+
+  Here is a sample input message to the engine:
+
++---------+
+MSH|^~\&|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
+PID|||7005728^^^TML^MR||TEST^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR
+PV1|1||OLIS||||OLIST^BLAKE^DONALD^THOR^^^^^921379^^^^OLIST
+ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379
+OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R
+OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
++---------+
+
+  And here is the message we expect to be returned by the engine:
+
++---------+
+MSH|^~\&|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
+PID|||7005728^^^TML^MR||test^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR
+PV1|1||OLIS||||OLIST^BLAKE^DONALD^THOR^^^^^921379^^^^OLIST
+ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379
+OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R
+OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
++---------+
+
+  Our fictitious engine is listening on port 10200 and sending mapped messages back out on port
+  10201. Here is the hUnit config file required to generate this test:
+
++---------+
+<?xml version="1.0" encoding="UTF-8"?>
+<hu:battery xmlns:hu="http://hl7api.sourceforge.net/hunit/tests"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://hl7api.sourceforge.net/hunit/tests hunit_tests.xsd ">
+    <hu:name>TestBattery</hu:name>
+    <hu:interfaces>
+        <hu:interface>
+            <hu:mllpInterface id="test_in_interface" autostart="true">
+                <hu:ip>localhost</hu:ip>
+                <hu:port>10200</hu:port>
+                <hu:mode>server</hu:mode>
+            </hu:mllpInterface>
+        </hu:interface>
+        <hu:interface>
+            <hu:mllpInterface id="test_out_interface">
+                <hu:ip>localhost</hu:ip>
+                <hu:port>10201</hu:port>
+                <hu:mode>client</hu:mode>
+            </hu:mllpInterface>
+        </hu:interface>
+    </hu:interfaces>
+    <hu:tests>
+        <hu:test>
+            <hu:name>ExpectSpecific Test</hu:name>
+            <hu:send_message>
+                <hu:hl7v2 interface_id="test_out_interface" message_id="InputMessage" />
+            </hu:send_message>
+            <hu:expect_message>
+                <hu:hl7v2_specific interface_id="test_in_interface" message_id="NormalOutputMessage"/>
+            </hu:expect_message>
+        </hu:test>
+    </hu:tests>
+    <hu:messages>
+        <hu:hl7v2 id="InputMessage">
+            <hu:text><![CDATA[
+MSH|^~\&|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
+PID|||7005728^^^TML^MR||TEST^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR
+PV1|1||OLIS||||OLIST^BLAKE^DONALD^THOR^^^^^921379^^^^OLIST
+ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379
+OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R
+OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
+           ]]></hu:text>
+        </hu:hl7v2>
+        <hu:hl7v2 id="NormalOutputMessage">
+            <hu:text><![CDATA[
+MSH|^~\&|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
+PID|||7005728^^^TML^MR||test^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR
+PV1|1||OLIS||||OLIST^BLAKE^DONALD^THOR^^^^^921379^^^^OLIST
+ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379
+OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R
+OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
+           ]]></hu:text>
+        </hu:hl7v2>
+    </hu:messages>
+</hu:battery>
++---------+ 
+
+Now, suppose the engine is misconfigured. This might produce output such as:
+
++---------+
+[INFO]  BATTERY[TestBattery] About to execute battery
+[INFO]  INTERFACE[test_in_interface] Starting SERVER interface on port 10200
+[INFO]  INTERFACE[test_out_interface] Starting CLIENT interface to localhost:10201
+[INFO]  INTERFACE[test_out_interface] Started interface successfully
+[INFO]  INTERFACE[test_out_interface] Sending message (640 bytes)
+[INFO]  INTERFACE[test_out_interface] Sent message
+[INFO]  INTERFACE[test_out_interface] Stopping interface
+[INFO]  INTERFACE[test_in_interface] Started interface successfully
+[INFO]  INTERFACE[test_in_interface] Waiting to receive message
+[INFO]  INTERFACE[test_in_interface] Received message (637 bytes)
+[INFO]  INTERFACE[test_in_interface] Sending HL7 v2 ACK (67 bytes)
+[INFO]  INTERFACE[test_in_interface] Sending message (67 bytes)
+[INFO]  INTERFACE[test_in_interface] Sent message
+[INFO]  INTERFACE[test_in_interface] Stopping interface
+[INFO]  BATTERY[TestBattery] Finished executing battery
+ ----------------------------------------------------
+Warning, the following tests failed:
+
+ * ExpectSpecific Test - Reason: Message did not match
+Received: 
+  MSH|^~\&|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
+  PID|||7005728^^^TML^MR||TEST2^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR
+  PV1|1||OLIS||||OLIST^BLAKE^DONALD^THOR^^^^^921379^^^^OLIST
+  ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379
+  OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R
+  OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
+Expected: 
+  MSH|^~\&|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
+  PID|||7005728^^^TML^MR||test^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR
+  PV1|1||OLIS||||OLIST^BLAKE^DONALD^THOR^^^^^921379^^^^OLIST
+  ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379
+  OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R
+  OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
++----------+
+

@@ -36,7 +36,7 @@ public class TextRunner {
 		if (!ctx.getBatteryFailures().isEmpty()) {
 			System.out.println("Warning, the following batteries failed:");
 			for (Map.Entry<TestBatteryImpl, TestFailureException> next : ctx.getBatteryFailures().entrySet()) {
-				System.out.println(" * " + next.getKey().getName() +" - Reason: " + next.getValue().describeReason());
+				System.out.println("\r\n * " + next.getKey().getName() +" - Reason: " + next.getValue().describeReason());
 			}
 			System.out.println("\r\n");
 		}
@@ -44,7 +44,7 @@ public class TextRunner {
 		if (!ctx.getTestFailures().isEmpty()) {
 			System.out.println("Warning, the following tests failed:");
 			for (Map.Entry<TestImpl, TestFailureException> next : ctx.getTestFailures().entrySet()) {
-				System.out.println(" * " + next.getKey().getName() +" - Reason: " + next.getValue().describeReason());
+				System.out.println("\r\n * " + next.getKey().getName() +" - Reason: " + next.getValue().describeReason());
 			}
 			System.out.println("\r\n");
 		}

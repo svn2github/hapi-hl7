@@ -35,7 +35,7 @@
 	
 	<complexType name="AnyInterface">
 		<choice>
-			<element name="mllpInterface" type="tns:MllpInterface"/>
+			<element name="mllpHl7V2Interface" type="tns:MllpHl7V2Interface"/>
 			<element name="jmsQueueInterface" type="tns:JmsQueueInterface"/>
 			<element name="jmsTopicInterface" type="tns:JmsTopicInterface"/>
 		</choice>
@@ -46,7 +46,7 @@
 		<attribute name="id" type="ID" use="required"/>
 	</complexType>
 
-	<complexType name="MllpInterface">
+	<complexType name="MllpHl7V2Interface">
 		<complexContent>
 			<extension base="tns:Interface">
 				<sequence>
@@ -54,6 +54,7 @@
 					<element name="port" type="int"/>
                     <element name="connectionTimeoutMillis" type="int" minOccurs="0"/>
                     <element name="receiveTimeoutMillis" type="int" minOccurs="0"/>
+                    <element name="clearMillis" type="int" minOccurs="0"/>
                     <element name="mode" minOccurs="1" maxOccurs="1">
                         <simpleType>
                             <restriction base="string">
@@ -62,6 +63,15 @@
                             </restriction>
                         </simpleType>
                     </element>
+                    <element name="encoding" minOccurs="0" maxOccurs="1" default="ER7">
+                        <simpleType>
+                            <restriction base="string">
+                                <enumeration value="ER7"></enumeration>
+                                <enumeration value="XML"></enumeration>
+                            </restriction>
+                        </simpleType>
+                    </element>
+                    <element name="autoAck" type="boolean" minOccurs="0" default="true"></element>
 				</sequence>
 			</extension>
 		</complexContent>
@@ -156,15 +166,6 @@
         <complexContent>
             <extension base="tns:ExpectMessage">
                 <sequence>
-                    <element name="encoding" minOccurs="0" maxOccurs="1" default="ER7">
-                        <simpleType>
-                            <restriction base="string">
-                                <enumeration value="ER7"></enumeration>
-                                <enumeration value="XML"></enumeration>
-                            </restriction>
-                        </simpleType>
-                    </element>
-                    <element name="autoAck" type="boolean" minOccurs="0" default="true"></element>
                 </sequence>                    
             </extension>
         </complexContent>

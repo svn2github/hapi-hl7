@@ -16,7 +16,7 @@ public class TextRunnerTest {
 
 	@Test
 	public void testTextRunnerSuccess() throws URISyntaxException, InterfaceWontStartException, JAXBException, ConfigurationException {
-		Hl7V2Test.startMessageReplacer("TEST2");
+		Hl7V2Test.startMessageReplacer("LEIGHTON", "TEST2");
 		
 		File defFile = new File(Thread.currentThread().getContextClassLoader().getResource("unit_tests_hl7.xml").toURI());
 		TextRunner.main(new String[] {defFile.getAbsolutePath()});

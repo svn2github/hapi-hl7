@@ -6,7 +6,7 @@
 	<groupId>ca.uhn.hunit</groupId>
 	<artifactId>hunit</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0-beta1</version>
+	<version>0.1</version>
 	<name>hUnit</name>
 	<url>http://hl7api.sourceforge.net/hunit</url>
 	<description>
@@ -41,8 +41,9 @@
 	
 	<licenses>
 	    <license>
-            <name>HAPI is dual licensed (MPL, GPL)</name>
+            <name>hUnit is dual licensed (MPL, GPL)</name>
 			<comments><![CDATA[
+			   hUnit is a sub-project of HAPI, and is licensed under the same terms. 
 			   HAPI is dual licensed under both the Mozilla Public License and the GNU General Public License.
 			   What this means is that you may choose to use HAPI under the terms of either license.
 			   You are both permitted and encouraged to use HAPI, royalty-free, within your applications,
@@ -64,8 +65,8 @@
 	
 	
 	<scm>
-		<connection>scm:cvs:pserver:anonymous:anonymous@hl7api.cvs.sourceforge.net:/cvsroot/hl7api:hapi</connection>
-		<url>http://hl7api.cvs.sourceforge.net/hl7api/</url>
+		<connection>scm:cvs:pserver:anonymous:anonymous@hl7api.cvs.sourceforge.net:/cvsroot/hl7api:hunit</connection>
+		<url>http://hl7api.cvs.sourceforge.net/hl7api/hunit</url>
 		<tag>HEAD</tag>
 	</scm>
 	
@@ -85,6 +86,11 @@
             <id>jboss</id>
             <name>jboss</name>
             <url>http://repository.jboss.org/maven2</url>
+		</repository>
+		<repository>
+		  <id>wikia</id>
+		  <name>wikia</name>
+		  <url>http://maven.xwiki.org/externals</url>
 		</repository>
 	</repositories>
 	
@@ -132,6 +138,11 @@
             <groupId>ca.uhn.hapi</groupId>
             <artifactId>hapi-base</artifactId>
             <version>1.0-beta1</version>
+        </dependency>
+        <dependency>
+			<groupId>org.incava</groupId>
+			<artifactId>java-diff</artifactId>
+			<version>1.1.0</version>
         </dependency>
 	</dependencies>
 	
@@ -191,9 +202,28 @@
                     </execution>
 				</executions>
 			</plugin>
-            
-		</plugins>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-site-plugin</artifactId>
+      <dependencies>
+      </dependencies>
+    </plugin>
+    
+  	</plugins>
 	</build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <inherited>false</inherited>
+                <configuration>
+                    <aggregate>true</aggregate>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

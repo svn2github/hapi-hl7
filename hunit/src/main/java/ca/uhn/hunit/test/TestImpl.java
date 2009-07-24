@@ -28,18 +28,18 @@ public class TestImpl implements ITest {
 			if (next instanceof SendMessageAny) {
 				SendMessageAny nextSm = (SendMessageAny)next;
 				if (nextSm.getHl7V2() != null) {
-					event = (new Hl7V2SendMessageImpl(theBattery, nextSm.getHl7V2()));
+					event = (new Hl7V2SendMessageImpl(theBattery, this, nextSm.getHl7V2()));
 				}
 			} else if (next instanceof ExpectMessageAny) {
 				ExpectMessageAny nextEm = (ExpectMessageAny) next;
 				if (nextEm.getHl7V2Specific() != null) {
-					event = (new Hl7V2ExpectSpecificMessageImpl(theBattery, nextEm.getHl7V2Specific()));
+					event = (new Hl7V2ExpectSpecificMessageImpl(theBattery, this, nextEm.getHl7V2Specific()));
 				}
 				if (nextEm.getHl7V2Rules() != null) {
-					event = (new Hl7V2ExpectRulesImpl(theBattery, nextEm.getHl7V2Rules()));
+					event = (new Hl7V2ExpectRulesImpl(theBattery, this, nextEm.getHl7V2Rules()));
 				}
 				if (nextEm.getHl7V2Ack() != null) {
-					event = (new Hl7V2ExpectRulesImpl(theBattery, nextEm.getHl7V2Ack()));
+					event = (new Hl7V2ExpectRulesImpl(theBattery, this, nextEm.getHl7V2Ack()));
 				}
 			} else {
 				throw new ConfigurationException("Unknown event type: " + next.getClass());

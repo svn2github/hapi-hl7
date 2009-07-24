@@ -4,9 +4,10 @@ import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.ex.InterfaceWontStopException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.run.ExecutionContext;
+import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.Interface;
 
-public abstract class AbstractInterface {
+public abstract class AbstractInterface implements Comparable<AbstractInterface> {
 
 	private Interface myConfig;
 	private String myId;
@@ -33,13 +34,19 @@ public abstract class AbstractInterface {
 	
 	public abstract void stop(ExecutionContext theCtx) throws InterfaceWontStopException;
 	
-	public abstract String receiveMessage(ExecutionContext theCtx) throws TestFailureException;
+	public abstract TestMessage receiveMessage(TestImpl theTest, ExecutionContext theCtx) throws TestFailureException;
 	
-	public abstract void sendMessage(ExecutionContext theCtx, String theMessage) throws TestFailureException;
+	public abstract void sendMessage(TestImpl theTest, ExecutionContext theCtx, TestMessage theMessage) throws TestFailureException;
 
 	public abstract boolean isStarted();
 	
 	public boolean isAutostart() {
 		return myAutostart;
 	}
+	
+	@Override
+	public int compareTo(AbstractInterface theO) {
+		return myId.compareTo(theO.myId);
+	}
+
 }

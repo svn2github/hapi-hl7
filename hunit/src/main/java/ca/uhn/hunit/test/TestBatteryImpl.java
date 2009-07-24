@@ -3,6 +3,7 @@ package ca.uhn.hunit.test;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,12 +17,10 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import ca.uhn.hunit.ex.ConfigurationException;
-import ca.uhn.hunit.ex.InterfaceException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.ex.InterfaceWontStopException;
-import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
-import ca.uhn.hunit.iface.MllpInterfaceImpl;
+import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.run.ExecutionContext;
@@ -94,8 +93,8 @@ public class TestBatteryImpl implements ITest {
 		for (AnyInterface next : myConfig.getInterfaces().getInterface()) {
 
 			AbstractInterface nextIf;
-			if (next.getMllpInterface() != null) {
-				nextIf = new MllpInterfaceImpl(next.getMllpInterface());
+			if (next.getMllpHl7V2Interface() != null) {
+				nextIf = new MllpHl7V2InterfaceImpl(next.getMllpHl7V2Interface());
 			} else {
 				throw new ConfigurationException("Unknown interface type in battery " + myName);
 			}
@@ -151,6 +150,12 @@ public class TestBatteryImpl implements ITest {
 	@Override
 	public Set<String> getInterfacesUsed() {
 		return myId2Interface.keySet();
+	}
+
+	public List<AbstractInterface> getInterfaces() {
+		ArrayList<AbstractInterface> retVal = new ArrayList<AbstractInterface>(myId2Interface.values());
+		Collections.sort(retVal);
+		return retVal;
 	}
 
 }
