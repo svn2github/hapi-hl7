@@ -11,7 +11,7 @@ public abstract class AbstractExpectMessage extends AbstractEvent {
 	private TestImpl myTest;
 
 	public AbstractExpectMessage(TestBatteryImpl theBattery, TestImpl theTest, ExpectMessage theConfig) {
-		super(theBattery, theConfig);
+		super(theBattery, theTest, theConfig);
 
 		myTest = theTest;
 	}

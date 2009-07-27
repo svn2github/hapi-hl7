@@ -3,7 +3,6 @@ package ca.uhn.hunit.test;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.xsd.Hl7V2ExpectAck;

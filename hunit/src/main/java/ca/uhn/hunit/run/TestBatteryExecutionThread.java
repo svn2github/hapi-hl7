@@ -1,41 +1,33 @@
-package ca.uhn.hunit.test;
+package ca.uhn.hunit.run;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import ca.uhn.hunit.ex.InterfaceException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.ex.InterfaceWontStopException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
-import ca.uhn.hunit.run.ExecutionContext;
+import ca.uhn.hunit.test.AbstractEvent;
 
 public class TestBatteryExecutionThread extends Thread {
 
 	private ExecutionContext myCtx;
-	private TestImpl myTest;
-	private String myInterfaceId;
 	private boolean myStopped;
 	private AbstractInterface myInterface;
-	private boolean myFailed;
-	private TestBatteryImpl myBattery;
+	private TestFailureException myFailed;
 	private List<AbstractEvent> myEvents = new LinkedList<AbstractEvent>();
 	private AbstractEvent myCurrentEvent;
-    private boolean myReady;
-
-	public TestBatteryExecutionThread(ExecutionContext theCtx, TestBatteryImpl theBattery, TestImpl theTest, String theInterfaceId) {
-		super(theInterfaceId);
-		myTest = theTest;
-		myInterfaceId = theInterfaceId;
-		myBattery = theBattery;
-		myInterface = theBattery.getInterface(theInterfaceId);
-		myCtx = theCtx;
-		myStopped = false;
-	}
+    private boolean myReady = false;
 
 	
+	public TestBatteryExecutionThread(ExecutionContext theExecutionContext, AbstractInterface theInterface) {
+		super(theInterface.getId());
+
+		myInterface = theInterface;
+		myCtx = theExecutionContext;
+	}
+
+
 	/**
      * @return Returns the waiting.
      */
@@ -51,8 +43,7 @@ public class TestBatteryExecutionThread extends Thread {
 				myInterface.start(myCtx);
 			}
 		} catch (InterfaceWontStartException e) {
-			myCtx.addFailure(myBattery, e);
-			myFailed = true;
+			myFailed = e;
 		}
 
 		myReady = true;
@@ -73,17 +64,22 @@ public class TestBatteryExecutionThread extends Thread {
 				myCurrentEvent = myEvents.get(0);
 			}
 
+			if (myFailed != null) {
+				myCtx.addFailure(myCurrentEvent.getTest(), myFailed);
+				return;
+			}
+			
 			try {
 				myCurrentEvent.execute(myCtx);
 			} catch (TestFailureException e) {
-				myCtx.addFailure(myTest, e);
-				myFailed = true;
+				myFailed = e;
+				myCtx.addFailure(myCurrentEvent.getTest(), e);
 				return;
 			}
 
 			synchronized (myEvents) {
 				if (!myEvents.isEmpty()) {
-					myEvents.remove(0);
+					myEvents.remove(myCurrentEvent);
 				}
 			}
 
@@ -92,7 +88,8 @@ public class TestBatteryExecutionThread extends Thread {
         try {
             myInterface.stop(myCtx);
         } catch (InterfaceWontStopException e) {
-            myCtx.addFailure(myBattery, e);
+        	myFailed = e;
+            myCtx.getLog().error(myInterface, "Can't stop interface: " + e.describeReason());
         }
         
 	}
@@ -105,16 +102,18 @@ public class TestBatteryExecutionThread extends Thread {
 
 	public boolean hasEventsPending() {
 		synchronized (myEvents) {
-			return myEvents.isEmpty() == false;
+			return (myEvents.isEmpty() == false) && (myFailed == null);
 		}
 	}
 
-	public boolean isFailed() {
-		return myFailed;
-	}
-	
 	public void finish() {
 	    myStopped = true;
+	}
+	
+	public void cancelCurrentEvents() {
+		synchronized (myEvents) {
+			myEvents.clear();
+		}
 	}
 	
 }

@@ -16,7 +16,7 @@ public abstract class AbstractSendMessage extends AbstractEvent {
 
 
 	public AbstractSendMessage(TestBatteryImpl theBattery, TestImpl theTest, SendMessage theConfig) {
-		super(theBattery, theConfig);
+		super(theBattery, theTest, theConfig);
 		
 		MessageDefinition message = (MessageDefinition)theConfig.getMessageId();
 		myMessageId = message.getId();

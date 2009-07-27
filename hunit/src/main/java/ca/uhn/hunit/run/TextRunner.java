@@ -2,7 +2,6 @@ package ca.uhn.hunit.run;
 
 import java.io.File;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
@@ -28,19 +27,13 @@ public class TextRunner {
 		File defFile = new File(defFileName);
 		
 		TestBatteryImpl batteryImpl = new TestBatteryImpl(defFile);
-		ExecutionContext ctx = new ExecutionContext();
-		batteryImpl.execute(ctx);
+		ExecutionContext ctx = new ExecutionContext(batteryImpl);
+		ctx.execute();
 		
+		
+		System.out.flush();
 		System.out.println("----------------------------------------------------");
 		
-		if (!ctx.getBatteryFailures().isEmpty()) {
-			System.out.println("Warning, the following batteries failed:");
-			for (Map.Entry<TestBatteryImpl, TestFailureException> next : ctx.getBatteryFailures().entrySet()) {
-				System.out.println("\r\n * " + next.getKey().getName() +" - Reason: " + next.getValue().describeReason());
-			}
-			System.out.println("\r\n");
-		}
-
 		if (!ctx.getTestFailures().isEmpty()) {
 			System.out.println("Warning, the following tests failed:");
 			for (Map.Entry<TestImpl, TestFailureException> next : ctx.getTestFailures().entrySet()) {

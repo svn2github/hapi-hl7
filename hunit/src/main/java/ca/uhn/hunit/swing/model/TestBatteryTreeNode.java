@@ -7,7 +7,7 @@ package ca.uhn.hunit.swing.model;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import ca.uhn.hunit.test.TestBatteryImpl;
+import ca.uhn.hunit.test.AbstractPropertyChangeSupport;
 
 /**
  *
@@ -16,10 +16,9 @@ import ca.uhn.hunit.test.TestBatteryImpl;
 public class TestBatteryTreeNode extends DefaultMutableTreeNode {
 
 	private static final long serialVersionUID = 1949757870372912053L;
-	
-	public TestBatteryTreeNode(TestBatteryImpl theBattery) {
+
+	public TestBatteryTreeNode(AbstractPropertyChangeSupport theBattery) {
 		super(theBattery);
-		
 		
 	}
 

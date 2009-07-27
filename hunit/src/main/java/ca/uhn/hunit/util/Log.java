@@ -35,5 +35,9 @@ public class Log {
 	public void error(ITest theTestImpl, String theMessage) {
 		error("TEST[" + theTestImpl.getName() + "] " + theMessage);
 	}
+
+	public void error(AbstractInterface theInterface, String theMessage) {
+		error("INTERFACE[" + theInterface.getId() + "] " + theMessage);
+	}
 	
 }

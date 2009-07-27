@@ -15,11 +15,11 @@
 	
 	<mailingLists>
         <mailingList>
-            <name>HAPI Developers Mailing List</name>
-            <subscribe>http://lists.sourceforge.net/mailman/listinfo/hl7api-devel</subscribe>
-            <unsubscribe>http://lists.sourceforge.net/mailman/listinfo/hl7api-devel</unsubscribe>
-            <archive>http://www.nabble.com/HAPI-f3467.html</archive>
-            <post>mailto:hl7api-devel@lists.sourceforge.net</post>
+            <name>hUnit Mailing List</name>
+            <subscribe>http://lists.sourceforge.net/mailman/listinfo/hl7api-hunit</subscribe>
+            <unsubscribe>http://lists.sourceforge.net/mailman/listinfo/hl7api-hunit</unsubscribe>
+            <archive>https://sourceforge.net/mailarchive/forum.php?forum_name=hl7api-hunit</archive>
+            <post>mailto:hl7api-hunit@lists.sourceforge.net</post>
         </mailingList>
 	</mailingLists>
 	
@@ -40,23 +40,6 @@
 	</ciManagement>
 	
 	<licenses>
-	    <license>
-            <name>hUnit is dual licensed (MPL, GPL)</name>
-			<comments><![CDATA[
-			   hUnit is a sub-project of HAPI, and is licensed under the same terms. 
-			   HAPI is dual licensed under both the Mozilla Public License and the GNU General Public License.
-			   What this means is that you may choose to use HAPI under the terms of either license.
-			   You are both permitted and encouraged to use HAPI, royalty-free, within your applications,
-			   whether they are free/open-source or commercial/closed-source, provided you abide by the 
-			   terms of one of the licenses below.
-			   You are under no obligations to inform the HAPI project about what you are doing with
-			   HAPI, but we would love to hear about it anyway!
-			]]></comments>
-	    </license>
-		<license>
-			<name>Mozilla Public License 1.1</name>
-			<url>http://www.mozilla.org/MPL/MPL-1.1.txt</url>
-		</license>
 		<license>
 			<name>GNU General Public License</name>
 			<url>http://www.gnu.org/licenses/gpl.txt</url>
@@ -135,6 +118,11 @@
             <version>2.4</version>
         </dependency>
         <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
             <groupId>ca.uhn.hapi</groupId>
             <artifactId>hapi-base</artifactId>
             <version>1.0-beta1</version>
@@ -208,14 +196,13 @@
                     </execution>
 				</executions>
 			</plugin>
-    <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-site-plugin</artifactId>
-      <dependencies>
-      </dependencies>
-    </plugin>
-    
-  	</plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<dependencies>
+				</dependencies>
+			</plugin>
+        </plugins>
 	</build>
 
     <reporting>
@@ -233,6 +220,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <m2st.version>1.2b</m2st.version>
+	    <m2st-syntaxHighlighter-urlBase>syntaxhighlighter</m2st-syntaxHighlighter-urlBase>
+	    <m2st-syntaxHighlighter-brushFiles>shBrushPlain.js,shBrushXml.js,shBrushJava.js</m2st-syntaxHighlighter-brushFiles>
     </properties>
 	
 </project>

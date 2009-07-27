@@ -10,13 +10,19 @@ public abstract class AbstractEvent {
 
 	private TestBatteryImpl myBattery;
 	private String myInterfaceId;
+	private TestImpl myTest;
 
-	public AbstractEvent(TestBatteryImpl theBattery, Event theConfig) {
+	public AbstractEvent(TestBatteryImpl theBattery, TestImpl theTest, Event theConfig) {
 		Interface ifDef = (Interface) theConfig.getInterfaceId();
 		myInterfaceId = ifDef.getId();
 		myBattery = theBattery;		
+		myTest = theTest;
 	}
 	
+	public TestImpl getTest() {
+		return myTest;
+	}
+
 	public abstract void execute(ExecutionContext theCtx) throws TestFailureException;
 
 	public TestBatteryImpl getBattery() {

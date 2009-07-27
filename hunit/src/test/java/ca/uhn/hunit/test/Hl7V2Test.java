@@ -18,33 +18,50 @@ public class Hl7V2Test {
 
 	@Test
 	public void testSuccessfulExpectSpecific() throws URISyntaxException, InterfaceWontStartException, ConfigurationException, JAXBException {
-		startMessageReplacer("LEIGHTON", "TEST");
+		new MllpHl7v2MessageSwapper(false, "LEIGHTON", "TEST").start();
 		
 		File defFile = new File(Thread.currentThread().getContextClassLoader().getResource("unit_tests_hl7.xml").toURI());
 		TestBatteryImpl battery = new TestBatteryImpl(defFile);
-		ExecutionContext ctx = new ExecutionContext();
-		battery.execute(ctx, "ExpectSpecific Test");
+		ExecutionContext ctx = new ExecutionContext(battery);
+		ctx.execute("ExpectSpecific Test");
 		
-		Assert.assertFalse(ctx.getBatteryFailures().containsKey(battery.getTestNames2Tests().get("ExpectSpecific Test")));
+		Assert.assertFalse(ctx.getTestFailures().containsKey(battery.getTestNames2Tests().get("ExpectSpecific Test")));
 		Assert.assertTrue(ctx.getTestSuccesses().contains(battery.getTestNames2Tests().get("ExpectSpecific Test")));
 	}
 
 	@Test
 	public void testFailureExpectSpecific() throws URISyntaxException, InterfaceWontStartException, ConfigurationException, JAXBException {
-		startMessageReplacer("LEIGHTON", "TEST2");
+		new MllpHl7v2MessageSwapper(false, "LEIGHTON", "TEST2").start();
 		
 		File defFile = new File(Thread.currentThread().getContextClassLoader().getResource("unit_tests_hl7.xml").toURI());
 		TestBatteryImpl battery = new TestBatteryImpl(defFile);
-		ExecutionContext ctx = new ExecutionContext();
-		battery.execute(ctx, "ExpectSpecific Test");
+		ExecutionContext ctx = new ExecutionContext(battery);
+		ctx.execute("ExpectSpecific Test");
 		
 		ITest test = battery.getTestNames2Tests().get("ExpectSpecific Test");
 		Assert.assertFalse(ctx.getTestSuccesses().contains(test));
 		Assert.assertTrue(ctx.getTestFailures().containsKey(test));
 	}
 
-	public static void startMessageReplacer(String theOldValue, final String theNewValue) {
-		new MllpHl7v2MessageSwapper(theOldValue, theNewValue).start();
+	
+	@Test
+	public void testMultipleTests() throws URISyntaxException, InterfaceWontStartException, ConfigurationException, JAXBException {
+		new MllpHl7v2MessageSwapper(false, "LEIGHTON", "TEST", 2).start();
+		
+		File defFile = new File(Thread.currentThread().getContextClassLoader().getResource("unit_tests_hl7.xml").toURI());
+		TestBatteryImpl battery = new TestBatteryImpl(defFile);
+		ExecutionContext ctx = new ExecutionContext(battery);
+		ctx.execute("ExpectSpecific Test", "ExpectSecond Test");
+		
+		ITest test = battery.getTestNames2Tests().get("ExpectSpecific Test");
+		Assert.assertTrue(ctx.getTestSuccesses().contains(test));
+		Assert.assertFalse(ctx.getTestFailures().containsKey(test));
+		
+		test = battery.getTestNames2Tests().get("ExpectSecond Test");
+		Assert.assertFalse(ctx.getTestSuccesses().contains(test));
+		Assert.assertTrue(ctx.getTestFailures().containsKey(test));
+
 	}
+
 	
 }

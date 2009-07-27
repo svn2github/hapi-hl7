@@ -3,11 +3,9 @@ package ca.uhn.hunit.test;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import ca.uhn.hunit.ex.ConfigurationException;
-import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.xsd.ExpectMessageAny;
 import ca.uhn.hunit.xsd.SendMessageAny;
 import ca.uhn.hunit.xsd.Test;
@@ -59,56 +57,7 @@ public class TestImpl implements ITest {
 	}
 	
 	
-	public void execute(ExecutionContext theCtx) {
-		Map<String, TestBatteryExecutionThread> interface2thread = new HashMap<String, TestBatteryExecutionThread>(); 
-		
-		for (String nextInterfaceId : myEvents.keySet()) {
-			TestBatteryExecutionThread thread = new TestBatteryExecutionThread(theCtx, myBattery, this, nextInterfaceId);
-			interface2thread.put(nextInterfaceId, thread);
-			thread.start();
-		}
 
-		// Wait until all threads are ready to start
-		for (TestBatteryExecutionThread next : interface2thread.values()) {
-		    if (!next.isReady() && !next.isFailed()) {
-		        try {
-                    Thread.sleep(250);
-                } catch (InterruptedException e) {
-                    // nothing
-                }
-		    }
-		}
-		
-		
-		for (String nextInterfaceId : myEvents.keySet()) {
-			ArrayList<AbstractEvent> nextEvents = myEvents.get(nextInterfaceId);
-			TestBatteryExecutionThread nextThread = interface2thread.get(nextInterfaceId);
-			nextThread.addEvents(nextEvents);
-		}
-
-		for (String nextInterfaceId : myEvents.keySet()) {
-			TestBatteryExecutionThread nextThread = interface2thread.get(nextInterfaceId);
-			while (nextThread.hasEventsPending() && !nextThread.isFailed()) {
-				try {
-					Thread.sleep(250);
-				} catch (InterruptedException e) {
-					// nothing
-				}
-			}
-		}
-
-		boolean failed = false;
-		for (String nextInterfaceId : myEvents.keySet()) {
-			TestBatteryExecutionThread nextThread = interface2thread.get(nextInterfaceId);
-			if (nextThread.isFailed()) {
-				failed = true;
-			}
-		}
-		
-		if (!failed) {
-			theCtx.addSuccess(this);
-		}
-	}
 
 
 	/* (non-Javadoc)

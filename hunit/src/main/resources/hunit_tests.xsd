@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://hl7api.sourceforge.net/hunit/tests" xmlns:tns="http://hl7api.sourceforge.net/hunit/tests" elementFormDefault="qualified">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+    targetNamespace="http://hl7api.sourceforge.net/hunit/hunit_tests.xsd" 
+    xmlns:tns="http://hl7api.sourceforge.net/hunit/hunit_tests.xsd" elementFormDefault="qualified">
 	
 	<element name="battery" type="tns:TestBattery"/>
 
@@ -36,8 +38,7 @@
 	<complexType name="AnyInterface">
 		<choice>
 			<element name="mllpHl7V2Interface" type="tns:MllpHl7V2Interface"/>
-			<element name="jmsQueueInterface" type="tns:JmsQueueInterface"/>
-			<element name="jmsTopicInterface" type="tns:JmsTopicInterface"/>
+			<element name="jmsHl7V2QueueInterface" type="tns:JmsHl7V2Interface"/>
 		</choice>
 	</complexType>
 	
