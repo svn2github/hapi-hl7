@@ -17,12 +17,14 @@ import javax.xml.transform.stream.StreamSource;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.iface.AbstractInterface;
+import ca.uhn.hunit.iface.JmsHl7V2InterfaceImpl;
 import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.xsd.AnyInterface;
 import ca.uhn.hunit.xsd.AnyMessageDefinitions;
 import ca.uhn.hunit.xsd.Hl7V2MessageDefinition;
+import ca.uhn.hunit.xsd.JmsHl7V2Interface;
 import ca.uhn.hunit.xsd.Test;
 import ca.uhn.hunit.xsd.TestBattery;
 
@@ -92,6 +94,8 @@ public class TestBatteryImpl extends AbstractPropertyChangeSupport implements IT
 			AbstractInterface nextIf;
 			if (next.getMllpHl7V2Interface() != null) {
 				nextIf = new MllpHl7V2InterfaceImpl(next.getMllpHl7V2Interface());
+			} else if (next.getJmsHl7V2QueueInterface() != null) {
+	                nextIf = new JmsHl7V2InterfaceImpl(next.getJmsHl7V2QueueInterface());
 			} else {
 				throw new ConfigurationException("Unknown interface type in battery " + myName);
 			}

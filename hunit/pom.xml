@@ -123,21 +123,74 @@
             <version>1.1.1</version>
         </dependency>
         <dependency>
-            <groupId>ca.uhn.hapi</groupId>
-            <artifactId>hapi-base</artifactId>
-            <version>1.0-beta1</version>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.9</version>
         </dependency>
         <dependency>
-			<groupId>org.incava</groupId>
-			<artifactId>java-diff</artifactId>
-			<version>1.1.0</version>
+        	<groupId>org.springframework</groupId>
+        	<artifactId>spring</artifactId>
+        	<version>2.5.6</version>
         </dependency>
+        <dependency>
+        	<groupId>org.springframework</groupId>
+        	<artifactId>spring</artifactId>
+        	<version>2.5.6</version>
+        	<classifier>sources</classifier>
+        	<scope>provided</scope>
+        </dependency>
+
+        <dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-j2ee</artifactId>
+			<version>4.2.3.GA</version>
+			<scope>provided</scope>
+        </dependency>
+
         <dependency>
         	<groupId>junit</groupId>
         	<artifactId>junit</artifactId>
         	<version>4.6</version>
         	<scope>test</scope>
         </dependency>
+        
+        <!-- HAPI Deps -->
+        <dependency>
+            <groupId>ca.uhn.hapi</groupId>
+            <artifactId>hapi-base</artifactId>
+            <version>1.0-beta1</version>
+        </dependency>
+		<dependency>
+			<groupId>ca.uhn.hapi</groupId>
+			<artifactId>hapi-structures-v21</artifactId>
+			<version>1.0-beta1</version>
+		</dependency>		
+		<dependency>
+			<groupId>ca.uhn.hapi</groupId>
+			<artifactId>hapi-structures-v22</artifactId>
+			<version>1.0-beta1</version>
+		</dependency>		
+		<dependency>
+			<groupId>ca.uhn.hapi</groupId>
+			<artifactId>hapi-structures-v23</artifactId>
+			<version>1.0-beta1</version>
+		</dependency>		
+		<dependency>
+			<groupId>ca.uhn.hapi</groupId>
+			<artifactId>hapi-structures-v231</artifactId>
+			<version>1.0-beta1</version>
+		</dependency>		
+		<dependency>
+			<groupId>ca.uhn.hapi</groupId>
+			<artifactId>hapi-structures-v24</artifactId>
+			<version>1.0-beta1</version>
+		</dependency>		
+		<dependency>
+			<groupId>ca.uhn.hapi</groupId>
+			<artifactId>hapi-structures-v25</artifactId>
+			<version>1.0-beta1</version>
+		</dependency>		
+
 	</dependencies>
 	
 	<modules>
@@ -169,21 +222,27 @@
 					<maxmem>1024m</maxmem>
 				</configuration>
 			</plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <inherited>false</inherited>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
-					<descriptors>
-						<descriptor>src/assembly/hapi-all.xml</descriptor>
-						<descriptor>src/assembly/hapi-src.xml</descriptor>
-					</descriptors>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
 				</configuration>
-            </plugin>
-            
-            
+				<executions>
+					<execution>
+						<id>make-assembly</id> <!-- this is used for inheritance merges -->
+						<phase>package</phase> <!-- append to the packaging phase. -->
+						<goals>
+							<goal>single</goal> <!-- goals == mojos -->
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>com.sun.tools.xjc.maven2</groupId>
 				<artifactId>maven-jaxb-plugin</artifactId>
+				<version>1.1</version>
 				<executions>
                     <execution>
                         <phase>generate-sources</phase>

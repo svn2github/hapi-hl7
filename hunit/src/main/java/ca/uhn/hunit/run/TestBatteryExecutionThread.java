@@ -9,111 +9,125 @@ import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.test.AbstractEvent;
 
-public class TestBatteryExecutionThread extends Thread {
+public class TestBatteryExecutionThread extends Thread
+{
 
-	private ExecutionContext myCtx;
-	private boolean myStopped;
-	private AbstractInterface myInterface;
-	private TestFailureException myFailed;
-	private List<AbstractEvent> myEvents = new LinkedList<AbstractEvent>();
-	private AbstractEvent myCurrentEvent;
+    private ExecutionContext myCtx;
+    private boolean myStopped;
+    private AbstractInterface myInterface;
+    private TestFailureException myFailed;
+    private List<AbstractEvent> myEvents = new LinkedList<AbstractEvent>();
+    private AbstractEvent myCurrentEvent;
     private boolean myReady = false;
 
-	
-	public TestBatteryExecutionThread(ExecutionContext theExecutionContext, AbstractInterface theInterface) {
-		super(theInterface.getId());
 
-		myInterface = theInterface;
-		myCtx = theExecutionContext;
-	}
+    public TestBatteryExecutionThread(ExecutionContext theExecutionContext, AbstractInterface theInterface) {
+        super(theInterface.getId());
+
+        myInterface = theInterface;
+        myCtx = theExecutionContext;
+    }
 
 
-	/**
+    /**
      * @return Returns the waiting.
      */
     public boolean isReady() {
         return myReady;
     }
 
+
     @Override
-	public void run() {
+    public void run() {
 
-		try {
-			if (myInterface.isAutostart() && !myInterface.isStarted()) {
-				myInterface.start(myCtx);
-			}
-		} catch (InterfaceWontStartException e) {
-			myFailed = e;
-		}
+        try {
+            if (myInterface.isAutostart() && !myInterface.isStarted()) {
+                myInterface.start(myCtx);
+            }
+        } catch (InterfaceWontStartException e) {
+            myFailed = e;
+        }
 
-		myReady = true;
-		
-		while (!myStopped) {
+        myReady = true;
 
-			try {
-				Thread.sleep(250);
-			} catch (InterruptedException e) {
-				// ignore
-			}
+        while (!myStopped) {
 
-			synchronized (myEvents) {
-				if (myEvents.isEmpty()) {
-					continue;
-				}
+            try {
+                Thread.sleep(250);
+            } catch (InterruptedException e) {
+                // ignore
+            }
 
-				myCurrentEvent = myEvents.get(0);
-			}
+            synchronized (myEvents) {
+                if (myEvents.isEmpty()) {
+                    continue;
+                }
 
-			if (myFailed != null) {
-				myCtx.addFailure(myCurrentEvent.getTest(), myFailed);
-				return;
-			}
-			
-			try {
-				myCurrentEvent.execute(myCtx);
-			} catch (TestFailureException e) {
-				myFailed = e;
-				myCtx.addFailure(myCurrentEvent.getTest(), e);
-				return;
-			}
+                myCurrentEvent = myEvents.get(0);
+            }
 
-			synchronized (myEvents) {
-				if (!myEvents.isEmpty()) {
-					myEvents.remove(myCurrentEvent);
-				}
-			}
+            if (myFailed != null) {
+                myCtx.addFailure(myCurrentEvent.getTest(), myFailed);
+                return;
+            }
 
-		}
+            try {
+                myCurrentEvent.execute(myCtx);
+            } catch (TestFailureException e) {
+                myFailed = e;
+                myCtx.addFailure(myCurrentEvent.getTest(), e);
+                return;
+            }
+
+            synchronized (myEvents) {
+                if (!myEvents.isEmpty()) {
+                    myEvents.remove(myCurrentEvent);
+                }
+            }
+
+        }
 
         try {
             myInterface.stop(myCtx);
         } catch (InterfaceWontStopException e) {
-        	myFailed = e;
+            myFailed = e;
             myCtx.getLog().error(myInterface, "Can't stop interface: " + e.describeReason());
         }
-        
-	}
 
-	public void addEvents(List<AbstractEvent> theEvents) {
-	    synchronized (myEvents) {
-			myEvents.addAll(theEvents);
-		}
-	}
+        myReady = false;
 
-	public boolean hasEventsPending() {
-		synchronized (myEvents) {
-			return (myEvents.isEmpty() == false) && (myFailed == null);
-		}
-	}
+    }
 
-	public void finish() {
-	    myStopped = true;
-	}
-	
-	public void cancelCurrentEvents() {
-		synchronized (myEvents) {
-			myEvents.clear();
-		}
-	}
-	
+
+    public void addEvents(List<AbstractEvent> theEvents) {
+        if (myFailed != null) {
+            for (AbstractEvent abstractEvent : theEvents) {
+                myCtx.addFailure(abstractEvent.getTest(), myFailed);
+            }
+        } else {
+            synchronized (myEvents) {
+                myEvents.addAll(theEvents);
+            }
+        }
+    }
+
+
+    public boolean hasEventsPending() {
+        synchronized (myEvents) {
+            return (myEvents.isEmpty() == false) && (myFailed == null);
+        }
+    }
+
+
+    public void finish() {
+        myStopped = true;
+    }
+
+
+    public void cancelCurrentEvents() {
+        synchronized (myEvents) {
+            myEvents.clear();
+        }
+    }
+
 }

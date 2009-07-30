@@ -31,15 +31,18 @@ public class TextRunner {
 		ctx.execute();
 		
 		
-		System.out.flush();
-		System.out.println("----------------------------------------------------");
+		ctx.getLog().info(batteryImpl, "----------------------------------------------------");
+        ctx.getLog().info(batteryImpl, "The following tests passed:");
+        for (TestImpl next : ctx.getTestSuccesses()) {
+            ctx.getLog().info(batteryImpl, " * " + next.getName());
+        }
+        ctx.getLog().info(batteryImpl, "----------------------------------------------------");
 		
 		if (!ctx.getTestFailures().isEmpty()) {
-			System.out.println("Warning, the following tests failed:");
+		    ctx.getLog().info(batteryImpl, "Warning, the some tests failed!");
 			for (Map.Entry<TestImpl, TestFailureException> next : ctx.getTestFailures().entrySet()) {
-				System.out.println("\r\n * " + next.getKey().getName() +" - Reason: " + next.getValue().describeReason());
+			    ctx.getLog().info(batteryImpl, "The following test failed: " + next.getKey().getName() +" - Reason: " + next.getValue().describeReason());
 			}
-			System.out.println("\r\n");
 		}
 	}
 

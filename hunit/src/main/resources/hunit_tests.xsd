@@ -94,11 +94,22 @@
 			<extension base="tns:Interface">
 				<sequence>
 					<element name="connection_factory" type="string"></element>
-					<sequence>
-					</sequence>
-					<element name="queue_name" type="string"></element>
+					<element name="connection_factory_constructor_arg" type="tns:JavaArgument" minOccurs="0" maxOccurs="unbounded"></element>
+					<choice>
+						<element name="queue_name" type="string"></element>
+						<element name="topic_name" type="string"></element>
+					</choice>
 					<element name="user_name" type="string"></element>
 					<element name="password" type="string"></element>
+                    <element name="encoding" minOccurs="0" maxOccurs="1" default="ER7">
+                        <simpleType>
+                            <restriction base="string">
+                                <enumeration value="ER7"></enumeration>
+                                <enumeration value="XML"></enumeration>
+                            </restriction>
+                        </simpleType>
+                    </element>
+                    <element name="clear" type="boolean" minOccurs="0" default="true"></element>
 				</sequence>
 			</extension>
 		</complexContent>
@@ -257,6 +268,11 @@
 	       <extension base="tns:MessageDefinition">
 	       </extension>
 	   </complexContent>
+	</complexType>
+	
+	<complexType name="JavaArgument">
+		<attribute name="type" type="string"></attribute>
+		<attribute name="value" type="string"></attribute>
 	</complexType>
 	
 </schema>

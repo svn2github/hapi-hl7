@@ -31,7 +31,6 @@ public class InterfacesModel implements PropertyChangeListener {
 		
 	}
 
-	@Override
 	public void propertyChange(PropertyChangeEvent theEvt) {
 		updateInterfaces();
 	}

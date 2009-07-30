@@ -136,7 +136,18 @@ public class ExecutionContext {
 		for (TestBatteryExecutionThread next : interface2thread.values()) {
 			next.finish();
 		}
-		
+
+	      // Wait until all threads are closed up
+        for (TestBatteryExecutionThread next : interface2thread.values()) {
+            if (next.isReady()) {
+                try {
+                    Thread.sleep(250);
+                } catch (InterruptedException e) {
+                    // nothing
+                }
+            }
+        }
+
 		getLog().info(myBattery, "Finished executing battery");
 	}
 

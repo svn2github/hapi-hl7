@@ -28,7 +28,6 @@ public class TestBatteryInterfacesTreeNode extends DefaultMutableTreeNode implem
 		}
 	}
 
-	@Override
 	public void propertyChange(PropertyChangeEvent theEvt) {
 		updateChildren();
 	}
