@@ -44,7 +44,7 @@
 	
 	<complexType name="Interface" abstract="true">
 		<attribute name="autostart" type="boolean"/>
-		<attribute name="id" type="ID" use="required"/>
+		<attribute name="id" type="string" use="required"/>
 	</complexType>
 
 	<complexType name="MllpHl7V2Interface">
@@ -133,8 +133,8 @@
 	</complexType>
 
     <complexType name="Event" abstract="true">
-        <attribute name="message_id" type="IDREF" use="required"></attribute>
-        <attribute name="interface_id" type="IDREF" use="required"></attribute>
+        <attribute name="message_id" type="string" use="required"></attribute>
+        <attribute name="interface_id" type="string" use="required"></attribute>
     </complexType>
 
     <complexType name="SendMessage">
@@ -174,7 +174,7 @@
 
     <complexType name="MessageSource">
         <choice>
-            <element name="ref" type="IDREF" minOccurs="1" maxOccurs="1"></element>
+            <element name="ref" type="string" minOccurs="1" maxOccurs="1"></element>
         </choice>
     </complexType>
 
@@ -260,7 +260,7 @@
 		<choice>
 		    <element name="text" type="string"></element>
 		</choice>
-        <attribute name="id" type="ID" use="required"/>
+        <attribute name="id" type="string" use="required"/>
     </complexType>
 	
 	<complexType name="Hl7V2MessageDefinition">
