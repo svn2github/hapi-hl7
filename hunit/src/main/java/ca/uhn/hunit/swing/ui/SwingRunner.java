@@ -11,8 +11,19 @@
 
 package ca.uhn.hunit.swing.ui;
 
+import java.io.File;
+import java.net.URISyntaxException;
+
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.tree.DefaultTreeModel;
+import javax.xml.bind.JAXBException;
+
+import ca.uhn.hunit.ex.ConfigurationException;
+import ca.uhn.hunit.ex.InterfaceWontStartException;
+import ca.uhn.hunit.swing.model.InterfacesTreeRenderer;
+import ca.uhn.hunit.swing.model.TestBatteryTreeNode;
+import ca.uhn.hunit.test.TestBatteryImpl;
 
 /**
  *
@@ -20,9 +31,15 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class SwingRunner extends javax.swing.JFrame {
 
-    /** Creates new form SwingRunner */
-    public SwingRunner() {
-        initComponents();
+    private TestBatteryImpl myBattery;
+	/** Creates new form SwingRunner 
+     * @param theBatteryImpl */
+    public SwingRunner(TestBatteryImpl theBatteryImpl) {
+        myBattery = theBatteryImpl;
+    	initComponents();
+    	
+    	myTestTree.setModel(new DefaultTreeModel(new TestBatteryTreeNode(myBattery), true));
+    	myTestTree.setCellRenderer(new InterfacesTreeRenderer());
     }
 
     /** This method is called from within the constructor to
@@ -97,8 +114,12 @@ public class SwingRunner extends javax.swing.JFrame {
 
     /**
     * @param args the command line arguments
+     * @throws JAXBException 
+     * @throws ConfigurationException 
+     * @throws InterfaceWontStartException 
+     * @throws URISyntaxException 
     */
-    public static void main(String args[]) {
+    public static void main(String args[]) throws InterfaceWontStartException, ConfigurationException, JAXBException, URISyntaxException {
     	try {
     	    // Set System L&F
             UIManager.setLookAndFeel(
@@ -118,9 +139,12 @@ public class SwingRunner extends javax.swing.JFrame {
         }
 
     	
+		File defFile = new File(Thread.currentThread().getContextClassLoader().getResource("unit_tests_hl7.xml").toURI());
+		final TestBatteryImpl batteryImpl = new TestBatteryImpl(defFile);
     	java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new SwingRunner().setVisible(true);
+
+            	new SwingRunner(batteryImpl).setVisible(true);
             }
         });
     }

@@ -43,10 +43,10 @@ public class Hl7V2Test {
 		Assert.assertTrue(ctx.getTestFailures().containsKey(test));
 	}
 
-	
+
 	@Test
 	public void testMultipleTests() throws URISyntaxException, InterfaceWontStartException, ConfigurationException, JAXBException {
-		new MllpHl7v2MessageSwapper(false, "LEIGHTON", "TEST", 2).start();
+		new MllpHl7v2MessageSwapper(true, "LEIGHTON", "TEST", 2).start();
 		
 		File defFile = new File(Thread.currentThread().getContextClassLoader().getResource("unit_tests_hl7.xml").toURI());
 		TestBatteryImpl battery = new TestBatteryImpl(defFile);
@@ -62,6 +62,7 @@ public class Hl7V2Test {
 		Assert.assertTrue(ctx.getTestFailures().containsKey(test));
 
 	}
+
 
 	
 }

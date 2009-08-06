@@ -24,7 +24,6 @@ import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.xsd.AnyInterface;
 import ca.uhn.hunit.xsd.AnyMessageDefinitions;
 import ca.uhn.hunit.xsd.Hl7V2MessageDefinition;
-import ca.uhn.hunit.xsd.JmsHl7V2Interface;
 import ca.uhn.hunit.xsd.Test;
 import ca.uhn.hunit.xsd.TestBattery;
 
@@ -42,8 +41,10 @@ public class TestBatteryImpl extends AbstractPropertyChangeSupport implements IT
 		myConfig = theConfig;
 		myName = theConfig.getName();
 		initInterfaces();
-		initTests();
 		initMessages();
+
+		// Init tests last since they will depend on other things to be ready
+		initTests();
 	}
 
 	public TestBatteryImpl(File theDefFile) throws InterfaceWontStartException, ConfigurationException, JAXBException {
@@ -68,7 +69,10 @@ public class TestBatteryImpl extends AbstractPropertyChangeSupport implements IT
 		}
 	}
 
-	public AbstractMessage getMessage(String theId) {
+	public AbstractMessage getMessage(String theId) throws ConfigurationException {
+		if (!myId2Message.containsKey(theId)) {
+			throw new ConfigurationException("Unknown message ID[" + theId + "] - Valid values are: " + myId2Message.keySet());
+		}
 		return myId2Message.get(theId);
 	}
 
@@ -84,7 +88,10 @@ public class TestBatteryImpl extends AbstractPropertyChangeSupport implements IT
 
 	}
 
-	public AbstractInterface getInterface(String theId) {
+	public AbstractInterface getInterface(String theId) throws ConfigurationException {
+		if (!myId2Interface.containsKey(theId)) {
+			throw new ConfigurationException("Unknown interface ID[" + theId + "] - Valid values are: " + myId2Interface.keySet());
+		}
 		return myId2Interface.get(theId);
 	}
 

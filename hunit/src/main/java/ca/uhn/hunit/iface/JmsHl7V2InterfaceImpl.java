@@ -1,19 +1,10 @@
 package ca.uhn.hunit.iface;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.List;
 
-import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.TextMessage;
@@ -22,15 +13,8 @@ import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
-import com.stc.jms.client.STCTopicConnectionFactory;
-
 import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.app.DefaultApplication;
-import ca.uhn.hl7v2.llp.LLPException;
-import ca.uhn.hl7v2.llp.MinLLPReader;
-import ca.uhn.hl7v2.llp.MinLLPWriter;
 import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.Segment;
 import ca.uhn.hl7v2.parser.DefaultXMLParser;
 import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
 import ca.uhn.hl7v2.parser.Parser;
@@ -49,7 +33,6 @@ import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.JavaArgument;
 import ca.uhn.hunit.xsd.JmsHl7V2Interface;
-import ca.uhn.hunit.xsd.MllpHl7V2Interface;
 
 public class JmsHl7V2InterfaceImpl extends AbstractInterface {
 

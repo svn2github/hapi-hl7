@@ -3,6 +3,8 @@
  */
 package ca.uhn.hunit.example;
 
+import java.io.BufferedInputStream;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -20,6 +22,7 @@ public final class MllpHl7v2MessageSwapper extends Thread {
 	private String myOldValue;
 	private boolean myPrintOutput;
 	private int myIterations;
+	private boolean myAlwaysCreateNewOutboundConnection;
 
 	public MllpHl7v2MessageSwapper(boolean thePrintOutput, String theOldValue, String theNewValue) {
 		this(thePrintOutput, theOldValue, theNewValue, 1);
@@ -43,14 +46,17 @@ public final class MllpHl7v2MessageSwapper extends Thread {
 			ServerSocket serverSocket = new ServerSocket(10201);
 
 			socket = serverSocket.accept();
+			InputStream inputStream = socket.getInputStream();
+			inputStream = new BufferedInputStream(inputStream);
+			MinLLPReader minLLPReader = new MinLLPReader(inputStream);
+
+			Socket outSocket = null;
 
 			if (myPrintOutput) {
 				System.out.println("Accepting connection from " + socket.getInetAddress().getHostAddress());
 			}
 
 			for (int i = 0; i < myIterations; i++) {
-
-				MinLLPReader minLLPReader = new MinLLPReader(socket.getInputStream());
 
 				String messageText;
 				do {
@@ -67,15 +73,21 @@ public final class MllpHl7v2MessageSwapper extends Thread {
 
 				messageText = messageText.replace(myOldValue, myNewValue);
 
-				if (myPrintOutput) {
-					System.out.println("Opening outbound connection to port " + 10200);
+				if (outSocket != null && myAlwaysCreateNewOutboundConnection) {
+					outSocket.close();
+					outSocket = null;
 				}
-
-				Socket outSocket = new Socket();
-				outSocket.connect(new InetSocketAddress("localhost", 10200));
-
+				
+				if (outSocket == null) {
+					if (myPrintOutput) {
+						System.out.println("Opening outbound connection to port " + 10200);
+					}
+					outSocket = new Socket();
+					outSocket.connect(new InetSocketAddress("localhost", 10200));
+				}
+				
 				if (myPrintOutput) {
-					System.out.println("Sending message:\r\n" + messageText + "\r\n");
+					System.out.println("Sending message from port " + outSocket.getLocalPort() + ":\r\n" + messageText + "\r\n");
 				}
 
 				new MinLLPWriter(outSocket.getOutputStream()).writeMessage(messageText);
@@ -89,5 +101,12 @@ public final class MllpHl7v2MessageSwapper extends Thread {
 			e.printStackTrace();
 		}
 
+	}
+
+	/**
+	 * If true, create a new outbound connection for each iteration
+	 */
+	public void setAlwaysCreateNewOutboundConnection(boolean theAlwaysCreateNewOutboundConnection) {
+		myAlwaysCreateNewOutboundConnection = theAlwaysCreateNewOutboundConnection;
 	}
 }

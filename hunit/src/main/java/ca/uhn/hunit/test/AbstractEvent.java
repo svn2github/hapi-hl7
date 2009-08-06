@@ -1,5 +1,6 @@
 package ca.uhn.hunit.test;
 
+import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.run.ExecutionContext;
@@ -13,8 +14,7 @@ public abstract class AbstractEvent {
 	private TestImpl myTest;
 
 	public AbstractEvent(TestBatteryImpl theBattery, TestImpl theTest, Event theConfig) {
-		Interface ifDef = (Interface) theConfig.getInterfaceId();
-		myInterfaceId = ifDef.getId();
+		myInterfaceId = theConfig.getInterfaceId();
 		myBattery = theBattery;		
 		myTest = theTest;
 	}
@@ -33,7 +33,7 @@ public abstract class AbstractEvent {
 		return myInterfaceId;
 	}
 
-	public AbstractInterface getInterface() {
+	public AbstractInterface getInterface() throws ConfigurationException {
 		return myBattery.getInterface(myInterfaceId);
 	}
 	

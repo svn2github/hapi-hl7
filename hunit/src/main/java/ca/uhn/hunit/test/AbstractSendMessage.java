@@ -1,37 +1,37 @@
 package ca.uhn.hunit.test;
 
+import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.run.ExecutionContext;
-import ca.uhn.hunit.xsd.MessageDefinition;
 import ca.uhn.hunit.xsd.SendMessage;
 
 public abstract class AbstractSendMessage extends AbstractEvent {
 
 
-	private String myMessageId;
 	private TestImpl myTest;
+	private AbstractMessage myMessageProvider;
+	private AbstractInterface myInterface;
 
 
-	public AbstractSendMessage(TestBatteryImpl theBattery, TestImpl theTest, SendMessage theConfig) {
+	public AbstractSendMessage(TestBatteryImpl theBattery, TestImpl theTest, SendMessage theConfig) throws ConfigurationException {
 		super(theBattery, theTest, theConfig);
 		
-		MessageDefinition message = (MessageDefinition)theConfig.getMessageId();
-		myMessageId = message.getId();
+		String messageId = theConfig.getMessageId();
+		myMessageProvider = getBattery().getMessage(messageId);
+		myInterface = getBattery().getInterface(getInterfaceId());
 		myTest = theTest;
 	}
 
 	@Override
 	public void execute(ExecutionContext theCtx) throws TestFailureException {
 
-		AbstractMessage messageProvider = getBattery().getMessage(myMessageId);
-		String message = messageProvider.getText();
+		String message = myMessageProvider.getText();
 		message = massageMessage(message);
 		
-		AbstractInterface iface = getBattery().getInterface(getInterfaceId());
-		iface.sendMessage(myTest, theCtx, new TestMessage(message));
+		myInterface.sendMessage(myTest, theCtx, new TestMessage(message));
 		
 	}
 

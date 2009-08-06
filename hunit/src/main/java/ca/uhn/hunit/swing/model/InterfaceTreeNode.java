@@ -7,20 +7,19 @@ package ca.uhn.hunit.swing.model;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.test.TestBatteryImpl;
 
 /**
  *
  * @author James
  */
-public class TestBatteryTreeNode extends DefaultMutableTreeNode {
+public class InterfaceTreeNode extends DefaultMutableTreeNode {
 
 	private static final long serialVersionUID = 1949757870372912053L;
 
-	public TestBatteryTreeNode(TestBatteryImpl theBattery) {
-		super(theBattery);
-
-		add(new TestBatteryInterfacesTreeNode(theBattery));
+	public InterfaceTreeNode(AbstractInterface theInterface) {
+		super(theInterface, false);
 	}
 
 }

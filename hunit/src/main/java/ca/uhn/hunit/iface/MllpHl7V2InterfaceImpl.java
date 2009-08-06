@@ -91,6 +91,11 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 		try {
 			long endTime = System.currentTimeMillis() + myReceiveTimeout;
 			while (!myStopped && message == null && System.currentTimeMillis() < endTime) {
+				if (!mySocket.isConnected()) {
+					theCtx.getLog().info(this, "Socket appears to be disconnected, attempting to reconnect");
+					startInterface(theCtx);
+				}
+				
 				try {
 					message = myReader.getMessage();
 				} catch (SocketTimeoutException e) {
@@ -175,6 +180,54 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 			return;
 		}
 
+		startInterface(theCtx);
+
+		if (myClearMillis != null) {
+			long readUntil = System.currentTimeMillis() + myClearMillis;
+			int cleared = 0;
+			while (System.currentTimeMillis() < readUntil) {
+				try {
+					String message = myReader.getMessage();
+					if (message == null) {
+					    try {
+                            Thread.sleep(250);
+                        } catch (InterruptedException e) {
+                            // nothing
+                        }
+                        continue;
+					}
+					Message parsedMessage = myParser.parse(message);
+					Message response = DefaultApplication.makeACK((Segment)parsedMessage.get("MSH"));
+					message = myParser.encode(response);
+					myWriter.writeMessage(message);
+					cleared++;
+					theCtx.getLog().info(this, "Cleared message");
+                    try {
+                        Thread.sleep(250);
+                    } catch (InterruptedException e) {
+                        // nothing
+                    }
+                    readUntil = System.currentTimeMillis() + myClearMillis;
+				} catch (LLPException e) {
+					// ignore
+				} catch (IOException e) {
+					break;
+				} catch (EncodingNotSupportedException e) {
+                    // ignore
+                } catch (HL7Exception e) {
+                    // ignore
+                }
+			}
+			theCtx.getLog().info(this, "Cleared " + cleared + " messages from interface before starting");			
+		}
+		
+		myStarted = true;
+	}
+
+	private void startInterface(ExecutionContext theCtx) throws InterfaceWontStartException {
+		mySocket = null;
+		myServerSocket = null;
+		
 		if (myClientMode) {
 			theCtx.getLog().info(this, "Starting CLIENT interface to " + myIp + ":" + myPort);
 			try {
@@ -232,48 +285,8 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 		} catch (IOException e) {
 			throw new InterfaceWontStartException(this, e.getMessage(), e);
 		}
-
-		if (myClearMillis != null) {
-			long readUntil = System.currentTimeMillis() + myClearMillis;
-			int cleared = 0;
-			while (System.currentTimeMillis() < readUntil) {
-				try {
-					String message = myReader.getMessage();
-					if (message == null) {
-					    try {
-                            Thread.sleep(250);
-                        } catch (InterruptedException e) {
-                            // nothing
-                        }
-                        continue;
-					}
-					Message parsedMessage = myParser.parse(message);
-					Message response = DefaultApplication.makeACK((Segment)parsedMessage.get("MSH"));
-					message = myParser.encode(response);
-					myWriter.writeMessage(message);
-					cleared++;
-					theCtx.getLog().info(this, "Cleared message");
-                    try {
-                        Thread.sleep(250);
-                    } catch (InterruptedException e) {
-                        // nothing
-                    }
-                    readUntil = System.currentTimeMillis() + myClearMillis;
-				} catch (LLPException e) {
-					// ignore
-				} catch (IOException e) {
-					break;
-				} catch (EncodingNotSupportedException e) {
-                    // ignore
-                } catch (HL7Exception e) {
-                    // ignore
-                }
-			}
-			theCtx.getLog().info(this, "Cleared " + cleared + " messages from interface before starting");			
-		}
 		
-		theCtx.getLog().info(this, "Started interface successfully");
-		myStarted = true;
+		theCtx.getLog().info(this, "Started interface successfully");		
 	}
 
 	@Override

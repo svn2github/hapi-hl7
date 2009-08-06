@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hu:battery xmlns:hu="http://hl7api.sourceforge.net/hunit/hunit_tests.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://hl7api.sourceforge.net/hunit/hunit_tests.xsd http://hl7api.sourceforge.net/hunit/hunit_tests.xsd">
 	<hu:name>TestBattery</hu:name>
 	<hu:interfaces>
 		<hu:interface>
@@ -38,7 +39,7 @@
                 <hu:hl7v2 interface_id="test_out_interface" message_id="InputMessage" />
             </hu:send_message>
             <hu:expect_message>
-                <hu:hl7v2_specific interface_id="test_in_interface" message_id="NormalOutputMessage"/>
+                <hu:hl7v2_specific interface_id="test_in_interface" message_id="DifferentOutputMessage"/>
             </hu:expect_message>
         </hu:test>
 	</hu:tests>

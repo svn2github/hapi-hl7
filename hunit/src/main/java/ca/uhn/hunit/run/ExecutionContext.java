@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.test.AbstractEvent;
@@ -83,7 +84,12 @@ public class ExecutionContext {
 					continue;
 				}
 
-				AbstractInterface nextInterface = myBattery.getInterface(nextInterfaceId);
+				AbstractInterface nextInterface;
+				try {
+					nextInterface = myBattery.getInterface(nextInterfaceId);
+				} catch (ConfigurationException e) {
+					throw new Error("Unknown interface ID[" + nextInterfaceId + "]. This should have already been caught, this is a bug");
+				}
 				TestBatteryExecutionThread thread = new TestBatteryExecutionThread(this, nextInterface);
 				interface2thread.put(nextInterfaceId, thread);
 				thread.start();
