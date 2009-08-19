@@ -20,6 +20,12 @@
 ~~ this file under either the MPL or the GPL.
 ~~ */
 ~~
-hUnit Cookbook 
+Help Wanted 
 
-  {{{sample_hl7inhl7out.html}HL7-in-HL7-out}}: Simple example testing an application which receives an HL7 message on an MLLP port, modifies it, and sends the translated message out on another port.
+  Interested in helping out? Here are a few ideas of features we'd love to see added!
+  
+  * The Swing GUI for running tests is just getting started. There are plenty of things to be done.
+  
+  * Support for calling SOAP web services would be great. Support for mocking (i.e. hUnit playing the role of server) would also be useful.
+  
+  * More ideas to come..

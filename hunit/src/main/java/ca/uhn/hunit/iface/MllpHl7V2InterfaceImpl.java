@@ -1,3 +1,24 @@
+/**
+ *
+ * The contents of this file are subject to the Mozilla Public License Version 1.1
+ * (the "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
+ * specific language governing rights and limitations under the License.
+ *
+ * The Initial Developer of the Original Code is University Health Network. Copyright (C)
+ * 2001.  All Rights Reserved.
+ *
+ * Alternatively, the contents of this file may be used under the terms of the
+ * GNU General Public License (the  "GPL"), in which case the provisions of the GPL are
+ * applicable instead of those above.  If you wish to allow use of your version of this
+ * file only under the terms of the GPL and not to allow others to use your version
+ * of this file under the MPL, indicate your decision by deleting  the provisions above
+ * and replace  them with the notice and other provisions required by the GPL License.
+ * If you do not delete the provisions above, a recipient may use your version of
+ * this file under either the MPL or the GPL.
+ */
 package ca.uhn.hunit.iface;
 
 import java.io.IOException;
@@ -19,20 +40,25 @@ import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
 import ca.uhn.hl7v2.validation.impl.ValidationContextImpl;
-import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
+import ca.uhn.hunit.ex.IncorrectHl7V2MessageReceivedException;
 import ca.uhn.hunit.ex.InterfaceException;
 import ca.uhn.hunit.ex.InterfaceWontReceiveException;
 import ca.uhn.hunit.ex.InterfaceWontSendException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.ex.InterfaceWontStopException;
+import ca.uhn.hunit.ex.SendOrReceiveFailureException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.xsd.Interface;
 import ca.uhn.hunit.xsd.MllpHl7V2Interface;
 
 public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 
+	private static final String CLIENT = "client";
+	private static final String SERVER = "server";
+	
 	private String myIp;
 	private int myPort;
 	private boolean myClientMode;
@@ -47,12 +73,13 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 	private Parser myParser;
 	private Boolean myAutoAck;
 	private Integer myClearMillis;
+	private String myEncoding;
 
 	public MllpHl7V2InterfaceImpl(MllpHl7V2Interface theConfig) {
 		super(theConfig);
 		myIp = theConfig.getIp();
 		myPort = theConfig.getPort();
-		myClientMode = theConfig.getMode().equalsIgnoreCase("client");
+		myClientMode = theConfig.getMode().equalsIgnoreCase(CLIENT);
 		myStarted = false;
 		myConnectionTimeout = theConfig.getConnectionTimeoutMillis();
 		myReceiveTimeout = theConfig.getReceiveTimeoutMillis();
@@ -65,7 +92,9 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 		if (myReceiveTimeout == null) {
 			myReceiveTimeout = 10000;
 		}
-		if ("XML".equals(theConfig.getEncoding())) {
+		
+		myEncoding = theConfig.getEncoding();
+		if ("XML".equals(myEncoding)) {
 			myParser = new DefaultXMLParser();
 		} else {
 			myParser = new PipeParser();
@@ -115,9 +144,9 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 			try {
 				parsedMessage = myParser.parse(message);
 			} catch (EncodingNotSupportedException e) {
-				throw new IncorrectMessageReceivedException(theTest, message, e.getMessage());
+				throw new SendOrReceiveFailureException("Encoding issue: ", e);
 			} catch (HL7Exception e) {
-				throw new IncorrectMessageReceivedException(theTest, message, e.getMessage());
+				throw new SendOrReceiveFailureException("HL7 issue: ", e);
 			}
 
 			if (myAutoAck) {
@@ -128,11 +157,11 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 					theCtx.getLog().info(this, "Sending HL7 v2 ACK (" + reply.length() + " bytes)");
 					sendMessage(theTest, theCtx, new TestMessage(reply));
 				} catch (EncodingNotSupportedException e) {
-					throw new IncorrectMessageReceivedException(theTest, e, message, "Problem generating ACK - " + e.getMessage());
+					throw new SendOrReceiveFailureException("Encoding issue: ", e);
 				} catch (HL7Exception e) {
-					throw new IncorrectMessageReceivedException(theTest, e, message, "Problem generating ACK - " + e.getMessage());
+					throw new SendOrReceiveFailureException("HL7 issue: ", e);
 				} catch (IOException e) {
-					throw new IncorrectMessageReceivedException(theTest, e, message, "Problem generating ACK - " + e.getMessage());
+					throw new SendOrReceiveFailureException("IO issue: ", e);
 				}
 				
 			}
@@ -317,6 +346,21 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 	@Override
 	public boolean isStarted() {
 		return myStarted;
+	}
+
+	@Override
+	public Interface exportConfig() {
+		MllpHl7V2Interface retVal = new MllpHl7V2Interface();
+		super.exportConfig(retVal);
+		retVal.setAutoAck(myAutoAck);
+		retVal.setClearMillis(myClearMillis);
+		retVal.setConnectionTimeoutMillis(myConnectionTimeout);
+		retVal.setEncoding(myEncoding);
+		retVal.setMode(myClientMode ? CLIENT : SERVER);
+		retVal.setIp(myIp);
+		retVal.setPort(myPort);
+		retVal.setReceiveTimeoutMillis(myReceiveTimeout);
+		return retVal;
 	}
 
 }

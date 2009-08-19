@@ -19,41 +19,23 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.swing.model;
+package ca.uhn.hunit.ex;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.List;
+public class SendOrReceiveFailureException extends TestFailureException {
 
-import ca.uhn.hunit.iface.AbstractInterface;
-import ca.uhn.hunit.test.TestBatteryImpl;
+	private static final long serialVersionUID = 4739426761190222441L;
 
-public class InterfacesModel implements PropertyChangeListener {
-
-	private TestBatteryImpl myBattery;
-	private List<AbstractInterface> myInterfaces;
-
-	public TestBatteryImpl getBattery() {
-		return myBattery;
+	public SendOrReceiveFailureException(String theMessage) {
+		super(theMessage);
 	}
 
-	public List<AbstractInterface> getInterfaces() {
-		return myInterfaces;
+	public SendOrReceiveFailureException(String theMessage, Throwable theCause) {
+		super(theMessage, theCause);
 	}
 
-	public InterfacesModel(TestBatteryImpl theBattery) {
-		myBattery = theBattery;
-		updateInterfaces();
+	@Override
+	public String describeReason() {
+		return getMessage();
 	}
 
-	private void updateInterfaces() {
-		List<AbstractInterface> oldValue = myBattery.getInterfaces();
-		myInterfaces = oldValue;
-		
-	}
-
-	public void propertyChange(PropertyChangeEvent theEvt) {
-		updateInterfaces();
-	}
-	
 }

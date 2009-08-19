@@ -1,3 +1,24 @@
+/**
+ *
+ * The contents of this file are subject to the Mozilla Public License Version 1.1
+ * (the "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
+ * specific language governing rights and limitations under the License.
+ *
+ * The Initial Developer of the Original Code is University Health Network. Copyright (C)
+ * 2001.  All Rights Reserved.
+ *
+ * Alternatively, the contents of this file may be used under the terms of the
+ * GNU General Public License (the  "GPL"), in which case the provisions of the GPL are
+ * applicable instead of those above.  If you wish to allow use of your version of this
+ * file only under the terms of the GPL and not to allow others to use your version
+ * of this file under the MPL, indicate your decision by deleting  the provisions above
+ * and replace  them with the notice and other provisions required by the GPL License.
+ * If you do not delete the provisions above, a recipient may use your version of
+ * this file under either the MPL or the GPL.
+ */
 package ca.uhn.hunit.compare.hl7v2;
 
 import java.util.ArrayList;
@@ -18,12 +39,18 @@ import ca.uhn.hunit.util.Pair;
 
 public class Hl7V2MessageCompare {
 
-	public Hl7V2MessageCompare() {
+	private GroupComparison myComparison;
 
+	public Hl7V2MessageCompare(Message theExpectMessage, Message theActualMessage) throws HL7Exception {
+		myComparison = compare(theExpectMessage, theActualMessage);
 	}
 
-	public GroupComparison compare(Message theMessage1, Message theMessage2) throws HL7Exception {
-		GroupComparison retVal = compareGroups(theMessage1, theMessage2);
+	public GroupComparison getMessageComparison() {
+		return myComparison;
+	}
+	
+	private GroupComparison compare(Message theExpectMessage, Message theActualMessage) throws HL7Exception {
+		GroupComparison retVal = compareGroups(theExpectMessage, theActualMessage);
 		return retVal;
 	}
 
@@ -64,16 +91,16 @@ public class Hl7V2MessageCompare {
 			}
 			for (int i = lowerCommonIndex; i < children1.length; i++) {
 				if (children1[i] instanceof Segment) {
-					structureComparisons.add(new SegmentComparison((Segment) children1[i], null));
+					structureComparisons.add(new SegmentComparison(children1[i].getName(), (Segment) children1[i], null));
 				} else {
-					structureComparisons.add(new SegmentComparison(null, (Segment) children1[i]));
+					structureComparisons.add(new GroupComparison((Group) children1[i], null));
 				}
 			}
 			for (int i = lowerCommonIndex; i < children2.length; i++) {
 				if (children2[i] instanceof Segment) {
-					structureComparisons.add(new SegmentComparison((Segment) children2[i], null));
+					structureComparisons.add(new SegmentComparison(children2[i].getName(), (Segment) children2[i], null));
 				} else {
-					structureComparisons.add(new SegmentComparison(null, (Segment) children2[i]));
+					structureComparisons.add(new SegmentComparison(children2[i].getName(), null, (Segment) children2[i]));
 				}
 			}
 
@@ -93,9 +120,9 @@ public class Hl7V2MessageCompare {
 					theStructureComparisons.add(new ExtraGroup((Group) structure, theIsMessage1));
 				} else {
 					if (theIsMessage1) {
-						theStructureComparisons.add(new SegmentComparison((Segment) structure, null));
+						theStructureComparisons.add(new SegmentComparison(structure.getName(), (Segment) structure, null));
 					} else {
-						theStructureComparisons.add(new SegmentComparison(null, (Segment) structure));
+						theStructureComparisons.add(new SegmentComparison(structure.getName(), null, (Segment) structure));
 					}
 				}
 			}
@@ -136,12 +163,14 @@ public class Hl7V2MessageCompare {
 	}
 
 	private SegmentComparison compareSegments(Segment theSegment1, Segment theSegment2) throws HL7Exception {
+		assert theSegment1.getName().equals(theSegment2.getName());
+		
 		List<FieldComparison> fieldComparisons = new ArrayList<FieldComparison>();
 		for (int i = 0; i < theSegment1.numFields(); i++) {
 			FieldComparison nextFieldComparison = compareFields(theSegment1, theSegment2, i);
 			fieldComparisons.add(nextFieldComparison);
 		}
-		return new SegmentComparison(fieldComparisons, theSegment1, theSegment2);
+		return new SegmentComparison(theSegment1.getName(), fieldComparisons);
 	}
 
 	private FieldComparison compareFields(Segment theSegment1, Segment theSegment2, int theI) throws HL7Exception {
@@ -177,7 +206,7 @@ public class Hl7V2MessageCompare {
 
 		}
 
-		return new FieldComparison(sameFields, diffFields1, diffFields2);
+		return new FieldComparison(theSegment1.getNames()[theI], sameFields, diffFields1, diffFields2);
 	}
 
 	private boolean compareTypes(Type theType1, Type theType2) {
@@ -206,5 +235,9 @@ public class Hl7V2MessageCompare {
 		} else {
 			return false;
 		}
+	}
+
+	public boolean isSame() {
+		return myComparison.isSame();
 	}
 }

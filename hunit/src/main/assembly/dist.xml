@@ -1,0 +1,29 @@
+<assembly>
+	<id>dist</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<fileSets>
+		<fileSet>
+			<directory>${project.basedir}/src/license</directory>
+			<includes>
+				<include>license.txt</include>
+			</includes>
+			<outputDirectory></outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/src/site/resources/examples</directory>
+			<includes>
+				<include>*.*</include>
+			</includes>
+			<outputDirectory>examples</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>${project.build.directory}</directory>
+			<includes>
+				<include>*-jar-with-dependencies.jar</include>
+			</includes>
+			<outputDirectory></outputDirectory>
+		</fileSet>
+	</fileSets>
+</assembly>

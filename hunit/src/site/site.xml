@@ -1,4 +1,28 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+
+    /*
+    The contents of this file are subject to the Mozilla Public License Version 1.1
+    (the "License"); you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at http://www.mozilla.org/MPL/
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
+    specific language governing rights and limitations under the License.
+
+    The Initial Developer of the Original Code is University Health Network. Copyright (C)
+    2001.  All Rights Reserved.
+
+    Alternatively, the contents of this file may be used under the terms of the
+    GNU General Public License (the  "GPL"), in which case the provisions of the GPL are
+    applicable instead of those above.  If you wish to allow use of your version of this
+    file only under the terms of the GPL and not to allow others to use your version
+    of this file under the MPL, indicate your decision by deleting  the provisions above
+    and replace  them with the notice and other provisions required by the GPL License.
+    If you do not delete the provisions above, a recipient may use your version of
+    this file under either the MPL or the GPL.
+    */
+
+-->
 <project xmlns="urn:site" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="urn:site http://maven.apache.org/xsd/decoration-1.0.0.xsd" 
     name="hUnit">
@@ -25,7 +49,21 @@
 	<version position="left"/>
 	<publishDate position="left"/>
 	
+	
+	
 	<body>
+	   
+	   <head>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-1395874-2");
+pageTracker._trackPageview();
+} catch(err) {}</script>	   
+	   </head>
 	  
 		<links>
             <item name="HAPI" href="http://hl7api.sf.net/" />
@@ -40,16 +78,22 @@
 	
         <menu name="Contributing to hUnit">
 			<item name="Submitting Code" href="submissions.html"/>
+            <item name="Help Wanted" href="help_wanted.html"/>
 			<item name="Issue Tracking" href="issue-tracking.html"/>
 			<item name="Source Code" href="source-repository.html"/>
             <item name="Mailing List" href="mail-lists.html"/>
+            <item name="Source Xref" href="xref/index.html"/>
         </menu>
 	
 		<menu name="Reports">
-            <item name="Source Xref" href="xref/index.html"/>
 			<item name="Unit Test Report" href="surefire-report.html"/>
             <item name="Team List" href="team-list.html"/>
+            <item name="License" href="license.html"/>
+            <item name="Issue Tracking" href="issue-tracking.html"/>
+            <item name="Project Team" href="project-team.html"/>
 		</menu>
 		
 	</body>
+	
+	
 </project>

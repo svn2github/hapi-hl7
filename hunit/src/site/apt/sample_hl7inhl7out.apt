@@ -1,3 +1,25 @@
+~~
+~~ /*
+~~ The contents of this file are subject to the Mozilla Public License Version 1.1
+~~ (the "License"); you may not use this file except in compliance with the License.
+~~ You may obtain a copy of the License at http://www.mozilla.org/MPL/
+~~ Software distributed under the License is distributed on an "AS IS" basis,
+~~ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
+~~ specific language governing rights and limitations under the License.
+~~
+~~ The Initial Developer of the Original Code is University Health Network. Copyright (C)
+~~ 2001.  All Rights Reserved.
+~~
+~~ Alternatively, the contents of this file may be used under the terms of the
+~~ GNU General Public License (the  "GPL"), in which case the provisions of the GPL are
+~~ applicable instead of those above.  If you wish to allow use of your version of this
+~~ file only under the terms of the GPL and not to allow others to use your version
+~~ of this file under the MPL, indicate your decision by deleting  the provisions above
+~~ and replace  them with the notice and other provisions required by the GPL License.
+~~ If you do not delete the provisions above, a recipient may use your version of
+~~ this file under either the MPL or the GPL.
+~~ */
+~~
 Simple HL7-in and HL7-out example
 
   In this example, consider an HL7 v2 interface, residing in an interface engine, which accepts
@@ -31,7 +53,7 @@ OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
 +---------+
 
   Our fictitious engine is listening on port 10200 and sending mapped messages back out on port
-  10201. Here is the hUnit config file required to generate this test:
+  10201. Here is the hUnit config file required to generate this test: {{{examples/hl7_in_hl7_out.xml}}}
 
 +---------+
 <?xml version="1.0" encoding="UTF-8"?>
@@ -91,28 +113,64 @@ OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
 </hu:battery>
 +---------+ 
 
-Now, suppose the engine is misconfigured. This might produce output such as:
+  Suppose the engine is working as it should. This would product output such as:
+  
++---------+
+[INFO]  BATTERY[TestBattery] About to execute battery
+[INFO]  INTERFACE[test_in_interface] Starting SERVER interface on port 10200
+[INFO]  INTERFACE[test_out_interface] Starting CLIENT interface to localhost:10201
+[INFO]  INTERFACE[test_out_interface] Started interface successfully
+[INFO]  INTERFACE[test_out_interface] Sending message (641 bytes)
+[INFO]  INTERFACE[test_out_interface] Sent message
+[INFO]  INTERFACE[test_in_interface] Started interface successfully
+[INFO]  INTERFACE[test_in_interface] Waiting to receive message
+[INFO]  INTERFACE[test_in_interface] Received message (638 bytes)
+[INFO]  INTERFACE[test_in_interface] Sending HL7 v2 ACK (68 bytes)
+[INFO]  INTERFACE[test_in_interface] Sending message (68 bytes)
+[INFO]  INTERFACE[test_in_interface] Sent message
+[INFO]  INTERFACE[test_out_interface] Sending message (641 bytes)
+[INFO]  INTERFACE[test_out_interface] Sent message
+[INFO]  INTERFACE[test_in_interface] Waiting to receive message
+[INFO]  INTERFACE[test_in_interface] Received message (638 bytes)
+[INFO]  INTERFACE[test_in_interface] Sending HL7 v2 ACK (68 bytes)
+[INFO]  INTERFACE[test_in_interface] Sending message (68 bytes)
+[INFO]  INTERFACE[test_in_interface] Sent message
+[INFO]  INTERFACE[test_out_interface] Stopping interface
+[INFO]  INTERFACE[test_in_interface] Stopping interface
+[INFO]  BATTERY[TestBattery] Finished executing battery
+[INFO]  BATTERY[TestBattery] ----------------------------------------------------
+[INFO]  BATTERY[TestBattery] The following tests passed:
+[INFO]  BATTERY[TestBattery]  * ExpectSpecific Test
++----------+
+ 
+  Now, suppose the engine is misconfigured. This might produce output such as:
 
 +---------+
 [INFO]  BATTERY[TestBattery] About to execute battery
 [INFO]  INTERFACE[test_in_interface] Starting SERVER interface on port 10200
 [INFO]  INTERFACE[test_out_interface] Starting CLIENT interface to localhost:10201
 [INFO]  INTERFACE[test_out_interface] Started interface successfully
-[INFO]  INTERFACE[test_out_interface] Sending message (640 bytes)
+[INFO]  INTERFACE[test_out_interface] Sending message (641 bytes)
 [INFO]  INTERFACE[test_out_interface] Sent message
-[INFO]  INTERFACE[test_out_interface] Stopping interface
 [INFO]  INTERFACE[test_in_interface] Started interface successfully
 [INFO]  INTERFACE[test_in_interface] Waiting to receive message
-[INFO]  INTERFACE[test_in_interface] Received message (637 bytes)
-[INFO]  INTERFACE[test_in_interface] Sending HL7 v2 ACK (67 bytes)
-[INFO]  INTERFACE[test_in_interface] Sending message (67 bytes)
+[INFO]  INTERFACE[test_in_interface] Received message (638 bytes)
+[INFO]  INTERFACE[test_in_interface] Sending HL7 v2 ACK (68 bytes)
+[INFO]  INTERFACE[test_in_interface] Sending message (68 bytes)
 [INFO]  INTERFACE[test_in_interface] Sent message
+[INFO]  INTERFACE[test_out_interface] Sending message (641 bytes)
+[INFO]  INTERFACE[test_out_interface] Sent message
+[INFO]  INTERFACE[test_in_interface] Waiting to receive message
+[INFO]  INTERFACE[test_in_interface] Received message (638 bytes)
+[INFO]  INTERFACE[test_in_interface] Sending HL7 v2 ACK (68 bytes)
+[INFO]  INTERFACE[test_in_interface] Sending message (68 bytes)
+[INFO]  INTERFACE[test_in_interface] Sent message
+[INFO]  INTERFACE[test_out_interface] Stopping interface
 [INFO]  INTERFACE[test_in_interface] Stopping interface
 [INFO]  BATTERY[TestBattery] Finished executing battery
- ----------------------------------------------------
-Warning, the following tests failed:
-
- * ExpectSpecific Test - Reason: Message did not match
+[INFO]  BATTERY[TestBattery] ----------------------------------------------------
+[INFO]  BATTERY[TestBattery] Warning, the some tests failed!
+[INFO]  BATTERY[TestBattery] The following test failed: ExpectSpecific Test - Reason: Messages did not match
 Received: 
   MSH|^~\&|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
   PID|||7005728^^^TML^MR||TEST2^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR
@@ -120,12 +178,63 @@ Received:
   ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379
   OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R
   OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
+  
 Expected: 
   MSH|^~\&|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
-  PID|||7005728^^^TML^MR||test^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR
+  PID|||7005728^^^TML^MR||TEST^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR
   PV1|1||OLIS||||OLIST^BLAKE^DONALD^THOR^^^^^921379^^^^OLIST
   ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379
   OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R
   OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
+  
+Differences: 
+  PID-5(1):
+    Expected: TEST^RACHEL^DIAMOND
+    Actual  : TEST2^RACHEL^DIAMOND
 +----------+
 
+Trying it yourself
+
+  hUnit ships with an {{{xref/ca/uhn/hunit/example/MllpHl7v2MessageSwapper.html}example server}} which can simulate
+  the interface engine in the example above.
+  
+  
+  '''Passing Test'''
+  
+  
+  To test it out, open two console windows, both open to the directory into which
+  you have unzipped the hUnit distribution. In the first, execute the following to start
+  the sample server. The -R option tells it to simply replace "LEIGHTON" with "TEST", and
+  to perform one pass.
+  
+--------------
+java -cp hunit-0.1-jar-with-dependencies.jar ca.uhn.hunit.example.MllpHl7v2MessageSwapper -R LEIGHTON=TEST -p 1
+--------------
+
+  In the second console window, execute the following to run hUnit's single test which 
+  looks for the LEIGHTON string to be replaced with TEST.
+  
+--------------
+java -jar hunit-0.1-jar-with-dependencies.jar -f examples/hl7_in_hl7_out.xml -t "ExpectSpecific Test"
+-------------- 
+
+  This should produce a pass. 
+  
+  
+  '''Failing Test'''
+  
+  
+  Now le's try making the test fail. In the first window, 
+  this time execute:
+
+--------------
+java -cp hunit-0.1-jar-with-dependencies.jar ca.uhn.hunit.example.MllpHl7v2MessageSwapper -R LEIGHTON=HUNIT_IS_GREAT -p 1
+--------------
+  
+  And in the second window, once again:
+
+--------------
+java -jar hunit-0.1-jar-with-dependencies.jar -f examples/hl7_in_hl7_out.xml -t "ExpectSpecific Test"
+-------------- 
+ 
+  This should produce a failing test.
