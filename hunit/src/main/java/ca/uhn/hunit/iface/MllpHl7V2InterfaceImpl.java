@@ -68,7 +68,6 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 	private ServerSocket myServerSocket;
 	private MinLLPReader myReader;
 	private MinLLPWriter myWriter;
-	private Integer myReceiveTimeout;
 	private boolean myStopped;
 	private Parser myParser;
 	private Boolean myAutoAck;
@@ -82,15 +81,11 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 		myClientMode = theConfig.getMode().equalsIgnoreCase(CLIENT);
 		myStarted = false;
 		myConnectionTimeout = theConfig.getConnectionTimeoutMillis();
-		myReceiveTimeout = theConfig.getReceiveTimeoutMillis();
 		myStopped = false;
 		myClearMillis = theConfig.getClearMillis();
 		
 		if (myConnectionTimeout == null) {
 			myConnectionTimeout = 10000;
-		}
-		if (myReceiveTimeout == null) {
-			myReceiveTimeout = 10000;
 		}
 		
 		myEncoding = theConfig.getEncoding();
@@ -110,7 +105,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 	}
 
 	@Override
-	public TestMessage receiveMessage(TestImpl theTest, ExecutionContext theCtx) throws TestFailureException {
+	public TestMessage receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException {
 		start(theCtx);
 
 		theCtx.getLog().info(this, "Waiting to receive message");
@@ -118,7 +113,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 		String message = null;
 		Message parsedMessage;
 		try {
-			long endTime = System.currentTimeMillis() + myReceiveTimeout;
+			long endTime = System.currentTimeMillis() + theTimeout;
 			while (!myStopped && message == null && System.currentTimeMillis() < endTime) {
 				if (!mySocket.isConnected()) {
 					theCtx.getLog().info(this, "Socket appears to be disconnected, attempting to reconnect");
@@ -131,12 +126,8 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 					// ignore
 				}
 			}
-			if (myStopped) {
+			if (myStopped || message == null) {
 				return null;
-			}
-			
-			if (message == null) {
-				throw new InterfaceWontReceiveException(this, "Didn't receive a message after " + myReceiveTimeout + "ms");
 			}
 			
 			theCtx.getLog().info(this, "Received message (" + message.length() + " bytes)");
@@ -261,7 +252,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 			theCtx.getLog().info(this, "Starting CLIENT interface to " + myIp + ":" + myPort);
 			try {
 
-				long endTime = System.currentTimeMillis() + myReceiveTimeout;
+				long endTime = System.currentTimeMillis() + myConnectionTimeout;
 				while (!myStopped && !(mySocket != null && mySocket.isConnected()) && System.currentTimeMillis() < endTime) {
 					mySocket = new Socket();
 					try {
@@ -287,7 +278,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 				myServerSocket = new ServerSocket(myPort);
 				myServerSocket.setSoTimeout(250);
 				
-				long endTime = System.currentTimeMillis() + myReceiveTimeout;
+				long endTime = System.currentTimeMillis() + myConnectionTimeout;
 				while (!myStopped && mySocket == null && System.currentTimeMillis() < endTime) {
 					try {
 						mySocket = myServerSocket.accept();
@@ -359,7 +350,6 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 		retVal.setMode(myClientMode ? CLIENT : SERVER);
 		retVal.setIp(myIp);
 		retVal.setPort(myPort);
-		retVal.setReceiveTimeoutMillis(myReceiveTimeout);
 		return retVal;
 	}
 

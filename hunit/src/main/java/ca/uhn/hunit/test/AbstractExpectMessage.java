@@ -22,36 +22,33 @@
 package ca.uhn.hunit.test;
 
 import ca.uhn.hunit.ex.ConfigurationException;
+import ca.uhn.hunit.ex.InterfaceWontReceiveException;
 import ca.uhn.hunit.ex.TestFailureException;
-import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.xsd.ExpectMessage;
 
-public abstract class AbstractExpectMessage extends AbstractEvent {
-
-	private TestImpl myTest;
-	private AbstractInterface myInterface;
+public abstract class AbstractExpectMessage extends AbstractExpect {
 
 	public AbstractExpectMessage(TestBatteryImpl theBattery, TestImpl theTest, ExpectMessage theConfig) throws ConfigurationException {
 		super(theBattery, theTest, theConfig);
-
-		myTest = theTest;
-		myInterface = getBattery().getInterface(getInterfaceId());
 	}
 
 	@Override
-	public void execute(ExecutionContext theCtx) throws TestFailureException {
+	public void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException {
 
-		myInterface.start(theCtx);
+		TestMessage message = getInterface().receiveMessage(getTest(), theCtx, getReceiveTimeout());
+		if (!getInterface().isStarted()) {
+		    return;
+		}
+		
+        if (message == null) {
+            // FIXME: correct number below
+            throw new InterfaceWontReceiveException(getInterface(), "Didn't receive a message after " + 9999 + "ms");
+        }
 
-		TestMessage message = myInterface.receiveMessage(myTest, theCtx);
 		receiveMessage(theCtx, message);
 
-	}
-
-	public TestImpl getTest() {
-		return myTest;
 	}
 
 	public abstract void receiveMessage(ExecutionContext theCtx, TestMessage theMessage) throws TestFailureException;

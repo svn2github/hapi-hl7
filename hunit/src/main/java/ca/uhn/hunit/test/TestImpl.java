@@ -28,6 +28,7 @@ import java.util.Set;
 
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.xsd.ExpectMessageAny;
+import ca.uhn.hunit.xsd.ExpectNoMessage;
 import ca.uhn.hunit.xsd.SendMessageAny;
 import ca.uhn.hunit.xsd.Test;
 
@@ -41,7 +42,7 @@ public class TestImpl implements ITest {
 		myName = theConfig.getName();
 		myBattery = theBattery;
 		
-		for (Object next : theConfig.getSendMessageOrExpectMessage()) {
+		for (Object next : theConfig.getSendMessageOrExpectMessageOrExpectNoMessage()) {
 			AbstractEvent event = null;
 			
 			if (next instanceof SendMessageAny) {
@@ -60,6 +61,8 @@ public class TestImpl implements ITest {
 				if (nextEm.getHl7V2Ack() != null) {
 					event = (new Hl7V2ExpectRulesImpl(theBattery, this, nextEm.getHl7V2Ack()));
 				}
+            } else if (next instanceof ExpectNoMessage) {
+                event = new ExpectNoMessageImpl(theBattery, this, (ExpectNoMessage)next);
 			} else {
 				throw new ConfigurationException("Unknown event type: " + next.getClass());
 			}

@@ -24,12 +24,14 @@ package ca.uhn.hunit.run;
 import java.util.LinkedList;
 import java.util.List;
 
+import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.ex.InterfaceWontStopException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.test.AbstractEvent;
+import ca.uhn.hunit.test.AbstractExpect;
 
 public class TestBatteryExecutionThread extends Thread {
 
@@ -100,7 +102,10 @@ public class TestBatteryExecutionThread extends Thread {
 				synchronized (myEvents) {
 					myEvents.clear();
 				}
-			}
+			} catch (ConfigurationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
 			synchronized (myEvents) {
 				if (!myEvents.isEmpty()) {
@@ -135,7 +140,24 @@ public class TestBatteryExecutionThread extends Thread {
 
 	public boolean hasEventsPending() {
 		synchronized (myEvents) {
-			return (myEvents.isEmpty() == false) && (myFailed == null);
+		    if (myFailed != null) {
+		        return false;
+		    }
+		    if (myEvents.isEmpty()) {
+		        return false;
+		    }
+		    
+		    boolean retVal = false;
+		    for (AbstractEvent next : myEvents) {
+		        if (next instanceof AbstractExpect) {
+		            if (((AbstractExpect)next).isWaitForCompletion()) {
+		                retVal = true;
+		            }
+		        } else {
+		            retVal = true;
+		        }
+		    }
+			return retVal;
 		}
 	}
 

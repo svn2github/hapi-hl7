@@ -22,40 +22,37 @@
 package ca.uhn.hunit.test;
 
 import ca.uhn.hunit.ex.ConfigurationException;
-import ca.uhn.hunit.ex.TestFailureException;
-import ca.uhn.hunit.iface.AbstractInterface;
-import ca.uhn.hunit.run.ExecutionContext;
-import ca.uhn.hunit.xsd.Event;
-import ca.uhn.hunit.xsd.Interface;
+import ca.uhn.hunit.xsd.ExpectEvent;
 
-public abstract class AbstractEvent {
+public abstract class AbstractExpect extends AbstractEvent {
 
-	private TestBatteryImpl myBattery;
-	private String myInterfaceId;
 	private TestImpl myTest;
+    private long myReceiveTimeout;
+    private boolean myWaitForCompletion;
 
-	public AbstractEvent(TestBatteryImpl theBattery, TestImpl theTest, Event theConfig) {
-		myInterfaceId = theConfig.getInterfaceId();
-		myBattery = theBattery;		
+	public AbstractExpect(TestBatteryImpl theBattery, TestImpl theTest, ExpectEvent theConfig) throws ConfigurationException {
+		super(theBattery, theTest, theConfig);
+
 		myTest = theTest;
+		
+		Long receiveTimeout = theConfig.getReceiveTimeoutMillis();
+		myReceiveTimeout = receiveTimeout != null ? receiveTimeout : 120000L;
+		
+		Boolean isWaitForCompletion = theConfig.isWaitForCompletion();
+		myWaitForCompletion = isWaitForCompletion != null ? isWaitForCompletion : true;
 	}
+
+	public boolean isWaitForCompletion() {
+	    return myWaitForCompletion;
+	}
+	
+	public long getReceiveTimeout() {
+	    return myReceiveTimeout;
+	}
+	
 	
 	public TestImpl getTest() {
 		return myTest;
-	}
-
-	public abstract void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException;
-
-	public TestBatteryImpl getBattery() {
-		return myBattery;
-	}
-
-	public String getInterfaceId() {
-		return myInterfaceId;
-	}
-
-	public AbstractInterface getInterface() throws ConfigurationException {
-		return myBattery.getInterface(myInterfaceId);
 	}
 	
 }

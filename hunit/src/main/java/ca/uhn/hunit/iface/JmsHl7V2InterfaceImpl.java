@@ -24,6 +24,7 @@ package ca.uhn.hunit.iface;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -42,7 +43,6 @@ import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
 import ca.uhn.hl7v2.validation.impl.ValidationContextImpl;
 import ca.uhn.hunit.ex.ConfigurationException;
-import ca.uhn.hunit.ex.IncorrectHl7V2MessageReceivedException;
 import ca.uhn.hunit.ex.InterfaceException;
 import ca.uhn.hunit.ex.InterfaceWontReceiveException;
 import ca.uhn.hunit.ex.InterfaceWontSendException;
@@ -56,13 +56,11 @@ import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.Interface;
 import ca.uhn.hunit.xsd.JavaArgument;
 import ca.uhn.hunit.xsd.JmsHl7V2Interface;
+import ca.uhn.hunit.xsd.NamedJavaArgument;
 
 public class JmsHl7V2InterfaceImpl extends AbstractInterface {
 
-	private boolean myClientMode;
 	private boolean myStarted;
-	private Integer myConnectionTimeout;
-	private Integer myReceiveTimeout = 60000;
 	private boolean myStopped;
 	private Parser myParser;
     private String myQueueName;
@@ -77,6 +75,9 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
     private Integer myClearMillis;
     private boolean myPubSubDomain;
 	private String myEncoding;
+    private List<Class< ? >> myMessagePropertyTypes;
+    private List<Object> myMessageProperties;
+    private List<String> myMessagePropertyNames;
 
 	public JmsHl7V2InterfaceImpl(JmsHl7V2Interface theConfig) throws ConfigurationException {
 		super(theConfig);
@@ -94,21 +95,10 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
                 
         myConstructorArgTypes = new ArrayList<Class<?>>();
         myConstructorArgs = new ArrayList<Object>();
-        for (JavaArgument next : theConfig.getConnectionFactoryConstructorArg()) {
-            if ("java.lang.String".equals(next.getType())) {
-                myConstructorArgTypes.add(String.class);
-                myConstructorArgs.add(next.getValue());
-            } else if ("java.lang.Integer".equals(next.getType())) {
-                myConstructorArgTypes.add(Integer.class);
-                myConstructorArgs.add(Integer.parseInt(next.getValue()));
-            } else if ("int".equals(next.getType())) {
-                myConstructorArgTypes.add(int.class);
-                myConstructorArgs.add(Integer.parseInt(next.getValue()));
-            } else {
-                throw new ConfigurationException("Unknown arg type: " + next.getType());
-            }
-        }
+        
+        extractArgsFromXml(myConstructorArgTypes, null, myConstructorArgs, theConfig.getConnectionFactoryConstructorArg());
         try {
+            
             myConstructor = myConnectionFactoryClass.getConstructor(myConstructorArgTypes.toArray(new Class<?>[0]));
         } catch (SecurityException e) {
             throw new ConfigurationException("Error creating connection factory: ", e);
@@ -120,9 +110,8 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
 		myPassword = theConfig.getPassword();
 		myStarted = false;
 		myStopped = false;
-
-		myEncoding = theConfig.getEncoding();
-		if ("XML".equals(myEncoding)) {
+		
+		if ("XML".equals(theConfig.getEncoding())) {
 			myParser = new DefaultXMLParser();
 		} else {
 			myParser = new PipeParser();
@@ -133,10 +122,50 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
 		if (myClear == null) {
 		    myClear = true;
 		}
+		
+		myMessagePropertyNames = new ArrayList<String>();
+        myMessagePropertyTypes = new ArrayList<Class<?>>();
+        myMessageProperties = new ArrayList<Object>();
+        extractNamedArgsFromXml(myMessagePropertyTypes, myMessagePropertyNames, myMessageProperties, theConfig.getMessageProperty());
+		
 	}
 
+    public static void extractArgsFromXml(List<Class< ? >> theArgTypeList, List<String> theNames, List<Object> theArgs,
+            List<JavaArgument> theArgDefinitions) throws ConfigurationException {
+        
+        for (JavaArgument next : theArgDefinitions) {
+            if ("java.lang.String".equals(next.getType())) {
+                theArgTypeList.add(String.class);
+                theArgs.add(next.getValue());
+            } else if ("java.lang.Integer".equals(next.getType())) {
+                theArgTypeList.add(Integer.class);
+                theArgs.add(Integer.parseInt(next.getValue()));
+            } else if ("int".equals(next.getType())) {
+                theArgTypeList.add(int.class);
+                theArgs.add(Integer.parseInt(next.getValue()));
+            } else {
+                throw new ConfigurationException("Unknown arg type: " + next.getType());
+            }
+
+            if (theNames != null) {
+                theNames.add(((NamedJavaArgument)next).getName());
+            }
+        }
+    }
+
+    
+    public static void extractNamedArgsFromXml(List<Class< ? >> theArgTypeList, List<String> theNames, List<Object> theArgs,
+            List<NamedJavaArgument> theArgDefinitions) throws ConfigurationException {
+        List<JavaArgument> argDefs = new ArrayList<JavaArgument>();
+        for (NamedJavaArgument next : theArgDefinitions) {
+            argDefs.add(next);
+        }
+        
+        extractArgsFromXml(theArgTypeList, theNames, theArgs, argDefs);
+    }
+    
 	@Override
-	public TestMessage receiveMessage(TestImpl theTest, ExecutionContext theCtx) throws TestFailureException {
+	public TestMessage receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException {
 		start(theCtx);
 
 		theCtx.getLog().info(this, "Waiting to receive message");
@@ -144,7 +173,7 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
 		String message = null;
 		Message parsedMessage;
 		try {
-			long endTime = System.currentTimeMillis() + myReceiveTimeout;
+			long endTime = System.currentTimeMillis() + theTimeout;
 			while (!myStopped && message == null && System.currentTimeMillis() < endTime) {
 				try {
 					message = doReceiveMessage();
@@ -154,14 +183,10 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
 		            throw new InterfaceWontReceiveException(this, e.getMessage(), e);
                 }
 			}
-			if (myStopped) {
+			if (myStopped || message == null) {
 				return null;
 			}
-			
-			if (message == null) {
-				throw new InterfaceWontReceiveException(this, "Didn't receive a message after " + myReceiveTimeout + "ms");
-			}
-			
+						
 			theCtx.getLog().info(this, "Received message (" + message.length() + " bytes)");
 
 			try {
@@ -200,7 +225,14 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
 		    MessageCreator mc = new MessageCreator() {
                 public javax.jms.Message createMessage(Session theSession) throws JMSException {
                     TextMessage textMessage = theSession.createTextMessage(theMessage.getRawMessage());
-                    textMessage.setStringProperty("SOURCE_SYSTEM", "UHN_Ultra");
+                    
+                    for (int i = 0; i < myMessageProperties.size(); i++) {
+                        if (java.lang.String.class.equals(myMessagePropertyTypes.get(i))) {
+                            textMessage.setStringProperty(myMessagePropertyNames.get(i), (String)myMessageProperties.get(i));
+                        } else if (java.lang.Integer.class.equals(myMessagePropertyTypes.get(i))) {
+                            textMessage.setIntProperty(myMessagePropertyNames.get(i), (Integer)myMessageProperties.get(i));
+                        }
+                    }
                     return textMessage;
                 }};
             myJmsTemplate.send(myQueueName, mc);

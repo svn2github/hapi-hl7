@@ -1,5 +1,7 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ca.uhn.hunit</groupId>
 	<artifactId>hunit</artifactId>
@@ -10,17 +12,17 @@
 	<description>
 	   TBA
 	</description>
-
+	
 	<mailingLists>
-		<mailingList>
-			<name>hUnit Mailing List</name>
-			<subscribe>http://lists.sourceforge.net/mailman/listinfo/hl7api-hunit</subscribe>
-			<unsubscribe>http://lists.sourceforge.net/mailman/listinfo/hl7api-hunit</unsubscribe>
-			<archive>https://sourceforge.net/mailarchive/forum.php?forum_name=hl7api-hunit</archive>
-			<post>mailto:hl7api-hunit@lists.sourceforge.net</post>
-		</mailingList>
+        <mailingList>
+            <name>hUnit Mailing List</name>
+            <subscribe>http://lists.sourceforge.net/mailman/listinfo/hl7api-hunit</subscribe>
+            <unsubscribe>http://lists.sourceforge.net/mailman/listinfo/hl7api-hunit</unsubscribe>
+            <archive>https://sourceforge.net/mailarchive/forum.php?forum_name=hl7api-hunit</archive>
+            <post>mailto:hl7api-hunit@lists.sourceforge.net</post>
+        </mailingList>
 	</mailingLists>
-
+	
 	<developers>
 		<developer>
 			<name>James Agnew</name>
@@ -32,11 +34,11 @@
 	<issueManagement>
 		<system>sourceforge</system>
 		<url>http://sourceforge.net/tracker/?group_id=38899</url>
-	</issueManagement>
-
+	</issueManagement>		
+	
 	<ciManagement>
 	</ciManagement>
-
+	
 	<licenses>
 		<license>
 			<name>hUnit is dual licensed (MPL, GPL)</name>
@@ -53,14 +55,15 @@
 			<name>GNU General Public License</name>
 			<url>http://www.gnu.org/licenses/gpl.txt</url>
 		</license>
-	</licenses>
-
+	</licenses>	
+	
+	
 	<scm>
 		<connection>scm:cvs:pserver:anonymous:anonymous@hl7api.cvs.sourceforge.net:/cvsroot/hl7api:hunit</connection>
 		<url>http://hl7api.cvs.sourceforge.net/hl7api/hunit</url>
 		<tag>HEAD</tag>
 	</scm>
-
+	
 	<repositories>
 		<repository>
 			<id>hapi-sf</id>
@@ -74,47 +77,36 @@
 			<layout>legacy</layout>
 		</repository>
 		<repository>
-			<id>jboss</id>
-			<name>jboss</name>
-			<url>http://repository.jboss.org/maven2</url>
+            <id>jboss</id>
+            <name>jboss</name>
+            <url>http://repository.jboss.org/maven2</url>
 		</repository>
 		<repository>
-			<id>wikia</id>
-			<name>wikia</name>
-			<url>http://maven.xwiki.org/externals</url>
+		  <id>wikia</id>
+		  <name>wikia</name>
+		  <url>http://maven.xwiki.org/externals</url>
 		</repository>
 	</repositories>
-
+	
 	<organization>
 		<name>University Health Network</name>
 		<url>http://www.uhn.ca</url>
 	</organization>
-
+		
 	<pluginRepositories>
-		<pluginRepository>
-			<id>codehaus</id>
-			<name>Codehaus Repo</name>
-			<url>http://repository.codehaus.org/org/codehaus/mojo/</url>
-		</pluginRepository>
-		<pluginRepository>
+       <pluginRepository>
+           <id>codehaus</id>
+           <name>Codehaus Repo</name>
+           <url>http://repository.codehaus.org/org/codehaus/mojo/</url>
+       </pluginRepository>
+       <pluginRepository>
 			<id>java.net</id>
 			<name>java.net Maven Repository</name>
 			<url>https://maven-repository.dev.java.net/nonav/repository</url>
 			<layout>legacy</layout>
-		</pluginRepository>
-		<pluginRepository>
-			<id>mc-release</id>
-			<name>Local Maven repository of releases</name>
-			<url>http://mc-repo.googlecode.com/svn/maven2/releases</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</pluginRepository>
+       </pluginRepository>
 	</pluginRepositories>
-
+	
 	<dependencies>
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
@@ -164,72 +156,76 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
+        <dependency>
 			<groupId>jboss</groupId>
 			<artifactId>jboss-j2ee</artifactId>
 			<version>4.2.3.GA</version>
 			<scope>provided</scope>
-		</dependency>
+        </dependency>
+        
+        <dependency>
+        	<groupId>org.apache.activemq</groupId>
+        	<artifactId>activemq-core</artifactId>
+        	<version>5.2.0</version>
+        	<scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.activemq</groupId>
+        	<artifactId>activemq-core</artifactId>
+        	<version>5.2.0</version>
+        	<classifier>sources</classifier>
+        	<scope>test</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.6</version>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- HAPI Deps -->
-		<dependency>
-			<groupId>ca.uhn.hapi</groupId>
-			<artifactId>hapi-base</artifactId>
-			<version>1.0-beta1</version>
-		</dependency>
+        <dependency>
+        	<groupId>junit</groupId>
+        	<artifactId>junit</artifactId>
+        	<version>4.6</version>
+        	<scope>test</scope>
+        </dependency>
+        
+        <!-- HAPI Deps -->
+        <dependency>
+            <groupId>ca.uhn.hapi</groupId>
+            <artifactId>hapi-base</artifactId>
+            <version>1.0-beta1</version>
+        </dependency>
 		<dependency>
 			<groupId>ca.uhn.hapi</groupId>
 			<artifactId>hapi-structures-v21</artifactId>
 			<version>1.0-beta1</version>
-		</dependency>
+		</dependency>		
 		<dependency>
 			<groupId>ca.uhn.hapi</groupId>
 			<artifactId>hapi-structures-v22</artifactId>
 			<version>1.0-beta1</version>
-		</dependency>
+		</dependency>		
 		<dependency>
 			<groupId>ca.uhn.hapi</groupId>
 			<artifactId>hapi-structures-v23</artifactId>
 			<version>1.0-beta1</version>
-		</dependency>
+		</dependency>		
 		<dependency>
 			<groupId>ca.uhn.hapi</groupId>
 			<artifactId>hapi-structures-v231</artifactId>
 			<version>1.0-beta1</version>
-		</dependency>
+		</dependency>		
 		<dependency>
 			<groupId>ca.uhn.hapi</groupId>
 			<artifactId>hapi-structures-v24</artifactId>
 			<version>1.0-beta1</version>
-		</dependency>
+		</dependency>		
 		<dependency>
 			<groupId>ca.uhn.hapi</groupId>
 			<artifactId>hapi-structures-v25</artifactId>
 			<version>1.0-beta1</version>
-		</dependency>
-		<dependency>
-			<groupId>ca.uhn.hapi</groupId>
-			<artifactId>hapi-structures-v251</artifactId>
-			<version>1.0-beta1</version>
-		</dependency>
-		<dependency>
-			<groupId>ca.uhn.hapi</groupId>
-			<artifactId>hapi-structures-v26</artifactId>
-			<version>1.0-beta1</version>
-		</dependency>
+		</dependency>		
 
 	</dependencies>
-
+	
 	<modules>
 	</modules>
-
+	
 	<distributionManagement>
 		<repository>
 			<id>hapi</id>
@@ -243,7 +239,7 @@
 			<url>scp://web.sourceforge.net/home/groups/h/hl/hl7api/htdocs/m2</url>
 		</snapshotRepository>
 	</distributionManagement>
-
+	
 	<build>
 		<defaultGoal>install</defaultGoal>
 		<plugins>
@@ -295,15 +291,15 @@
 				<artifactId>maven-jaxb-plugin</artifactId>
 				<version>1.1</version>
 				<executions>
-					<execution>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<generatePackage>ca.uhn.hunit.xsd</generatePackage>
-						</configuration>
-					</execution>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <generatePackage>ca.uhn.hunit.xsd</generatePackage>
+                        </configuration>
+                    </execution>
 				</executions>
 			</plugin>
 			<plugin>

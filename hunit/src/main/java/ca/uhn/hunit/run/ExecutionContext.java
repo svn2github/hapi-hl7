@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
@@ -59,10 +60,12 @@ public class ExecutionContext {
 	}
 
 	public void addFailure(TestImpl theTest, TestFailureException theException) {
-		myTestFailures.put(theTest, theException);
+		getLog().info(theTest, "Failure: " + theException.getMessage());
+	    myTestFailures.put(theTest, theException);
 	}
 
 	public void addSuccess(TestImpl theTest) {
+        getLog().error(theTest, "Success!");
 		myTestSuccesses.add(theTest);
 	}
 
@@ -149,9 +152,13 @@ public class ExecutionContext {
 			boolean eventsPending;
 			do {
 				eventsPending = false;
-				for (TestBatteryExecutionThread nextThread : interface2thread.values()) {
-					if (nextThread.hasEventsPending()) {
+				for (Entry<String, TestBatteryExecutionThread> next : interface2thread.entrySet()) {
+				    TestBatteryExecutionThread nextThread = next.getValue();
+				    if (nextThread.hasEventsPending()) {
 						eventsPending = true;
+					}
+					if (myTestFailures.containsKey(nextTest)) {
+					    break;
 					}
 					try {
 						Thread.sleep(250);
@@ -159,8 +166,13 @@ public class ExecutionContext {
 						// nothing
 					}
 				}
-			} while (eventsPending == true);
+			} while (eventsPending == true && !myTestFailures.containsKey(nextTest));
 
+			// If we got out of the loop because of an error, cancel the other threads
+            for (Map.Entry<String, TestBatteryExecutionThread> nextEntry : interface2thread.entrySet()) {
+                nextEntry.getValue().cancelCurrentEvents();
+            }
+			
 			// If we didn't fail, we succeeded :)
 			if (!myTestFailures.containsKey(nextTest)) {
 				addSuccess(nextTest);

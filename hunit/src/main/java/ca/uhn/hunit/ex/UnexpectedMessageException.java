@@ -19,43 +19,51 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.test;
+package ca.uhn.hunit.ex;
 
-import ca.uhn.hunit.ex.ConfigurationException;
-import ca.uhn.hunit.ex.TestFailureException;
-import ca.uhn.hunit.iface.AbstractInterface;
-import ca.uhn.hunit.run.ExecutionContext;
-import ca.uhn.hunit.xsd.Event;
-import ca.uhn.hunit.xsd.Interface;
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.Type;
+import ca.uhn.hl7v2.parser.EncodingCharacters;
+import ca.uhn.hl7v2.parser.PipeParser;
+import ca.uhn.hunit.compare.hl7v2.FieldComparison;
+import ca.uhn.hunit.compare.hl7v2.Hl7V2MessageCompare;
+import ca.uhn.hunit.compare.hl7v2.SegmentComparison;
+import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.test.TestImpl;
 
-public abstract class AbstractEvent {
+public class UnexpectedMessageException extends TestFailureException
+{
 
-	private TestBatteryImpl myBattery;
-	private String myInterfaceId;
-	private TestImpl myTest;
+    private static final long serialVersionUID = -7116214031563429174L;
 
-	public AbstractEvent(TestBatteryImpl theBattery, TestImpl theTest, Event theConfig) {
-		myInterfaceId = theConfig.getInterfaceId();
-		myBattery = theBattery;		
-		myTest = theTest;
-	}
-	
-	public TestImpl getTest() {
-		return myTest;
-	}
+    private TestImpl myTest;
+    private TestMessage myMessageReceived;
 
-	public abstract void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException;
 
-	public TestBatteryImpl getBattery() {
-		return myBattery;
-	}
+    public UnexpectedMessageException(TestImpl theExpect, TestMessage theMessageReceived, String theProblem) {
+        super(theProblem);
+        myTest = theExpect;
+        myMessageReceived = theMessageReceived;
+    }
 
-	public String getInterfaceId() {
-		return myInterfaceId;
-	}
 
-	public AbstractInterface getInterface() throws ConfigurationException {
-		return myBattery.getInterface(myInterfaceId);
-	}
-	
+    public TestImpl getTest() {
+        return myTest;
+    }
+
+
+    public TestMessage getMessageReceived() {
+        return myMessageReceived;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String describeReason() {
+        return "Unexpected message received:\r\n" + IncorrectHl7V2MessageReceivedException.formatMsg(myMessageReceived);
+    }
+
 }

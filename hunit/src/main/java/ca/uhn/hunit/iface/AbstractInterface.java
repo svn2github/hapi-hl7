@@ -43,7 +43,7 @@ public abstract class AbstractInterface implements Comparable<AbstractInterface>
 		myId = theConfig.getId();
 		myAutostart = theConfig.isAutostart();
 		if (myAutostart == null) {
-			myAutostart = false;
+			myAutostart = true;
 		}
 	}
 
@@ -69,7 +69,7 @@ public abstract class AbstractInterface implements Comparable<AbstractInterface>
 	
 	public abstract void stop(ExecutionContext theCtx) throws InterfaceWontStopException;
 	
-	public abstract TestMessage receiveMessage(TestImpl theTest, ExecutionContext theCtx) throws TestFailureException;
+	public abstract TestMessage receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException;
 	
 	public abstract void sendMessage(TestImpl theTest, ExecutionContext theCtx, TestMessage theMessage) throws TestFailureException;
 

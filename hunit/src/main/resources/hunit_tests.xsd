@@ -54,7 +54,6 @@
 					<element name="ip" type="string"/>
 					<element name="port" type="int"/>
                     <element name="connectionTimeoutMillis" type="int" minOccurs="0"/>
-                    <element name="receiveTimeoutMillis" type="int" minOccurs="0"/>
                     <element name="clearMillis" type="int" minOccurs="0">
                     	<annotation>
                     		<documentation>
@@ -110,6 +109,7 @@
                         </simpleType>
                     </element>
                     <element name="clear" type="boolean" minOccurs="0" default="true"></element>
+					<element name="message_property" type="tns:NamedJavaArgument" minOccurs="0" maxOccurs="unbounded"></element>
 				</sequence>
 			</extension>
 		</complexContent>
@@ -121,6 +121,7 @@
 			<choice minOccurs="1" maxOccurs="unbounded">
 				<element name="send_message" type="tns:SendMessageAny"/>
 				<element name="expect_message" type="tns:ExpectMessageAny"/>
+				<element name="expect_no_message" type="tns:ExpectNoMessage"/>
 			</choice>
         </sequence>
 	</complexType>
@@ -133,13 +134,14 @@
 	</complexType>
 
     <complexType name="Event" abstract="true">
-        <attribute name="message_id" type="string" use="required"></attribute>
         <attribute name="interface_id" type="string" use="required"></attribute>
     </complexType>
 
     <complexType name="SendMessage">
         <complexContent>
-            <extension base="tns:Event"></extension>
+            <extension base="tns:Event">
+		        <attribute name="message_id" type="string" use="required"></attribute>
+            </extension>
         </complexContent>
     </complexType>
 
@@ -149,9 +151,33 @@
         </complexContent>
     </complexType>
 
+    <complexType name="ExpectEvent" abstract="true">
+        <complexContent>
+            <extension base="tns:Event">
+            	<sequence>
+                    <element name="receive_timeout_millis" type="long" minOccurs="0"/>
+                    <element name="wait_for_completion" type="boolean" minOccurs="0" default="true"/>
+            	</sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
     <complexType name="ExpectMessage" abstract="true">
         <complexContent>
-            <extension base="tns:Event"></extension>
+            <extension base="tns:ExpectEvent">
+            	<sequence>
+                    <element name="message_id" type="string" minOccurs="1"/>
+            	</sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="ExpectNoMessage">
+        <complexContent>
+            <extension base="tns:ExpectEvent">
+            	<sequence>
+            	</sequence>
+            </extension>
         </complexContent>
     </complexType>
 
@@ -273,6 +299,14 @@
 	<complexType name="JavaArgument">
 		<attribute name="type" type="string"></attribute>
 		<attribute name="value" type="string"></attribute>
+	</complexType>
+
+	<complexType name="NamedJavaArgument">
+		<complexContent>
+			<extension base="tns:JavaArgument">
+				<attribute name="name" type="string"></attribute>
+			</extension>
+		</complexContent>
 	</complexType>
 	
 </schema>
