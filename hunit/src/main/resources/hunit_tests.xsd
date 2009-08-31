@@ -166,8 +166,8 @@
         <complexContent>
             <extension base="tns:ExpectEvent">
             	<sequence>
-                    <element name="message_id" type="string" minOccurs="1"/>
             	</sequence>
+                <attribute name="message_id" type="string" use="required"/>
             </extension>
         </complexContent>
     </complexType>

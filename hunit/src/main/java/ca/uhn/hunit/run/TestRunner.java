@@ -24,6 +24,7 @@ package ca.uhn.hunit.run;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
@@ -56,7 +57,6 @@ public class TestRunner {
 	 * @throws ParseException
 	 */
 	public static void main(String[] theArgs) throws URISyntaxException, JAXBException, InterfaceWontStartException, ConfigurationException, FileNotFoundException, ParseException {
-
 		Options options = new Options();
 
 		OptionGroup fileOptionGroup = new OptionGroup();
