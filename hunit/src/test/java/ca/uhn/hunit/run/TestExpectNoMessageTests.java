@@ -19,7 +19,7 @@ import ca.uhn.hunit.test.TestBatteryImpl;
  * TODO: add!
  * 
  * @author <a href="mailto:james.agnew@uhn.on.ca">James Agnew</a>
- * @version $Revision: 1.1 $ updated on $Date: 2009-08-21 20:02:58 $ by $Author: jamesagnew $
+ * @version $Revision: 1.2 $ updated on $Date: 2009-08-31 20:54:49 $ by $Author: jamesagnew $
  */
 public class TestExpectNoMessageTests
 {
@@ -40,7 +40,7 @@ public class TestExpectNoMessageTests
         File defFile = new File(Thread.currentThread().getContextClassLoader().getResource("unit_test_expect_no.xml").toURI());
         TestBatteryImpl battery = new TestBatteryImpl(defFile);
         ExecutionContext ctx = new ExecutionContext(battery);
-        ctx.execute("ExpectFailure");
+        ctx.execute("ExpectSuccess");
         
         Assert.assertTrue(ctx.getTestSuccesses().contains(battery.getTestNames2Tests().get("ExpectSuccess")));
     }
