@@ -155,9 +155,9 @@
         <complexContent>
             <extension base="tns:Event">
             	<sequence>
-                    <element name="receive_timeout_millis" type="long" minOccurs="0"/>
-                    <element name="wait_for_completion" type="boolean" minOccurs="0" default="true"/>
             	</sequence>
+                <attribute name="receive_timeout_millis" type="long" use="optional"/>
+                <attribute name="wait_for_completion" type="boolean" use="optional" default="true"/>
             </extension>
         </complexContent>
     </complexType>

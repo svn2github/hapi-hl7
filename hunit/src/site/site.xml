@@ -82,6 +82,7 @@ pageTracker._trackPageview();
 			<item name="Issue Tracking" href="issue-tracking.html"/>
 			<item name="Source Code" href="source-repository.html"/>
             <item name="Mailing List" href="mail-lists.html"/>
+            <item name="User Forum" href="http://sourceforge.net/apps/phpbb/hl7api/viewforum.php?f=1&sid=5ca02011b743fde8461aee43466a053b"/>
             <item name="Source Xref" href="xref/index.html"/>
         </menu>
 	
