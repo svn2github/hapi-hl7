@@ -19,6 +19,13 @@
 			<outputDirectory>examples</outputDirectory>
 		</fileSet>
 		<fileSet>
+			<directory>${project.basedir}/src/main/dist</directory>
+			<includes>
+				<include>*.*</include>
+			</includes>
+			<outputDirectory></outputDirectory>
+		</fileSet>
+		<fileSet>
 			<directory>${project.build.directory}</directory>
 			<includes>
 				<include>*-jar-with-dependencies.jar</include>

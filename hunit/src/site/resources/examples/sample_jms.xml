@@ -13,7 +13,7 @@
 				<hu:connection_factory_constructor_arg type="int" value="18907"/>
 				<hu:topic_name>tp_In_ORM_WCH_ccRIS</hu:topic_name>
 				<hu:user_name>Administrator</hu:user_name>
-				<hu:password>STC</hu:password>
+				<hu:password>PASSWORD</hu:password>
 				<hu:message_property type="java.lang.String" name="SOURCE_SYSTEM" value="WCH_ccRIS"/>
 				<hu:message_property type="java.lang.String" name="SOURCE_INTERFACE" value="ORM"/>
 			</hu:jmsHl7V2QueueInterface>
@@ -25,7 +25,7 @@
 				<hu:connection_factory_constructor_arg type="int" value="18907"/>
 				<hu:queue_name>q_Out_ADTSIU_WCH_Kiosk</hu:queue_name>
 				<hu:user_name>Administrator</hu:user_name>
-				<hu:password>STC</hu:password>
+				<hu:password>PASSWORD</hu:password>
 			</hu:jmsHl7V2QueueInterface>
 		</hu:interface>			
 	</hu:interfaces>

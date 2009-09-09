@@ -22,9 +22,9 @@
 ~~
 Welcome
 
-  This is the home page for hUnit, the open-sourced healthcare messaging unit testing framework.
+  This is the home page for hUnit, the open-sourced healthcare/ESB/HL7 messaging unit testing framework.
   
-  hUnit is a sub-project of the HAPI project, which aims to provide a full featured and open HL7
+  hUnit is a sub-project of the {{{http://hl7api.sf.net/}HAPI project}}, which aims to provide a full featured and open HL7
   message parsing library. 
 
 

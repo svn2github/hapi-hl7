@@ -1,19 +1,21 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>ca.uhn.hunit</groupId>
-	<artifactId>hunit</artifactId>
-	<packaging>jar</packaging>
-	<version>0.1</version>
-	<name>hUnit</name>
-	<url>http://hl7api.sourceforge.net/hunit</url>
-	<description>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>ca.uhn.hunit</groupId>
+    <artifactId>hunit</artifactId>
+    <packaging>jar</packaging>
+    <name>hUnit</name>
+    <url>http://hl7api.sourceforge.net/hunit</url>
+    <description>
 	   TBA
-	</description>
-	
-	<mailingLists>
+    </description>
+
+    <version>0.2-SNAPSHOT</version>
+
+    <mailingLists>
         <mailingList>
             <name>hUnit Mailing List</name>
             <subscribe>http://lists.sourceforge.net/mailman/listinfo/hl7api-hunit</subscribe>
@@ -21,276 +23,281 @@
             <archive>https://sourceforge.net/mailarchive/forum.php?forum_name=hl7api-hunit</archive>
             <post>mailto:hl7api-hunit@lists.sourceforge.net</post>
         </mailingList>
-	</mailingLists>
+    </mailingLists>
 	
-	<developers>
-		<developer>
-			<name>James Agnew</name>
-			<email>jamesagnew@users.sourceforge.net</email>
-		</developer>
-	</developers>
-	<inceptionYear>2009</inceptionYear>
+    <developers>
+        <developer>
+            <name>James Agnew</name>
+            <email>jamesagnew@users.sourceforge.net</email>
+        </developer>
+    </developers>
+    <inceptionYear>2009</inceptionYear>
 
-	<issueManagement>
-		<system>sourceforge</system>
-		<url>http://sourceforge.net/tracker/?group_id=38899</url>
-	</issueManagement>		
+    <issueManagement>
+        <system>sourceforge</system>
+        <url>http://sourceforge.net/tracker/?group_id=38899</url>
+    </issueManagement>
 	
-	<ciManagement>
-	</ciManagement>
+    <ciManagement>
+    </ciManagement>
 	
-	<licenses>
-		<license>
-			<name>hUnit is dual licensed (MPL, GPL)</name>
-			<comments><![CDATA[
+    <licenses>
+        <license>
+            <name>hUnit is dual licensed (MPL, GPL)</name>
+            <comments><![CDATA[
                hUnit is dual licensed under both the Mozilla Public License and the GNU General Public License.
                What this means is that you may choose to use hUnit under the terms of either license.
-            ]]></comments>
-		</license>
-		<license>
-			<name>Mozilla Public License 1.1</name>
-			<url>http://www.mozilla.org/MPL/MPL-1.1.txt</url>
-		</license>
-		<license>
-			<name>GNU General Public License</name>
-			<url>http://www.gnu.org/licenses/gpl.txt</url>
-		</license>
-	</licenses>	
+            ]]>
+            </comments>
+        </license>
+        <license>
+            <name>Mozilla Public License 1.1</name>
+            <url>http://www.mozilla.org/MPL/MPL-1.1.txt</url>
+        </license>
+        <license>
+            <name>GNU General Public License</name>
+            <url>http://www.gnu.org/licenses/gpl.txt</url>
+        </license>
+    </licenses>
 	
 	
-	<scm>
-		<connection>scm:cvs:pserver:anonymous:anonymous@hl7api.cvs.sourceforge.net:/cvsroot/hl7api:hunit</connection>
-		<url>http://hl7api.cvs.sourceforge.net/hl7api/hunit</url>
-		<tag>HEAD</tag>
-	</scm>
+    <scm>
+        <connection>scm:cvs:pserver:anonymous:anonymous@hl7api.cvs.sourceforge.net:/cvsroot/hl7api:hunit</connection>
+        <url>http://hl7api.cvs.sourceforge.net/hl7api/hunit</url>
+        <tag>HEAD</tag>
+    </scm>
 	
-	<repositories>
-		<repository>
-			<id>hapi-sf</id>
-			<name>HAPI Sourceforge Repository</name>
-			<url>http://hl7api.sourceforge.net/m2</url>
-		</repository>
-		<repository>
-			<id>java.net</id>
-			<name>java.net Maven Repository</name>
-			<url>https://maven-repository.dev.java.net/nonav/repository</url>
-			<layout>legacy</layout>
-		</repository>
-		<repository>
+    <repositories>
+        <repository>
+            <id>hapi-sf</id>
+            <name>HAPI Sourceforge Repository</name>
+            <url>http://hl7api.sourceforge.net/m2</url>
+        </repository>
+        <repository>
+            <id>java.net</id>
+            <name>java.net Maven Repository</name>
+            <url>https://maven-repository.dev.java.net/nonav/repository</url>
+            <layout>legacy</layout>
+        </repository>
+        <repository>
             <id>jboss</id>
             <name>jboss</name>
             <url>http://repository.jboss.org/maven2</url>
-		</repository>
-		<repository>
-		  <id>wikia</id>
-		  <name>wikia</name>
-		  <url>http://maven.xwiki.org/externals</url>
-		</repository>
-	</repositories>
+        </repository>
+        <repository>
+            <id>wikia</id>
+            <name>wikia</name>
+            <url>http://maven.xwiki.org/externals</url>
+        </repository>
+    </repositories>
 	
-	<organization>
-		<name>University Health Network</name>
-		<url>http://www.uhn.ca</url>
-	</organization>
+    <organization>
+        <name>University Health Network</name>
+        <url>http://www.uhn.ca</url>
+    </organization>
 		
-	<pluginRepositories>
-       <pluginRepository>
-           <id>codehaus</id>
-           <name>Codehaus Repo</name>
-           <url>http://repository.codehaus.org/org/codehaus/mojo/</url>
-       </pluginRepository>
-       <pluginRepository>
-			<id>java.net</id>
-			<name>java.net Maven Repository</name>
-			<url>https://maven-repository.dev.java.net/nonav/repository</url>
-			<layout>legacy</layout>
-       </pluginRepository>
-	</pluginRepositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>codehaus</id>
+            <name>Codehaus Repo</name>
+            <url>http://repository.codehaus.org/org/codehaus/mojo/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>java.net</id>
+            <name>java.net Maven Repository</name>
+            <url>https://maven-repository.dev.java.net/nonav/repository</url>
+            <layout>legacy</layout>
+        </pluginRepository>
+    </pluginRepositories>
 	
-	<dependencies>
-		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.0</version>
-		</dependency>
-		<dependency>
-			<groupId>sun-jaxb</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<version>2.1.9</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.activation</groupId>
-			<artifactId>activation</artifactId>
-			<version>1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.4</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.9</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-cli</groupId>
-			<artifactId>commons-cli</artifactId>
-			<version>1.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring</artifactId>
-			<version>2.5.6</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring</artifactId>
-			<version>2.5.6</version>
-			<classifier>sources</classifier>
-			<scope>provided</scope>
-		</dependency>
-
+    <dependencies>
         <dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-j2ee</artifactId>
-			<version>4.2.3.GA</version>
-			<scope>provided</scope>
-        </dependency>
-        
-        <dependency>
-        	<groupId>org.apache.activemq</groupId>
-        	<artifactId>activemq-core</artifactId>
-        	<version>5.2.0</version>
-        	<scope>test</scope>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.0</version>
         </dependency>
         <dependency>
-        	<groupId>org.apache.activemq</groupId>
-        	<artifactId>activemq-core</artifactId>
-        	<version>5.2.0</version>
-        	<classifier>sources</classifier>
-        	<scope>test</scope>
+            <groupId>sun-jaxb</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.1.9</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.9</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-cli</groupId>
+            <artifactId>commons-cli</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring</artifactId>
+            <version>2.5.6</version>
         </dependency>
 
         <dependency>
-        	<groupId>junit</groupId>
-        	<artifactId>junit</artifactId>
-        	<version>4.6</version>
-        	<scope>test</scope>
+            <groupId>jboss</groupId>
+            <artifactId>jboss-j2ee</artifactId>
+            <version>4.2.3.GA</version>
+            <scope>provided</scope>
         </dependency>
         
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-core</artifactId>
+            <version>5.2.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-core</artifactId>
+            <version>5.2.0</version>
+            <classifier>sources</classifier>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.7</version>
+            <scope>provided</scope>
+        </dependency>
+        
+		<!-- XMLUnit -->
+		<dependency>
+			<groupId>xmlunit</groupId>
+			<artifactId>xmlunit</artifactId>
+			<version>1.0</version>
+		</dependency>
+
         <!-- HAPI Deps -->
         <dependency>
             <groupId>ca.uhn.hapi</groupId>
             <artifactId>hapi-base</artifactId>
             <version>1.0-beta1</version>
         </dependency>
-		<dependency>
-			<groupId>ca.uhn.hapi</groupId>
-			<artifactId>hapi-structures-v21</artifactId>
-			<version>1.0-beta1</version>
-		</dependency>		
-		<dependency>
-			<groupId>ca.uhn.hapi</groupId>
-			<artifactId>hapi-structures-v22</artifactId>
-			<version>1.0-beta1</version>
-		</dependency>		
-		<dependency>
-			<groupId>ca.uhn.hapi</groupId>
-			<artifactId>hapi-structures-v23</artifactId>
-			<version>1.0-beta1</version>
-		</dependency>		
-		<dependency>
-			<groupId>ca.uhn.hapi</groupId>
-			<artifactId>hapi-structures-v231</artifactId>
-			<version>1.0-beta1</version>
-		</dependency>		
-		<dependency>
-			<groupId>ca.uhn.hapi</groupId>
-			<artifactId>hapi-structures-v24</artifactId>
-			<version>1.0-beta1</version>
-		</dependency>		
-		<dependency>
-			<groupId>ca.uhn.hapi</groupId>
-			<artifactId>hapi-structures-v25</artifactId>
-			<version>1.0-beta1</version>
-		</dependency>		
+        <dependency>
+            <groupId>ca.uhn.hapi</groupId>
+            <artifactId>hapi-structures-v21</artifactId>
+            <version>1.0-beta1</version>
+        </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi</groupId>
+            <artifactId>hapi-structures-v22</artifactId>
+            <version>1.0-beta1</version>
+        </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi</groupId>
+            <artifactId>hapi-structures-v23</artifactId>
+            <version>1.0-beta1</version>
+        </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi</groupId>
+            <artifactId>hapi-structures-v231</artifactId>
+            <version>1.0-beta1</version>
+        </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi</groupId>
+            <artifactId>hapi-structures-v24</artifactId>
+            <version>1.0-beta1</version>
+        </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi</groupId>
+            <artifactId>hapi-structures-v25</artifactId>
+            <version>1.0-beta1</version>
+        </dependency>
 
-	</dependencies>
+    </dependencies>
 	
-	<modules>
-	</modules>
+    <modules>
+    </modules>
 	
-	<distributionManagement>
-		<repository>
-			<id>hapi</id>
-			<name>HAPI Sourceforge</name>
+    <distributionManagement>
+        <repository>
+            <id>hapi</id>
+            <name>HAPI Sourceforge</name>
 			<!-- <url>file://C:/wagon</url> -->
-			<url>scp://web.sourceforge.net/home/groups/h/hl/hl7api/htdocs/m2</url>
-		</repository>
-		<snapshotRepository>
-			<id>hapi</id>
-			<name>HAPI Sourceforge</name>
-			<url>scp://web.sourceforge.net/home/groups/h/hl/hl7api/htdocs/m2</url>
-		</snapshotRepository>
-	</distributionManagement>
+            <url>scp://web.sourceforge.net/home/groups/h/hl/hl7api/htdocs/m2</url>
+        </repository>
+        <snapshotRepository>
+            <id>hapi</id>
+            <name>HAPI Sourceforge</name>
+            <url>scp://web.sourceforge.net/home/groups/h/hl/hl7api/htdocs/m2</url>
+        </snapshotRepository>
+        <site>
+            <id>hl7api.sf.net</id>
+            <url>scp://shell.sourceforge.net/home/groups/h/hl/hl7api/htdocs/hunit</url>
+        </site>
+    </distributionManagement>
 	
-	<build>
-		<defaultGoal>install</defaultGoal>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-					<fork>true</fork>
-					<maxmem>1024m</maxmem>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>make-assembly</id> <!-- this is used for inheritance merges -->
-						<phase>package</phase> <!-- append to the packaging phase. -->
-						<goals>
-							<goal>single</goal> <!-- goals == mojos -->
-						</goals>
-						<configuration>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
-							<archive>
-								<manifest>
-									<mainClass>ca.uhn.hunit.run.TestRunner</mainClass>
-								</manifest>
-							</archive>
-						</configuration>
-					</execution>
-					<execution>
-						<id>make-dist</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<configuration>
-							<descriptors>
-								<descriptor>${project.basedir}/src/main/assembly/dist.xml</descriptor>
-							</descriptors>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>com.sun.tools.xjc.maven2</groupId>
-				<artifactId>maven-jaxb-plugin</artifactId>
-				<version>1.1</version>
-				<executions>
+    <build>
+        <defaultGoal>install</defaultGoal>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                    <fork>true</fork>
+                    <maxmem>1024m</maxmem>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                        <phase>package</phase> <!-- append to the packaging phase. -->
+                        <goals>
+                            <goal>single</goal> <!-- goals == mojos -->
+                        </goals>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                            <archive>
+                                <manifest>
+                                    <mainClass>ca.uhn.hunit.run.TestRunner</mainClass>
+                                </manifest>
+                            </archive>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>make-dist</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>${project.basedir}/src/main/assembly/dist.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.sun.tools.xjc.maven2</groupId>
+                <artifactId>maven-jaxb-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
                     <execution>
                         <phase>generate-sources</phase>
                         <goals>
@@ -300,54 +307,54 @@
                             <generatePackage>ca.uhn.hunit.xsd</generatePackage>
                         </configuration>
                     </execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<dependencies>
-				</dependencies>
-			</plugin>
-			<plugin>
-				<groupId>com.google.code.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-				<version>1.4.0</version>
-				<configuration>
-					<header>src/license/license.txt</header>
-					<failIfMissing>true</failIfMissing>
-					<includes>
-						<include>src/main/java/**</include>
-					</includes>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>process-sources</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <dependencies>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>com.google.code.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <version>1.4.0</version>
+                <configuration>
+                    <header>src/license/license.txt</header>
+                    <failIfMissing>true</failIfMissing>
+                    <includes>
+                        <include>src/main/java/**</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
 						<!--
 							<configuration> <header>src/license/license.txt</header> <failIfMissing>true</failIfMissing> <includes> <include>src/main/java**</include> </includes>
 							</configuration>
 						-->
-					</execution>
-				</executions>
-			</plugin>
+                    </execution>
+                </executions>
+            </plugin>
 
-			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
 					<!-- Insert analytics script block into all HTML files -->
-					<execution>
-						<id>insert-analytics</id>
-						<phase>site</phase>
-						<configuration>
-							<tasks>
-								<replace dir="${basedir}/target/site">
-									<include name="**/*.html" />
-									<replacetoken>
+                    <execution>
+                        <id>insert-analytics</id>
+                        <phase>site</phase>
+                        <configuration>
+                            <tasks>
+                                <replace dir="${basedir}/target/site">
+                                    <include name="**/*.html" />
+                                    <replacetoken>
                     <![CDATA[</body>]]>
-									</replacetoken>
-									<replacevalue>
+                                    </replacetoken>
+                                    <replacevalue>
                     <![CDATA[
 <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
@@ -358,53 +365,46 @@ try {
 var pageTracker = _gat._getTracker("UA-1395874-2");
 pageTracker._trackPageview();
 } catch(err) {}</script></body>]]>
-									</replacevalue>
-								</replace>
-							</tasks>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+                                    </replacevalue>
+                                </replace>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-		</plugins>
-	</build>
+        </plugins>
+    </build>
 
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jxr-plugin</artifactId>
-				<inherited>false</inherited>
-				<configuration>
-					<aggregate>true</aggregate>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>project-team</report>
-							<report>mailing-list</report>
-							<report>issue-tracking</report>
-							<report>license</report>
-							<report>scm</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-		</plugins>
-	</reporting>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<m2st.version>1.2b</m2st.version>
-		<m2st-syntaxHighlighter-urlBase>syntaxhighlighter</m2st-syntaxHighlighter-urlBase>
-		<m2st-syntaxHighlighter-brushFiles>shBrushPlain.js,shBrushXml.js,shBrushJava.js</m2st-syntaxHighlighter-brushFiles>
-	</properties>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <inherited>false</inherited>
+                <configuration>
+                    <aggregate>true</aggregate>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>project-team</report>
+                            <report>mailing-list</report>
+                            <report>issue-tracking</report>
+                            <report>license</report>
+                            <report>scm</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
 
 </project>

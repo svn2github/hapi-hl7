@@ -23,3 +23,5 @@
 hUnit Cookbook 
 
   {{{sample_hl7inhl7out.html}HL7-in-HL7-out}}: Simple example testing an application which receives an HL7 message on an MLLP port, modifies it, and sends the translated message out on another port.
+
+  {{{sample_jms.html}JMS}}: Connecting directly to JMS queues and topics
