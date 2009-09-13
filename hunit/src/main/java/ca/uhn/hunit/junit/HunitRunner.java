@@ -22,12 +22,26 @@
 
 package ca.uhn.hunit.junit;
 
-import java.util.List;
+import ca.uhn.hunit.ex.ConfigurationException;
+import ca.uhn.hunit.ex.InterfaceWontStartException;
+import ca.uhn.hunit.ex.TestFailureException;
+import ca.uhn.hunit.run.ExecutionContext;
+import ca.uhn.hunit.run.IExecutionListener;
+import ca.uhn.hunit.test.ITest;
+import ca.uhn.hunit.test.TestBatteryImpl;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import javax.xml.bind.JAXBException;
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
+import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
-import org.junit.runners.ParentRunner;
 import org.junit.runners.model.InitializationError;
+import org.springframework.util.ResourceUtils;
 
 /**
  * JUNIT 4 test runner to allow hUnit tests to be run from within a JUNIT
@@ -35,41 +49,81 @@ import org.junit.runners.model.InitializationError;
  *
  * This class is not yet complete.
  */
-public class HunitRunner extends ParentRunner<Runner> {
+public class HunitRunner extends Runner {
 
     private Class<?> myTestClass;
+    private final TestBatteryImpl myBattery;
+    private final Description myDescription;
+    private final ArrayList<String> myTestNames;
+    private final Map<String, Description> myTestName2Description = new HashMap<String, Description>();
 
     public HunitRunner(Class<?> theTestClass) throws InitializationError {
-        super(theTestClass);
 
         myTestClass = theTestClass;
+
+        HunitBattery batteryAnnotation = myTestClass.getAnnotation(HunitBattery.class);
+        try {
+            File file = ResourceUtils.getFile(batteryAnnotation.file());
+            myBattery = new TestBatteryImpl(file);
+        } catch (InterfaceWontStartException ex) {
+            throw new InitializationError(Collections.singletonList((Throwable)ex));
+        } catch (ConfigurationException ex) {
+            throw new InitializationError(Collections.singletonList((Throwable)ex));
+        } catch (JAXBException ex) {
+            throw new InitializationError(Collections.singletonList((Throwable)ex));
+        } catch (FileNotFoundException ex) {
+            throw new InitializationError(Collections.singletonList((Throwable)ex));
+        }
+
+         myDescription = Description.createSuiteDescription(myBattery.getName());
+
+         myTestNames = new ArrayList<String>();
+        for (String nextTestName : myBattery.getTestNames()) {
+            myTestNames.add(nextTestName);
+            Description description = Description.createTestDescription(myTestClass, nextTestName);
+            myDescription.addChild(description);
+            myTestName2Description.put(nextTestName, description);
+        }
+
+
     }
 
     @Override
     public Description getDescription() {
-        Description retVal = Description.createTestDescription(null, null);
-        return retVal;
+        return myDescription;
     }
 
     @Override
-    public void run(RunNotifier arg0) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void run(final RunNotifier notifier) {
+        
+        ExecutionContext ctx = new ExecutionContext(myBattery);
+
+        ctx.addListener(new IExecutionListener() {
+
+            public void testFailed(ITest theTest, TestFailureException theException) {
+                Description description = myTestName2Description.get(theTest.getName());
+                Failure failure = new Failure(description, theException);
+                notifier.fireTestFailure(failure);
+            }
+
+            public void testPassed(ITest theTest) {
+                Description description = myTestName2Description.get(theTest.getName());
+                notifier.fireTestFinished(description);
+            }
+
+            public void testStarted(ITest theTest) {
+                Description description = myTestName2Description.get(theTest.getName());
+                notifier.fireTestStarted(description);
+            }
+        });
+
+        //notifier.fireTestRunStarted(myDescription);
+        ctx.execute(myTestNames);
+
+        //notifier.fireTestRunFinished(result);
     }
 
-    @Override
-    protected List getChildren() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 
-    @Override
-    protected Description describeChild(Runner child) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    protected void runChild(Runner child, RunNotifier notifier) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
+    //private class My
 
 }

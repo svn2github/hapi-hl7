@@ -58,12 +58,8 @@ public class Hl7V2ExpectSpecificMessageImpl extends AbstractHl7V2ExpectMessage {
 		TestMessage expectMessage = myMessageProvider.getTestMessage();
 		TestMessage actualMessage = theMessage;
 		
-		Hl7V2MessageCompare messageCompare;
-		try {
-			messageCompare = new Hl7V2MessageCompare((Message) expectMessage.getParsedMessage(), (Message)actualMessage.getParsedMessage());
-		} catch (HL7Exception e) {
-			throw new UnexpectedTestFailureException(e);
-		}
+		Hl7V2MessageCompare messageCompare = new Hl7V2MessageCompare();
+        messageCompare.compare(expectMessage, actualMessage);
 		if (!messageCompare.isSame()) {
 			throw new IncorrectHl7V2MessageReceivedException(myTest, null, expectMessage, actualMessage, "Messages did not match", messageCompare); 
 		}

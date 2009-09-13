@@ -31,6 +31,8 @@ import ca.uhn.hunit.compare.hl7v2.Hl7V2MessageCompare;
 import ca.uhn.hunit.compare.hl7v2.SegmentComparison;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.test.TestImpl;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class IncorrectHl7V2MessageReceivedException extends TestFailureException
 {
@@ -42,8 +44,6 @@ public class IncorrectHl7V2MessageReceivedException extends TestFailureException
     private String myProblem;
     private TestMessage myMessageExpected;
     private Hl7V2MessageCompare myMessageCompare;
-    private PipeParser myEncodingParser;
-    private EncodingCharacters myEncodingCharacters = new EncodingCharacters('|', null);
 
 
     public IncorrectHl7V2MessageReceivedException(TestImpl theExpect, TestMessage theMessageReceived,
@@ -77,14 +77,14 @@ public class IncorrectHl7V2MessageReceivedException extends TestFailureException
         myMessageExpected = theExpectMessage;
         myMessageReceived = theActualMessage;
         myProblem = theProblem;
-        myEncodingParser = new PipeParser();
         myMessageCompare = theMessageCompare;
         if (myMessageExpected != null && myMessageReceived != null && myMessageCompare == null) {
             try {
-                myMessageCompare = new Hl7V2MessageCompare((Message)myMessageExpected.getParsedMessage(),
-                        (Message)myMessageReceived.getParsedMessage());
-            } catch (HL7Exception e) {
-                e.printStackTrace();
+                myMessageCompare = new Hl7V2MessageCompare();
+                myMessageCompare.compare(theExpectMessage, theActualMessage);
+            } catch (UnexpectedTestFailureException ex) {
+                myMessageCompare = null;
+                ex.printStackTrace();
                 // TODO: what should we do with this?
             }
         }
@@ -113,62 +113,20 @@ public class IncorrectHl7V2MessageReceivedException extends TestFailureException
 
     @Override
     public String describeReason() {
+        if (myMessageCompare != null) {
+            return myMessageCompare.describeDifference();
+        }
+
         StringBuilder retVal = new StringBuilder();
         retVal.append(myProblem).append("\r\n");
-        retVal.append("Received: \r\n").append(formatMsg(myMessageReceived)).append("\r\n");
+        retVal.append("Received: \r\n").append(Hl7V2MessageCompare.formatMsg(myMessageReceived)).append("\r\n");
         if (myMessageExpected != null) {
-            retVal.append("Expected: \r\n").append(formatMsg(myMessageExpected)).append("\r\n");
+            retVal.append("Expected: \r\n").append(Hl7V2MessageCompare.formatMsg(myMessageExpected)).append("\r\n");
         }
-        if (myMessageCompare != null) {
-            retVal.append("Differences: \r\n");
-            for (SegmentComparison nextSegment : myMessageCompare.getMessageComparison().flattenMessage()) {
-                if (nextSegment.getExpectSegment() != null) {
-                    retVal.append("  Expected: ").append(
-                            PipeParser.encode(nextSegment.getExpectSegment(), myEncodingCharacters)).append("\r\n");
-                }
-                if (nextSegment.getActualSegment() != null) {
-                    retVal.append("  Actual  : ").append(
-                            PipeParser.encode(nextSegment.getExpectSegment(), myEncodingCharacters)).append("\r\n");
-                }
-                if (!nextSegment.isSame()) {
-                    int fieldIndex = 0;
-                    for (FieldComparison next : nextSegment.getFieldComparisons()) {
-                        fieldIndex++;
-                        for (int rep = 1; rep <= next.getDiffFieldsActual().size(); rep++) {
-                            if (next.getSameFields().get(rep - 1) == null) {
-                                retVal.append("  ");
-                                retVal.append(nextSegment.getName());
-                                retVal.append("-");
-                                retVal.append(fieldIndex);
-                                retVal.append("(");
-                                retVal.append(rep);
-                                retVal.append(") - ");
-                                retVal.append(next.getFieldName());
-                                retVal.append(":\r\n");
-                                Type expectedType = next.getDiffFieldsExpected().get(rep - 1);
-                                retVal.append("    Expected: ").append(encode(expectedType)).append("\r\n");
-                                Type actualType = next.getDiffFieldsActual().get(rep - 1);
-                                retVal.append("    Actual  : ").append(encode(actualType)).append("\r\n");
-                            }
-                        }
-                    }
-                }
-            }
-        }
+
         return retVal.toString();
     }
 
 
-    private String encode(Type theType) {
-        if (theType == null) {
-            return "";
-        }
-        return PipeParser.encode(theType, myEncodingCharacters);
-    }
-
-
-    public static String formatMsg(TestMessage theMessageReceived) {
-        return "  " + theMessageReceived.getRawMessage().replaceAll("(\\r|\\n)+", "\r\n  ");
-    }
 
 }

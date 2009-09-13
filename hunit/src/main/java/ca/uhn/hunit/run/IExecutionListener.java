@@ -19,25 +19,21 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.util;
 
-import ca.uhn.hunit.iface.AbstractInterface;
+package ca.uhn.hunit.run;
+
+import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.test.ITest;
-import ca.uhn.hunit.test.TestBatteryImpl;
-import org.apache.commons.logging.LogFactory;
 
-public class Log {
+/**
+ * Listens to an {@link ExecutionContext} for updates to running tests
+ */
+public interface IExecutionListener {
 
-    public static org.apache.commons.logging.Log get(AbstractInterface theInterface) {
-        return LogFactory.getLog("hunit.interface." + theInterface.getId());
-    }
+    void testStarted(ITest theTest);
 
-    public static org.apache.commons.logging.Log get(ITest theTest) {
-        return LogFactory.getLog("hunit.test." + theTest.getName());
-    }
+    void testFailed(ITest theTest, TestFailureException theException);
 
-    public static org.apache.commons.logging.Log get(TestBatteryImpl theTest) {
-        return LogFactory.getLog("hunit.battery." + theTest.getName());
-    }
-
+    void testPassed(ITest theTest);
+    
 }

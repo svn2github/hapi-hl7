@@ -1,5 +1,6 @@
 package ca.uhn.hunit.compare.hl7v2;
 
+import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import java.util.List;
 
 import org.junit.Assert;
@@ -12,12 +13,13 @@ import ca.uhn.hl7v2.model.Type;
 import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
 import ca.uhn.hl7v2.parser.PipeParser;
 import ca.uhn.hl7v2.parser.ng.NewPipeParser;
+import ca.uhn.hunit.iface.TestMessage;
 
 
 public class Hl7V2MessageCompareTest {
 
 	@Test
-	public void testFieldDifference() throws EncodingNotSupportedException, HL7Exception {
+	public void testFieldDifference() throws EncodingNotSupportedException, HL7Exception, UnexpectedTestFailureException {
 		
 		String message1string = "MSH|^~\\&|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3\r\n" + 
 				"PID|||7005728^^^TML^MR||LEIGHTON^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR\r\n" + 
@@ -36,8 +38,13 @@ public class Hl7V2MessageCompareTest {
 		PipeParser parser = new PipeParser();
 		Message message1 = parser.parse(message1string);
 		Message message2 = parser.parse(message2string);
-		
-		GroupComparison comparison = new Hl7V2MessageCompare(message1, message2).getMessageComparison(); 
+
+        TestMessage expect = new TestMessage(message1string, message1);
+        TestMessage actual = new TestMessage(message2string, message2);
+        
+        Hl7V2MessageCompare hl7compare = new Hl7V2MessageCompare();
+        hl7compare.compare(expect, actual);
+		GroupComparison comparison = hl7compare.getMessageComparison();
 		
 		List<SegmentComparison> cmp = comparison.flattenMessage();
 		SegmentComparison pidCmp = cmp.get(1);
@@ -68,7 +75,7 @@ public class Hl7V2MessageCompareTest {
 
 
 	@Test
-	public void testDifferentSegment() throws EncodingNotSupportedException, HL7Exception {
+	public void testDifferentSegment() throws EncodingNotSupportedException, HL7Exception, UnexpectedTestFailureException {
 		
 		String message1string = "MSH|^~\\&|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3\r\n" + 
 				"PID|||7005728^^^TML^MR||LEIGHTON^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR\r\n" + 
@@ -89,7 +96,12 @@ public class Hl7V2MessageCompareTest {
 		Message message1 = parser.parse(message1string);
 		Message message2 = parser.parse(message2string);
 		
-		GroupComparison comparison = new Hl7V2MessageCompare(message1, message2).getMessageComparison(); 
+        TestMessage expect = new TestMessage(message1string, message1);
+        TestMessage actual = new TestMessage(message2string, message2);
+
+        Hl7V2MessageCompare hl7compare = new Hl7V2MessageCompare();
+        hl7compare.compare(expect, actual);
+		GroupComparison comparison = hl7compare.getMessageComparison();
 		
 		List<SegmentComparison> cmp = comparison.flattenMessage();
 		

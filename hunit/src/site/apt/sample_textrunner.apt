@@ -20,23 +20,19 @@
 ~~ this file under either the MPL or the GPL.
 ~~ */
 ~~
-hUnit Cookbook 
+Running your tests on the console
 
-  This page shows examples of how to set up and use hUnit. The project is still a work in progress, so if
-  you are looking for functionality you don't see here, get in touch, or maybe even add it yourself!
+  hUnit ships as a "Jar with dependencies", so you can simply run it on the command line, supplying
+  a filename to run.
 
+--------------
+java -jar hunit-0.1-jar-with-dependencies.jar -f examples/hl7_in_hl7_out.xml
+-------------- 
+ 
 
-* Developing Tests
+  TO get help:
 
-  {{{sample_hl7inhl7out.html}HL7-in-HL7-out}}: Simple example testing an application which receives an HL7 message on an MLLP port, modifies it, and sends the translated message out on another port.
+--------------
+java -jar hunit-0.1-jar-with-dependencies.jar --help
+--------------
 
-  {{{sample_jms.html}JMS}}: Connecting directly to JMS queues and topics
-
-
-* Running Tests
-
-  {{{xref/ca/uhn/hunit/example/Junit4ExampleTest.html}JUnit4 Runner}}: Running your tests with JUnit 4
-
-  {{{xref/ca/uhn/hunit/example/Junit3ExampleTest.html}JUnit3 Runner}}: Running your tests with JUnit 3
-
-  {{{sample_textrunner.html}TextRunner}}: Running your tests directly on the command line

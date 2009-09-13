@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hu:battery xmlns:hu="http://hl7api.sourceforge.net/hunit/hunit_tests.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://hl7api.sourceforge.net/hunit/hunit_tests.xsd http://hl7api.sourceforge.net/hunit/hunit_tests.xsd">
+	<hu:name>TestBattery</hu:name>
+	<hu:interfaces>
+		<hu:interface>
+			<hu:jmsHl7V2QueueInterface id="test_in_interface">
+				<hu:connection_factory>ca.uhn.hunit.iface.StaticActiveMQConnectionFactory</hu:connection_factory>
+				<hu:queue_name>test_queue</hu:queue_name>
+				<hu:user_name>user</hu:user_name>
+				<hu:password>pass</hu:password>
+				<hu:encoding>ER7</hu:encoding>
+			</hu:jmsHl7V2QueueInterface>
+		</hu:interface>
+		<hu:interface>
+			<hu:jmsHl7V2QueueInterface id="test_out_interface">
+				<hu:connection_factory>ca.uhn.hunit.iface.StaticActiveMQConnectionFactory</hu:connection_factory>
+				<hu:queue_name>test_queue</hu:queue_name>
+				<hu:user_name>user</hu:user_name>
+				<hu:password>pass</hu:password>
+				<hu:encoding>ER7</hu:encoding>
+			</hu:jmsHl7V2QueueInterface>
+		</hu:interface>
+	</hu:interfaces>
+	<hu:tests>
+		<hu:test>
+			<hu:name>Test 1</hu:name>
+			<hu:send_message>
+				<hu:hl7v2 interface_id="test_out_interface" message_id="InputMessage" />
+			</hu:send_message>
+			<hu:expect_message>
+                <hu:hl7v2_specific interface_id="test_in_interface" message_id="InputMessage"/>
+			</hu:expect_message>
+		</hu:test>
+		<hu:test>
+			<hu:name>Test 2</hu:name>
+			<hu:send_message>
+				<hu:hl7v2 interface_id="test_out_interface" message_id="InputMessage" />
+			</hu:send_message>
+			<hu:expect_message>
+                <hu:hl7v2_specific interface_id="test_in_interface" message_id="InputMessage"/>
+			</hu:expect_message>
+		</hu:test>
+		<hu:test>
+			<hu:name>Test 3</hu:name>
+			<hu:send_message>
+				<hu:hl7v2 interface_id="test_out_interface" message_id="InputMessage" />
+			</hu:send_message>
+			<hu:expect_message>
+                <hu:hl7v2_specific interface_id="test_in_interface" message_id="InputMessage"/>
+			</hu:expect_message>
+		</hu:test>
+		<hu:test>
+			<hu:name>Test 4</hu:name>
+			<hu:send_message>
+				<hu:hl7v2 interface_id="test_out_interface" message_id="InputMessage" />
+			</hu:send_message>
+			<hu:expect_message>
+                <hu:hl7v2_specific interface_id="test_in_interface" message_id="DifferentOutputMessage"/>
+			</hu:expect_message>
+		</hu:test>
+	</hu:tests>
+	<hu:messages>
+		<hu:hl7v2 id="InputMessage">
+			<hu:text><![CDATA[
+MSH|^~\&|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
+PID|||7005728^^^TML^MR||LEIGHTON^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR
+PV1|1||OLIS||||OLIST^BLAKE^DONALD^THOR^^^^^921379^^^^OLIST
+ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379
+OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R
+OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
+           ]]></hu:text>
+		</hu:hl7v2>
+        <hu:hl7v2 id="DifferentOutputMessage">
+            <hu:text><![CDATA[
+MSH|^~\&|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
+PID|||7005728^^^TML^MR||TEST2^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR
+PV1|1||OLIS||||OLIST^BLAKE^DONALD^THOR^^^^^921379^^^^OLIST
+ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379
+OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R
+OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
+           ]]></hu:text>
+        </hu:hl7v2>
+	</hu:messages>
+</hu:battery>

@@ -63,7 +63,7 @@ public class UnexpectedMessageException extends TestFailureException
      */
     @Override
     public String describeReason() {
-        return "Unexpected message received:\r\n" + IncorrectHl7V2MessageReceivedException.formatMsg(myMessageReceived);
+        return "Unexpected message received:\r\n" + Hl7V2MessageCompare.formatMsg(myMessageReceived);
     }
 
 }

@@ -32,6 +32,7 @@ import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.test.AbstractEvent;
 import ca.uhn.hunit.test.AbstractExpect;
+import ca.uhn.hunit.util.Log;
 
 public class TestBatteryExecutionThread extends Thread {
 
@@ -119,7 +120,7 @@ public class TestBatteryExecutionThread extends Thread {
 			myInterface.stop(myCtx);
 		} catch (InterfaceWontStopException e) {
 			myFailed = e;
-			myCtx.getLog().error(myInterface, "Can't stop interface: " + e.describeReason());
+			Log.get(myInterface).error("Can't stop interface: " + e.describeReason());
 		}
 
 		myReady = false;

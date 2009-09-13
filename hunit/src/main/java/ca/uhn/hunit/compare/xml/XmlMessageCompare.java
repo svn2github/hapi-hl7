@@ -19,37 +19,55 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
+package ca.uhn.hunit.compare.xml;
 
-package ca.uhn.hunit.compare;
-
+import ca.uhn.hunit.compare.ICompare;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
+import java.io.IOException;
+import javax.xml.parsers.ParserConfigurationException;
+import org.custommonkey.xmlunit.Diff;
+import org.xml.sax.SAXException;
 
 /**
- * Implementors of this class are able to compare two messages (of a given type they
- * are able to handle) and return a structured comparison.
+ * Implementation of ICompare which compares XML documents
  */
-public interface ICompare {
+public class XmlMessageCompare implements ICompare {
+
+    private Diff myDiff;
 
     /**
-     * Triggers the comparison. This method is expected to be called once,
-     * before any other method
-     * 
-     * @param theExpected The expected message
-     * @param theActual The actual message
+     * {@inheritDoc }
      */
-    void compare(TestMessage theExpectMessage, TestMessage theActualMessage) throws UnexpectedTestFailureException;
+    public void compare(TestMessage theExpectMessage, TestMessage theActualMessage) throws UnexpectedTestFailureException {
+        try {
+            myDiff = new Diff(theExpectMessage.getRawMessage(), theActualMessage.getRawMessage());
+        } catch (SAXException ex) {
+            throw new UnexpectedTestFailureException("Failure generating message diff", ex);
+        } catch (IOException ex) {
+            throw new UnexpectedTestFailureException("Failure generating message diff", ex);
+        } catch (ParserConfigurationException ex) {
+            throw new UnexpectedTestFailureException("Failure generating message diff", ex);
+        }
+    }
 
-    
     /**
-     * Returns true if the messages are the same
+     * {@inheritDoc }
      */
-    boolean isSame();
-
+    public boolean isSame() {
+        return myDiff.identical();
+    }
 
     /**
-     * @return Returns a string describing the difference
+     * {@inheritDoc }
      */
-    String describeDifference();
+    public String describeDifference() {
+        StringBuffer buffer = new StringBuffer();
+        myDiff.appendMessage(buffer);
+        return buffer.toString();
+    }
+
+
+
 
 }

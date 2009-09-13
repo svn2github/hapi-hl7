@@ -19,25 +19,29 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.util;
 
-import ca.uhn.hunit.iface.AbstractInterface;
-import ca.uhn.hunit.test.ITest;
-import ca.uhn.hunit.test.TestBatteryImpl;
-import org.apache.commons.logging.LogFactory;
+package ca.uhn.hunit.example;
 
-public class Log {
+import org.junit.runner.RunWith;
 
-    public static org.apache.commons.logging.Log get(AbstractInterface theInterface) {
-        return LogFactory.getLog("hunit.interface." + theInterface.getId());
-    }
+/**
+ * This test shows an example of hUnit being embedded
+ * as a JUnit 4 test within a JUnit suite.
+ *
+ * Basically, only 2 annotations are needed. The first,
+ * below, is the @RunWith annotation, which is copied
+ * verbatim.
+ */
+@RunWith(value=ca.uhn.hunit.junit.HunitRunner.class)
+/*
+ * The second annotation is the @HunitBattery annotation,
+ * which specifies the battery file to run. If the file
+ * is on the classpath, prefix the name with
+ * "classpath:" as shown below
+ */
+@ca.uhn.hunit.junit.HunitBattery(file="classpath:ca/uhn/hunit/junit/unit_tests_many_passing.xml")
+public class Junit4ExampleTest {
 
-    public static org.apache.commons.logging.Log get(ITest theTest) {
-        return LogFactory.getLog("hunit.test." + theTest.getName());
-    }
-
-    public static org.apache.commons.logging.Log get(TestBatteryImpl theTest) {
-        return LogFactory.getLog("hunit.battery." + theTest.getName());
-    }
+    // no content is needed
 
 }

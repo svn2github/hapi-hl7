@@ -24,10 +24,8 @@ package ca.uhn.hunit.run;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
 
 import ca.uhn.hunit.ex.ConfigurationException;
@@ -40,151 +38,165 @@ import ca.uhn.hunit.util.Log;
 
 public class ExecutionContext {
 
-	private Log myLog = new Log();
+    private Map<TestImpl, TestFailureException> myTestFailures = new HashMap<TestImpl, TestFailureException>();
+    private List<TestImpl> myTestSuccesses = new ArrayList<TestImpl>();
+    private List<IExecutionListener> myListeners = new ArrayList<IExecutionListener>();
+    private TestBatteryImpl myBattery;
 
-	private Map<TestImpl, TestFailureException> myTestFailures = new HashMap<TestImpl, TestFailureException>();
-	private List<TestImpl> myTestSuccesses = new ArrayList<TestImpl>();
+    public ExecutionContext(TestBatteryImpl theBattery) {
+        myBattery = theBattery;
+    }
 
-	private TestBatteryImpl myBattery;
+    /**
+     * Adds a listeners which will be notified of execution events (test pass/fails)
+     */
+    public void addListener(IExecutionListener theListener) {
+        myListeners.add(theListener);
+    }
 
-	public ExecutionContext(TestBatteryImpl theBattery) {
-		myBattery = theBattery;
-	}
+    public void addFailure(TestImpl theTest, TestFailureException theException) {
+        Log.get(theTest).error("Failure: " + theException.getMessage());
+        myTestFailures.put(theTest, theException);
+    }
 
-	public Log getLog() {
-		return myLog;
-	}
+    public void addSuccess(TestImpl theTest) {
+        Log.get(theTest).info("Success!");
+        myTestSuccesses.add(theTest);
+    }
 
-	public void setLog(Log theLog) {
-		myLog = theLog;
-	}
+    public Map<TestImpl, TestFailureException> getTestFailures() {
+        return myTestFailures;
+    }
 
-	public void addFailure(TestImpl theTest, TestFailureException theException) {
-		getLog().info(theTest, "Failure: " + theException.getMessage());
-	    myTestFailures.put(theTest, theException);
-	}
+    public List<TestImpl> getTestSuccesses() {
+        return myTestSuccesses;
+    }
 
-	public void addSuccess(TestImpl theTest) {
-        getLog().error(theTest, "Success!");
-		myTestSuccesses.add(theTest);
-	}
+    public void execute() {
+        execute((List<String>) null);
+    }
 
-	public Map<TestImpl, TestFailureException> getTestFailures() {
-		return myTestFailures;
-	}
+    public void execute(String... theTestNamesToExecute) {
+        if (theTestNamesToExecute == null || theTestNamesToExecute.length == 0) {
+            execute((List<String>) null);
+        } else {
+            List<String> testNames = new ArrayList<String>(Arrays.asList(theTestNamesToExecute));
+            execute(testNames);
+        }
+    }
 
-	public List<TestImpl> getTestSuccesses() {
-		return myTestSuccesses;
-	}
+    public void execute(List<String> theTestNamesToExecute) {
+        if (theTestNamesToExecute == null || theTestNamesToExecute.isEmpty()) {
+            theTestNamesToExecute = myBattery.getTestNames();
+        }
 
-	public void execute() {
-		execute((Set<String>)null);
-	}
+        Log.get(myBattery).info("About to execute battery");
 
-	public void execute(String... theTestNamesToExecute) {
-		if (theTestNamesToExecute == null || theTestNamesToExecute.length == 0) {
-			execute((Set<String>)null);
-		} else {
-		Set<String> testNames = new HashSet<String>(Arrays.asList(theTestNamesToExecute));
-		execute(testNames);
-		}
-	}
+        /* *****
+         * TODO: Use java.util.concurrent's executorservice instead of the
+         * busywaits ****
+         */
 
-	public void execute(Set<String> theTestNamesToExecute) {
-		if (theTestNamesToExecute == null || theTestNamesToExecute.isEmpty()) {
-			theTestNamesToExecute = myBattery.getTestNames();
-		}
-		
-		getLog().info(myBattery, "About to execute battery");
+        List<TestImpl> tests = new ArrayList<TestImpl>();
+        Map<String, TestBatteryExecutionThread> interface2thread = new HashMap<String, TestBatteryExecutionThread>();
+        for (String nextTestNameId : myBattery.getTestNames2Tests().keySet()) {
+            if (!theTestNamesToExecute.contains(nextTestNameId)) {
+                continue;
+            }
 
-		/* *****
-		 * TODO: Use java.util.concurrent's executorservice instead of the
-		 * busywaits ****
-		 */
+            TestImpl nextTest = myBattery.getTestNames2Tests().get(nextTestNameId);
+            tests.add(nextTest);
 
-		List<TestImpl> tests = new ArrayList<TestImpl>();
-		Map<String, TestBatteryExecutionThread> interface2thread = new HashMap<String, TestBatteryExecutionThread>();
-		for (String nextTestNameId : myBattery.getTestNames2Tests().keySet()) {
-			if (!theTestNamesToExecute.contains(nextTestNameId)) {
-				continue;
-			}
+            myTestFailures.remove(nextTest);
+            myTestSuccesses.remove(nextTest);
 
-			TestImpl nextTest = myBattery.getTestNames2Tests().get(nextTestNameId);
-			tests.add(nextTest);
-			for (String nextInterfaceId : nextTest.getInterfacesUsed()) {
-				if (interface2thread.containsKey(nextInterfaceId)) {
-					continue;
-				}
+            for (String nextInterfaceId : nextTest.getInterfacesUsed()) {
+                if (interface2thread.containsKey(nextInterfaceId)) {
+                    continue;
+                }
 
-				AbstractInterface nextInterface;
-				try {
-					nextInterface = myBattery.getInterface(nextInterfaceId);
-				} catch (ConfigurationException e) {
-					throw new Error("Unknown interface ID[" + nextInterfaceId + "]. This should have already been caught, this is a bug");
-				}
-				TestBatteryExecutionThread thread = new TestBatteryExecutionThread(this, nextInterface);
-				interface2thread.put(nextInterfaceId, thread);
-				thread.start();
+                AbstractInterface nextInterface;
+                try {
+                    nextInterface = myBattery.getInterface(nextInterfaceId);
+                } catch (ConfigurationException e) {
+                    throw new Error("Unknown interface ID[" + nextInterfaceId + "]. This should have already been caught, this is a bug");
+                }
+                TestBatteryExecutionThread thread = new TestBatteryExecutionThread(this, nextInterface);
+                interface2thread.put(nextInterfaceId, thread);
+                thread.start();
 
-			}
+            }
 
-		}
+        }
 
-		// Wait until all threads are ready to start
-		for (TestBatteryExecutionThread next : interface2thread.values()) {
-			if (!next.isReady()) {
-				try {
-					Thread.sleep(250);
-				} catch (InterruptedException e) {
-					// nothing
-				}
-			}
-		}
+        // Wait until all threads are ready to start
+        for (TestBatteryExecutionThread next : interface2thread.values()) {
+            if (!next.isReady()) {
+                try {
+                    Thread.sleep(250);
+                } catch (InterruptedException e) {
+                    // nothing
+                }
+            }
+        }
 
-		// Start executing
-		for (TestImpl nextTest : tests) {
-			for (Map.Entry<String, TestBatteryExecutionThread> nextEntry : interface2thread.entrySet()) {
-				List<AbstractEvent> events = nextTest.getEventsForInterface(nextEntry.getKey());
-				nextEntry.getValue().addEvents(events);
-			}
+        // Start executing
+        for (TestImpl nextTest : tests) {
 
-			// Wait for all threads to catch up - This works but it's ugly
-			boolean eventsPending;
-			do {
-				eventsPending = false;
-				for (Entry<String, TestBatteryExecutionThread> next : interface2thread.entrySet()) {
-				    TestBatteryExecutionThread nextThread = next.getValue();
-				    if (nextThread.hasEventsPending()) {
-						eventsPending = true;
-					}
-					if (myTestFailures.containsKey(nextTest)) {
-					    break;
-					}
-					try {
-						Thread.sleep(250);
-					} catch (InterruptedException e) {
-						// nothing
-					}
-				}
-			} while (eventsPending == true && !myTestFailures.containsKey(nextTest));
+            for (IExecutionListener next : myListeners) {
+                next.testStarted(nextTest);
+            }
 
-			// If we got out of the loop because of an error, cancel the other threads
+            for (Map.Entry<String, TestBatteryExecutionThread> nextEntry : interface2thread.entrySet()) {
+                List<AbstractEvent> events = nextTest.getEventsForInterface(nextEntry.getKey());
+                nextEntry.getValue().addEvents(events);
+            }
+
+            // Wait for all threads to catch up - This works but it's ugly
+            boolean eventsPending;
+            do {
+                eventsPending = false;
+                for (Entry<String, TestBatteryExecutionThread> next : interface2thread.entrySet()) {
+                    TestBatteryExecutionThread nextThread = next.getValue();
+                    if (nextThread.hasEventsPending()) {
+                        eventsPending = true;
+                    }
+                    if (myTestFailures.containsKey(nextTest)) {
+                        break;
+                    }
+                    try {
+                        Thread.sleep(250);
+                    } catch (InterruptedException e) {
+                        // nothing
+                    }
+                }
+            } while (eventsPending == true && !myTestFailures.containsKey(nextTest));
+
+            // If we got out of the loop because of an error, cancel the other threads
             for (Map.Entry<String, TestBatteryExecutionThread> nextEntry : interface2thread.entrySet()) {
                 nextEntry.getValue().cancelCurrentEvents();
             }
-			
-			// If we didn't fail, we succeeded :)
-			if (!myTestFailures.containsKey(nextTest)) {
-				addSuccess(nextTest);
-			}
 
-		}
+            // If we didn't fail, we succeeded :)
+            if (!myTestFailures.containsKey(nextTest)) {
+                addSuccess(nextTest);
+                for (IExecutionListener next : myListeners) {
+                    next.testPassed(nextTest);
+                }
+            } else {
+                for (IExecutionListener next : myListeners) {
+                    next.testFailed(nextTest, myTestFailures.get(nextTest));
+                }
+            }
 
-		for (TestBatteryExecutionThread next : interface2thread.values()) {
-			next.finish();
-		}
 
-	      // Wait until all threads are closed up
+        }
+
+        for (TestBatteryExecutionThread next : interface2thread.values()) {
+            next.finish();
+        }
+
+        // Wait until all threads are closed up
         for (TestBatteryExecutionThread next : interface2thread.values()) {
             if (next.isReady()) {
                 try {
@@ -195,7 +207,6 @@ public class ExecutionContext {
             }
         }
 
-		getLog().info(myBattery, "Finished executing battery");
-	}
-
+        Log.get(myBattery).info("Finished executing battery");
+    }
 }

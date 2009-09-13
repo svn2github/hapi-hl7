@@ -19,25 +19,29 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.util;
 
-import ca.uhn.hunit.iface.AbstractInterface;
+package ca.uhn.hunit.junit;
+
+import ca.uhn.hunit.ex.TestFailureException;
+import ca.uhn.hunit.run.IExecutionListener;
 import ca.uhn.hunit.test.ITest;
-import ca.uhn.hunit.test.TestBatteryImpl;
-import org.apache.commons.logging.LogFactory;
+import junit.framework.AssertionFailedError;
 
-public class Log {
+/**
+ * Execution listener which generates JUnit 3 assertion failures when a test fails
+ */
+public class Junit3FailureListener implements IExecutionListener {
 
-    public static org.apache.commons.logging.Log get(AbstractInterface theInterface) {
-        return LogFactory.getLog("hunit.interface." + theInterface.getId());
+    public void testStarted(ITest theTest) {
+        // nothing
     }
 
-    public static org.apache.commons.logging.Log get(ITest theTest) {
-        return LogFactory.getLog("hunit.test." + theTest.getName());
+    public void testFailed(ITest theTest, TestFailureException theException) {
+        throw new AssertionFailedError(theTest.getName() + " Failure! - " + theException.describeReason());
     }
 
-    public static org.apache.commons.logging.Log get(TestBatteryImpl theTest) {
-        return LogFactory.getLog("hunit.battery." + theTest.getName());
+    public void testPassed(ITest theTest) {
+        // nothing
     }
 
 }

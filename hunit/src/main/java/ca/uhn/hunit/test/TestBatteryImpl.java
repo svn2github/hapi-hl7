@@ -59,7 +59,7 @@ public class TestBatteryImpl extends AbstractPropertyChangeSupport implements IT
 	private String myName;
 	private List<TestImpl> myTests = new ArrayList<TestImpl>();
 	private HashMap<String, TestImpl> myTestNames2Tests = new HashMap<String, TestImpl>();
-	private Set<String> myTestNames = new HashSet<String>();
+	private List<String> myTestNames = new ArrayList<String>();
 	
 	public TestBatteryImpl(TestBattery theConfig) throws ConfigurationException, InterfaceWontStartException {
 		myConfig = theConfig;
@@ -155,7 +155,7 @@ public class TestBatteryImpl extends AbstractPropertyChangeSupport implements IT
 		return retVal;
 	}
 
-	public Set<String> getTestNames() {
+	public List<String> getTestNames() {
 		return myTestNames;
 	}
 

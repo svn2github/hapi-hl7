@@ -3,10 +3,14 @@
 <log4j:configuration>
     <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d{ABSOLUTE} %5p %c{1}:%L - %m%n"/>
+            <param name="ConversionPattern" value="%d{ABSOLUTE} %5p %c{1} - %m%n"/>
         </layout>
     </appender>
-    <root>
+	<logger name="hunit" additivity="false">
+		<level value="info" />
+		<appender-ref ref="stdout" />
+	</logger>
+	<root>
         <priority value="ERROR"></priority>
         <appender-ref ref="stdout"/>
     </root>

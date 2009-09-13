@@ -53,6 +53,7 @@ import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.util.Log;
 import ca.uhn.hunit.xsd.Interface;
 import ca.uhn.hunit.xsd.JavaArgument;
 import ca.uhn.hunit.xsd.JmsHl7V2Interface;
@@ -168,7 +169,7 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
 	public TestMessage receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException {
 		start(theCtx);
 
-		theCtx.getLog().info(this, "Waiting to receive message");
+		Log.get(this).info( "Waiting to receive message");
 
 		String message = null;
 		Message parsedMessage;
@@ -187,7 +188,7 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
 				return null;
 			}
 						
-			theCtx.getLog().info(this, "Received message (" + message.length() + " bytes)");
+			Log.get(this).info( "Received message (" + message.length() + " bytes)");
 
 			try {
 				parsedMessage = myParser.parse(message);
@@ -219,7 +220,7 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
 			}
 		}
 		
-		theCtx.getLog().info(this, "Sending message (" + theMessage.getRawMessage().length() + " bytes)");
+		Log.get(this).info( "Sending message (" + theMessage.getRawMessage().length() + " bytes)");
 
 		try {
 		    MessageCreator mc = new MessageCreator() {
@@ -236,7 +237,7 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
                     return textMessage;
                 }};
             myJmsTemplate.send(myQueueName, mc);
-			theCtx.getLog().info(this, "Sent message");
+			Log.get(this).info( "Sent message");
 		} catch (JmsException e) {
 			throw new InterfaceWontSendException(this, e.getMessage(), e);
 		}
@@ -286,7 +287,7 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
                         continue;
 					}
 					cleared++;
-					theCtx.getLog().info(this, "Cleared message");
+					Log.get(this).info( "Cleared message");
                     try {
                         Thread.sleep(250);
                     } catch (InterruptedException e) {
@@ -294,13 +295,13 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
                     }
                     readUntil = System.currentTimeMillis() + myClearMillis;
 				} catch (JMSException e) {
-				    theCtx.getLog().warn(this, "Error while clearing queue: " + e.getMessage());
+				    Log.get(this).warn("Error while clearing queue: " + e.getMessage());
                 }
 			}
-			theCtx.getLog().info(this, "Cleared " + cleared + " messages from interface before starting");			
+			Log.get(this).info( "Cleared " + cleared + " messages from interface before starting");
 		}
 		
-		theCtx.getLog().info(this, "Started interface successfully");
+		Log.get(this).info( "Started interface successfully");
 		myStarted = true;
 	}
 
@@ -323,7 +324,7 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
 			return;
 		}
 
-		theCtx.getLog().info(this, "Stopping interface");
+		Log.get(this).info( "Stopping interface");
 
 		myStarted = false;
 	}

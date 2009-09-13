@@ -385,9 +385,14 @@ pageTracker._trackPageview();
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
                 <inherited>false</inherited>
-                <configuration>
-                    <aggregate>true</aggregate>
-                </configuration>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>jxs</report>
+							<report>test-jxr</report>
+						</reports>
+					</reportSet>
+				</reportSets>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

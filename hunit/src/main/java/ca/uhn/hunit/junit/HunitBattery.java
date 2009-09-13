@@ -19,25 +19,28 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.util;
 
-import ca.uhn.hunit.iface.AbstractInterface;
-import ca.uhn.hunit.test.ITest;
-import ca.uhn.hunit.test.TestBatteryImpl;
-import org.apache.commons.logging.LogFactory;
+package ca.uhn.hunit.junit;
 
-public class Log {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    public static org.apache.commons.logging.Log get(AbstractInterface theInterface) {
-        return LogFactory.getLog("hunit.interface." + theInterface.getId());
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Inherited
+public @interface HunitBattery {
 
-    public static org.apache.commons.logging.Log get(ITest theTest) {
-        return LogFactory.getLog("hunit.test." + theTest.getName());
-    }
+    /**
+     * The path to the file to execute
+     */
+    String file();
 
-    public static org.apache.commons.logging.Log get(TestBatteryImpl theTest) {
-        return LogFactory.getLog("hunit.battery." + theTest.getName());
-    }
+    /**
+     * @return The names of the tests to run. If empty (the default), run all
+     */
+    String[] testNames() default {};
 
 }
