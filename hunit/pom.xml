@@ -305,6 +305,8 @@
                         </goals>
                         <configuration>
                             <generatePackage>ca.uhn.hunit.xsd</generatePackage>
+							<generateDirectory>${basedir}/target/generated-sources/maven-jaxb-plugin</generateDirectory>
+							<verbose>true</verbose>
                         </configuration>
                     </execution>
                 </executions>
