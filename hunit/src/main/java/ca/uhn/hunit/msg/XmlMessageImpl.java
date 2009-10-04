@@ -19,63 +19,54 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.compare.xml;
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
-import ca.uhn.hunit.compare.ICompare;
-import ca.uhn.hunit.ex.UnexpectedTestFailureException;
+package ca.uhn.hunit.msg;
+
+import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.xsd.XmlMessageDefinition;
 import java.io.IOException;
+import java.io.StringReader;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.custommonkey.xmlunit.DetailedDiff;
-import org.custommonkey.xmlunit.Diff;
-import org.custommonkey.xmlunit.XMLUnit;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * Implementation of ICompare which compares XML documents
+ * XML Message implementation
  */
-public class XmlMessageCompare implements ICompare {
+public class XmlMessageImpl extends AbstractMessage {
 
-    private DetailedDiff myDiff;
+    private final String myText;
+    private final Document myDocument;
 
-    public XmlMessageCompare() {
-        XMLUnit.setIgnoreWhitespace(true);
-    }
-
-    /**
-     * {@inheritDoc }
-     */
-    public void compare(TestMessage theExpectMessage, TestMessage theActualMessage) throws UnexpectedTestFailureException {
-
+    public XmlMessageImpl(XmlMessageDefinition theDefinition) throws ConfigurationException {
+        super(theDefinition);
         try {
-            Diff diff = new Diff(theExpectMessage.getRawMessage(), theActualMessage.getRawMessage());
-            myDiff = new DetailedDiff(diff);
+            myText = theDefinition.getText();
+            DocumentBuilderFactory parserFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder parser = parserFactory.newDocumentBuilder();
+            StringReader inputStream = new StringReader(myText);
+            myDocument = parser.parse(new InputSource(inputStream));
         } catch (SAXException ex) {
-            throw new UnexpectedTestFailureException("Failure generating message diff", ex);
+            throw new ConfigurationException("Failed to parse XML message", ex);
         } catch (IOException ex) {
-            throw new UnexpectedTestFailureException("Failure generating message diff", ex);
+            throw new ConfigurationException("Failed to parse XML message", ex);
         } catch (ParserConfigurationException ex) {
-            throw new UnexpectedTestFailureException("Failure generating message diff", ex);
+            throw new ConfigurationException("Failed to parse XML message", ex);
         }
     }
 
-    /**
-     * {@inheritDoc }
-     */
-    public boolean isSame() {
-        return myDiff.similar();
+    @Override
+    public TestMessage<Document> getTestMessage() {
+        return new TestMessage<Document>(myText, myDocument);
     }
-
-    /**
-     * {@inheritDoc }
-     */
-    public String describeDifference() {
-        StringBuffer buffer = new StringBuffer();
-        myDiff.appendMessage(buffer);
-        return buffer.toString();
-    }
-
-
 
 
 }

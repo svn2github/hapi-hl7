@@ -54,10 +54,6 @@ public class Hl7V2MessageImpl extends AbstractMessage {
 	}
 
 	@Override
-	public String getText() {
-		return myText;
-	}
-
 	public TestMessage getTestMessage() {
 		return new TestMessage(myText, myParsedMessage);
 	}

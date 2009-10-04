@@ -38,7 +38,7 @@
 	<complexType name="AnyInterface">
 		<choice>
 			<element name="mllpHl7V2Interface" type="tns:MllpHl7V2Interface"/>
-			<element name="jmsHl7V2QueueInterface" type="tns:JmsHl7V2Interface"/>
+			<element name="jmsInterface" type="tns:JmsInterface"/>
 		</choice>
 	</complexType>
 	
@@ -88,7 +88,7 @@
 		</complexContent>
 	</complexType>
 
-	<complexType name="JmsHl7V2Interface">
+	<complexType name="AbstractJmsInterface" abstract="true">
 		<complexContent>
 			<extension base="tns:Interface">
 				<sequence>
@@ -100,16 +100,17 @@
 					</choice>
 					<element name="user_name" type="string"></element>
 					<element name="password" type="string"></element>
-                    <element name="encoding" minOccurs="0" maxOccurs="1" default="ER7">
-                        <simpleType>
-                            <restriction base="string">
-                                <enumeration value="ER7"></enumeration>
-                                <enumeration value="XML"></enumeration>
-                            </restriction>
-                        </simpleType>
-                    </element>
                     <element name="clear" type="boolean" minOccurs="0" default="true"></element>
 					<element name="message_property" type="tns:NamedJavaArgument" minOccurs="0" maxOccurs="unbounded"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="JmsInterface">
+		<complexContent>
+			<extension base="tns:AbstractJmsInterface">
+				<sequence>
 				</sequence>
 			</extension>
 		</complexContent>
@@ -147,7 +148,18 @@
 
     <complexType name="Hl7V2SendMessage">
         <complexContent>
-            <extension base="tns:SendMessage"></extension>
+            <extension base="tns:SendMessage">
+				<sequence>
+                    <element name="encoding" minOccurs="0" maxOccurs="1" default="ER7">
+                        <simpleType>
+                            <restriction base="string">
+                                <enumeration value="ER7"></enumeration>
+                                <enumeration value="XML"></enumeration>
+                            </restriction>
+                        </simpleType>
+                    </element>
+				</sequence>
+			</extension>
         </complexContent>
     </complexType>
 
@@ -187,7 +199,7 @@
             <element name="hl7v2_ack" minOccurs="1" maxOccurs="1" type="tns:Hl7V2ExpectAck"/>
             <element name="hl7v2_nak" minOccurs="1" maxOccurs="1" type="tns:Hl7V2ExpectNak"/>
             <element name="hl7v2_rules" minOccurs="1" maxOccurs="1" type="tns:Hl7V2ExpectRules"/>
-			<element name="xml" minOccurs="1" maxOccurs="1" type="tns:XMLExpectMessage"/>
+			<element name="xml_specific" minOccurs="1" maxOccurs="1" type="tns:XMLExpectMessage"/>
 		</choice>
 	</complexType>
 	
@@ -261,13 +273,23 @@
 	<complexType name="XMLExpectMessage">
         <complexContent>
             <extension base="tns:ExpectMessage">
-                <choice>
-                    <element name="specificMessage" minOccurs="1" maxOccurs="1" type="tns:MessageSource"/>
-                </choice>
+				<sequence>
+					<element name="validateMessageUsingDTD" type="boolean" minOccurs="0" maxOccurs="1" default="false"/>
+				</sequence>
             </extension>
         </complexContent>
 	</complexType>
-	
+
+	<complexType name="XMLExpectSpecificMessage">
+		<complexContent>
+			<extension base="tns:XMLExpectMessage">
+				<sequence>
+					<element name="specificMessage" minOccurs="1" maxOccurs="1" type="tns:MessageSource"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
 	<complexType name="AckMessage">
 	</complexType>
 
@@ -278,6 +300,7 @@
         <sequence>
 	        <choice minOccurs="0" maxOccurs="unbounded">
 	            <element name="hl7v2" type="tns:Hl7V2MessageDefinition"></element>
+	            <element name="xml" type="tns:XmlMessageDefinition"></element>
 	        </choice>
         </sequence>
     </complexType>
@@ -295,7 +318,14 @@
 	       </extension>
 	   </complexContent>
 	</complexType>
-	
+
+	<complexType name="XmlMessageDefinition">
+	   <complexContent>
+	       <extension base="tns:MessageDefinition">
+	       </extension>
+	   </complexContent>
+	</complexType>
+
 	<complexType name="JavaArgument">
 		<attribute name="type" type="string"></attribute>
 		<attribute name="value" type="string"></attribute>

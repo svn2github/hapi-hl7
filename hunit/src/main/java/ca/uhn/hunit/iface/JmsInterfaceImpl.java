@@ -19,27 +19,41 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.test;
+package ca.uhn.hunit.iface;
+
+
+
 
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
-import ca.uhn.hunit.iface.TestMessage;
-import ca.uhn.hunit.run.ExecutionContext;
-import ca.uhn.hunit.xsd.HL7V2ExpectAbstract;
+import ca.uhn.hunit.xsd.Interface;
+import ca.uhn.hunit.xsd.JmsInterface;
 
-public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage {
+/**
+ * Interface implementation which sends/receives plain text
+ */
+public class JmsInterfaceImpl extends AbstractJmsInterfaceImpl<String> {
 
-
-	public AbstractHl7V2ExpectMessage(TestImpl theTest, TestBatteryImpl theBattery, HL7V2ExpectAbstract theConfig) throws ConfigurationException {
-		super(theBattery, theTest, theConfig);
+	public JmsInterfaceImpl(JmsInterface theConfig) throws ConfigurationException {
+		super(theConfig);
 	}
+
 
 	@Override
-	public void receiveMessage(ExecutionContext theCtx, TestMessage theMessage)
-			throws TestFailureException {
-		validateMessage(theMessage);
+	public Interface exportConfig() {
+		JmsInterface retVal = new JmsInterface();
+		super.exportConfig(retVal);
+		return retVal;
 	}
 
-	public abstract void validateMessage(TestMessage theMessage) throws TestFailureException;
-	
+    @Override
+    public String parseMessage(String theMessage) throws TestFailureException {
+        return theMessage;
+    }
+
+    @Override
+    public String encodeMessage(String theMessage) throws TestFailureException {
+        return theMessage;
+    }
+
 }

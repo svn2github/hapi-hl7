@@ -19,37 +19,39 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.iface;
+package ca.uhn.hunit.event.expect;
 
-public class TestMessage<T> {
+import ca.uhn.hunit.test.*;
+import ca.uhn.hunit.ex.ConfigurationException;
+import ca.uhn.hunit.ex.InterfaceWontReceiveException;
+import ca.uhn.hunit.ex.TestFailureException;
+import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.run.ExecutionContext;
+import ca.uhn.hunit.xsd.ExpectMessage;
 
-	private String myRawMessage;
-	private T myParsedMessage;
+public abstract class AbstractExpectMessage extends AbstractExpect {
 
-	public TestMessage(String theRawMessage, T theParsedMessage) {
-		super();
-		myRawMessage = theRawMessage;
-		myParsedMessage = theParsedMessage;
+	public AbstractExpectMessage(TestBatteryImpl theBattery, TestImpl theTest, ExpectMessage theConfig) throws ConfigurationException {
+		super(theBattery, theTest, theConfig);
 	}
 
-	public TestMessage(String theMessage) {
-		myRawMessage = theMessage;
+	@Override
+	public void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException {
+
+		TestMessage<?> message = getInterface().receiveMessage(getTest(), theCtx, getReceiveTimeout());
+		if (!getInterface().isStarted()) {
+		    return;
+		}
+		
+        if (message == null) {
+            // FIXME: correct number below
+            throw new InterfaceWontReceiveException(getInterface(), "Didn't receive a message after " + 9999 + "ms");
+        }
+
+		receiveMessage(theCtx, message);
+
 	}
 
-	public T getParsedMessage() {
-		return myParsedMessage;
-	}
-
-	public String getRawMessage() {
-		return myRawMessage;
-	}
-
-	public void setParsedMessage(T theParsedMessage) {
-		myParsedMessage = theParsedMessage;
-	}
-
-	public void setRawMessage(String theRawMessage) {
-		myRawMessage = theRawMessage;
-	}
+	public abstract void receiveMessage(ExecutionContext theCtx, TestMessage<?> theMessage) throws TestFailureException;
 
 }

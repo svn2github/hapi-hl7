@@ -19,51 +19,57 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.test;
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
-import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hunit.compare.hl7v2.Hl7V2MessageCompare;
+package ca.uhn.hunit.event.expect;
+
+import ca.uhn.hunit.compare.xml.XmlMessageCompare;
 import ca.uhn.hunit.ex.ConfigurationException;
-import ca.uhn.hunit.ex.IncorrectHl7V2MessageReceivedException;
+import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.ex.TestFailureException;
-import ca.uhn.hunit.ex.UnexpectedTestFailureException;
-import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.msg.AbstractMessage;
-import ca.uhn.hunit.msg.Hl7V2MessageImpl;
-import ca.uhn.hunit.xsd.Hl7V2ExpectSpecificMessage;
+import ca.uhn.hunit.xsd.MessageSource;
+import ca.uhn.hunit.xsd.XMLExpectSpecificMessage;
+import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.msg.XmlMessageImpl;
+import ca.uhn.hunit.test.TestBatteryImpl;
+import ca.uhn.hunit.test.TestImpl;
+import org.w3c.dom.Document;
 
-public class Hl7V2ExpectSpecificMessageImpl extends AbstractHl7V2ExpectMessage {
+/**
+ *
+ * @author James
+ */
+public class XmlExpectSpecificMessage extends AbstractXmlExpectMessage {
+    private final String myMessageId;
+    private final XmlMessageImpl myMessageProvider;
 
-	private String myMessageId;
-	private TestImpl myTest;
-	private Hl7V2MessageImpl myMessageProvider;
-	
-	public Hl7V2ExpectSpecificMessageImpl(TestBatteryImpl theBattery, TestImpl theTest, Hl7V2ExpectSpecificMessage theConfig) throws ConfigurationException {
-		super(theTest, theBattery, theConfig);
-		
+    public XmlExpectSpecificMessage(TestBatteryImpl theBattery, TestImpl theTest, XMLExpectSpecificMessage theConfig) throws ConfigurationException {
+        super(theBattery, theTest, theConfig);
+
 		myMessageId = theConfig.getMessageId();
 		AbstractMessage messageProvider = getBattery().getMessage(myMessageId);
-		if (!(messageProvider instanceof Hl7V2MessageImpl)) {
+		if (!(messageProvider instanceof XmlMessageImpl)) {
 			throw new ConfigurationException("Message with ID[" + myMessageId + "] is not an HL7 v2 message type so it can not be used with this expect");
 		}
-		myMessageProvider = (Hl7V2MessageImpl) messageProvider;
-		myTest = theTest;
-	}
+		myMessageProvider = (XmlMessageImpl) messageProvider;
 
-	@Override
-	public void validateMessage(TestMessage theMessage)
-			throws TestFailureException {
-		
-		TestMessage expectMessage = myMessageProvider.getTestMessage();
-		TestMessage actualMessage = theMessage;
-		
-		Hl7V2MessageCompare messageCompare = new Hl7V2MessageCompare();
-        messageCompare.compare(expectMessage, actualMessage);
-		if (!messageCompare.isSame()) {
-			throw new IncorrectHl7V2MessageReceivedException(myTest, null, expectMessage, actualMessage, "Messages did not match", messageCompare); 
-		}
-		
-	}
+    }
+
+    @Override
+    protected void validateMessage(TestMessage<Document> parsedMessage) throws TestFailureException {
+        TestMessage<Document> expect = myMessageProvider.getTestMessage();
+        XmlMessageCompare compare = new XmlMessageCompare();
+        compare.compare(expect, parsedMessage);
+
+        System.out.println("+++" + compare.isSame());
+
+        if (compare.isSame() == false) {
+            throw new IncorrectMessageReceivedException(getTest(), null, expect, parsedMessage, "Inforrect message received", compare);
+        }
+    }
 
 }

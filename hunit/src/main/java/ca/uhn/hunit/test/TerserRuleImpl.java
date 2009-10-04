@@ -21,6 +21,7 @@
  */
 package ca.uhn.hunit.test;
 
+import ca.uhn.hunit.event.expect.AbstractExpectMessage;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -30,7 +31,7 @@ import java.util.regex.Pattern;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.util.Terser;
-import ca.uhn.hunit.ex.IncorrectHl7V2MessageReceivedException;
+import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.xsd.TerserMessageRule;
 
@@ -64,35 +65,35 @@ public class TerserRuleImpl {
 	}
 	
 	
-	public void validate(TestMessage theMessage) throws IncorrectHl7V2MessageReceivedException {
+	public void validate(TestMessage theMessage) throws IncorrectMessageReceivedException {
 		String value;
 		try {
 			value = new Terser((Message) theMessage.getParsedMessage()).get(myPath);
 		} catch (HL7Exception e) {
-			throw new IncorrectHl7V2MessageReceivedException(myExpect.getTest(), (TestMessage)null, theMessage, e.getMessage());
+			throw new IncorrectMessageReceivedException(myExpect.getTest(), (TestMessage)null, theMessage, e.getMessage());
 		}
 
 		if (!myValues.isEmpty()) {
 			if (!myValues.contains(value)) {
-				throw new IncorrectHl7V2MessageReceivedException(myExpect.getTest(), (TestMessage)null, theMessage, "Incorrect value for SPEC[" + myPath + "]. Expected[" + myValues + "] but found[" + value + "]");
+				throw new IncorrectMessageReceivedException(myExpect.getTest(), (TestMessage)null, theMessage, "Incorrect value for SPEC[" + myPath + "]. Expected[" + myValues + "] but found[" + value + "]");
 			}
 		}
 
 		if (!myNotValues.isEmpty()) {
 			if (myNotValues.contains(value)) {
-				throw new IncorrectHl7V2MessageReceivedException(myExpect.getTest(), (TestMessage)null, theMessage, "Incorrect value for SPEC[" + myPath + "]. Should not contain[" + myNotValues + "] but found[" + value + "]");
+				throw new IncorrectMessageReceivedException(myExpect.getTest(), (TestMessage)null, theMessage, "Incorrect value for SPEC[" + myPath + "]. Should not contain[" + myNotValues + "] but found[" + value + "]");
 			}
 		}
 
 		for (Pattern next : myPatterns) {
 			if (!next.matcher(value).matches()) {
-				throw new IncorrectHl7V2MessageReceivedException(myExpect.getTest(), (TestMessage)null, theMessage, "Incorrect value for SPEC[" + myPath + "]. Expected Pattern[" + next.pattern() + "] but found[" + value + "]");
+				throw new IncorrectMessageReceivedException(myExpect.getTest(), (TestMessage)null, theMessage, "Incorrect value for SPEC[" + myPath + "]. Expected Pattern[" + next.pattern() + "] but found[" + value + "]");
 			}
 		}
 
 		for (Pattern next : myNotPatterns) {
 			if (next.matcher(value).matches()) {
-				throw new IncorrectHl7V2MessageReceivedException(myExpect.getTest(), (TestMessage)null, theMessage, "Incorrect value for SPEC[" + myPath + "]. Expected Not Pattern[" + myValues + "] but found[" + value + "]");
+				throw new IncorrectMessageReceivedException(myExpect.getTest(), (TestMessage)null, theMessage, "Incorrect value for SPEC[" + myPath + "]. Expected Not Pattern[" + myValues + "] but found[" + value + "]");
 			}
 		}
 

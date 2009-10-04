@@ -7,7 +7,7 @@
         
 	<hu:interfaces>
 		<hu:interface>
-			<hu:jmsHl7V2QueueInterface id="from_ORM_WCH_ccRIS">
+			<hu:jmsInterface id="from_ORM_WCH_ccRIS">
 				<hu:connection_factory>com.stc.jms.client.STCTopicConnectionFactory</hu:connection_factory>
 				<hu:connection_factory_constructor_arg type="java.lang.String" value="jcapsdev"/>
 				<hu:connection_factory_constructor_arg type="int" value="18907"/>
@@ -16,17 +16,17 @@
 				<hu:password>PASSWORD</hu:password>
 				<hu:message_property type="java.lang.String" name="SOURCE_SYSTEM" value="WCH_ccRIS"/>
 				<hu:message_property type="java.lang.String" name="SOURCE_INTERFACE" value="ORM"/>
-			</hu:jmsHl7V2QueueInterface>
+			</hu:jmsInterface>
 		</hu:interface>
 		<hu:interface>
-			<hu:jmsHl7V2QueueInterface id="to_SIU_WCH_Kiosk">
+			<hu:jmsInterface id="to_SIU_WCH_Kiosk">
 				<hu:connection_factory>com.stc.jms.client.STCQueueConnectionFactory</hu:connection_factory>
 				<hu:connection_factory_constructor_arg type="java.lang.String" value="jcapsdev"/>
 				<hu:connection_factory_constructor_arg type="int" value="18907"/>
 				<hu:queue_name>q_Out_ADTSIU_WCH_Kiosk</hu:queue_name>
 				<hu:user_name>Administrator</hu:user_name>
 				<hu:password>PASSWORD</hu:password>
-			</hu:jmsHl7V2QueueInterface>
+			</hu:jmsInterface>
 		</hu:interface>			
 	</hu:interfaces>
 	<hu:tests>

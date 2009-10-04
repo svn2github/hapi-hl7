@@ -19,37 +19,32 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.iface;
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
-public class TestMessage<T> {
+package ca.uhn.hunit.util;
 
-	private String myRawMessage;
-	private T myParsedMessage;
+/**
+ * String utilities
+ */
+public class StringUtil {
 
-	public TestMessage(String theRawMessage, T theParsedMessage) {
-		super();
-		myRawMessage = theRawMessage;
-		myParsedMessage = theParsedMessage;
-	}
+    private StringUtil() {
+        // nothing
+    }
 
-	public TestMessage(String theMessage) {
-		myRawMessage = theMessage;
-	}
-
-	public T getParsedMessage() {
-		return myParsedMessage;
-	}
-
-	public String getRawMessage() {
-		return myRawMessage;
-	}
-
-	public void setParsedMessage(T theParsedMessage) {
-		myParsedMessage = theParsedMessage;
-	}
-
-	public void setRawMessage(String theRawMessage) {
-		myRawMessage = theRawMessage;
-	}
+    /**
+     * Adds <code>theIndent</code> at the start of each line of the string <code>theInput</code>
+     */
+    public static String prependEachLine(String theInput, String theIndent) {
+        StringBuilder retVal = new StringBuilder();
+        String[] lines = theInput.split("\\r\\n");
+        for (String string : lines) {
+            retVal.append(theIndent).append(string).append("\r\n");
+        }
+        return retVal.toString();
+    }
 
 }

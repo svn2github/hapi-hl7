@@ -21,9 +21,9 @@ import ca.uhn.hunit.test.TestBatteryImpl;
  * TODO: add!
  * 
  * @author <a href="mailto:james.agnew@uhn.on.ca">James Agnew</a>
- * @version $Revision: 1.1 $ updated on $Date: 2009-08-21 20:02:58 $ by $Author: jamesagnew $
+ * @version $Revision: 1.1 $ updated on $Date: 2009-10-04 19:16:25 $ by $Author: jamesagnew $
  */
-public class TestJmsTests
+public class JmsTest
 {
     
     @Test

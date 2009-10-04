@@ -21,6 +21,7 @@
  */
 package ca.uhn.hunit.run;
 
+import ca.uhn.hunit.event.AbstractEvent;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,8 +31,7 @@ import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.ex.InterfaceWontStopException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
-import ca.uhn.hunit.test.AbstractEvent;
-import ca.uhn.hunit.test.AbstractExpect;
+import ca.uhn.hunit.event.expect.AbstractExpect;
 import ca.uhn.hunit.util.Log;
 
 public class TestBatteryExecutionThread extends Thread {

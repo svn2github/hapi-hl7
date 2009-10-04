@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hu:battery xmlns:hu="http://hl7api.sourceforge.net/hunit/hunit_tests.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://hl7api.sourceforge.net/hunit/hunit_tests.xsd http://hl7api.sourceforge.net/hunit/hunit_tests.xsd">
+	<hu:name>TestBattery</hu:name>
+	<hu:interfaces>
+		<hu:interface>
+			<hu:jmsInterface id="test_in_interface">
+				<hu:connection_factory>ca.uhn.hunit.iface.StaticActiveMQConnectionFactory</hu:connection_factory>
+				<hu:queue_name>test_queue</hu:queue_name>
+				<hu:user_name>user</hu:user_name>
+				<hu:password>pass</hu:password>
+			</hu:jmsInterface>
+		</hu:interface>
+		<hu:interface>
+			<hu:jmsInterface id="test_out_interface">
+				<hu:connection_factory>ca.uhn.hunit.iface.StaticActiveMQConnectionFactory</hu:connection_factory>
+				<hu:queue_name>test_queue</hu:queue_name>
+				<hu:user_name>user</hu:user_name>
+				<hu:password>pass</hu:password>
+			</hu:jmsInterface>
+		</hu:interface>
+	</hu:interfaces>
+	<hu:tests>
+		<hu:test>
+			<hu:name>ExpectSameMessage</hu:name>
+			<hu:send_message>
+				<hu:xml interface_id="test_out_interface" message_id="InputMessage" />
+			</hu:send_message>
+			<hu:expect_message>
+                <hu:xml_specific interface_id="test_in_interface" message_id="InputMessage"/>
+			</hu:expect_message>
+		</hu:test>
+        <hu:test>
+            <hu:name>ExpectDifferentMessage</hu:name>
+            <hu:send_message>
+                <hu:xml interface_id="test_out_interface" message_id="InputMessage" />
+            </hu:send_message>
+            <hu:expect_message>
+                <hu:xml_specific interface_id="test_in_interface" message_id="DifferentOutputMessage"/>
+            </hu:expect_message>
+        </hu:test>
+	</hu:tests>
+	<hu:messages>
+		<hu:xml id="InputMessage">
+			<hu:text><![CDATA[
+<catalog>
+	<book>
+		<author>someguy</author>
+		<title>awful book</title>
+	</book>
+	<book>
+		<author>someguy</author>
+		<title>great book</title>
+	</book>
+</catalog>
+           ]]></hu:text>
+		</hu:xml>
+        <hu:xml id="DifferentOutputMessage">
+            <hu:text><![CDATA[
+<catalog>
+	<book>
+		<author>someguy</author>
+		<title>awful book</title>
+	</book>
+	<book>
+		<author>someguy</author>
+		<title>another awful book</title>
+	</book>
+</catalog>
+           ]]></hu:text>
+        </hu:xml>
+	</hu:messages>
+</hu:battery>

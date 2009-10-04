@@ -28,10 +28,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import ca.uhn.hunit.event.AbstractEvent;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
-import ca.uhn.hunit.test.AbstractEvent;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.Log;

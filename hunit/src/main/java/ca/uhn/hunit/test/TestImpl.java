@@ -21,6 +21,12 @@
  */
 package ca.uhn.hunit.test;
 
+import ca.uhn.hunit.event.AbstractEvent;
+import ca.uhn.hunit.event.send.Hl7V2SendMessageImpl;
+import ca.uhn.hunit.event.expect.Hl7V2ExpectRulesImpl;
+import ca.uhn.hunit.event.expect.Hl7V2ExpectSpecificMessageImpl;
+import ca.uhn.hunit.event.expect.ExpectNoMessageImpl;
+import ca.uhn.hunit.event.send.XmlSendMessageImpl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +53,9 @@ public class TestImpl implements ITest {
 			
 			if (next instanceof SendMessageAny) {
 				SendMessageAny nextSm = (SendMessageAny)next;
-				if (nextSm.getHl7V2() != null) {
+				if (nextSm.getXml() != null) {
+					event = (new XmlSendMessageImpl(theBattery, this, nextSm.getXml()));
+				} else if (nextSm.getHl7V2() != null) {
 					event = (new Hl7V2SendMessageImpl(theBattery, this, nextSm.getHl7V2()));
 				}
 			} else if (next instanceof ExpectMessageAny) {

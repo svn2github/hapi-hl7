@@ -19,21 +19,50 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.test;
+package ca.uhn.hunit.event.send;
 
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.parser.DefaultXMLParser;
+import ca.uhn.hl7v2.parser.Parser;
+import ca.uhn.hl7v2.parser.PipeParser;
+import ca.uhn.hl7v2.validation.impl.ValidationContextImpl;
+import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.ex.ConfigurationException;
+import ca.uhn.hunit.ex.UnexpectedTestFailureException;
+import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.xsd.Hl7V2SendMessage;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Hl7V2SendMessageImpl extends AbstractSendMessage {
+public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message> {
+    private String myEncoding;
+    private Parser myParser;
 
 	public Hl7V2SendMessageImpl(TestBatteryImpl theBattery,TestImpl theTest, 
 			Hl7V2SendMessage theConfig) throws ConfigurationException {
 		super(theBattery, theTest, theConfig);
+
+        myEncoding = theConfig.getEncoding();
+		if ("XML".equals(myEncoding)) {
+			myParser = new DefaultXMLParser();
+		} else {
+			myParser = new PipeParser();
+            myEncoding = "ER7";
+		}
+		myParser.setValidationContext(new ValidationContextImpl());
+
 	}
 
 	@Override
-	public String massageMessage(String theInput) {
-		return theInput;
+	public TestMessage<Message> massageMessage(TestMessage<Message> theInput) throws UnexpectedTestFailureException {
+        try {
+            final Message parsedMessage = theInput.getParsedMessage();
+            TestMessage<Message> retVal = new TestMessage<Message>(myParser.encode(parsedMessage), parsedMessage);
+            return retVal;
+        } catch (HL7Exception ex) {
+            throw new UnexpectedTestFailureException("Unable to encode message", ex);
+        }
 	}
 
 

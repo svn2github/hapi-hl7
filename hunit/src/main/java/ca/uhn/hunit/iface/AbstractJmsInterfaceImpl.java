@@ -35,35 +35,23 @@ import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
-import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.parser.DefaultXMLParser;
-import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
-import ca.uhn.hl7v2.parser.Parser;
-import ca.uhn.hl7v2.parser.PipeParser;
-import ca.uhn.hl7v2.validation.impl.ValidationContextImpl;
 import ca.uhn.hunit.ex.ConfigurationException;
-import ca.uhn.hunit.ex.InterfaceException;
 import ca.uhn.hunit.ex.InterfaceWontReceiveException;
 import ca.uhn.hunit.ex.InterfaceWontSendException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.ex.InterfaceWontStopException;
-import ca.uhn.hunit.ex.SendOrReceiveFailureException;
 import ca.uhn.hunit.ex.TestFailureException;
-import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.Log;
-import ca.uhn.hunit.xsd.Interface;
 import ca.uhn.hunit.xsd.JavaArgument;
-import ca.uhn.hunit.xsd.JmsHl7V2Interface;
+import ca.uhn.hunit.xsd.AbstractJmsInterface;
 import ca.uhn.hunit.xsd.NamedJavaArgument;
 
-public class JmsHl7V2InterfaceImpl extends AbstractInterface {
+public abstract class AbstractJmsInterfaceImpl<T extends Object> extends AbstractInterface {
 
 	private boolean myStarted;
 	private boolean myStopped;
-	private Parser myParser;
     private String myQueueName;
     private Class< ? > myConnectionFactoryClass;
     private String myUsername;
@@ -80,7 +68,7 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
     private List<Object> myMessageProperties;
     private List<String> myMessagePropertyNames;
 
-	public JmsHl7V2InterfaceImpl(JmsHl7V2Interface theConfig) throws ConfigurationException {
+	public AbstractJmsInterfaceImpl(AbstractJmsInterface theConfig) throws ConfigurationException {
 		super(theConfig);
 		
 		myQueueName = theConfig.getQueueName();
@@ -112,13 +100,6 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
 		myStarted = false;
 		myStopped = false;
 		
-		if ("XML".equals(theConfig.getEncoding())) {
-			myParser = new DefaultXMLParser();
-		} else {
-			myParser = new PipeParser();
-		}
-		myParser.setValidationContext(new ValidationContextImpl());
-
 		myClear = theConfig.isClear();
 		if (myClear == null) {
 		    myClear = true;
@@ -164,6 +145,19 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
         
         extractArgsFromXml(theArgTypeList, theNames, theArgs, argDefs);
     }
+
+    
+    /**
+     * Subclasses must override this method to parse any message they receive
+     */
+    public abstract T parseMessage(String theMessage) throws TestFailureException;
+
+
+    /**
+     * Subclasses must override this method to encode messages from text
+     */
+    public abstract String encodeMessage(T theMessage) throws TestFailureException;
+
     
 	@Override
 	public TestMessage receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException {
@@ -172,7 +166,6 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
 		Log.get(this).info( "Waiting to receive message");
 
 		String message = null;
-		Message parsedMessage;
 		try {
 			long endTime = System.currentTimeMillis() + theTimeout;
 			while (!myStopped && message == null && System.currentTimeMillis() < endTime) {
@@ -190,34 +183,22 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
 						
 			Log.get(this).info( "Received message (" + message.length() + " bytes)");
 
-			try {
-				parsedMessage = myParser.parse(message);
-			} catch (EncodingNotSupportedException e) {
-				throw new SendOrReceiveFailureException(e.getMessage());
-			} catch (HL7Exception e) {
-				throw new SendOrReceiveFailureException(e.getMessage());
-			}
+            Object parsedMessage = parseMessage(message);
 
-		     return new TestMessage(myParser.encode(parsedMessage), parsedMessage);
+		    return new TestMessage(message, parsedMessage);
 
 		} catch (JmsException e) {
 			throw new InterfaceWontReceiveException(this, e.getMessage(), e);
-		} catch (HL7Exception e) {
-            throw new InterfaceWontReceiveException(this, e.getMessage(), e);
         }
 
 	}
 
 	@Override
-	public void sendMessage(TestImpl theTest, ExecutionContext theCtx, final TestMessage theMessage) throws InterfaceException, UnexpectedTestFailureException {
+	public void sendMessage(TestImpl theTest, ExecutionContext theCtx, final TestMessage theMessage) throws TestFailureException {
 		start(theCtx);
 
 		if (theMessage.getRawMessage() == null) {
-			try {
-				theMessage.setRawMessage(myParser.encode((Message) theMessage.getParsedMessage()));
-			} catch (HL7Exception e) {
-				throw new UnexpectedTestFailureException("Can't encode message to send it: " + e.getMessage());
-			}
+				theMessage.setRawMessage(encodeMessage((T) theMessage.getParsedMessage()));
 		}
 		
 		Log.get(this).info( "Sending message (" + theMessage.getRawMessage().length() + " bytes)");
@@ -334,19 +315,14 @@ public class JmsHl7V2InterfaceImpl extends AbstractInterface {
 		return myStarted;
 	}
 
-	@Override
-	public Interface exportConfig() {
-		JmsHl7V2Interface retVal = new JmsHl7V2Interface();
+	protected void exportConfig(AbstractJmsInterface retVal) {
 		super.exportConfig(retVal);
 		retVal.setClear(myClear);
 		retVal.setConnectionFactory(myConnectionFactoryClass.getName());
-		retVal.setEncoding(myEncoding);
 		retVal.setPassword(myPassword);
 		retVal.setQueueName(myPubSubDomain ? null : myQueueName);
 		retVal.setTopicName(myPubSubDomain ? myQueueName : null);
 		retVal.setUserName(myUsername);
-		
-		return retVal;
 	}
 
 }

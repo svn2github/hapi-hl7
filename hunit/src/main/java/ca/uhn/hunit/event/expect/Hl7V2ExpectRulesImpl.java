@@ -19,13 +19,14 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.test;
+package ca.uhn.hunit.event.expect;
 
+import ca.uhn.hunit.test.*;
 import java.util.ArrayList;
 import java.util.List;
 
 import ca.uhn.hunit.ex.ConfigurationException;
-import ca.uhn.hunit.ex.IncorrectHl7V2MessageReceivedException;
+import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.xsd.Hl7V2ExpectAck;
 import ca.uhn.hunit.xsd.Hl7V2ExpectNak;
@@ -61,7 +62,7 @@ public class Hl7V2ExpectRulesImpl extends AbstractHl7V2ExpectMessage {
 	}
 
 	@Override
-	public void validateMessage(TestMessage theMessage)	throws IncorrectHl7V2MessageReceivedException {
+	public void validateMessage(TestMessage theMessage)	throws IncorrectMessageReceivedException {
 		for (TerserRuleImpl next : myRules) {
 			next.validate(theMessage);
 		}

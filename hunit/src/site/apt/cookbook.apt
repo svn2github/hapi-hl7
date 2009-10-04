@@ -30,6 +30,11 @@ hUnit Cookbook
 
   {{{sample_hl7inhl7out.html}HL7-in-HL7-out}}: Simple example testing an application which receives an HL7 message on an MLLP port, modifies it, and sends the translated message out on another port.
 
+  {{{sample_expect_no.html}Expect No Message}}: When you don't want to receive any message on a particular interface.
+
+
+* Interface Types
+
   {{{sample_jms.html}JMS}}: Connecting directly to JMS queues and topics
 
 

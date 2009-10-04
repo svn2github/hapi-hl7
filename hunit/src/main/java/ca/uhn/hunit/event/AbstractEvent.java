@@ -19,40 +19,44 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.test;
+package ca.uhn.hunit.event;
 
 import ca.uhn.hunit.ex.ConfigurationException;
-import ca.uhn.hunit.xsd.ExpectEvent;
+import ca.uhn.hunit.ex.TestFailureException;
+import ca.uhn.hunit.iface.AbstractInterface;
+import ca.uhn.hunit.run.ExecutionContext;
+import ca.uhn.hunit.test.TestBatteryImpl;
+import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.xsd.Event;
 
-public abstract class AbstractExpect extends AbstractEvent {
+public abstract class AbstractEvent {
 
+	private TestBatteryImpl myBattery;
+	private String myInterfaceId;
 	private TestImpl myTest;
-    private long myReceiveTimeout;
-    private boolean myWaitForCompletion;
 
-	public AbstractExpect(TestBatteryImpl theBattery, TestImpl theTest, ExpectEvent theConfig) throws ConfigurationException {
-		super(theBattery, theTest, theConfig);
-
+	public AbstractEvent(TestBatteryImpl theBattery, TestImpl theTest, Event theConfig) {
+		myInterfaceId = theConfig.getInterfaceId();
+		myBattery = theBattery;		
 		myTest = theTest;
-		
-		Long receiveTimeout = theConfig.getReceiveTimeoutMillis();
-		myReceiveTimeout = receiveTimeout != null ? receiveTimeout : 120000L;
-		
-		Boolean isWaitForCompletion = theConfig.isWaitForCompletion();
-		myWaitForCompletion = isWaitForCompletion != null ? isWaitForCompletion : true;
 	}
-
-	public boolean isWaitForCompletion() {
-	    return myWaitForCompletion;
-	}
-	
-	public long getReceiveTimeout() {
-	    return myReceiveTimeout;
-	}
-	
 	
 	public TestImpl getTest() {
 		return myTest;
+	}
+
+	public abstract void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException;
+
+	public TestBatteryImpl getBattery() {
+		return myBattery;
+	}
+
+	public String getInterfaceId() {
+		return myInterfaceId;
+	}
+
+	public AbstractInterface getInterface() throws ConfigurationException {
+		return myBattery.getInterface(myInterfaceId);
 	}
 	
 }

@@ -19,8 +19,10 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.test;
+package ca.uhn.hunit.event.send;
 
+import ca.uhn.hunit.event.AbstractEvent;
+import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
@@ -29,7 +31,7 @@ import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.xsd.SendMessage;
 
-public abstract class AbstractSendMessage extends AbstractEvent {
+public abstract class AbstractSendMessage<T> extends AbstractEvent {
 
 
 	private TestImpl myTest;
@@ -49,14 +51,18 @@ public abstract class AbstractSendMessage extends AbstractEvent {
 	@Override
 	public void execute(ExecutionContext theCtx) throws TestFailureException {
 
-		String message = myMessageProvider.getText();
-		message = massageMessage(message);
+		TestMessage<?> message = myMessageProvider.getTestMessage();
 		
-		myInterface.sendMessage(myTest, theCtx, new TestMessage(message));
+        message = massageMessage((TestMessage<T>) message);
+		
+		myInterface.sendMessage(myTest, theCtx, message);
 		
 	}
 
-	
-	public abstract String massageMessage(String theInput);
+	/**
+     * Subclasses should override this method to perform any message massaging
+     * they need to do. It is ok to just return the object passed in.
+     */
+	public abstract TestMessage<T> massageMessage(TestMessage<T> theInput) throws TestFailureException;
 	
 }

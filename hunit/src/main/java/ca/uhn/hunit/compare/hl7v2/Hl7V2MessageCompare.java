@@ -44,6 +44,7 @@ import ca.uhn.hl7v2.parser.PipeParser;
 import ca.uhn.hl7v2.validation.impl.ValidationContextImpl;
 import ca.uhn.hunit.compare.ICompare;
 import ca.uhn.hunit.util.Pair;
+import ca.uhn.hunit.util.StringUtil;
 
 public class Hl7V2MessageCompare implements ICompare {
 
@@ -273,19 +274,13 @@ public class Hl7V2MessageCompare implements ICompare {
      */
     public String describeDifference() {
         StringBuilder retVal = new StringBuilder();
-        retVal.append("Received: \r\n").append(formatMsg(myActualMessage)).append("\r\n");
-        if (myExpectedMessage != null) {
-            retVal.append("Expected: \r\n").append(formatMsg(myExpectedMessage)).append("\r\n");
-        }
-
-        retVal.append("Differences: \r\n");
         for (SegmentComparison nextSegment : myComparison.flattenMessage()) {
             if (nextSegment.getExpectSegment() != null) {
-                retVal.append("  Expected: ").append(
+                retVal.append("Expected: ").append(
                         PipeParser.encode(nextSegment.getExpectSegment(), myEncodingCharacters)).append("\r\n");
             }
             if (nextSegment.getActualSegment() != null) {
-                retVal.append("  Actual  : ").append(
+                retVal.append("Actual  : ").append(
                         PipeParser.encode(nextSegment.getExpectSegment(), myEncodingCharacters)).append("\r\n");
             }
             if (!nextSegment.isSame()) {
@@ -294,7 +289,6 @@ public class Hl7V2MessageCompare implements ICompare {
                     fieldIndex++;
                     for (int rep = 1; rep <= next.getDiffFieldsActual().size(); rep++) {
                         if (next.getSameFields().get(rep - 1) == null) {
-                            retVal.append("  ");
                             retVal.append(nextSegment.getName());
                             retVal.append("-");
                             retVal.append(fieldIndex);
@@ -304,9 +298,9 @@ public class Hl7V2MessageCompare implements ICompare {
                             retVal.append(next.getFieldName());
                             retVal.append(":\r\n");
                             Type expectedType = next.getDiffFieldsExpected().get(rep - 1);
-                            retVal.append("    Expected: ").append(encode(expectedType)).append("\r\n");
+                            retVal.append("  Expected: ").append(encode(expectedType)).append("\r\n");
                             Type actualType = next.getDiffFieldsActual().get(rep - 1);
-                            retVal.append("    Actual  : ").append(encode(actualType)).append("\r\n");
+                            retVal.append("  Actual  : ").append(encode(actualType)).append("\r\n");
                         }
                     }
                 }
@@ -324,6 +318,6 @@ public class Hl7V2MessageCompare implements ICompare {
     }
 
     public static String formatMsg(TestMessage theMessageReceived) {
-        return "  " + theMessageReceived.getRawMessage().replaceAll("(\\r|\\n)+", "\r\n  ");
+        return StringUtil.prependEachLine(theMessageReceived.getRawMessage(), "  ");
     }
 }

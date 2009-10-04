@@ -12,7 +12,6 @@ import ca.uhn.hl7v2.model.Segment;
 import ca.uhn.hl7v2.model.Type;
 import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
 import ca.uhn.hl7v2.parser.PipeParser;
-import ca.uhn.hl7v2.parser.ng.NewPipeParser;
 import ca.uhn.hunit.iface.TestMessage;
 
 
@@ -92,7 +91,7 @@ public class Hl7V2MessageCompareTest {
 		"OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R\r\n" + 
 		"OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH\r\n";
 		
-		NewPipeParser parser = new NewPipeParser();
+		PipeParser parser = new PipeParser();
 		Message message1 = parser.parse(message1string);
 		Message message2 = parser.parse(message2string);
 		

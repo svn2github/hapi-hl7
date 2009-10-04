@@ -21,6 +21,7 @@
  */
 package ca.uhn.hunit.msg;
 
+import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.xsd.MessageDefinition;
 
 public abstract class AbstractMessage {
@@ -31,7 +32,7 @@ public abstract class AbstractMessage {
 		myId = theConfig.getId();
 	}
 
-	public abstract String getText();
+	public abstract TestMessage getTestMessage();
 
 	public String getId() {
 		return myId;

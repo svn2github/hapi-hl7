@@ -34,7 +34,7 @@ Sending and Receiving messages using JMS
   The JMS interface definition is as follows:
 
 +---------+
-    <hu:jmsHl7V2QueueInterface id="from_ORM_WCH_ccRIS">
+    <hu:jmsInterface id="from_ORM_WCH_ccRIS">
         <hu:connection_factory>com.stc.jms.client.STCTopicConnectionFactory</hu:connection_factory>
         <hu:connection_factory_constructor_arg type="java.lang.String" value="jcapsdev"/>
         <hu:connection_factory_constructor_arg type="int" value="18907"/>
@@ -43,7 +43,7 @@ Sending and Receiving messages using JMS
         <hu:password>PASSWORD</hu:password>
         <hu:message_property type="java.lang.String" name="SOURCE_SYSTEM" value="WCH_ccRIS"/>
         <hu:message_property type="java.lang.String" name="SOURCE_INTERFACE" value="ORM"/>
-    </hu:jmsHl7V2QueueInterface>
+    </hu:jmsInterface>
 +---------+
 
   Note that the connection factory is specified, as well as the two constructor

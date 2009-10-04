@@ -19,43 +19,54 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.test;
+package ca.uhn.hunit.event.expect;
 
+import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
-import ca.uhn.hunit.iface.AbstractInterface;
+import ca.uhn.hunit.ex.UnexpectedMessageException;
+import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.xsd.Event;
-import ca.uhn.hunit.xsd.Interface;
+import ca.uhn.hunit.xsd.ExpectNoMessage;
 
-public abstract class AbstractEvent {
+/**
+ * TODO: add!
+ * 
+ * @author <a href="mailto:james.agnew@uhn.on.ca">James Agnew</a>
+ * @version $Revision: 1.1 $ updated on $Date: 2009-10-04 19:16:25 $ by $Author: jamesagnew $
+ */
+public class ExpectNoMessageImpl extends AbstractExpect
+{
 
-	private TestBatteryImpl myBattery;
-	private String myInterfaceId;
-	private TestImpl myTest;
+    private long myReceiveTimeout;
 
-	public AbstractEvent(TestBatteryImpl theBattery, TestImpl theTest, Event theConfig) {
-		myInterfaceId = theConfig.getInterfaceId();
-		myBattery = theBattery;		
-		myTest = theTest;
-	}
-	
-	public TestImpl getTest() {
-		return myTest;
-	}
 
-	public abstract void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException;
+    /**
+     * @param theBattery
+     * @param theTest
+     * @param theConfig
+     * @throws ConfigurationException 
+     */
+    public ExpectNoMessageImpl(TestBatteryImpl theBattery, TestImpl theTest, ExpectNoMessage theConfig) throws ConfigurationException {
+        super(theBattery, theTest, theConfig);
+        
+        Long receiveTimeout = theConfig.getReceiveTimeoutMillis();
+        myReceiveTimeout = receiveTimeout != null ? receiveTimeout : 120000L;
+    }
 
-	public TestBatteryImpl getBattery() {
-		return myBattery;
-	}
 
-	public String getInterfaceId() {
-		return myInterfaceId;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException {
+        
+        TestMessage message = getInterface().receiveMessage(getTest(), theCtx, myReceiveTimeout);
+        if (message != null) {
+            throw new UnexpectedMessageException(getTest(), message, "Unexpected message received");
+        }
+        
+    }
 
-	public AbstractInterface getInterface() throws ConfigurationException {
-		return myBattery.getInterface(myInterfaceId);
-	}
-	
 }

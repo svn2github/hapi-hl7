@@ -1,0 +1,76 @@
+~~
+~~ /*
+~~ The contents of this file are subject to the Mozilla Public License Version 1.1
+~~ (the "License"); you may not use this file except in compliance with the License.
+~~ You may obtain a copy of the License at http://www.mozilla.org/MPL/
+~~ Software distributed under the License is distributed on an "AS IS" basis,
+~~ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
+~~ specific language governing rights and limitations under the License.
+~~
+~~ The Initial Developer of the Original Code is University Health Network. Copyright (C)
+~~ 2001.  All Rights Reserved.
+~~
+~~ Alternatively, the contents of this file may be used under the terms of the
+~~ GNU General Public License (the  "GPL"), in which case the provisions of the GPL are
+~~ applicable instead of those above.  If you wish to allow use of your version of this
+~~ file only under the terms of the GPL and not to allow others to use your version
+~~ of this file under the MPL, indicate your decision by deleting  the provisions above
+~~ and replace  them with the notice and other provisions required by the GPL License.
+~~ If you do not delete the provisions above, a recipient may use your version of
+~~ this file under either the MPL or the GPL.
+~~ */
+~~
+Expecting no message
+
+* Introduction
+
+  Sometimes, what you want to do is not receive any message at all on a particular interface. This
+  page looks at two such examples.
+
+
+* Dead Letter Queue
+
+  In this example, we have an interface to which we are sending a message called "send_interface". 
+  We also have an interface from which we are receiving a message called "receive_message".
+  There is a third interface called "dead_letter_queue_interface", to which we expect not to
+  receive any message at all. This might be a JMS queue to which errors are being logged,
+  or something like that.
+
+  Note that the "wait_for_completion" attribute signals that we don't want to wait for this
+  interface if all other events have completed successfully. We would want to use this if
+  receiving a message on the "receive_interface" means that no errors occurred, so that
+  we won't sit around waiting for a message on the dead letter queue if we know that none
+  are coming. If we want to wait and check, this attribute can be omitted (and it might
+  make sense to add a timeout value. See below)
+
++---------+
+	<hu:test>
+		<hu:name>ExpectFailure</hu:name>
+		<hu:send_message>
+			<hu:hl7v2 interface_id="send_interface" message_id="InputMessage" />
+		</hu:send_message>
+		<hu:expect_no_message interface_id="dead_letter_queue_interface" wait_for_completion="false">
+		</hu:expect_no_message>
+		<hu:expect_message>
+			<hu:hl7v2_specific interface_id="receive_interface" message_id="OutputMessage"/>
+		</hu:expect_message>
+	</hu:test>
++---------+
+
+
+* Message Filter
+
+  In this example, we are testing an interface that should not recieve a message. This might
+  be useful, for instance, in testing an interface engine which should filter a particular
+  message. The "receive_timeout_millis" value specifies how long we should wait.
+
++---------+
+	<hu:test>
+		<hu:name>ExpectFailure</hu:name>
+		<hu:send_message>
+			<hu:hl7v2 interface_id="send_interface" message_id="InputMessage" />
+		</hu:send_message>
+		<hu:expect_no_message interface_id="receive_message" receive_timeout_millis="5000">
+		</hu:expect_no_message>
+	</hu:test>
++---------+

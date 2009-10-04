@@ -5,22 +5,20 @@
 	<hu:name>TestBattery</hu:name>
 	<hu:interfaces>
 		<hu:interface>
-			<hu:jmsHl7V2QueueInterface id="test_in_interface">
+			<hu:jmsInterface id="test_in_interface">
 				<hu:connection_factory>ca.uhn.hunit.iface.StaticActiveMQConnectionFactory</hu:connection_factory>
 				<hu:queue_name>test_queue</hu:queue_name>
 				<hu:user_name>user</hu:user_name>
 				<hu:password>pass</hu:password>
-				<hu:encoding>ER7</hu:encoding>
-			</hu:jmsHl7V2QueueInterface>
+			</hu:jmsInterface>
 		</hu:interface>
 		<hu:interface>
-			<hu:jmsHl7V2QueueInterface id="test_out_interface">
+			<hu:jmsInterface id="test_out_interface">
 				<hu:connection_factory>ca.uhn.hunit.iface.StaticActiveMQConnectionFactory</hu:connection_factory>
 				<hu:queue_name>test_queue</hu:queue_name>
 				<hu:user_name>user</hu:user_name>
 				<hu:password>pass</hu:password>
-				<hu:encoding>ER7</hu:encoding>
-			</hu:jmsHl7V2QueueInterface>
+			</hu:jmsInterface>
 		</hu:interface>
 	</hu:interfaces>
 	<hu:tests>

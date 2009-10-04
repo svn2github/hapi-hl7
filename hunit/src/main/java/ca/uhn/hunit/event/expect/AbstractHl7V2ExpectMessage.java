@@ -19,53 +19,33 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.test;
+package ca.uhn.hunit.event.expect;
 
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
-import ca.uhn.hunit.ex.UnexpectedMessageException;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.run.ExecutionContext;
-import ca.uhn.hunit.xsd.Event;
-import ca.uhn.hunit.xsd.ExpectNoMessage;
+import ca.uhn.hunit.xsd.HL7V2ExpectAbstract;
 
-/**
- * TODO: add!
- * 
- * @author <a href="mailto:james.agnew@uhn.on.ca">James Agnew</a>
- * @version $Revision: 1.2 $ updated on $Date: 2009-08-31 00:29:19 $ by $Author: jamesagnew $
- */
-public class ExpectNoMessageImpl extends AbstractExpect
-{
-
-    private long myReceiveTimeout;
+public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage {
 
 
-    /**
-     * @param theBattery
-     * @param theTest
-     * @param theConfig
-     * @throws ConfigurationException 
-     */
-    public ExpectNoMessageImpl(TestBatteryImpl theBattery, TestImpl theTest, ExpectNoMessage theConfig) throws ConfigurationException {
-        super(theBattery, theTest, theConfig);
-        
-        Long receiveTimeout = theConfig.getReceiveTimeoutMillis();
-        myReceiveTimeout = receiveTimeout != null ? receiveTimeout : 120000L;
-    }
+	public AbstractHl7V2ExpectMessage(TestImpl theTest, TestBatteryImpl theBattery, HL7V2ExpectAbstract theConfig) throws ConfigurationException {
+		super(theBattery, theTest, theConfig);
+	}
 
+	@Override
+	public void receiveMessage(ExecutionContext theCtx, TestMessage<?> theMessage)
+			throws TestFailureException {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException {
-        
-        TestMessage message = getInterface().receiveMessage(getTest(), theCtx, myReceiveTimeout);
-        if (message != null) {
-            throw new UnexpectedMessageException(getTest(), message, "Unexpected message received");
-        }
-        
-    }
+        // TODO: make sure this is sound
+        TestMessage<Message> testMessage = (TestMessage<Message>) theMessage;
 
+        validateMessage(testMessage);
+	}
+
+	public abstract void validateMessage(TestMessage<Message> theMessage) throws TestFailureException;
+	
 }

@@ -19,38 +19,35 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.test;
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package ca.uhn.hunit.event.send;
 
 import ca.uhn.hunit.ex.ConfigurationException;
-import ca.uhn.hunit.ex.InterfaceWontReceiveException;
-import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
-import ca.uhn.hunit.run.ExecutionContext;
-import ca.uhn.hunit.xsd.ExpectMessage;
+import ca.uhn.hunit.test.TestBatteryImpl;
+import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.xsd.XMLSendMessage;
 
-public abstract class AbstractExpectMessage extends AbstractExpect {
+/**
+ *
+ * @author James
+ */
+public class XmlSendMessageImpl extends AbstractSendMessage {
 
-	public AbstractExpectMessage(TestBatteryImpl theBattery, TestImpl theTest, ExpectMessage theConfig) throws ConfigurationException {
-		super(theBattery, theTest, theConfig);
-	}
+    public XmlSendMessageImpl(TestBatteryImpl theBattery, TestImpl theTest, XMLSendMessage theConfig) throws ConfigurationException {
+        super(theBattery, theTest, theConfig);
+    }
 
-	@Override
-	public void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException {
-
-		TestMessage message = getInterface().receiveMessage(getTest(), theCtx, getReceiveTimeout());
-		if (!getInterface().isStarted()) {
-		    return;
-		}
-		
-        if (message == null) {
-            // FIXME: correct number below
-            throw new InterfaceWontReceiveException(getInterface(), "Didn't receive a message after " + 9999 + "ms");
-        }
-
-		receiveMessage(theCtx, message);
-
-	}
-
-	public abstract void receiveMessage(ExecutionContext theCtx, TestMessage theMessage) throws TestFailureException;
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public TestMessage massageMessage(TestMessage theInput) {
+        return theInput;
+    }
 
 }

@@ -25,7 +25,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,15 +38,18 @@ import javax.xml.transform.stream.StreamSource;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.iface.AbstractInterface;
-import ca.uhn.hunit.iface.JmsHl7V2InterfaceImpl;
+import ca.uhn.hunit.iface.JmsInterfaceImpl;
 import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.msg.Hl7V2MessageImpl;
+import ca.uhn.hunit.msg.XmlMessageImpl;
 import ca.uhn.hunit.xsd.AnyInterface;
 import ca.uhn.hunit.xsd.AnyMessageDefinitions;
 import ca.uhn.hunit.xsd.Hl7V2MessageDefinition;
+import ca.uhn.hunit.xsd.MessageDefinition;
 import ca.uhn.hunit.xsd.Test;
 import ca.uhn.hunit.xsd.TestBattery;
+import ca.uhn.hunit.xsd.XmlMessageDefinition;
 
 public class TestBatteryImpl extends AbstractPropertyChangeSupport implements ITest {
 
@@ -86,8 +88,15 @@ public class TestBatteryImpl extends AbstractPropertyChangeSupport implements IT
 	private void initMessages() throws ConfigurationException {
 		AnyMessageDefinitions messages = myConfig.getMessages();
 		if (messages != null) {
-			for (Hl7V2MessageDefinition next : messages.getHl7V2()) {
-				AbstractMessage nextMessage = new Hl7V2MessageImpl(next);
+			for (MessageDefinition next : messages.getHl7V2OrXml()) {
+				AbstractMessage nextMessage;
+                if (next instanceof Hl7V2MessageDefinition) {
+                    nextMessage = new Hl7V2MessageImpl((Hl7V2MessageDefinition) next);
+                } else if (next instanceof XmlMessageDefinition) {
+                    nextMessage = new XmlMessageImpl((XmlMessageDefinition) next);
+                } else {
+                    throw new ConfigurationException("Unknown message type: " + next.getClass().getName());
+                }
 				myId2Message.put(nextMessage.getId(), nextMessage);
 			}
 		}
@@ -126,8 +135,8 @@ public class TestBatteryImpl extends AbstractPropertyChangeSupport implements IT
 			AbstractInterface nextIf;
 			if (next.getMllpHl7V2Interface() != null) {
 				nextIf = new MllpHl7V2InterfaceImpl(next.getMllpHl7V2Interface());
-			} else if (next.getJmsHl7V2QueueInterface() != null) {
-	                nextIf = new JmsHl7V2InterfaceImpl(next.getJmsHl7V2QueueInterface());
+			} else if (next.getJmsInterface() != null) {
+	            nextIf = new JmsInterfaceImpl(next.getJmsInterface());
 			} else {
 				throw new ConfigurationException("Unknown interface type in battery " + myName);
 			}
