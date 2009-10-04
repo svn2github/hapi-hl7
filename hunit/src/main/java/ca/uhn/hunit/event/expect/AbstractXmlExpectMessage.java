@@ -25,6 +25,19 @@
  */
 package ca.uhn.hunit.event.expect;
 
+import java.io.IOException;
+import java.io.StringReader;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.ex.TestFailureException;
@@ -33,22 +46,13 @@ import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.util.Log;
 import ca.uhn.hunit.xsd.XMLExpectMessage;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * Abstract test event to expect an XML message
  */
-public abstract class AbstractXmlExpectMessage extends AbstractExpectMessage {
+public abstract class AbstractXmlExpectMessage extends AbstractExpectMessage implements ErrorHandler {
     private final DocumentBuilder myParser;
 
     public AbstractXmlExpectMessage(TestBatteryImpl theBattery, TestImpl theTest, XMLExpectMessage theConfig) throws ConfigurationException {
@@ -58,10 +62,13 @@ public abstract class AbstractXmlExpectMessage extends AbstractExpectMessage {
             DocumentBuilderFactory parserFactory = DocumentBuilderFactory.newInstance();
             Boolean validateMessage = theConfig.isValidateMessageUsingDTD();
             if (validateMessage == null) {
-                validateMessage = true;
+                validateMessage = false;
             }
             parserFactory.setValidating(validateMessage);
+            
             myParser = parserFactory.newDocumentBuilder();
+            myParser.setErrorHandler(this);
+            
         } catch (ParserConfigurationException ex) {
             throw new ConfigurationException("Unable to set up XML parser", ex);
         }
@@ -69,6 +76,22 @@ public abstract class AbstractXmlExpectMessage extends AbstractExpectMessage {
     }
 
     @Override
+	public void error(SAXParseException theArg0) throws SAXException {
+		throw new SAXException(theArg0);		
+	}
+
+	@Override
+	public void fatalError(SAXParseException theArg0) throws SAXException {
+		throw new SAXException(theArg0);		
+		
+	}
+
+	@Override
+	public void warning(SAXParseException theArg0) throws SAXException {
+		Log.get(getTest()).warn("XML Parsing Warning: " + theArg0.getMessage());
+	}
+
+	@Override
     public void receiveMessage(ExecutionContext theCtx, TestMessage<?> theMessage) throws TestFailureException {
         Document parsedMessage = (Document) theMessage.getParsedMessage();
         if (parsedMessage == null) {

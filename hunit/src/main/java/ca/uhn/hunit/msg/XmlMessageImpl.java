@@ -51,6 +51,7 @@ public class XmlMessageImpl extends AbstractMessage {
         try {
             myText = theDefinition.getText();
             DocumentBuilderFactory parserFactory = DocumentBuilderFactory.newInstance();
+            parserFactory.setValidating(false);
             DocumentBuilder parser = parserFactory.newDocumentBuilder();
             StringReader inputStream = new StringReader(myText);
             myDocument = parser.parse(new InputSource(inputStream));

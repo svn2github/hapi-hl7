@@ -147,20 +147,8 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
     }
 
     
-    /**
-     * Subclasses must override this method to parse any message they receive
-     */
-    public abstract T parseMessage(String theMessage) throws TestFailureException;
-
-
-    /**
-     * Subclasses must override this method to encode messages from text
-     */
-    public abstract String encodeMessage(T theMessage) throws TestFailureException;
-
-    
 	@Override
-	public TestMessage receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException {
+	public TestMessage<?> receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException {
 		start(theCtx);
 
 		Log.get(this).info( "Waiting to receive message");
@@ -183,9 +171,7 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
 						
 			Log.get(this).info( "Received message (" + message.length() + " bytes)");
 
-            Object parsedMessage = parseMessage(message);
-
-		    return new TestMessage(message, parsedMessage);
+		    return new TestMessage<Object>(message, null);
 
 		} catch (JmsException e) {
 			throw new InterfaceWontReceiveException(this, e.getMessage(), e);
@@ -194,13 +180,9 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
 	}
 
 	@Override
-	public void sendMessage(TestImpl theTest, ExecutionContext theCtx, final TestMessage theMessage) throws TestFailureException {
+	public void sendMessage(TestImpl theTest, ExecutionContext theCtx, final TestMessage<?> theMessage) throws TestFailureException {
 		start(theCtx);
 
-		if (theMessage.getRawMessage() == null) {
-				theMessage.setRawMessage(encodeMessage((T) theMessage.getParsedMessage()));
-		}
-		
 		Log.get(this).info( "Sending message (" + theMessage.getRawMessage().length() + " bytes)");
 
 		try {

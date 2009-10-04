@@ -199,7 +199,7 @@
             <element name="hl7v2_ack" minOccurs="1" maxOccurs="1" type="tns:Hl7V2ExpectAck"/>
             <element name="hl7v2_nak" minOccurs="1" maxOccurs="1" type="tns:Hl7V2ExpectNak"/>
             <element name="hl7v2_rules" minOccurs="1" maxOccurs="1" type="tns:Hl7V2ExpectRules"/>
-			<element name="xml_specific" minOccurs="1" maxOccurs="1" type="tns:XMLExpectMessage"/>
+			<element name="xml_specific" minOccurs="1" maxOccurs="1" type="tns:XMLExpectSpecificMessage"/>
 		</choice>
 	</complexType>
 	

@@ -25,7 +25,6 @@ package ca.uhn.hunit.iface;
 
 
 import ca.uhn.hunit.ex.ConfigurationException;
-import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.xsd.Interface;
 import ca.uhn.hunit.xsd.JmsInterface;
 
@@ -45,15 +44,5 @@ public class JmsInterfaceImpl extends AbstractJmsInterfaceImpl<String> {
 		super.exportConfig(retVal);
 		return retVal;
 	}
-
-    @Override
-    public String parseMessage(String theMessage) throws TestFailureException {
-        return theMessage;
-    }
-
-    @Override
-    public String encodeMessage(String theMessage) throws TestFailureException {
-        return theMessage;
-    }
 
 }

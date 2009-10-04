@@ -69,9 +69,9 @@ public abstract class AbstractInterface implements Comparable<AbstractInterface>
 	
 	public abstract void stop(ExecutionContext theCtx) throws InterfaceWontStopException;
 	
-	public abstract TestMessage receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException;
+	public abstract TestMessage<?> receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException;
 	
-	public abstract void sendMessage(TestImpl theTest, ExecutionContext theCtx, TestMessage theMessage) throws TestFailureException;
+	public abstract void sendMessage(TestImpl theTest, ExecutionContext theCtx, TestMessage<?> theMessage) throws TestFailureException;
 
 	public abstract boolean isStarted();
 	

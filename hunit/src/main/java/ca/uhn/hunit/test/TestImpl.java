@@ -26,6 +26,7 @@ import ca.uhn.hunit.event.send.Hl7V2SendMessageImpl;
 import ca.uhn.hunit.event.expect.Hl7V2ExpectRulesImpl;
 import ca.uhn.hunit.event.expect.Hl7V2ExpectSpecificMessageImpl;
 import ca.uhn.hunit.event.expect.ExpectNoMessageImpl;
+import ca.uhn.hunit.event.expect.XmlExpectSpecificMessage;
 import ca.uhn.hunit.event.send.XmlSendMessageImpl;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,17 +58,21 @@ public class TestImpl implements ITest {
 					event = (new XmlSendMessageImpl(theBattery, this, nextSm.getXml()));
 				} else if (nextSm.getHl7V2() != null) {
 					event = (new Hl7V2SendMessageImpl(theBattery, this, nextSm.getHl7V2()));
+				} else {
+					throw new ConfigurationException("Unknown event type: " + next.getClass());
 				}
 			} else if (next instanceof ExpectMessageAny) {
 				ExpectMessageAny nextEm = (ExpectMessageAny) next;
 				if (nextEm.getHl7V2Specific() != null) {
 					event = (new Hl7V2ExpectSpecificMessageImpl(theBattery, this, nextEm.getHl7V2Specific()));
-				}
-				if (nextEm.getHl7V2Rules() != null) {
+				} else if (nextEm.getHl7V2Rules() != null) {
 					event = (new Hl7V2ExpectRulesImpl(theBattery, this, nextEm.getHl7V2Rules()));
-				}
-				if (nextEm.getHl7V2Ack() != null) {
+				} else if (nextEm.getHl7V2Ack() != null) {
 					event = (new Hl7V2ExpectRulesImpl(theBattery, this, nextEm.getHl7V2Ack()));
+				} else if (nextEm.getXmlSpecific() != null) {
+					event = new XmlExpectSpecificMessage(theBattery, this, nextEm.getXmlSpecific());
+				} else {
+					throw new ConfigurationException("Unknown event type: " + next.getClass());
 				}
             } else if (next instanceof ExpectNoMessage) {
                 event = new ExpectNoMessageImpl(theBattery, this, (ExpectNoMessage)next);
