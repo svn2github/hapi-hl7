@@ -32,6 +32,8 @@ hUnit Cookbook
 
   {{{sample_expect_no.html}Expect No Message}}: When you don't want to receive any message on a particular interface.
 
+  {{{sample_xml.html}XML Payloads}}: Sending or receiving arbitrary XML message payloads
+
 
 * Interface Types
 

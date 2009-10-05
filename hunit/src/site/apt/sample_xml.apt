@@ -1,0 +1,54 @@
+Simple HL7-in and HL7-out example
+
+* Introduction
+
+  This example shows how to configure hUnit to send and receive XML message payloads.
+
+** Defining Messages
+
+  First define XML messages to send or receive in the messages block. XML message payloads
+  are normally defined in a CDATA block in the text element. Hopefully a mode to read
+  them from an external file will be added at some point.
+
++---------+
+<hu:messages>
+
+	<!-- Other messages -->
+	<!-- ... -->
+
+	<hu:xml id="InputMessage">
+		<hu:text><![CDATA[
+			<catalog>
+				<book>
+					<author>someguy</author>
+					<title>awful book</title>
+				</book>
+				<book>
+					<author>someguy</author>
+					<title>great book</title>
+				</book>
+			</catalog>
+	   ]]></hu:text>
+	</hu:xml>
+
+</hu:messages>
++---------+
+
+
+** Defining Tests
+
+  Then, define tests to send and receive these messages:
+
++---------+
+<hu:tests>
+	<hu:test>
+		<hu:name>ExpectDifferentMessage</hu:name>
+		<hu:send_message>
+			<hu:xml interface_id="test_out_interface" message_id="InputMessage" />
+		</hu:send_message>
+		<hu:expect_message>
+			<hu:xml_specific interface_id="test_in_interface" message_id="DifferentOutputMessage"/>
+		</hu:expect_message>
+	</hu:test>
+</hu:tests>
++---------+

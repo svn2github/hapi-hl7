@@ -42,9 +42,17 @@ import javax.xml.bind.JAXBException;
 
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
+import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
+import ca.uhn.hunit.swing.controller.ctx.AbstractContextController;
+import ca.uhn.hunit.swing.controller.ctx.MllpHl7v2InterfaceEditorContextController;
+import ca.uhn.hunit.swing.controller.ctx.SwingRunnerController;
+import ca.uhn.hunit.swing.model.InterfaceTreeNode;
 import ca.uhn.hunit.swing.model.InterfacesTreeRenderer;
 import ca.uhn.hunit.swing.model.TestBatteryTreeNode;
 import ca.uhn.hunit.test.TestBatteryImpl;
+import java.awt.BorderLayout;
+import java.io.IOException;
+import javax.swing.JPanel;
 
 /**
  *
@@ -53,10 +61,14 @@ import ca.uhn.hunit.test.TestBatteryImpl;
 public class SwingRunner extends javax.swing.JFrame {
 
     private TestBatteryImpl myBattery;
+    private final SwingRunnerController myController;
+    
 	/** Creates new form SwingRunner 
      * @param theBatteryImpl */
-    public SwingRunner(TestBatteryImpl theBatteryImpl) {
-        myBattery = theBatteryImpl;
+    public SwingRunner(SwingRunnerController theController, TestBatteryImpl theBatteryImpl) {
+        this.myBattery = theBatteryImpl;
+        this.myController = theController;
+
     	initComponents();
     	
     	myTestTree.setModel(new DefaultTreeModel(new TestBatteryTreeNode(myBattery), true));
@@ -78,6 +90,7 @@ public class SwingRunner extends javax.swing.JFrame {
         myStatusLabel = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         myTestTree = new javax.swing.JTree();
+        myTestContextPanel = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         myFileMenu = new javax.swing.JMenu();
 
@@ -93,7 +106,14 @@ public class SwingRunner extends javax.swing.JFrame {
 
         myStatusLabel.setText("jLabel1");
 
+        myTestTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
+            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
+                myTestTreeValueChanged(evt);
+            }
+        });
         jScrollPane1.setViewportView(myTestTree);
+
+        myTestContextPanel.setLayout(new java.awt.BorderLayout());
 
         myFileMenu.setText("File");
         jMenuBar1.add(myFileMenu);
@@ -104,17 +124,17 @@ public class SwingRunner extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 521, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 590, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(myProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 196, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(myProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(myStatusLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 301, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(myStatusLabel)
+                    .addComponent(myTestContextPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 415, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 196, Short.MAX_VALUE)
-                .addGap(315, 315, 315))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -122,10 +142,11 @@ public class SwingRunner extends javax.swing.JFrame {
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(myProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(myTestContextPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(myProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(myStatusLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
@@ -133,42 +154,28 @@ public class SwingRunner extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-    * @param args the command line arguments
-     * @throws JAXBException 
-     * @throws ConfigurationException 
-     * @throws InterfaceWontStartException 
-     * @throws URISyntaxException 
-    */
-    public static void main(String args[]) throws InterfaceWontStartException, ConfigurationException, JAXBException, URISyntaxException {
-    	try {
-    	    // Set System L&F
-            UIManager.setLookAndFeel(
-                UIManager.getSystemLookAndFeelClassName());
-        } 
-        catch (UnsupportedLookAndFeelException e) {
-           // handle exception
-        }
-        catch (ClassNotFoundException e) {
-           // handle exception
-        }
-        catch (InstantiationException e) {
-           // handle exception
-        }
-        catch (IllegalAccessException e) {
-           // handle exception
-        }
+    private void myTestTreeValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_myTestTreeValueChanged
+        Object selectedModelObject = evt.getPath().getLastPathComponent();
+        AbstractContextController<?> ctxController = null;
 
-    	
-		File defFile = new File(Thread.currentThread().getContextClassLoader().getResource("unit_tests_hl7.xml").toURI());
-		final TestBatteryImpl batteryImpl = new TestBatteryImpl(defFile);
-    	java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-
-            	new SwingRunner(batteryImpl).setVisible(true);
+        if (selectedModelObject instanceof InterfaceTreeNode) {
+            InterfaceTreeNode interfaceTreeNode = (InterfaceTreeNode) selectedModelObject;
+            if (interfaceTreeNode.getUserObject() instanceof MllpHl7V2InterfaceImpl) {
+                ctxController = new MllpHl7v2InterfaceEditorContextController((MllpHl7V2InterfaceImpl) interfaceTreeNode.getUserObject());
+            } else {
+                System.out.println("Unknown interface: " + selectedModelObject);
             }
-        });
-    }
+        } else {
+            System.out.println(selectedModelObject);
+        }
+
+        myTestContextPanel.removeAll();
+        if (ctxController != null) {
+            final JPanel view = ctxController.getView();
+            myTestContextPanel.add(view, BorderLayout.CENTER);
+            myTestContextPanel.validate();
+        }
+    }//GEN-LAST:event_myTestTreeValueChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -178,6 +185,7 @@ public class SwingRunner extends javax.swing.JFrame {
     private javax.swing.JMenu myFileMenu;
     private javax.swing.JProgressBar myProgressBar;
     private javax.swing.JLabel myStatusLabel;
+    private javax.swing.JPanel myTestContextPanel;
     private javax.swing.JTree myTestTree;
     // End of variables declaration//GEN-END:variables
 

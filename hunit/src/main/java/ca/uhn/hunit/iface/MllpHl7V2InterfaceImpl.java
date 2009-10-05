@@ -83,6 +83,9 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 		myConnectionTimeout = theConfig.getConnectionTimeoutMillis();
 		myStopped = false;
 		myClearMillis = theConfig.getClearMillis();
+        if (myClearMillis == null) {
+            myClearMillis = 0;
+        }
 		
 		if (myConnectionTimeout == null) {
 			myConnectionTimeout = 10000;
@@ -97,12 +100,67 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 		myParser.setValidationContext(new ValidationContextImpl());
 
 		myAutoAck = theConfig.isAutoAck();
-		
 		if (myAutoAck == null) {
 			myAutoAck = true;
 		}
 
 	}
+
+    public boolean isAutoAck() {
+        return myAutoAck;
+    }
+
+    public void setAutoAck(boolean myAutoAck) {
+        this.myAutoAck = myAutoAck;
+    }
+
+    public int getClearMillis() {
+        return myClearMillis;
+    }
+
+    public void setClearMillis(int myClearMillis) {
+        this.myClearMillis = myClearMillis;
+    }
+
+    public boolean isClientMode() {
+        return myClientMode;
+    }
+
+    public void setClientMode(boolean myClientMode) {
+        this.myClientMode = myClientMode;
+    }
+
+    public int getConnectionTimeout() {
+        return myConnectionTimeout;
+    }
+
+    public void setConnectionTimeout(int myConnectionTimeout) {
+        this.myConnectionTimeout = myConnectionTimeout;
+    }
+
+    public String getEncoding() {
+        return myEncoding;
+    }
+
+    public void setEncoding(String myEncoding) {
+        this.myEncoding = myEncoding;
+    }
+
+    public String getIp() {
+        return myIp;
+    }
+
+    public void setIp(String myIp) {
+        this.myIp = myIp;
+    }
+
+    public int getPort() {
+        return myPort;
+    }
+
+    public void setPort(int myPort) {
+        this.myPort = myPort;
+    }
 
 	@Override
 	public TestMessage receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException {
