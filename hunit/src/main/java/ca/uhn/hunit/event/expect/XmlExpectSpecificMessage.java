@@ -32,6 +32,7 @@ import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.xsd.MessageSource;
+import ca.uhn.hunit.xsd.XMLExpectMessage;
 import ca.uhn.hunit.xsd.XMLExpectSpecificMessage;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.msg.XmlMessageImpl;

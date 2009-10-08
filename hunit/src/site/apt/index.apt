@@ -45,7 +45,22 @@ What is hUnit?
   * It aims to be as flexible as possible. Currently only HL7-in-HL7-out verification is possible,
     but much more should be possible soon. We'd love to hear what you think might be useful.
     
-    
+
+What's New?
+
+* October 7, 2009
+
+  A new release has been posted to Sourceforge. This release features support for JMS queues
+  and topics, XML messages, and interfaces which are not supposed to receive any messages (i.e.
+  if filters are being tested, or a dead letter queue exists for errors). This release 
+  also adds support for running tests in JUnit 3 and JUnit 4.
+
+  See the cookbook page to see how to use these features.
+
+  Work on a UI for designing tests (avoiding the need to hand craft XML files) is
+  now beginning.
+
+ 
 What's next?
 
   hUnit has several features being planned for future releases. If you are interested in

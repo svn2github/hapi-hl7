@@ -13,7 +13,7 @@
 	   TBA
     </description>
 
-    <version>0.2-SNAPSHOT</version>
+    <version>0.2</version>
 
     <mailingLists>
         <mailingList>
@@ -332,7 +332,7 @@
                     <execution>
                         <phase>process-sources</phase>
                         <goals>
-                            <goal>check</goal>
+                            <goal>format</goal>
                         </goals>
 						<!--
 							<configuration> <header>src/license/license.txt</header> <failIfMissing>true</failIfMissing> <includes> <include>src/main/java**</include> </includes>
