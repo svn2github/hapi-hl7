@@ -43,7 +43,7 @@ public class SwingRunnerController {
 
     public SwingRunnerController() throws Exception {
 
-        File defFile = new File("src/test/resources/unit_tests_hl7.xml");
+        File defFile = new File("src/test/resources/unit_tests_jms.xml");
         if (!defFile.exists()) {
             throw new IOException();
         }

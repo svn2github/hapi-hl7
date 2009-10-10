@@ -43,6 +43,32 @@
 	</complexType>
 	
 	<complexType name="Interface" abstract="true">
+		<sequence>
+			<element name="clear" type="boolean" minOccurs="0" default="true">
+				<annotation>
+					<documentation>
+						If true, specifies the that hUnit
+						should listen on this interface for messages to ignore
+						when the interface starts before continuing. This is
+						useful for instance if there is a chance old stale messages
+						may be waiting on a given interface, and you want to allow
+						them to be processed before beginning your unit testing.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="clearMillis" type="int" minOccurs="0" default="100">
+				<annotation>
+					<documentation>
+						If present, specifies the number of milliseconds hUnit
+						should listen on this interface for messages to ignore
+						when the interface starts before continuing. This is
+						useful for instance if there is a chance old stale messages
+						may be waiting on a given interface, and you want to allow
+						them to be processed before beginning your unit testing.
+					</documentation>
+				</annotation>
+			</element>
+		</sequence>
 		<attribute name="autostart" type="boolean"/>
 		<attribute name="id" type="string" use="required"/>
 	</complexType>
@@ -54,18 +80,6 @@
 					<element name="ip" type="string"/>
 					<element name="port" type="int"/>
                     <element name="connectionTimeoutMillis" type="int" minOccurs="0"/>
-                    <element name="clearMillis" type="int" minOccurs="0">
-                    	<annotation>
-                    		<documentation>
-                    			If present, specifies the number of milliseconds hUnit 
-                    			should listen on this interface for messages to ignore 
-                    			when the interface starts before continuing. This is
-                    			useful for instance if there is a chance old stale messages
-                    			may be waiting on a given interface, and you want to allow 
-                    			them to be processed before beginning your unit testing. 
-                    		</documentation>
-                    	</annotation>
-                    </element>
                     <element name="mode" minOccurs="1" maxOccurs="1">
                         <simpleType>
                             <restriction base="string">
@@ -100,7 +114,6 @@
 					</choice>
 					<element name="user_name" type="string"></element>
 					<element name="password" type="string"></element>
-                    <element name="clear" type="boolean" minOccurs="0" default="true"></element>
 					<element name="message_property" type="tns:NamedJavaArgument" minOccurs="0" maxOccurs="unbounded"></element>
 				</sequence>
 			</extension>

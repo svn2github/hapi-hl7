@@ -50,6 +50,7 @@ import ca.uhn.hunit.xsd.MessageDefinition;
 import ca.uhn.hunit.xsd.Test;
 import ca.uhn.hunit.xsd.TestBattery;
 import ca.uhn.hunit.xsd.XmlMessageDefinition;
+import java.util.Collection;
 
 public class TestBatteryImpl extends AbstractPropertyChangeSupport implements ITest {
 
@@ -167,5 +168,9 @@ public class TestBatteryImpl extends AbstractPropertyChangeSupport implements IT
 	public List<String> getTestNames() {
 		return myTestNames;
 	}
+
+    public Collection<AbstractMessage> getMessages() {
+        return myId2Message.values();
+    }
 
 }

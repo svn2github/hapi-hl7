@@ -30,32 +30,25 @@
  * Created on 4-Oct-2009, 6:15:35 PM
  */
 
-package ca.uhn.hunit.swing.ui;
+package ca.uhn.hunit.swing.ui.iface;
 
-import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
 import ca.uhn.hunit.swing.controller.ctx.MllpHl7v2InterfaceEditorContextController;
+import ca.uhn.hunit.swing.ui.AbstractContextForm;
 
 /**
  *
  * @author James
  */
-public class MllpHl7v2InterfaceEditorForm extends javax.swing.JPanel {
-    private final MllpHl7v2InterfaceEditorContextController myController;
+public class MllpHl7v2InterfaceEditorForm extends AbstractContextForm<MllpHl7v2InterfaceEditorContextController> {
+    private static final long serialVersionUID = 1;
+
+    private MllpHl7v2InterfaceEditorContextController myController;
 
     /** Creates new form MllpHl7v2InterfaceEditorForm */
     public MllpHl7v2InterfaceEditorForm() {
-        myController = null;
-
         initComponents();
     }
 
-    /** Creates new form MllpHl7v2InterfaceEditorForm */
-    public MllpHl7v2InterfaceEditorForm(MllpHl7v2InterfaceEditorContextController theController) {
-        myController = theController;
-
-        initComponents();
-        setValues();
-    }
 
 
     public void setValues() {
@@ -73,7 +66,7 @@ public class MllpHl7v2InterfaceEditorForm extends javax.swing.JPanel {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        myInterfaceForm = new InterfaceForm(myController);
+        myInterfaceForm = new ca.uhn.hunit.swing.ui.iface.InterfaceForm();
         jPanel2 = new javax.swing.JPanel();
         myMllpHl7v2InterfaceForm = new MllpHl7v2InterfaceForm(myController);
 
@@ -136,8 +129,19 @@ public class MllpHl7v2InterfaceEditorForm extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private ca.uhn.hunit.swing.ui.InterfaceForm myInterfaceForm;
-    private ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm myMllpHl7v2InterfaceForm;
+    private ca.uhn.hunit.swing.ui.iface.InterfaceForm myInterfaceForm;
+    private ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm myMllpHl7v2InterfaceForm;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void setController(MllpHl7v2InterfaceEditorContextController theController) {
+        myInterfaceForm.setController(theController);
+        myMllpHl7v2InterfaceForm.setController(theController);
+    }
+
+    @Override
+    public void tearDown() {
+        // nothing
+    }
 
 }

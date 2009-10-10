@@ -43,13 +43,24 @@ import org.xml.sax.SAXException;
  */
 public class XmlMessageImpl extends AbstractMessage {
 
-    private final String myText;
-    private final Document myDocument;
+    private String myText;
+    private Document myDocument;
 
     public XmlMessageImpl(XmlMessageDefinition theDefinition) throws ConfigurationException {
         super(theDefinition);
+            final String text = theDefinition.getText();
+        setSourceMessage(text);
+    }
+
+    @Override
+    public TestMessage<Document> getTestMessage() {
+        return new TestMessage<Document>(myText, myDocument);
+    }
+
+    @Override
+    public void setSourceMessage(final String text) throws ConfigurationException {
         try {
-            myText = theDefinition.getText();
+            myText = text;
             DocumentBuilderFactory parserFactory = DocumentBuilderFactory.newInstance();
             parserFactory.setValidating(false);
             DocumentBuilder parser = parserFactory.newDocumentBuilder();
@@ -65,8 +76,8 @@ public class XmlMessageImpl extends AbstractMessage {
     }
 
     @Override
-    public TestMessage<Document> getTestMessage() {
-        return new TestMessage<Document>(myText, myDocument);
+    public String getSourceMessage() {
+        return myText;
     }
 
 

@@ -29,6 +29,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 
 import ca.uhn.hunit.iface.AbstractInterface;
+import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.test.TestBatteryImpl;
 
 public class InterfacesTreeRenderer extends DefaultTreeCellRenderer {
@@ -43,10 +44,17 @@ public class InterfacesTreeRenderer extends DefaultTreeCellRenderer {
 			setText(battery.getName());
 		} else if (theValue instanceof TestBatteryInterfacesTreeNode) {
 			setText("Interfaces");
+		} else if (theValue instanceof TestBatteryMessagesTreeNode) {
+			setText("Messages");
 		} else if (theValue instanceof InterfaceTreeNode) {
 			InterfaceTreeNode node = (InterfaceTreeNode)theValue;
 			AbstractInterface ai = (AbstractInterface)node.getUserObject();
-			String name = (String)ai.getId();
+			String name = ai.getId();
+			setText(name);
+		} else if (theValue instanceof MessageTreeNode) {
+			MessageTreeNode node = (MessageTreeNode)theValue;
+			AbstractMessage ai = (AbstractMessage)node.getUserObject();
+			String name = ai.getId();
 			setText(name);
 		} else {
 			setText("--" + theValue.toString());

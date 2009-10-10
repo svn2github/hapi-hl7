@@ -20,35 +20,40 @@
  * this file under either the MPL or the GPL.
  */
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Created on Aug 17, 2009
  */
+package ca.uhn.hunit.iface;
 
-package ca.uhn.hunit.swing.controller.ctx;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
 
-import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
-import ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceEditorForm;
+import org.apache.activemq.ActiveMQConnectionFactory;
 
 /**
- *
- * @author James
+ * TODO: add!
+ * 
  */
-public class MllpHl7v2InterfaceEditorContextController extends AbstractInterfaceEditorContextController<MllpHl7V2InterfaceImpl, MllpHl7v2InterfaceEditorForm> {
-    private final MllpHl7v2InterfaceEditorForm myView;
+public class StaticActiveMQConnectionFactory implements ConnectionFactory
+{
+    private static ActiveMQConnectionFactory ourConnectionFactory;
+
+    static {
+        ourConnectionFactory = new ActiveMQConnectionFactory("vm://localhost?broker.persistent=false");
+    }
 
     /**
-     * Constructor
+     * {@inheritDoc}
      */
-    public MllpHl7v2InterfaceEditorContextController(MllpHl7V2InterfaceImpl theModel) {
-        super(theModel);
-
-        myView = new MllpHl7v2InterfaceEditorForm();
-        myView.setController(this);
+    public Connection createConnection() throws JMSException {
+        return ourConnectionFactory.createConnection();
     }
 
-    @Override
-    public MllpHl7v2InterfaceEditorForm getView() {
-        return myView;
+    /**
+     * {@inheritDoc}
+     */
+    public Connection createConnection(String theArg0, String theArg1) throws JMSException {
+        return createConnection();
     }
-
+    
 }

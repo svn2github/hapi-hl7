@@ -42,6 +42,7 @@ public class TestBatteryTreeNode extends DefaultMutableTreeNode {
 		super(theBattery);
 
 		add(new TestBatteryInterfacesTreeNode(theBattery));
+		add(new TestBatteryMessagesTreeNode(theBattery));
 	}
 
 }

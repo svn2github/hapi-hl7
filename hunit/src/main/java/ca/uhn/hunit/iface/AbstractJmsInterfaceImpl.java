@@ -44,6 +44,7 @@ import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.Log;
+import ca.uhn.hunit.util.TypedValueListTableModel;
 import ca.uhn.hunit.xsd.JavaArgument;
 import ca.uhn.hunit.xsd.AbstractJmsInterface;
 import ca.uhn.hunit.xsd.NamedJavaArgument;
@@ -56,17 +57,11 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
     private Class< ? > myConnectionFactoryClass;
     private String myUsername;
     private String myPassword;
-    private ArrayList<Object> myConstructorArgs;
-    private ArrayList<Class< ? >> myConstructorArgTypes;
-    private Boolean myClear;
     private Constructor< ? > myConstructor;
     private JmsTemplate myJmsTemplate;
-    private Integer myClearMillis;
     private boolean myPubSubDomain;
-	private String myEncoding;
-    private List<Class< ? >> myMessagePropertyTypes;
-    private List<Object> myMessageProperties;
-    private List<String> myMessagePropertyNames;
+    private final TypedValueListTableModel myConstructorArgsTableModel;
+    private final TypedValueListTableModel myMessagePropertyTableModel;
 
 	public AbstractJmsInterfaceImpl(AbstractJmsInterface theConfig) throws ConfigurationException {
 		super(theConfig);
@@ -82,13 +77,11 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
             throw new ConfigurationException("Unknown connection factory: " + theConfig.getConnectionFactory());
         }
                 
-        myConstructorArgTypes = new ArrayList<Class<?>>();
-        myConstructorArgs = new ArrayList<Object>();
-        
-        extractArgsFromXml(myConstructorArgTypes, null, myConstructorArgs, theConfig.getConnectionFactoryConstructorArg());
+        myConstructorArgsTableModel = new TypedValueListTableModel(false);
+        myConstructorArgsTableModel.setValues(theConfig.getConnectionFactoryConstructorArg());
         try {
             
-            myConstructor = myConnectionFactoryClass.getConstructor(myConstructorArgTypes.toArray(new Class<?>[0]));
+            myConstructor = myConnectionFactoryClass.getConstructor(myConstructorArgsTableModel.getArgTypeArray());
         } catch (SecurityException e) {
             throw new ConfigurationException("Error creating connection factory: ", e);
         } catch (NoSuchMethodException e) {
@@ -99,16 +92,9 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
 		myPassword = theConfig.getPassword();
 		myStarted = false;
 		myStopped = false;
-		
-		myClear = theConfig.isClear();
-		if (myClear == null) {
-		    myClear = true;
-		}
-		
-		myMessagePropertyNames = new ArrayList<String>();
-        myMessagePropertyTypes = new ArrayList<Class<?>>();
-        myMessageProperties = new ArrayList<Object>();
-        extractNamedArgsFromXml(myMessagePropertyTypes, myMessagePropertyNames, myMessageProperties, theConfig.getMessageProperty());
+
+        myMessagePropertyTableModel = new TypedValueListTableModel(true);
+        myMessagePropertyTableModel.setValues(theConfig.getMessageProperty());
 		
 	}
 
@@ -190,11 +176,13 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
                 public javax.jms.Message createMessage(Session theSession) throws JMSException {
                     TextMessage textMessage = theSession.createTextMessage(theMessage.getRawMessage());
                     
-                    for (int i = 0; i < myMessageProperties.size(); i++) {
-                        if (java.lang.String.class.equals(myMessagePropertyTypes.get(i))) {
-                            textMessage.setStringProperty(myMessagePropertyNames.get(i), (String)myMessageProperties.get(i));
-                        } else if (java.lang.Integer.class.equals(myMessagePropertyTypes.get(i))) {
-                            textMessage.setIntProperty(myMessagePropertyNames.get(i), (Integer)myMessageProperties.get(i));
+                    for (int i = 0; i < myMessagePropertyTableModel.getRowCount(); i++) {
+                        if (java.lang.String.class.equals(myMessagePropertyTableModel.getArgType(i))) {
+                            textMessage.setStringProperty(myMessagePropertyTableModel.getName(i), (String)myMessagePropertyTableModel.getArg(i));
+                        } else if (java.lang.Integer.class.equals(myMessagePropertyTableModel.getArgType(i))) {
+                            textMessage.setIntProperty(myMessagePropertyTableModel.getName(i), (Integer)myMessagePropertyTableModel.getArg(i));
+                        } else if (int.class.equals(myMessagePropertyTableModel.getArgType(i))) {
+                            textMessage.setIntProperty(myMessagePropertyTableModel.getName(i), (Integer)myMessagePropertyTableModel.getArg(i));
                         }
                     }
                     return textMessage;
@@ -215,7 +203,7 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
 
 		ConnectionFactory connectionFactory;
         try {
-            connectionFactory = (ConnectionFactory)myConstructor.newInstance(myConstructorArgs.toArray());
+            connectionFactory = (ConnectionFactory)myConstructor.newInstance(myConstructorArgsTableModel.getArgArray());
         } catch (IllegalArgumentException e1) {
             throw new InterfaceWontStartException(this, e1.getMessage());
         } catch (InstantiationException e1) {
@@ -231,11 +219,8 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
 		myJmsTemplate.setReceiveTimeout(250);
         myJmsTemplate.setPubSubDomain(myPubSubDomain);
 
-		if (myClear) {
-		    myClearMillis = 600;
-		}
-		if (myClearMillis != null) {
-			long readUntil = System.currentTimeMillis() + myClearMillis;
+		if (isClear()) {
+			long readUntil = System.currentTimeMillis() + getClearMillis();
 			int cleared = 0;
 			while (System.currentTimeMillis() < readUntil) {
 				try {
@@ -256,7 +241,7 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
                     } catch (InterruptedException e) {
                         // nothing
                     }
-                    readUntil = System.currentTimeMillis() + myClearMillis;
+                    readUntil = System.currentTimeMillis() + getClearMillis();
 				} catch (JMSException e) {
 				    Log.get(this).warn("Error while clearing queue: " + e.getMessage());
                 }
@@ -299,12 +284,61 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
 
 	protected void exportConfig(AbstractJmsInterface retVal) {
 		super.exportConfig(retVal);
-		retVal.setClear(myClear);
+		retVal.setClear(isClear());
 		retVal.setConnectionFactory(myConnectionFactoryClass.getName());
 		retVal.setPassword(myPassword);
 		retVal.setQueueName(myPubSubDomain ? null : myQueueName);
 		retVal.setTopicName(myPubSubDomain ? myQueueName : null);
 		retVal.setUserName(myUsername);
 	}
+
+    public TypedValueListTableModel getConstructorArgsTableModel() {
+        return myConstructorArgsTableModel;
+    }
+
+    public TypedValueListTableModel getMessagePropertyTableModel() {
+        return myMessagePropertyTableModel;
+    }
+
+    public Class<?> getConnectionFactoryClass() {
+        return myConnectionFactoryClass;
+    }
+
+    public void setConnectionFactoryClass(Class<?> myConnectionFactoryClass) {
+        this.myConnectionFactoryClass = myConnectionFactoryClass;
+    }
+
+    public String getPassword() {
+        return myPassword;
+    }
+
+    public void setPassword(String myPassword) {
+        this.myPassword = myPassword;
+    }
+
+    public boolean isPubSubDomain() {
+        return myPubSubDomain;
+    }
+
+    public void setPubSubDomain(boolean myPubSubDomain) {
+        this.myPubSubDomain = myPubSubDomain;
+    }
+
+    public String getQueueName() {
+        return myQueueName;
+    }
+
+    public void setQueueName(String myQueueName) {
+        this.myQueueName = myQueueName;
+    }
+
+    public String getUsername() {
+        return myUsername;
+    }
+
+    public void setUsername(String myUsername) {
+        this.myUsername = myUsername;
+    }
+
 
 }

@@ -26,29 +26,33 @@
 
 package ca.uhn.hunit.swing.controller.ctx;
 
-import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
-import ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceEditorForm;
+import ca.uhn.hunit.msg.Hl7V2MessageImpl;
+import ca.uhn.hunit.swing.ui.msg.Hl7V2MessageEditorForm;
 
 /**
  *
  * @author James
  */
-public class MllpHl7v2InterfaceEditorContextController extends AbstractInterfaceEditorContextController<MllpHl7V2InterfaceImpl, MllpHl7v2InterfaceEditorForm> {
-    private final MllpHl7v2InterfaceEditorForm myView;
+public class Hl7V2MessageEditorController extends AbstractMessageEditorController<Hl7V2MessageEditorForm, Hl7V2MessageImpl> {
+    private final Hl7V2MessageEditorForm myView;
+    private final Hl7V2MessageImpl myMessage;
 
-    /**
-     * Constructor
-     */
-    public MllpHl7v2InterfaceEditorContextController(MllpHl7V2InterfaceImpl theModel) {
-        super(theModel);
 
-        myView = new MllpHl7v2InterfaceEditorForm();
+    public Hl7V2MessageEditorController(Hl7V2MessageImpl theMessage) {
+        myView = new Hl7V2MessageEditorForm();
+        myMessage = theMessage;
+
         myView.setController(this);
     }
 
     @Override
-    public MllpHl7v2InterfaceEditorForm getView() {
+    public Hl7V2MessageEditorForm getView() {
         return myView;
+    }
+
+    @Override
+    public Hl7V2MessageImpl getMessage() {
+        return myMessage;
     }
 
 }

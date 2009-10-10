@@ -59,10 +59,7 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="ca.uhn.hunit.swing.ui.InterfaceForm" name="myInterfaceForm">
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new InterfaceForm(myController)"/>
-          </AuxValues>
+        <Component class="ca.uhn.hunit.swing.ui.iface.InterfaceForm" name="myInterfaceForm">
         </Component>
       </SubComponents>
     </Container>
@@ -104,7 +101,7 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm" name="myMllpHl7v2InterfaceForm">
+        <Component class="ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm" name="myMllpHl7v2InterfaceForm">
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new MllpHl7v2InterfaceForm(myController)"/>
           </AuxValues>

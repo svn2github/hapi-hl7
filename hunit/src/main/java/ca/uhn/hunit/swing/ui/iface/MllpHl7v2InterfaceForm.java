@@ -30,16 +30,19 @@
  * Created on 4-Oct-2009, 5:19:13 PM
  */
 
-package ca.uhn.hunit.swing.ui;
+package ca.uhn.hunit.swing.ui.iface;
 
 import ca.uhn.hunit.swing.controller.ctx.MllpHl7v2InterfaceEditorContextController;
+import ca.uhn.hunit.swing.ui.AbstractContextForm;
 
 /**
  *
  * @author James
  */
-public class MllpHl7v2InterfaceForm extends javax.swing.JPanel {
-    private final MllpHl7v2InterfaceEditorContextController myController;
+public class MllpHl7v2InterfaceForm extends AbstractContextForm<MllpHl7v2InterfaceEditorContextController> {
+    private static final long serialVersionUID = 1;
+
+    private MllpHl7v2InterfaceEditorContextController myController;
 
     public MllpHl7v2InterfaceForm() {
         initComponents();
@@ -206,6 +209,17 @@ public class MllpHl7v2InterfaceForm extends javax.swing.JPanel {
                 myModeCombobox.setSelectedIndex(1);
             }
         }
+    }
+
+    @Override
+    public void setController(MllpHl7v2InterfaceEditorContextController theController) {
+        myController = theController;
+        setValues();
+    }
+
+    @Override
+    public void tearDown() {
+        // nothing
     }
 
 }

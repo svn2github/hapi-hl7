@@ -29,29 +29,24 @@
  *
  * Created on 22-Jul-2009, 10:57:14 PM
  */
-
 package ca.uhn.hunit.swing.ui;
 
-import java.io.File;
-import java.net.URISyntaxException;
-
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import ca.uhn.hunit.iface.JmsInterfaceImpl;
 import javax.swing.tree.DefaultTreeModel;
-import javax.xml.bind.JAXBException;
 
-import ca.uhn.hunit.ex.ConfigurationException;
-import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
+import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.swing.controller.ctx.AbstractContextController;
+import ca.uhn.hunit.swing.controller.ctx.Hl7V2MessageEditorController;
+import ca.uhn.hunit.swing.controller.ctx.JmsInterfaceContextController;
 import ca.uhn.hunit.swing.controller.ctx.MllpHl7v2InterfaceEditorContextController;
 import ca.uhn.hunit.swing.controller.ctx.SwingRunnerController;
 import ca.uhn.hunit.swing.model.InterfaceTreeNode;
 import ca.uhn.hunit.swing.model.InterfacesTreeRenderer;
+import ca.uhn.hunit.swing.model.MessageTreeNode;
 import ca.uhn.hunit.swing.model.TestBatteryTreeNode;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import java.awt.BorderLayout;
-import java.io.IOException;
 import javax.swing.JPanel;
 
 /**
@@ -62,17 +57,17 @@ public class SwingRunner extends javax.swing.JFrame {
 
     private TestBatteryImpl myBattery;
     private final SwingRunnerController myController;
-    
-	/** Creates new form SwingRunner 
+
+    /** Creates new form SwingRunner
      * @param theBatteryImpl */
     public SwingRunner(SwingRunnerController theController, TestBatteryImpl theBatteryImpl) {
         this.myBattery = theBatteryImpl;
         this.myController = theController;
 
-    	initComponents();
-    	
-    	myTestTree.setModel(new DefaultTreeModel(new TestBatteryTreeNode(myBattery), true));
-    	myTestTree.setCellRenderer(new InterfacesTreeRenderer());
+        initComponents();
+
+        myTestTree.setModel(new DefaultTreeModel(new TestBatteryTreeNode(myBattery), true));
+        myTestTree.setCellRenderer(new InterfacesTreeRenderer());
     }
 
     /** This method is called from within the constructor to
@@ -133,7 +128,7 @@ public class SwingRunner extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(myStatusLabel)
-                    .addComponent(myTestContextPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 415, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(myTestContextPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 415, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -162,9 +157,19 @@ public class SwingRunner extends javax.swing.JFrame {
             InterfaceTreeNode interfaceTreeNode = (InterfaceTreeNode) selectedModelObject;
             if (interfaceTreeNode.getUserObject() instanceof MllpHl7V2InterfaceImpl) {
                 ctxController = new MllpHl7v2InterfaceEditorContextController((MllpHl7V2InterfaceImpl) interfaceTreeNode.getUserObject());
+            } else if (interfaceTreeNode.getUserObject() instanceof JmsInterfaceImpl) {
+                ctxController = new JmsInterfaceContextController((JmsInterfaceImpl) interfaceTreeNode.getUserObject());
             } else {
                 System.out.println("Unknown interface: " + selectedModelObject);
             }
+        } else if (selectedModelObject instanceof MessageTreeNode) {
+            MessageTreeNode treeNode = (MessageTreeNode) selectedModelObject;
+            if (treeNode.getUserObject() instanceof Hl7V2MessageImpl) {
+                ctxController = new Hl7V2MessageEditorController((Hl7V2MessageImpl) treeNode.getUserObject());
+            } else {
+                System.out.println("Unknown message: " + selectedModelObject);
+            }
+
         } else {
             System.out.println(selectedModelObject);
         }
@@ -176,7 +181,6 @@ public class SwingRunner extends javax.swing.JFrame {
             myTestContextPanel.validate();
         }
     }//GEN-LAST:event_myTestTreeValueChanged
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JMenuBar jMenuBar1;
@@ -188,5 +192,4 @@ public class SwingRunner extends javax.swing.JFrame {
     private javax.swing.JPanel myTestContextPanel;
     private javax.swing.JTree myTestTree;
     // End of variables declaration//GEN-END:variables
-
 }

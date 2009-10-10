@@ -71,7 +71,6 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 	private boolean myStopped;
 	private Parser myParser;
 	private Boolean myAutoAck;
-	private Integer myClearMillis;
 	private String myEncoding;
 
 	public MllpHl7V2InterfaceImpl(MllpHl7V2Interface theConfig) {
@@ -82,10 +81,6 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 		myStarted = false;
 		myConnectionTimeout = theConfig.getConnectionTimeoutMillis();
 		myStopped = false;
-		myClearMillis = theConfig.getClearMillis();
-        if (myClearMillis == null) {
-            myClearMillis = 0;
-        }
 		
 		if (myConnectionTimeout == null) {
 			myConnectionTimeout = 10000;
@@ -112,14 +107,6 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 
     public void setAutoAck(boolean myAutoAck) {
         this.myAutoAck = myAutoAck;
-    }
-
-    public int getClearMillis() {
-        return myClearMillis;
-    }
-
-    public void setClearMillis(int myClearMillis) {
-        this.myClearMillis = myClearMillis;
     }
 
     public boolean isClientMode() {
@@ -260,8 +247,8 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 
 		startInterface(theCtx);
 
-		if (myClearMillis != null) {
-			long readUntil = System.currentTimeMillis() + myClearMillis;
+		if (isClear()) {
+			long readUntil = System.currentTimeMillis() + getClearMillis();
 			int cleared = 0;
 			while (System.currentTimeMillis() < readUntil) {
 				try {
@@ -285,7 +272,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
                     } catch (InterruptedException e) {
                         // nothing
                     }
-                    readUntil = System.currentTimeMillis() + myClearMillis;
+                    readUntil = System.currentTimeMillis() + getClearMillis();
 				} catch (LLPException e) {
 					// ignore
 				} catch (IOException e) {
@@ -402,7 +389,6 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 		MllpHl7V2Interface retVal = new MllpHl7V2Interface();
 		super.exportConfig(retVal);
 		retVal.setAutoAck(myAutoAck);
-		retVal.setClearMillis(myClearMillis);
 		retVal.setConnectionTimeoutMillis(myConnectionTimeout);
 		retVal.setEncoding(myEncoding);
 		retVal.setMode(myClientMode ? CLIENT : SERVER);

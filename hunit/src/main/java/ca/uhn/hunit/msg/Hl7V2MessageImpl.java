@@ -34,32 +34,42 @@ public class Hl7V2MessageImpl extends AbstractMessage {
 
 	private String myText;
 	private Message myParsedMessage;
+    private String mySourceMessage;
 
 	public Hl7V2MessageImpl(Hl7V2MessageDefinition theConfig) throws ConfigurationException {
 		super(theConfig);
 
-		myText = theConfig.getText().trim().replaceAll("(\\r|\\n)+", "\r");
-		
-		PipeParser parser = new PipeParser();
-		parser.setValidationContext(new ValidationContextImpl());
-		try {
-		    // Parse and re-encode to strip out any inconsistancies in the message (extra blank fields at the end of segments, etc) 
+        setSourceMessage(theConfig.getText());
+	}
+
+	@Override
+	public TestMessage<Message> getTestMessage() {
+		return new TestMessage<Message>(myText, myParsedMessage);
+	}
+
+    @Override
+    public void setSourceMessage(String theMessage) throws ConfigurationException {
+        mySourceMessage = theMessage.trim();
+        myText = mySourceMessage.replaceAll("(\\r|\\n)+", "\r");
+        PipeParser parser = new PipeParser();
+        parser.setValidationContext(new ValidationContextImpl());
+        try {
+            // Parse and re-encode to strip out any inconsistancies in the message (extra blank fields at the end of segments, etc)
             myParsedMessage = parser.parse(myText);
-			myText = parser.encode(myParsedMessage);
+            myText = parser.encode(myParsedMessage);
         } catch (EncodingNotSupportedException e) {
             throw new ConfigurationException(e);
         } catch (HL7Exception e) {
             throw new ConfigurationException(e);
         }
-	}
 
-	@Override
-	public TestMessage getTestMessage() {
-		return new TestMessage(myText, myParsedMessage);
-	}
+        mySourceMessage = myText.replaceAll("\\r", "\r\n");
+    }
+
+    @Override
+    public String getSourceMessage() {
+        return mySourceMessage;
+    }
 	
-	public Message getMessage() {
-		return myParsedMessage;
-	}
 	
 }

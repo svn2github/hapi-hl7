@@ -21,6 +21,7 @@
  */
 package ca.uhn.hunit.msg;
 
+import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.xsd.MessageDefinition;
 
@@ -33,6 +34,13 @@ public abstract class AbstractMessage {
 	}
 
 	public abstract TestMessage getTestMessage();
+
+
+    public abstract String getSourceMessage();
+
+
+    public abstract void setSourceMessage(String theSourceMessage) throws ConfigurationException;
+
 
 	public String getId() {
 		return myId;

@@ -24,31 +24,22 @@
  * and open the template in the editor.
  */
 
-package ca.uhn.hunit.swing.controller.ctx;
+package ca.uhn.hunit.swing.model;
 
-import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
-import ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceEditorForm;
+import javax.swing.tree.DefaultMutableTreeNode;
+
+import ca.uhn.hunit.msg.AbstractMessage;
 
 /**
  *
  * @author James
  */
-public class MllpHl7v2InterfaceEditorContextController extends AbstractInterfaceEditorContextController<MllpHl7V2InterfaceImpl, MllpHl7v2InterfaceEditorForm> {
-    private final MllpHl7v2InterfaceEditorForm myView;
+public class MessageTreeNode extends DefaultMutableTreeNode {
 
-    /**
-     * Constructor
-     */
-    public MllpHl7v2InterfaceEditorContextController(MllpHl7V2InterfaceImpl theModel) {
-        super(theModel);
+	private static final long serialVersionUID = 1949757870372912053L;
 
-        myView = new MllpHl7v2InterfaceEditorForm();
-        myView.setController(this);
-    }
-
-    @Override
-    public MllpHl7v2InterfaceEditorForm getView() {
-        return myView;
-    }
+	public MessageTreeNode(AbstractMessage theMessage) {
+		super(theMessage, false);
+	}
 
 }

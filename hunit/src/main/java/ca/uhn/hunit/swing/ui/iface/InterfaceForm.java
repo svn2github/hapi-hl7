@@ -29,33 +29,25 @@
  *
  * Created on 4-Oct-2009, 5:22:57 PM
  */
-
-package ca.uhn.hunit.swing.ui;
+package ca.uhn.hunit.swing.ui.iface;
 
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.swing.controller.ctx.AbstractInterfaceEditorContextController;
-import javax.swing.JPanel;
+import ca.uhn.hunit.swing.ui.AbstractContextForm;
+import javax.swing.SpinnerNumberModel;
 
 /**
  *
  * @author James
  */
-public class InterfaceForm extends javax.swing.JPanel {
+public class InterfaceForm extends AbstractContextForm<AbstractInterfaceEditorContextController<?, ?>> {
 
-    private final AbstractInterfaceEditorContextController<?, ?> myController;
+    private static final long serialVersionUID = 1;
+    private AbstractInterfaceEditorContextController<?, ?> myController;
 
     /** Creates new form InterfaceForm */
     public InterfaceForm() {
         initComponents();
-        this.myController = null;
-    }
-
-    /** Creates new form InterfaceForm */
-    public <T extends AbstractInterface, V extends JPanel> InterfaceForm(AbstractInterfaceEditorContextController<T, V> theController) {
-        initComponents();
-        this.myController = theController;
-
-        setValues();
     }
 
     /** This method is called from within the constructor to
@@ -71,6 +63,11 @@ public class InterfaceForm extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         myIdTextBox = new javax.swing.JTextField();
         myAutostartCheckBox = new javax.swing.JCheckBox();
+        myClearOnStartupCheckbox = new javax.swing.JCheckBox();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        myClearForMillisSpinner = new javax.swing.JSpinner();
+        myClearForMillisSpinner.setModel(new SpinnerNumberModel());
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel1.setLabelFor(myIdTextBox);
@@ -82,11 +79,12 @@ public class InterfaceForm extends javax.swing.JPanel {
 
         myIdTextBox.setText("jTextField1");
 
-        myAutostartCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                myAutostartCheckBoxActionPerformed(evt);
-            }
-        });
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        jLabel3.setLabelFor(myAutostartCheckBox);
+        jLabel3.setText("Clear On Startup");
+
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        jLabel4.setText("Clear For Millis");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -95,12 +93,19 @@ public class InterfaceForm extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(myIdTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(myAutostartCheckBox))
-                .addGap(60, 60, 60))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(myClearOnStartupCheckbox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(myClearForMillisSpinner, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE))
+                    .addComponent(myAutostartCheckBox)
+                    .addComponent(myIdTextBox, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -109,30 +114,46 @@ public class InterfaceForm extends javax.swing.JPanel {
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(myIdTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 21, Short.MAX_VALUE)
                     .addComponent(myAutostartCheckBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 21, Short.MAX_VALUE)
+                        .addComponent(myClearForMillisSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(myClearOnStartupCheckbox, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 21, Short.MAX_VALUE))
+                .addGap(18, 18, 18))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void myAutostartCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myAutostartCheckBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_myAutostartCheckBoxActionPerformed
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JCheckBox myAutostartCheckBox;
+    private javax.swing.JSpinner myClearForMillisSpinner;
+    private javax.swing.JCheckBox myClearOnStartupCheckbox;
     private javax.swing.JTextField myIdTextBox;
     // End of variables declaration//GEN-END:variables
 
     public void setValues() {
-        if (myController != null) {
-            myAutostartCheckBox.setSelected(myController.getModel().isAutostart());
-            myIdTextBox.setText(myController.getModel().getId());
-        }
+        final AbstractInterface model = myController.getModel();
+        myAutostartCheckBox.setSelected(model.isAutostart());
+        myIdTextBox.setText(model.getId());
+        myClearForMillisSpinner.setValue(model.getClearMillis());
+        myClearOnStartupCheckbox.setSelected(model.isClear());
     }
 
+    @Override
+    public void setController(AbstractInterfaceEditorContextController<?, ?> theController) {
+        this.myController = theController;
+        setValues();
+    }
+
+    @Override
+    public void tearDown() {
+        // nothing
+    }
 }

@@ -26,28 +26,31 @@
 
 package ca.uhn.hunit.swing.controller.ctx;
 
-import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
-import ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceEditorForm;
+import ca.uhn.hunit.iface.JmsInterfaceImpl;
+import ca.uhn.hunit.swing.ui.iface.JmsInterfaceEditorForm;
+import ca.uhn.hunit.swing.ui.iface.JmsInterfaceForm;
 
 /**
  *
  * @author James
  */
-public class MllpHl7v2InterfaceEditorContextController extends AbstractInterfaceEditorContextController<MllpHl7V2InterfaceImpl, MllpHl7v2InterfaceEditorForm> {
-    private final MllpHl7v2InterfaceEditorForm myView;
+public class JmsInterfaceContextController extends AbstractInterfaceEditorContextController<JmsInterfaceImpl, JmsInterfaceEditorForm> {
+    private final JmsInterfaceImpl myModel;
+    private final JmsInterfaceEditorForm myView;
 
-    /**
-     * Constructor
-     */
-    public MllpHl7v2InterfaceEditorContextController(MllpHl7V2InterfaceImpl theModel) {
+    public JmsInterfaceContextController(JmsInterfaceImpl theModel) {
         super(theModel);
-
-        myView = new MllpHl7v2InterfaceEditorForm();
+        myModel = theModel;
+        myView = new JmsInterfaceEditorForm();
         myView.setController(this);
     }
 
+    public JmsInterfaceImpl getModel() {
+        return myModel;
+    }
+
     @Override
-    public MllpHl7v2InterfaceEditorForm getView() {
+    public JmsInterfaceEditorForm getView() {
         return myView;
     }
 

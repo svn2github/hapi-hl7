@@ -33,6 +33,8 @@ public abstract class AbstractInterface implements Comparable<AbstractInterface>
 	private Interface myConfig;
 	private String myId;
 	private Boolean myAutostart;
+	private Integer myClearMillis;
+    private Boolean myClear;
 
 	public String getId() {
 		return myId;
@@ -45,6 +47,16 @@ public abstract class AbstractInterface implements Comparable<AbstractInterface>
 		if (myAutostart == null) {
 			myAutostart = true;
 		}
+		myClearMillis = theConfig.getClearMillis();
+        if (myClearMillis == null) {
+            myClearMillis = 100;
+        }
+   		myClear = theConfig.isClear();
+		if (myClear == null) {
+		    myClear = true;
+		}
+
+
 	}
 
 	public Interface getConfig() {
@@ -82,5 +94,13 @@ public abstract class AbstractInterface implements Comparable<AbstractInterface>
 	public int compareTo(AbstractInterface theO) {
 		return myId.compareTo(theO.myId);
 	}
+
+    public boolean isClear() {
+        return myClear;
+    }
+
+    public int getClearMillis() {
+        return myClearMillis;
+    }
 
 }

@@ -26,29 +26,18 @@
 
 package ca.uhn.hunit.swing.controller.ctx;
 
-import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
-import ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceEditorForm;
+import ca.uhn.hunit.msg.AbstractMessage;
+import ca.uhn.hunit.swing.ui.AbstractContextForm;
 
 /**
  *
  * @author James
  */
-public class MllpHl7v2InterfaceEditorContextController extends AbstractInterfaceEditorContextController<MllpHl7V2InterfaceImpl, MllpHl7v2InterfaceEditorForm> {
-    private final MllpHl7v2InterfaceEditorForm myView;
+public abstract class AbstractMessageEditorController<T extends AbstractContextForm<?>, M extends AbstractMessage> extends AbstractContextController<T> {
 
     /**
-     * Constructor
+     * Provide the message to edit
      */
-    public MllpHl7v2InterfaceEditorContextController(MllpHl7V2InterfaceImpl theModel) {
-        super(theModel);
-
-        myView = new MllpHl7v2InterfaceEditorForm();
-        myView.setController(this);
-    }
-
-    @Override
-    public MllpHl7v2InterfaceEditorForm getView() {
-        return myView;
-    }
+    public abstract M getMessage();
 
 }

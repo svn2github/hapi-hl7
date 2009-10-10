@@ -24,7 +24,7 @@
  * and open the template in the editor.
  */
 
-package ca.uhn.hunit.swing.ui;
+package ca.uhn.hunit.swing.ui.iface;
 
 import java.beans.*;
 
@@ -37,7 +37,7 @@ public class MllpHl7v2InterfaceFormBeanInfo extends SimpleBeanInfo {
     // Bean descriptor//GEN-FIRST:BeanDescriptor
     /*lazy BeanDescriptor*/
     private static BeanDescriptor getBdescriptor(){
-        BeanDescriptor beanDescriptor = new BeanDescriptor  ( ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class , null ); // NOI18N//GEN-HEADEREND:BeanDescriptor
+        BeanDescriptor beanDescriptor = new BeanDescriptor  ( ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class , null ); // NOI18N//GEN-HEADEREND:BeanDescriptor
 
     // Here you can add code for customizing the BeanDescriptor.
 
@@ -153,107 +153,107 @@ public class MllpHl7v2InterfaceFormBeanInfo extends SimpleBeanInfo {
         PropertyDescriptor[] properties = new PropertyDescriptor[101];
     
         try {
-            properties[PROPERTY_accessibleContext] = new PropertyDescriptor ( "accessibleContext", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getAccessibleContext", null ); // NOI18N
-            properties[PROPERTY_actionMap] = new PropertyDescriptor ( "actionMap", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getActionMap", "setActionMap" ); // NOI18N
-            properties[PROPERTY_alignmentX] = new PropertyDescriptor ( "alignmentX", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getAlignmentX", "setAlignmentX" ); // NOI18N
-            properties[PROPERTY_alignmentY] = new PropertyDescriptor ( "alignmentY", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getAlignmentY", "setAlignmentY" ); // NOI18N
-            properties[PROPERTY_ancestorListeners] = new PropertyDescriptor ( "ancestorListeners", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getAncestorListeners", null ); // NOI18N
-            properties[PROPERTY_autoscrolls] = new PropertyDescriptor ( "autoscrolls", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getAutoscrolls", "setAutoscrolls" ); // NOI18N
-            properties[PROPERTY_background] = new PropertyDescriptor ( "background", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getBackground", "setBackground" ); // NOI18N
-            properties[PROPERTY_backgroundSet] = new PropertyDescriptor ( "backgroundSet", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isBackgroundSet", null ); // NOI18N
-            properties[PROPERTY_baselineResizeBehavior] = new PropertyDescriptor ( "baselineResizeBehavior", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getBaselineResizeBehavior", null ); // NOI18N
-            properties[PROPERTY_border] = new PropertyDescriptor ( "border", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getBorder", "setBorder" ); // NOI18N
-            properties[PROPERTY_bounds] = new PropertyDescriptor ( "bounds", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getBounds", "setBounds" ); // NOI18N
-            properties[PROPERTY_colorModel] = new PropertyDescriptor ( "colorModel", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getColorModel", null ); // NOI18N
-            properties[PROPERTY_component] = new IndexedPropertyDescriptor ( "component", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, null, null, "getComponent", null ); // NOI18N
-            properties[PROPERTY_componentCount] = new PropertyDescriptor ( "componentCount", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getComponentCount", null ); // NOI18N
-            properties[PROPERTY_componentListeners] = new PropertyDescriptor ( "componentListeners", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getComponentListeners", null ); // NOI18N
-            properties[PROPERTY_componentOrientation] = new PropertyDescriptor ( "componentOrientation", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getComponentOrientation", "setComponentOrientation" ); // NOI18N
-            properties[PROPERTY_componentPopupMenu] = new PropertyDescriptor ( "componentPopupMenu", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getComponentPopupMenu", "setComponentPopupMenu" ); // NOI18N
-            properties[PROPERTY_components] = new PropertyDescriptor ( "components", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getComponents", null ); // NOI18N
-            properties[PROPERTY_containerListeners] = new PropertyDescriptor ( "containerListeners", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getContainerListeners", null ); // NOI18N
-            properties[PROPERTY_cursor] = new PropertyDescriptor ( "cursor", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getCursor", "setCursor" ); // NOI18N
-            properties[PROPERTY_cursorSet] = new PropertyDescriptor ( "cursorSet", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isCursorSet", null ); // NOI18N
-            properties[PROPERTY_debugGraphicsOptions] = new PropertyDescriptor ( "debugGraphicsOptions", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getDebugGraphicsOptions", "setDebugGraphicsOptions" ); // NOI18N
-            properties[PROPERTY_displayable] = new PropertyDescriptor ( "displayable", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isDisplayable", null ); // NOI18N
-            properties[PROPERTY_doubleBuffered] = new PropertyDescriptor ( "doubleBuffered", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isDoubleBuffered", "setDoubleBuffered" ); // NOI18N
-            properties[PROPERTY_dropTarget] = new PropertyDescriptor ( "dropTarget", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getDropTarget", "setDropTarget" ); // NOI18N
-            properties[PROPERTY_enabled] = new PropertyDescriptor ( "enabled", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isEnabled", "setEnabled" ); // NOI18N
-            properties[PROPERTY_focusable] = new PropertyDescriptor ( "focusable", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isFocusable", "setFocusable" ); // NOI18N
-            properties[PROPERTY_focusCycleRoot] = new PropertyDescriptor ( "focusCycleRoot", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isFocusCycleRoot", "setFocusCycleRoot" ); // NOI18N
-            properties[PROPERTY_focusCycleRootAncestor] = new PropertyDescriptor ( "focusCycleRootAncestor", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getFocusCycleRootAncestor", null ); // NOI18N
-            properties[PROPERTY_focusListeners] = new PropertyDescriptor ( "focusListeners", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getFocusListeners", null ); // NOI18N
-            properties[PROPERTY_focusOwner] = new PropertyDescriptor ( "focusOwner", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isFocusOwner", null ); // NOI18N
-            properties[PROPERTY_focusTraversable] = new PropertyDescriptor ( "focusTraversable", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isFocusTraversable", null ); // NOI18N
-            properties[PROPERTY_focusTraversalKeys] = new IndexedPropertyDescriptor ( "focusTraversalKeys", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, null, null, null, "setFocusTraversalKeys" ); // NOI18N
-            properties[PROPERTY_focusTraversalKeysEnabled] = new PropertyDescriptor ( "focusTraversalKeysEnabled", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getFocusTraversalKeysEnabled", "setFocusTraversalKeysEnabled" ); // NOI18N
-            properties[PROPERTY_focusTraversalPolicy] = new PropertyDescriptor ( "focusTraversalPolicy", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getFocusTraversalPolicy", "setFocusTraversalPolicy" ); // NOI18N
-            properties[PROPERTY_focusTraversalPolicyProvider] = new PropertyDescriptor ( "focusTraversalPolicyProvider", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isFocusTraversalPolicyProvider", "setFocusTraversalPolicyProvider" ); // NOI18N
-            properties[PROPERTY_focusTraversalPolicySet] = new PropertyDescriptor ( "focusTraversalPolicySet", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isFocusTraversalPolicySet", null ); // NOI18N
-            properties[PROPERTY_font] = new PropertyDescriptor ( "font", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getFont", "setFont" ); // NOI18N
-            properties[PROPERTY_fontSet] = new PropertyDescriptor ( "fontSet", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isFontSet", null ); // NOI18N
-            properties[PROPERTY_foreground] = new PropertyDescriptor ( "foreground", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getForeground", "setForeground" ); // NOI18N
-            properties[PROPERTY_foregroundSet] = new PropertyDescriptor ( "foregroundSet", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isForegroundSet", null ); // NOI18N
-            properties[PROPERTY_graphics] = new PropertyDescriptor ( "graphics", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getGraphics", null ); // NOI18N
-            properties[PROPERTY_graphicsConfiguration] = new PropertyDescriptor ( "graphicsConfiguration", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getGraphicsConfiguration", null ); // NOI18N
-            properties[PROPERTY_height] = new PropertyDescriptor ( "height", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getHeight", null ); // NOI18N
-            properties[PROPERTY_hierarchyBoundsListeners] = new PropertyDescriptor ( "hierarchyBoundsListeners", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getHierarchyBoundsListeners", null ); // NOI18N
-            properties[PROPERTY_hierarchyListeners] = new PropertyDescriptor ( "hierarchyListeners", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getHierarchyListeners", null ); // NOI18N
-            properties[PROPERTY_ignoreRepaint] = new PropertyDescriptor ( "ignoreRepaint", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getIgnoreRepaint", "setIgnoreRepaint" ); // NOI18N
-            properties[PROPERTY_inheritsPopupMenu] = new PropertyDescriptor ( "inheritsPopupMenu", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getInheritsPopupMenu", "setInheritsPopupMenu" ); // NOI18N
-            properties[PROPERTY_inputContext] = new PropertyDescriptor ( "inputContext", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getInputContext", null ); // NOI18N
-            properties[PROPERTY_inputMap] = new PropertyDescriptor ( "inputMap", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getInputMap", null ); // NOI18N
-            properties[PROPERTY_inputMethodListeners] = new PropertyDescriptor ( "inputMethodListeners", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getInputMethodListeners", null ); // NOI18N
-            properties[PROPERTY_inputMethodRequests] = new PropertyDescriptor ( "inputMethodRequests", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getInputMethodRequests", null ); // NOI18N
-            properties[PROPERTY_inputVerifier] = new PropertyDescriptor ( "inputVerifier", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getInputVerifier", "setInputVerifier" ); // NOI18N
-            properties[PROPERTY_insets] = new PropertyDescriptor ( "insets", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getInsets", null ); // NOI18N
-            properties[PROPERTY_keyListeners] = new PropertyDescriptor ( "keyListeners", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getKeyListeners", null ); // NOI18N
-            properties[PROPERTY_layout] = new PropertyDescriptor ( "layout", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getLayout", "setLayout" ); // NOI18N
-            properties[PROPERTY_lightweight] = new PropertyDescriptor ( "lightweight", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isLightweight", null ); // NOI18N
-            properties[PROPERTY_locale] = new PropertyDescriptor ( "locale", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getLocale", "setLocale" ); // NOI18N
-            properties[PROPERTY_location] = new PropertyDescriptor ( "location", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getLocation", "setLocation" ); // NOI18N
-            properties[PROPERTY_locationOnScreen] = new PropertyDescriptor ( "locationOnScreen", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getLocationOnScreen", null ); // NOI18N
-            properties[PROPERTY_managingFocus] = new PropertyDescriptor ( "managingFocus", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isManagingFocus", null ); // NOI18N
-            properties[PROPERTY_maximumSize] = new PropertyDescriptor ( "maximumSize", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getMaximumSize", "setMaximumSize" ); // NOI18N
-            properties[PROPERTY_maximumSizeSet] = new PropertyDescriptor ( "maximumSizeSet", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isMaximumSizeSet", null ); // NOI18N
-            properties[PROPERTY_minimumSize] = new PropertyDescriptor ( "minimumSize", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getMinimumSize", "setMinimumSize" ); // NOI18N
-            properties[PROPERTY_minimumSizeSet] = new PropertyDescriptor ( "minimumSizeSet", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isMinimumSizeSet", null ); // NOI18N
-            properties[PROPERTY_mouseListeners] = new PropertyDescriptor ( "mouseListeners", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getMouseListeners", null ); // NOI18N
-            properties[PROPERTY_mouseMotionListeners] = new PropertyDescriptor ( "mouseMotionListeners", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getMouseMotionListeners", null ); // NOI18N
-            properties[PROPERTY_mousePosition] = new PropertyDescriptor ( "mousePosition", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getMousePosition", null ); // NOI18N
-            properties[PROPERTY_mouseWheelListeners] = new PropertyDescriptor ( "mouseWheelListeners", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getMouseWheelListeners", null ); // NOI18N
-            properties[PROPERTY_name] = new PropertyDescriptor ( "name", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getName", "setName" ); // NOI18N
-            properties[PROPERTY_nextFocusableComponent] = new PropertyDescriptor ( "nextFocusableComponent", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getNextFocusableComponent", "setNextFocusableComponent" ); // NOI18N
-            properties[PROPERTY_opaque] = new PropertyDescriptor ( "opaque", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isOpaque", "setOpaque" ); // NOI18N
-            properties[PROPERTY_optimizedDrawingEnabled] = new PropertyDescriptor ( "optimizedDrawingEnabled", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isOptimizedDrawingEnabled", null ); // NOI18N
-            properties[PROPERTY_paintingForPrint] = new PropertyDescriptor ( "paintingForPrint", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isPaintingForPrint", null ); // NOI18N
-            properties[PROPERTY_paintingTile] = new PropertyDescriptor ( "paintingTile", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isPaintingTile", null ); // NOI18N
-            properties[PROPERTY_parent] = new PropertyDescriptor ( "parent", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getParent", null ); // NOI18N
-            properties[PROPERTY_peer] = new PropertyDescriptor ( "peer", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getPeer", null ); // NOI18N
-            properties[PROPERTY_preferredSize] = new PropertyDescriptor ( "preferredSize", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getPreferredSize", "setPreferredSize" ); // NOI18N
-            properties[PROPERTY_preferredSizeSet] = new PropertyDescriptor ( "preferredSizeSet", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isPreferredSizeSet", null ); // NOI18N
-            properties[PROPERTY_propertyChangeListeners] = new PropertyDescriptor ( "propertyChangeListeners", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getPropertyChangeListeners", null ); // NOI18N
-            properties[PROPERTY_registeredKeyStrokes] = new PropertyDescriptor ( "registeredKeyStrokes", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getRegisteredKeyStrokes", null ); // NOI18N
-            properties[PROPERTY_requestFocusEnabled] = new PropertyDescriptor ( "requestFocusEnabled", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isRequestFocusEnabled", "setRequestFocusEnabled" ); // NOI18N
-            properties[PROPERTY_rootPane] = new PropertyDescriptor ( "rootPane", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getRootPane", null ); // NOI18N
-            properties[PROPERTY_showing] = new PropertyDescriptor ( "showing", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isShowing", null ); // NOI18N
-            properties[PROPERTY_size] = new PropertyDescriptor ( "size", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getSize", "setSize" ); // NOI18N
-            properties[PROPERTY_toolkit] = new PropertyDescriptor ( "toolkit", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getToolkit", null ); // NOI18N
-            properties[PROPERTY_toolTipText] = new PropertyDescriptor ( "toolTipText", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getToolTipText", "setToolTipText" ); // NOI18N
-            properties[PROPERTY_topLevelAncestor] = new PropertyDescriptor ( "topLevelAncestor", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getTopLevelAncestor", null ); // NOI18N
-            properties[PROPERTY_transferHandler] = new PropertyDescriptor ( "transferHandler", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getTransferHandler", "setTransferHandler" ); // NOI18N
-            properties[PROPERTY_treeLock] = new PropertyDescriptor ( "treeLock", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getTreeLock", null ); // NOI18N
-            properties[PROPERTY_UI] = new PropertyDescriptor ( "UI", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getUI", "setUI" ); // NOI18N
-            properties[PROPERTY_UIClassID] = new PropertyDescriptor ( "UIClassID", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getUIClassID", null ); // NOI18N
-            properties[PROPERTY_valid] = new PropertyDescriptor ( "valid", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isValid", null ); // NOI18N
-            properties[PROPERTY_validateRoot] = new PropertyDescriptor ( "validateRoot", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isValidateRoot", null ); // NOI18N
-            properties[PROPERTY_verifyInputWhenFocusTarget] = new PropertyDescriptor ( "verifyInputWhenFocusTarget", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getVerifyInputWhenFocusTarget", "setVerifyInputWhenFocusTarget" ); // NOI18N
-            properties[PROPERTY_vetoableChangeListeners] = new PropertyDescriptor ( "vetoableChangeListeners", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getVetoableChangeListeners", null ); // NOI18N
-            properties[PROPERTY_visible] = new PropertyDescriptor ( "visible", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "isVisible", "setVisible" ); // NOI18N
-            properties[PROPERTY_visibleRect] = new PropertyDescriptor ( "visibleRect", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getVisibleRect", null ); // NOI18N
-            properties[PROPERTY_width] = new PropertyDescriptor ( "width", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getWidth", null ); // NOI18N
-            properties[PROPERTY_x] = new PropertyDescriptor ( "x", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getX", null ); // NOI18N
-            properties[PROPERTY_y] = new PropertyDescriptor ( "y", ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "getY", null ); // NOI18N
+            properties[PROPERTY_accessibleContext] = new PropertyDescriptor ( "accessibleContext", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getAccessibleContext", null ); // NOI18N
+            properties[PROPERTY_actionMap] = new PropertyDescriptor ( "actionMap", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getActionMap", "setActionMap" ); // NOI18N
+            properties[PROPERTY_alignmentX] = new PropertyDescriptor ( "alignmentX", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getAlignmentX", "setAlignmentX" ); // NOI18N
+            properties[PROPERTY_alignmentY] = new PropertyDescriptor ( "alignmentY", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getAlignmentY", "setAlignmentY" ); // NOI18N
+            properties[PROPERTY_ancestorListeners] = new PropertyDescriptor ( "ancestorListeners", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getAncestorListeners", null ); // NOI18N
+            properties[PROPERTY_autoscrolls] = new PropertyDescriptor ( "autoscrolls", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getAutoscrolls", "setAutoscrolls" ); // NOI18N
+            properties[PROPERTY_background] = new PropertyDescriptor ( "background", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getBackground", "setBackground" ); // NOI18N
+            properties[PROPERTY_backgroundSet] = new PropertyDescriptor ( "backgroundSet", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isBackgroundSet", null ); // NOI18N
+            properties[PROPERTY_baselineResizeBehavior] = new PropertyDescriptor ( "baselineResizeBehavior", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getBaselineResizeBehavior", null ); // NOI18N
+            properties[PROPERTY_border] = new PropertyDescriptor ( "border", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getBorder", "setBorder" ); // NOI18N
+            properties[PROPERTY_bounds] = new PropertyDescriptor ( "bounds", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getBounds", "setBounds" ); // NOI18N
+            properties[PROPERTY_colorModel] = new PropertyDescriptor ( "colorModel", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getColorModel", null ); // NOI18N
+            properties[PROPERTY_component] = new IndexedPropertyDescriptor ( "component", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, null, null, "getComponent", null ); // NOI18N
+            properties[PROPERTY_componentCount] = new PropertyDescriptor ( "componentCount", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getComponentCount", null ); // NOI18N
+            properties[PROPERTY_componentListeners] = new PropertyDescriptor ( "componentListeners", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getComponentListeners", null ); // NOI18N
+            properties[PROPERTY_componentOrientation] = new PropertyDescriptor ( "componentOrientation", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getComponentOrientation", "setComponentOrientation" ); // NOI18N
+            properties[PROPERTY_componentPopupMenu] = new PropertyDescriptor ( "componentPopupMenu", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getComponentPopupMenu", "setComponentPopupMenu" ); // NOI18N
+            properties[PROPERTY_components] = new PropertyDescriptor ( "components", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getComponents", null ); // NOI18N
+            properties[PROPERTY_containerListeners] = new PropertyDescriptor ( "containerListeners", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getContainerListeners", null ); // NOI18N
+            properties[PROPERTY_cursor] = new PropertyDescriptor ( "cursor", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getCursor", "setCursor" ); // NOI18N
+            properties[PROPERTY_cursorSet] = new PropertyDescriptor ( "cursorSet", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isCursorSet", null ); // NOI18N
+            properties[PROPERTY_debugGraphicsOptions] = new PropertyDescriptor ( "debugGraphicsOptions", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getDebugGraphicsOptions", "setDebugGraphicsOptions" ); // NOI18N
+            properties[PROPERTY_displayable] = new PropertyDescriptor ( "displayable", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isDisplayable", null ); // NOI18N
+            properties[PROPERTY_doubleBuffered] = new PropertyDescriptor ( "doubleBuffered", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isDoubleBuffered", "setDoubleBuffered" ); // NOI18N
+            properties[PROPERTY_dropTarget] = new PropertyDescriptor ( "dropTarget", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getDropTarget", "setDropTarget" ); // NOI18N
+            properties[PROPERTY_enabled] = new PropertyDescriptor ( "enabled", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isEnabled", "setEnabled" ); // NOI18N
+            properties[PROPERTY_focusable] = new PropertyDescriptor ( "focusable", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isFocusable", "setFocusable" ); // NOI18N
+            properties[PROPERTY_focusCycleRoot] = new PropertyDescriptor ( "focusCycleRoot", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isFocusCycleRoot", "setFocusCycleRoot" ); // NOI18N
+            properties[PROPERTY_focusCycleRootAncestor] = new PropertyDescriptor ( "focusCycleRootAncestor", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getFocusCycleRootAncestor", null ); // NOI18N
+            properties[PROPERTY_focusListeners] = new PropertyDescriptor ( "focusListeners", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getFocusListeners", null ); // NOI18N
+            properties[PROPERTY_focusOwner] = new PropertyDescriptor ( "focusOwner", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isFocusOwner", null ); // NOI18N
+            properties[PROPERTY_focusTraversable] = new PropertyDescriptor ( "focusTraversable", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isFocusTraversable", null ); // NOI18N
+            properties[PROPERTY_focusTraversalKeys] = new IndexedPropertyDescriptor ( "focusTraversalKeys", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, null, null, null, "setFocusTraversalKeys" ); // NOI18N
+            properties[PROPERTY_focusTraversalKeysEnabled] = new PropertyDescriptor ( "focusTraversalKeysEnabled", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getFocusTraversalKeysEnabled", "setFocusTraversalKeysEnabled" ); // NOI18N
+            properties[PROPERTY_focusTraversalPolicy] = new PropertyDescriptor ( "focusTraversalPolicy", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getFocusTraversalPolicy", "setFocusTraversalPolicy" ); // NOI18N
+            properties[PROPERTY_focusTraversalPolicyProvider] = new PropertyDescriptor ( "focusTraversalPolicyProvider", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isFocusTraversalPolicyProvider", "setFocusTraversalPolicyProvider" ); // NOI18N
+            properties[PROPERTY_focusTraversalPolicySet] = new PropertyDescriptor ( "focusTraversalPolicySet", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isFocusTraversalPolicySet", null ); // NOI18N
+            properties[PROPERTY_font] = new PropertyDescriptor ( "font", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getFont", "setFont" ); // NOI18N
+            properties[PROPERTY_fontSet] = new PropertyDescriptor ( "fontSet", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isFontSet", null ); // NOI18N
+            properties[PROPERTY_foreground] = new PropertyDescriptor ( "foreground", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getForeground", "setForeground" ); // NOI18N
+            properties[PROPERTY_foregroundSet] = new PropertyDescriptor ( "foregroundSet", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isForegroundSet", null ); // NOI18N
+            properties[PROPERTY_graphics] = new PropertyDescriptor ( "graphics", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getGraphics", null ); // NOI18N
+            properties[PROPERTY_graphicsConfiguration] = new PropertyDescriptor ( "graphicsConfiguration", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getGraphicsConfiguration", null ); // NOI18N
+            properties[PROPERTY_height] = new PropertyDescriptor ( "height", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getHeight", null ); // NOI18N
+            properties[PROPERTY_hierarchyBoundsListeners] = new PropertyDescriptor ( "hierarchyBoundsListeners", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getHierarchyBoundsListeners", null ); // NOI18N
+            properties[PROPERTY_hierarchyListeners] = new PropertyDescriptor ( "hierarchyListeners", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getHierarchyListeners", null ); // NOI18N
+            properties[PROPERTY_ignoreRepaint] = new PropertyDescriptor ( "ignoreRepaint", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getIgnoreRepaint", "setIgnoreRepaint" ); // NOI18N
+            properties[PROPERTY_inheritsPopupMenu] = new PropertyDescriptor ( "inheritsPopupMenu", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getInheritsPopupMenu", "setInheritsPopupMenu" ); // NOI18N
+            properties[PROPERTY_inputContext] = new PropertyDescriptor ( "inputContext", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getInputContext", null ); // NOI18N
+            properties[PROPERTY_inputMap] = new PropertyDescriptor ( "inputMap", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getInputMap", null ); // NOI18N
+            properties[PROPERTY_inputMethodListeners] = new PropertyDescriptor ( "inputMethodListeners", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getInputMethodListeners", null ); // NOI18N
+            properties[PROPERTY_inputMethodRequests] = new PropertyDescriptor ( "inputMethodRequests", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getInputMethodRequests", null ); // NOI18N
+            properties[PROPERTY_inputVerifier] = new PropertyDescriptor ( "inputVerifier", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getInputVerifier", "setInputVerifier" ); // NOI18N
+            properties[PROPERTY_insets] = new PropertyDescriptor ( "insets", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getInsets", null ); // NOI18N
+            properties[PROPERTY_keyListeners] = new PropertyDescriptor ( "keyListeners", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getKeyListeners", null ); // NOI18N
+            properties[PROPERTY_layout] = new PropertyDescriptor ( "layout", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getLayout", "setLayout" ); // NOI18N
+            properties[PROPERTY_lightweight] = new PropertyDescriptor ( "lightweight", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isLightweight", null ); // NOI18N
+            properties[PROPERTY_locale] = new PropertyDescriptor ( "locale", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getLocale", "setLocale" ); // NOI18N
+            properties[PROPERTY_location] = new PropertyDescriptor ( "location", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getLocation", "setLocation" ); // NOI18N
+            properties[PROPERTY_locationOnScreen] = new PropertyDescriptor ( "locationOnScreen", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getLocationOnScreen", null ); // NOI18N
+            properties[PROPERTY_managingFocus] = new PropertyDescriptor ( "managingFocus", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isManagingFocus", null ); // NOI18N
+            properties[PROPERTY_maximumSize] = new PropertyDescriptor ( "maximumSize", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getMaximumSize", "setMaximumSize" ); // NOI18N
+            properties[PROPERTY_maximumSizeSet] = new PropertyDescriptor ( "maximumSizeSet", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isMaximumSizeSet", null ); // NOI18N
+            properties[PROPERTY_minimumSize] = new PropertyDescriptor ( "minimumSize", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getMinimumSize", "setMinimumSize" ); // NOI18N
+            properties[PROPERTY_minimumSizeSet] = new PropertyDescriptor ( "minimumSizeSet", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isMinimumSizeSet", null ); // NOI18N
+            properties[PROPERTY_mouseListeners] = new PropertyDescriptor ( "mouseListeners", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getMouseListeners", null ); // NOI18N
+            properties[PROPERTY_mouseMotionListeners] = new PropertyDescriptor ( "mouseMotionListeners", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getMouseMotionListeners", null ); // NOI18N
+            properties[PROPERTY_mousePosition] = new PropertyDescriptor ( "mousePosition", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getMousePosition", null ); // NOI18N
+            properties[PROPERTY_mouseWheelListeners] = new PropertyDescriptor ( "mouseWheelListeners", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getMouseWheelListeners", null ); // NOI18N
+            properties[PROPERTY_name] = new PropertyDescriptor ( "name", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getName", "setName" ); // NOI18N
+            properties[PROPERTY_nextFocusableComponent] = new PropertyDescriptor ( "nextFocusableComponent", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getNextFocusableComponent", "setNextFocusableComponent" ); // NOI18N
+            properties[PROPERTY_opaque] = new PropertyDescriptor ( "opaque", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isOpaque", "setOpaque" ); // NOI18N
+            properties[PROPERTY_optimizedDrawingEnabled] = new PropertyDescriptor ( "optimizedDrawingEnabled", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isOptimizedDrawingEnabled", null ); // NOI18N
+            properties[PROPERTY_paintingForPrint] = new PropertyDescriptor ( "paintingForPrint", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isPaintingForPrint", null ); // NOI18N
+            properties[PROPERTY_paintingTile] = new PropertyDescriptor ( "paintingTile", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isPaintingTile", null ); // NOI18N
+            properties[PROPERTY_parent] = new PropertyDescriptor ( "parent", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getParent", null ); // NOI18N
+            properties[PROPERTY_peer] = new PropertyDescriptor ( "peer", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getPeer", null ); // NOI18N
+            properties[PROPERTY_preferredSize] = new PropertyDescriptor ( "preferredSize", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getPreferredSize", "setPreferredSize" ); // NOI18N
+            properties[PROPERTY_preferredSizeSet] = new PropertyDescriptor ( "preferredSizeSet", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isPreferredSizeSet", null ); // NOI18N
+            properties[PROPERTY_propertyChangeListeners] = new PropertyDescriptor ( "propertyChangeListeners", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getPropertyChangeListeners", null ); // NOI18N
+            properties[PROPERTY_registeredKeyStrokes] = new PropertyDescriptor ( "registeredKeyStrokes", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getRegisteredKeyStrokes", null ); // NOI18N
+            properties[PROPERTY_requestFocusEnabled] = new PropertyDescriptor ( "requestFocusEnabled", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isRequestFocusEnabled", "setRequestFocusEnabled" ); // NOI18N
+            properties[PROPERTY_rootPane] = new PropertyDescriptor ( "rootPane", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getRootPane", null ); // NOI18N
+            properties[PROPERTY_showing] = new PropertyDescriptor ( "showing", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isShowing", null ); // NOI18N
+            properties[PROPERTY_size] = new PropertyDescriptor ( "size", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getSize", "setSize" ); // NOI18N
+            properties[PROPERTY_toolkit] = new PropertyDescriptor ( "toolkit", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getToolkit", null ); // NOI18N
+            properties[PROPERTY_toolTipText] = new PropertyDescriptor ( "toolTipText", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getToolTipText", "setToolTipText" ); // NOI18N
+            properties[PROPERTY_topLevelAncestor] = new PropertyDescriptor ( "topLevelAncestor", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getTopLevelAncestor", null ); // NOI18N
+            properties[PROPERTY_transferHandler] = new PropertyDescriptor ( "transferHandler", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getTransferHandler", "setTransferHandler" ); // NOI18N
+            properties[PROPERTY_treeLock] = new PropertyDescriptor ( "treeLock", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getTreeLock", null ); // NOI18N
+            properties[PROPERTY_UI] = new PropertyDescriptor ( "UI", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getUI", "setUI" ); // NOI18N
+            properties[PROPERTY_UIClassID] = new PropertyDescriptor ( "UIClassID", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getUIClassID", null ); // NOI18N
+            properties[PROPERTY_valid] = new PropertyDescriptor ( "valid", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isValid", null ); // NOI18N
+            properties[PROPERTY_validateRoot] = new PropertyDescriptor ( "validateRoot", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isValidateRoot", null ); // NOI18N
+            properties[PROPERTY_verifyInputWhenFocusTarget] = new PropertyDescriptor ( "verifyInputWhenFocusTarget", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getVerifyInputWhenFocusTarget", "setVerifyInputWhenFocusTarget" ); // NOI18N
+            properties[PROPERTY_vetoableChangeListeners] = new PropertyDescriptor ( "vetoableChangeListeners", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getVetoableChangeListeners", null ); // NOI18N
+            properties[PROPERTY_visible] = new PropertyDescriptor ( "visible", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "isVisible", "setVisible" ); // NOI18N
+            properties[PROPERTY_visibleRect] = new PropertyDescriptor ( "visibleRect", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getVisibleRect", null ); // NOI18N
+            properties[PROPERTY_width] = new PropertyDescriptor ( "width", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getWidth", null ); // NOI18N
+            properties[PROPERTY_x] = new PropertyDescriptor ( "x", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getX", null ); // NOI18N
+            properties[PROPERTY_y] = new PropertyDescriptor ( "y", ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "getY", null ); // NOI18N
         }
         catch(IntrospectionException e) {
             e.printStackTrace();
@@ -284,19 +284,19 @@ public class MllpHl7v2InterfaceFormBeanInfo extends SimpleBeanInfo {
         EventSetDescriptor[] eventSets = new EventSetDescriptor[13];
     
         try {
-            eventSets[EVENT_ancestorListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "ancestorListener", javax.swing.event.AncestorListener.class, new String[] {"ancestorAdded", "ancestorRemoved", "ancestorMoved"}, "addAncestorListener", "removeAncestorListener" ); // NOI18N
-            eventSets[EVENT_componentListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "componentListener", java.awt.event.ComponentListener.class, new String[] {"componentResized", "componentMoved", "componentShown", "componentHidden"}, "addComponentListener", "removeComponentListener" ); // NOI18N
-            eventSets[EVENT_containerListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "containerListener", java.awt.event.ContainerListener.class, new String[] {"componentAdded", "componentRemoved"}, "addContainerListener", "removeContainerListener" ); // NOI18N
-            eventSets[EVENT_focusListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "focusListener", java.awt.event.FocusListener.class, new String[] {"focusGained", "focusLost"}, "addFocusListener", "removeFocusListener" ); // NOI18N
-            eventSets[EVENT_hierarchyBoundsListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "hierarchyBoundsListener", java.awt.event.HierarchyBoundsListener.class, new String[] {"ancestorMoved", "ancestorResized"}, "addHierarchyBoundsListener", "removeHierarchyBoundsListener" ); // NOI18N
-            eventSets[EVENT_hierarchyListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "hierarchyListener", java.awt.event.HierarchyListener.class, new String[] {"hierarchyChanged"}, "addHierarchyListener", "removeHierarchyListener" ); // NOI18N
-            eventSets[EVENT_inputMethodListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "inputMethodListener", java.awt.event.InputMethodListener.class, new String[] {"inputMethodTextChanged", "caretPositionChanged"}, "addInputMethodListener", "removeInputMethodListener" ); // NOI18N
-            eventSets[EVENT_keyListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "keyListener", java.awt.event.KeyListener.class, new String[] {"keyTyped", "keyPressed", "keyReleased"}, "addKeyListener", "removeKeyListener" ); // NOI18N
-            eventSets[EVENT_mouseListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "mouseListener", java.awt.event.MouseListener.class, new String[] {"mouseClicked", "mousePressed", "mouseReleased", "mouseEntered", "mouseExited"}, "addMouseListener", "removeMouseListener" ); // NOI18N
-            eventSets[EVENT_mouseMotionListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "mouseMotionListener", java.awt.event.MouseMotionListener.class, new String[] {"mouseDragged", "mouseMoved"}, "addMouseMotionListener", "removeMouseMotionListener" ); // NOI18N
-            eventSets[EVENT_mouseWheelListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "mouseWheelListener", java.awt.event.MouseWheelListener.class, new String[] {"mouseWheelMoved"}, "addMouseWheelListener", "removeMouseWheelListener" ); // NOI18N
-            eventSets[EVENT_propertyChangeListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "propertyChangeListener", java.beans.PropertyChangeListener.class, new String[] {"propertyChange"}, "addPropertyChangeListener", "removePropertyChangeListener" ); // NOI18N
-            eventSets[EVENT_vetoableChangeListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.MllpHl7v2InterfaceForm.class, "vetoableChangeListener", java.beans.VetoableChangeListener.class, new String[] {"vetoableChange"}, "addVetoableChangeListener", "removeVetoableChangeListener" ); // NOI18N
+            eventSets[EVENT_ancestorListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "ancestorListener", javax.swing.event.AncestorListener.class, new String[] {"ancestorAdded", "ancestorRemoved", "ancestorMoved"}, "addAncestorListener", "removeAncestorListener" ); // NOI18N
+            eventSets[EVENT_componentListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "componentListener", java.awt.event.ComponentListener.class, new String[] {"componentResized", "componentMoved", "componentShown", "componentHidden"}, "addComponentListener", "removeComponentListener" ); // NOI18N
+            eventSets[EVENT_containerListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "containerListener", java.awt.event.ContainerListener.class, new String[] {"componentAdded", "componentRemoved"}, "addContainerListener", "removeContainerListener" ); // NOI18N
+            eventSets[EVENT_focusListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "focusListener", java.awt.event.FocusListener.class, new String[] {"focusGained", "focusLost"}, "addFocusListener", "removeFocusListener" ); // NOI18N
+            eventSets[EVENT_hierarchyBoundsListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "hierarchyBoundsListener", java.awt.event.HierarchyBoundsListener.class, new String[] {"ancestorMoved", "ancestorResized"}, "addHierarchyBoundsListener", "removeHierarchyBoundsListener" ); // NOI18N
+            eventSets[EVENT_hierarchyListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "hierarchyListener", java.awt.event.HierarchyListener.class, new String[] {"hierarchyChanged"}, "addHierarchyListener", "removeHierarchyListener" ); // NOI18N
+            eventSets[EVENT_inputMethodListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "inputMethodListener", java.awt.event.InputMethodListener.class, new String[] {"inputMethodTextChanged", "caretPositionChanged"}, "addInputMethodListener", "removeInputMethodListener" ); // NOI18N
+            eventSets[EVENT_keyListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "keyListener", java.awt.event.KeyListener.class, new String[] {"keyTyped", "keyPressed", "keyReleased"}, "addKeyListener", "removeKeyListener" ); // NOI18N
+            eventSets[EVENT_mouseListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "mouseListener", java.awt.event.MouseListener.class, new String[] {"mouseClicked", "mousePressed", "mouseReleased", "mouseEntered", "mouseExited"}, "addMouseListener", "removeMouseListener" ); // NOI18N
+            eventSets[EVENT_mouseMotionListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "mouseMotionListener", java.awt.event.MouseMotionListener.class, new String[] {"mouseDragged", "mouseMoved"}, "addMouseMotionListener", "removeMouseMotionListener" ); // NOI18N
+            eventSets[EVENT_mouseWheelListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "mouseWheelListener", java.awt.event.MouseWheelListener.class, new String[] {"mouseWheelMoved"}, "addMouseWheelListener", "removeMouseWheelListener" ); // NOI18N
+            eventSets[EVENT_propertyChangeListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "propertyChangeListener", java.beans.PropertyChangeListener.class, new String[] {"propertyChange"}, "addPropertyChangeListener", "removePropertyChangeListener" ); // NOI18N
+            eventSets[EVENT_vetoableChangeListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceForm.class, "vetoableChangeListener", java.beans.VetoableChangeListener.class, new String[] {"vetoableChange"}, "addVetoableChangeListener", "removeVetoableChangeListener" ); // NOI18N
         }
         catch(IntrospectionException e) {
             e.printStackTrace();
