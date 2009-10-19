@@ -22,40 +22,45 @@
 package ca.uhn.hunit.event.send;
 
 import ca.uhn.hunit.event.AbstractEvent;
+import ca.uhn.hunit.event.ISpecificMessageEvent;
 import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
+import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.xsd.SendMessage;
 
-public abstract class AbstractSendMessage<T> extends AbstractEvent {
+public abstract class AbstractSendMessage<T> extends AbstractEvent implements ISpecificMessageEvent {
 
 
-	private TestImpl myTest;
-	private AbstractMessage myMessageProvider;
-	private AbstractInterface myInterface;
+	private String myInterfaceId;
+    private String myMessageId;
 
 
-	public AbstractSendMessage(TestBatteryImpl theBattery, TestImpl theTest, SendMessage theConfig) throws ConfigurationException {
-		super(theBattery, theTest, theConfig);
-		
-		String messageId = theConfig.getMessageId();
-		myMessageProvider = getBattery().getMessage(messageId);
-		myInterface = getBattery().getInterface(getInterfaceId());
-		myTest = theTest;
+	public AbstractSendMessage(TestImpl theTest, SendMessage theConfig) throws ConfigurationException {
+		super(theTest, theConfig);
 	}
 
 	@Override
 	public void execute(ExecutionContext theCtx) throws TestFailureException {
+        
+        try {
+            
+            AbstractMessage messageProvider = getBattery().getMessage(myMessageId);
+            TestMessage<?> message = messageProvider.getTestMessage();
 
-		TestMessage<?> message = myMessageProvider.getTestMessage();
-		
-        message = massageMessage((TestMessage<T>) message);
-		
-		myInterface.sendMessage(myTest, theCtx, message);
+            message = massageMessage((TestMessage<T>) message);
+            AbstractInterface iface = getBattery().getInterface(myInterfaceId);
+            iface.sendMessage(getTest(), theCtx, message);
+
+        } catch (ConfigurationException ex) {
+
+            throw new UnexpectedTestFailureException(ex);
+            
+        }
 		
 	}
 
@@ -64,5 +69,17 @@ public abstract class AbstractSendMessage<T> extends AbstractEvent {
      * they need to do. It is ok to just return the object passed in.
      */
 	public abstract TestMessage<T> massageMessage(TestMessage<T> theInput) throws TestFailureException;
-	
+
+
+    public String getMessageId() {
+        return myMessageId;
+    }
+
+
+    public void setMessageId(String theMessageId) {
+        String oldValue = theMessageId;
+        this.myMessageId = theMessageId;
+        firePropertyChange(MESSAGE_ID_PROPERTY, oldValue, myMessageId);
+    }
+
 }

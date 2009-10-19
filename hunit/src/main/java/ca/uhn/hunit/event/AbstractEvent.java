@@ -27,17 +27,22 @@ import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.util.AbstractModelClass;
 import ca.uhn.hunit.xsd.Event;
 
-public abstract class AbstractEvent {
+/**
+ * An event is a single action taken within a test. A single test therefore is
+ * a series of events executed in parallel
+ */
+public abstract class AbstractEvent extends AbstractModelClass {
 
-	private TestBatteryImpl myBattery;
+    public static final String INTERFACE_ID_PROPERTY = "INTERFACE_ID_PROPERTY";
+
 	private String myInterfaceId;
 	private TestImpl myTest;
 
-	public AbstractEvent(TestBatteryImpl theBattery, TestImpl theTest, Event theConfig) {
+	public AbstractEvent(TestImpl theTest, Event theConfig) {
 		myInterfaceId = theConfig.getInterfaceId();
-		myBattery = theBattery;		
 		myTest = theTest;
 	}
 	
@@ -48,7 +53,7 @@ public abstract class AbstractEvent {
 	public abstract void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException;
 
 	public TestBatteryImpl getBattery() {
-		return myBattery;
+		return myTest.getBattery();
 	}
 
 	public String getInterfaceId() {
@@ -56,7 +61,23 @@ public abstract class AbstractEvent {
 	}
 
 	public AbstractInterface getInterface() throws ConfigurationException {
-		return myBattery.getInterface(myInterfaceId);
+		return myTest.getBattery().getInterface(myInterfaceId);
 	}
-	
+
+    /**
+     * Returns the ResourceBundle key to be used to retrieve the description of this event
+     */
+    public String getResourceBundleSummaryKey() {
+        return "event.summary." + getClass().getName();
+    }
+
+    public void setInterfaceId(String string) {
+        if (string == null || !myTest.getBattery().getInterfaceIds().contains(string)) {
+            return;
+        }
+        String oldValue = myInterfaceId;
+        myInterfaceId = string;
+        firePropertyChange(INTERFACE_ID_PROPERTY, oldValue, myInterfaceId);
+    }
+
 }

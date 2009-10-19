@@ -27,8 +27,8 @@ import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.run.IExecutionListener;
-import ca.uhn.hunit.test.ITest;
 import ca.uhn.hunit.test.TestBatteryImpl;
+import ca.uhn.hunit.test.TestImpl;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -100,18 +100,18 @@ public class HunitRunner extends Runner {
 
         ctx.addListener(new IExecutionListener() {
 
-            public void testFailed(ITest theTest, TestFailureException theException) {
+            public void testFailed(TestImpl theTest, TestFailureException theException) {
                 Description description = myTestName2Description.get(theTest.getName());
                 Failure failure = new Failure(description, theException);
                 notifier.fireTestFailure(failure);
             }
 
-            public void testPassed(ITest theTest) {
+            public void testPassed(TestImpl theTest) {
                 Description description = myTestName2Description.get(theTest.getName());
                 notifier.fireTestFinished(description);
             }
 
-            public void testStarted(ITest theTest) {
+            public void testStarted(TestImpl theTest) {
                 Description description = myTestName2Description.get(theTest.getName());
                 notifier.fireTestStarted(description);
             }

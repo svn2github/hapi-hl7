@@ -28,13 +28,16 @@ package ca.uhn.hunit.swing.controller.ctx;
 
 import ca.uhn.hunit.iface.AbstractInterface;
 import javax.swing.JPanel;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  *
  * @author James
  */
 public abstract class AbstractInterfaceEditorContextController<T extends AbstractInterface, V extends JPanel> extends AbstractContextController<V> {
-    
+    private static final Log ourLog = LogFactory.getLog(AbstractInterfaceEditorContextController.class);
+
     private final T myModel;
 
     public AbstractInterfaceEditorContextController(T theModel) {
@@ -43,6 +46,12 @@ public abstract class AbstractInterfaceEditorContextController<T extends Abstrac
 
     public T getModel() {
         return myModel;
+    }
+
+    public void setId(String text) {
+        ourLog.info("Setting ID to " + text);
+        
+        myModel.setId(text);
     }
 
 }

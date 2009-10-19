@@ -29,7 +29,7 @@ import ca.uhn.hunit.iface.TestMessage;
  * Implementors of this class are able to compare two messages (of a given type they
  * are able to handle) and return a structured comparison.
  */
-public interface ICompare {
+public interface ICompare<T> {
 
     /**
      * Triggers the comparison. This method is expected to be called once,
@@ -38,7 +38,7 @@ public interface ICompare {
      * @param theExpected The expected message
      * @param theActual The actual message
      */
-    void compare(TestMessage theExpectMessage, TestMessage theActualMessage) throws UnexpectedTestFailureException;
+    void compare(TestMessage<T> theExpectMessage, TestMessage<T> theActualMessage) throws UnexpectedTestFailureException;
 
     
     /**

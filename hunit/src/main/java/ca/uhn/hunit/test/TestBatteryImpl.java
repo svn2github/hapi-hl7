@@ -52,17 +52,18 @@ import ca.uhn.hunit.xsd.TestBattery;
 import ca.uhn.hunit.xsd.XmlMessageDefinition;
 import java.util.Collection;
 
-public class TestBatteryImpl extends AbstractPropertyChangeSupport implements ITest {
+public class TestBatteryImpl extends AbstractPropertyChangeSupport {
 
 	public static final String PROP_INTERFACES = "PROP_INTERFACES"; 
+	public static final String PROP_MESSAGES = "PROP_MESSAGES";
+	public static final String PROP_TESTS = "PROP_TESTS";
 	
 	private TestBattery myConfig;
 	private Map<String, AbstractInterface> myId2Interface = new HashMap<String, AbstractInterface>();
 	private Map<String, AbstractMessage> myId2Message = new HashMap<String, AbstractMessage>();
 	private String myName;
-	private List<TestImpl> myTests = new ArrayList<TestImpl>();
-	private HashMap<String, TestImpl> myTestNames2Tests = new HashMap<String, TestImpl>();
-	private List<String> myTestNames = new ArrayList<String>();
+    private final BatteryTestModel myTestModel = new BatteryTestModel(this);
+    private final List<AbstractMessage> myMessages = new ArrayList<AbstractMessage>();
 	
 	public TestBatteryImpl(TestBattery theConfig) throws ConfigurationException, InterfaceWontStartException {
 		myConfig = theConfig;
@@ -86,6 +87,10 @@ public class TestBatteryImpl extends AbstractPropertyChangeSupport implements IT
 		return battery;
 	}
 
+    public TestBatteryImpl() {
+        myName = "Untitled";
+    }
+
 	private void initMessages() throws ConfigurationException {
 		AnyMessageDefinitions messages = myConfig.getMessages();
 		if (messages != null) {
@@ -99,6 +104,7 @@ public class TestBatteryImpl extends AbstractPropertyChangeSupport implements IT
                     throw new ConfigurationException("Unknown message type: " + next.getClass().getName());
                 }
 				myId2Message.put(nextMessage.getId(), nextMessage);
+                myMessages.add(nextMessage);
 			}
 		}
 	}
@@ -111,16 +117,8 @@ public class TestBatteryImpl extends AbstractPropertyChangeSupport implements IT
 	}
 
 	private void initTests() throws ConfigurationException {
-		for (Test next : myConfig.getTests().getTest()) {
-			TestImpl nextTest = new TestImpl(this, next);
-			if (myTestNames2Tests.containsKey(nextTest.getName())) {
-				throw new ConfigurationException("Duplicate test name detected: " + nextTest.getName());
-			}
-			myTestNames2Tests.put(nextTest.getName(), nextTest);
-			myTests.add(nextTest);
-			myTestNames.add(nextTest.getName());
-		}
-
+        final List<Test> testList = myConfig.getTests().getTest();
+        myTestModel.initFromXml(testList);
 	}
 
 	public AbstractInterface getInterface(String theId) throws ConfigurationException {
@@ -151,9 +149,10 @@ public class TestBatteryImpl extends AbstractPropertyChangeSupport implements IT
 	}
 
 
-	public HashMap<String, TestImpl> getTestNames2Tests() {
-		return myTestNames2Tests;
-	}
+    public TestImpl getTestByName(String theName) {
+        return myTestModel.getTestByName(theName);
+    }
+
 
 	public Set<String> getInterfacesUsed() {
 		return myId2Interface.keySet();
@@ -166,11 +165,19 @@ public class TestBatteryImpl extends AbstractPropertyChangeSupport implements IT
 	}
 
 	public List<String> getTestNames() {
-		return myTestNames;
+		return myTestModel.getTestNames();
 	}
 
-    public Collection<AbstractMessage> getMessages() {
-        return myId2Message.values();
+    public List<AbstractMessage> getMessages() {
+        return myMessages;
+    }
+
+    public List<TestImpl> getTests() {
+		return myTestModel.getTests();
+    }
+
+    public Set<String> getInterfaceIds() {
+        return myId2Interface.keySet();
     }
 
 }

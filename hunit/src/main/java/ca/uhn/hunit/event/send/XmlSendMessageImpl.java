@@ -28,26 +28,30 @@ package ca.uhn.hunit.event.send;
 
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.iface.TestMessage;
-import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.XMLSendMessage;
+import org.jdom.Document;
 
 /**
  *
  * @author James
  */
-public class XmlSendMessageImpl extends AbstractSendMessage {
+public class XmlSendMessageImpl extends AbstractSendMessage<Document> {
 
-    public XmlSendMessageImpl(TestBatteryImpl theBattery, TestImpl theTest, XMLSendMessage theConfig) throws ConfigurationException {
-        super(theBattery, theTest, theConfig);
+    public XmlSendMessageImpl(TestImpl theTest, XMLSendMessage theConfig) throws ConfigurationException {
+        super(theTest, theConfig);
     }
 
     /**
      * {@inheritDoc }
      */
     @Override
-    public TestMessage massageMessage(TestMessage theInput) {
+    public TestMessage<Document> massageMessage(TestMessage<Document> theInput) {
         return theInput;
+    }
+
+    public Class<Document> getMessageClass() {
+        return Document.class;
     }
 
 }

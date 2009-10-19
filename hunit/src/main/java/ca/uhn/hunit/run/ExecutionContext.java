@@ -21,6 +21,7 @@
  */
 package ca.uhn.hunit.run;
 
+import ca.uhn.hunit.test.TestEventsModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,7 +35,8 @@ import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
-import ca.uhn.hunit.util.Log;
+import ca.uhn.hunit.util.log.CommonsLoggingLog;
+import ca.uhn.hunit.util.log.ILogProvider;
 
 public class ExecutionContext {
 
@@ -42,6 +44,7 @@ public class ExecutionContext {
     private List<TestImpl> myTestSuccesses = new ArrayList<TestImpl>();
     private List<IExecutionListener> myListeners = new ArrayList<IExecutionListener>();
     private TestBatteryImpl myBattery;
+    private ILogProvider myLog = new CommonsLoggingLog();
 
     public ExecutionContext(TestBatteryImpl theBattery) {
         myBattery = theBattery;
@@ -55,12 +58,12 @@ public class ExecutionContext {
     }
 
     public void addFailure(TestImpl theTest, TestFailureException theException) {
-        Log.get(theTest).error("Failure: " + theException.getMessage());
+        myLog.get(theTest).error("Failure: " + theException.getMessage());
         myTestFailures.put(theTest, theException);
     }
 
     public void addSuccess(TestImpl theTest) {
-        Log.get(theTest).info("Success!");
+        myLog.get(theTest).info("Success!");
         myTestSuccesses.add(theTest);
     }
 
@@ -90,27 +93,27 @@ public class ExecutionContext {
             theTestNamesToExecute = myBattery.getTestNames();
         }
 
-        Log.get(myBattery).info("About to execute battery");
+        myLog.get(myBattery).info("About to execute battery");
 
-        /* *****
+        /* 
          * TODO: Use java.util.concurrent's executorservice instead of the
-         * busywaits ****
+         * busywaits
          */
 
         List<TestImpl> tests = new ArrayList<TestImpl>();
         Map<String, TestBatteryExecutionThread> interface2thread = new HashMap<String, TestBatteryExecutionThread>();
-        for (String nextTestNameId : myBattery.getTestNames2Tests().keySet()) {
+        for (String nextTestNameId : myBattery.getTestNames()) {
             if (!theTestNamesToExecute.contains(nextTestNameId)) {
                 continue;
             }
 
-            TestImpl nextTest = myBattery.getTestNames2Tests().get(nextTestNameId);
+            TestImpl nextTest = myBattery.getTestByName(nextTestNameId);
             tests.add(nextTest);
 
             myTestFailures.remove(nextTest);
             myTestSuccesses.remove(nextTest);
 
-            for (String nextInterfaceId : nextTest.getInterfacesUsed()) {
+            for (String nextInterfaceId : nextTest.getEventsModel().getInterfaceIds()) {
                 if (interface2thread.containsKey(nextInterfaceId)) {
                     continue;
                 }
@@ -147,9 +150,14 @@ public class ExecutionContext {
                 next.testStarted(nextTest);
             }
 
-            for (Map.Entry<String, TestBatteryExecutionThread> nextEntry : interface2thread.entrySet()) {
-                List<AbstractEvent> events = nextTest.getEventsForInterface(nextEntry.getKey());
-                nextEntry.getValue().addEvents(events);
+            final TestEventsModel eventsModel = nextTest.getEventsModel();
+            for (int eventIndex = 0; eventIndex < eventsModel.getRowCount(); eventIndex++) {
+                for (String nextInterfaceId : eventsModel.getInterfaceIds()) {
+                    AbstractEvent nextEvent = eventsModel.getEventsByInterfaceId(nextInterfaceId).get(eventIndex);
+                    if (nextEvent != null) {
+                        interface2thread.get(nextInterfaceId).addEvent(nextEvent);
+                    }
+                }
             }
 
             // Wait for all threads to catch up - This works but it's ugly
@@ -207,6 +215,15 @@ public class ExecutionContext {
             }
         }
 
-        Log.get(myBattery).info("Finished executing battery");
+        myLog.get(myBattery).info("Finished executing battery");
     }
+
+    public ILogProvider getLog() {
+        return myLog;
+    }
+
+    public void setLog(ILogProvider myLog) {
+        this.myLog = myLog;
+    }
+
 }

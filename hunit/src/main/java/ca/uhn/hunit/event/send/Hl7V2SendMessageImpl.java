@@ -27,21 +27,20 @@ import ca.uhn.hl7v2.parser.DefaultXMLParser;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
 import ca.uhn.hl7v2.validation.impl.ValidationContextImpl;
+import ca.uhn.hunit.event.ISpecificMessageEvent;
 import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.xsd.Hl7V2SendMessage;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message> {
+public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message> implements ISpecificMessageEvent {
     private String myEncoding;
     private Parser myParser;
 
-	public Hl7V2SendMessageImpl(TestBatteryImpl theBattery,TestImpl theTest, 
+	public Hl7V2SendMessageImpl(TestImpl theTest, 
 			Hl7V2SendMessage theConfig) throws ConfigurationException {
-		super(theBattery, theTest, theConfig);
+		super(theTest, theConfig);
 
         myEncoding = theConfig.getEncoding();
 		if ("XML".equals(myEncoding)) {
@@ -64,6 +63,11 @@ public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message> {
             throw new UnexpectedTestFailureException("Unable to encode message", ex);
         }
 	}
+
+
+    public Class<Message> getMessageClass() {
+        return Message.class;
+    }
 
 
 }

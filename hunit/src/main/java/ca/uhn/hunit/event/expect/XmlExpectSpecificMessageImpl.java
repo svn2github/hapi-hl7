@@ -44,12 +44,12 @@ import org.w3c.dom.Document;
  *
  * @author James
  */
-public class XmlExpectSpecificMessage extends AbstractXmlExpectMessage {
+public class XmlExpectSpecificMessageImpl extends AbstractXmlExpectMessage {
     private final String myMessageId;
     private final XmlMessageImpl myMessageProvider;
 
-    public XmlExpectSpecificMessage(TestBatteryImpl theBattery, TestImpl theTest, XMLExpectSpecificMessage theConfig) throws ConfigurationException {
-        super(theBattery, theTest, theConfig);
+    public XmlExpectSpecificMessageImpl(TestImpl theTest, XMLExpectSpecificMessage theConfig) throws ConfigurationException {
+        super(theTest, theConfig);
 
 		myMessageId = theConfig.getMessageId();
 		AbstractMessage messageProvider = getBattery().getMessage(myMessageId);

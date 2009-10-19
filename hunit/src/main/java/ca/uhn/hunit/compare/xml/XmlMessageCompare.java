@@ -29,12 +29,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 /**
  * Implementation of ICompare which compares XML documents
  */
-public class XmlMessageCompare implements ICompare {
+public class XmlMessageCompare implements ICompare<Document> {
 
     private DetailedDiff myDiff;
 
@@ -45,7 +46,7 @@ public class XmlMessageCompare implements ICompare {
     /**
      * {@inheritDoc }
      */
-    public void compare(TestMessage theExpectMessage, TestMessage theActualMessage) throws UnexpectedTestFailureException {
+    public void compare(TestMessage<Document> theExpectMessage, TestMessage<Document> theActualMessage) throws UnexpectedTestFailureException {
 
         try {
             Diff diff = new Diff(theExpectMessage.getRawMessage(), theActualMessage.getRawMessage());
@@ -53,8 +54,6 @@ public class XmlMessageCompare implements ICompare {
         } catch (SAXException ex) {
             throw new UnexpectedTestFailureException("Failure generating message diff", ex);
         } catch (IOException ex) {
-            throw new UnexpectedTestFailureException("Failure generating message diff", ex);
-        } catch (ParserConfigurationException ex) {
             throw new UnexpectedTestFailureException("Failure generating message diff", ex);
         }
     }

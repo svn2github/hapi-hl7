@@ -19,14 +19,48 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.test;
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
-import java.util.Set;
+package ca.uhn.hunit.swing.ui.event.expect;
 
-public interface ITest {
+import ca.uhn.hunit.event.AbstractEvent;
+import ca.uhn.hunit.test.TestBatteryImpl;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.text.AbstractDocument.AbstractElement;
 
-	String getName();
+/**
+ *
+ * @author James
+ */
+public class InterfaceComboBoxModel extends DefaultComboBoxModel {
+    private static final long serialVersionUID = 1L;
 
-	Set<String> getInterfacesUsed();
-	
+    private final TestBatteryImpl myBattery;
+
+    public InterfaceComboBoxModel(TestBatteryImpl theBattery, AbstractEvent theEvent) {
+        if (theBattery == null) {
+            theBattery = new TestBatteryImpl();
+        }
+        myBattery = theBattery;
+
+        if (theEvent != null) {
+            setSelectedItem(theEvent.getInterfaceId());
+        }
+    }
+
+    @Override
+    public Object getElementAt(int index) {
+        return myBattery.getInterfaces().get(index).getId();
+    }
+
+    @Override
+    public int getSize() {
+        return myBattery.getInterfaces().size();
+    }
+
+    
+
 }

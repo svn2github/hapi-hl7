@@ -50,7 +50,7 @@ import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.test.TestImpl;
-import ca.uhn.hunit.util.Log;
+import ca.uhn.hunit.util.log.ILogProvider;
 import ca.uhn.hunit.xsd.Interface;
 import ca.uhn.hunit.xsd.MllpHl7V2Interface;
 
@@ -153,7 +153,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 	public TestMessage receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException {
 		start(theCtx);
 
-		Log.get(this).info( "Waiting to receive message");
+		theCtx.getLog().get(this).info( "Waiting to receive message");
 
 		String message = null;
 		Message parsedMessage;
@@ -161,7 +161,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 			long endTime = System.currentTimeMillis() + theTimeout;
 			while (!myStopped && message == null && System.currentTimeMillis() < endTime) {
 				if (!mySocket.isConnected()) {
-					Log.get(this).info( "Socket appears to be disconnected, attempting to reconnect");
+					theCtx.getLog().get(this).info( "Socket appears to be disconnected, attempting to reconnect");
 					startInterface(theCtx);
 				}
 				
@@ -175,7 +175,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 				return null;
 			}
 			
-			Log.get(this).info( "Received message (" + message.length() + " bytes)");
+			theCtx.getLog().get(this).info( "Received message (" + message.length() + " bytes)");
 
 			try {
 				parsedMessage = myParser.parse(message);
@@ -190,7 +190,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 					Message ack = DefaultApplication.makeACK((Segment) parsedMessage.get("MSH"));
 					String reply = myParser.encode(ack);
 
-					Log.get(this).info( "Sending HL7 v2 ACK (" + reply.length() + " bytes)");
+					theCtx.getLog().get(this).info( "Sending HL7 v2 ACK (" + reply.length() + " bytes)");
 					sendMessage(theTest, theCtx, new TestMessage(reply));
 				} catch (EncodingNotSupportedException e) {
 					throw new SendOrReceiveFailureException("Encoding issue: ", e);
@@ -226,11 +226,11 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 			}
 		}
 		
-		Log.get(this).info( "Sending message (" + theMessage.getRawMessage().length() + " bytes)");
+		theCtx.getLog().get(this).info( "Sending message (" + theMessage.getRawMessage().length() + " bytes)");
 
 		try {
 			myWriter.writeMessage(theMessage.getRawMessage());
-			Log.get(this).info( "Sent message");
+			theCtx.getLog().get(this).info( "Sent message");
 		} catch (LLPException e) {
 			throw new InterfaceWontSendException(this, e.getMessage(), e);
 		} catch (IOException e) {
@@ -266,7 +266,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 					message = myParser.encode(response);
 					myWriter.writeMessage(message);
 					cleared++;
-					Log.get(this).info( "Cleared message");
+					theCtx.getLog().get(this).info( "Cleared message");
                     try {
                         Thread.sleep(250);
                     } catch (InterruptedException e) {
@@ -283,10 +283,11 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
                     // ignore
                 }
 			}
-			Log.get(this).info( "Cleared " + cleared + " messages from interface before starting");
+			theCtx.getLog().get(this).info( "Cleared " + cleared + " messages from interface before starting");
 		}
 		
 		myStarted = true;
+        firePropertyChange(INTERFACE_STARTED_PROPERTY, false, true);
 	}
 
 	private void startInterface(ExecutionContext theCtx) throws InterfaceWontStartException {
@@ -294,7 +295,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 		myServerSocket = null;
 		
 		if (myClientMode) {
-			Log.get(this).info( "Starting CLIENT interface to " + myIp + ":" + myPort);
+			theCtx.getLog().get(this).info( "Starting CLIENT interface to " + myIp + ":" + myPort);
 			try {
 
 				long endTime = System.currentTimeMillis() + myConnectionTimeout;
@@ -318,7 +319,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 				throw new InterfaceWontStartException(this, e.getMessage(), e);
 			}
 		} else {
-			Log.get(this).info( "Starting SERVER interface on port " + myPort);
+			theCtx.getLog().get(this).info( "Starting SERVER interface on port " + myPort);
 			try {
 				myServerSocket = new ServerSocket(myPort);
 				myServerSocket.setSoTimeout(250);
@@ -351,7 +352,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 			throw new InterfaceWontStartException(this, e.getMessage(), e);
 		}
 		
-		Log.get(this).info( "Started interface successfully");
+		theCtx.getLog().get(this).info( "Started interface successfully");
 	}
 
 	@Override
@@ -363,7 +364,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 			return;
 		}
 
-		Log.get(this).info( "Stopping interface");
+		theCtx.getLog().get(this).info( "Stopping interface");
 
 		try {
 			if (myServerSocket != null) {
@@ -377,6 +378,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 		}
 
 		myStarted = false;
+        firePropertyChange(INTERFACE_STARTED_PROPERTY, true, false);
 	}
 
 	@Override

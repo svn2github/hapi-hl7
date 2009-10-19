@@ -21,6 +21,7 @@
  */
 package ca.uhn.hunit.event.expect;
 
+import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hunit.test.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,22 +38,22 @@ public class Hl7V2ExpectRulesImpl extends AbstractHl7V2ExpectMessage {
 
 	private List<TerserRuleImpl> myRules = new ArrayList<TerserRuleImpl>();
 	
-	public Hl7V2ExpectRulesImpl(TestBatteryImpl theBattery, TestImpl theTest, Hl7V2ExpectRules theConfig) throws ConfigurationException {
-		super(theTest, theBattery, theConfig);
+	public Hl7V2ExpectRulesImpl(TestImpl theTest, Hl7V2ExpectRules theConfig) throws ConfigurationException {
+		super(theTest, theConfig);
 		
 		for (TerserMessageRule next : theConfig.getRule()) {
 			addRule(new TerserRuleImpl(this, next));
 		}
 	}
 
-	public Hl7V2ExpectRulesImpl(TestBatteryImpl theBattery, TestImpl theTest, Hl7V2ExpectAck theConfig) throws ConfigurationException {
-		this(theBattery, theTest, (Hl7V2ExpectRules)theConfig);
+	public Hl7V2ExpectRulesImpl(TestImpl theTest, Hl7V2ExpectAck theConfig) throws ConfigurationException {
+		this(theTest, (Hl7V2ExpectRules)theConfig);
 
 		addRule(TerserRuleImpl.getValuesInstance(this, "/MSA-1", "AA"));
 	}
 
 	public Hl7V2ExpectRulesImpl(TestBatteryImpl theBattery, TestImpl theTest, Hl7V2ExpectNak theConfig) throws ConfigurationException {
-		this(theBattery, theTest, (Hl7V2ExpectRules)theConfig);
+		this(theTest, (Hl7V2ExpectRules)theConfig);
 		
 		addRule(TerserRuleImpl.getNotValuesInstance(this, "/MSA-1", "AA"));
 	}
@@ -62,7 +63,7 @@ public class Hl7V2ExpectRulesImpl extends AbstractHl7V2ExpectMessage {
 	}
 
 	@Override
-	public void validateMessage(TestMessage theMessage)	throws IncorrectMessageReceivedException {
+	public void validateMessage(TestMessage<Message> theMessage)	throws IncorrectMessageReceivedException {
 		for (TerserRuleImpl next : myRules) {
 			next.validate(theMessage);
 		}

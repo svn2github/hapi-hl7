@@ -44,66 +44,45 @@ import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.run.ExecutionContext;
-import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
-import ca.uhn.hunit.util.Log;
 import ca.uhn.hunit.xsd.XMLExpectMessage;
 
 /**
  * Abstract test event to expect an XML message
  */
-public abstract class AbstractXmlExpectMessage extends AbstractExpectMessage implements ErrorHandler {
-    private final DocumentBuilder myParser;
+public abstract class AbstractXmlExpectMessage extends AbstractExpectMessage<Document> {
 
-    public AbstractXmlExpectMessage(TestBatteryImpl theBattery, TestImpl theTest, XMLExpectMessage theConfig) throws ConfigurationException {
-        super(theBattery, theTest, theConfig);
+    private final DocumentBuilderFactory myParserFactory;
 
-        try {
-            DocumentBuilderFactory parserFactory = DocumentBuilderFactory.newInstance();
-            Boolean validateMessage = theConfig.isValidateMessageUsingDTD();
-            if (validateMessage == null) {
-                validateMessage = false;
-            }
-            parserFactory.setValidating(validateMessage);
-            
-            myParser = parserFactory.newDocumentBuilder();
-            myParser.setErrorHandler(this);
-            
-        } catch (ParserConfigurationException ex) {
-            throw new ConfigurationException("Unable to set up XML parser", ex);
+    public AbstractXmlExpectMessage(TestImpl theTest, XMLExpectMessage theConfig) throws ConfigurationException {
+        super(theTest, theConfig);
+
+        myParserFactory = DocumentBuilderFactory.newInstance();
+        Boolean validateMessage = theConfig.isValidateMessageUsingDTD();
+        if (validateMessage == null) {
+            validateMessage = false;
         }
+        myParserFactory.setValidating(validateMessage);
 
     }
 
     @Override
-	public void error(SAXParseException theArg0) throws SAXException {
-		throw new SAXException(theArg0);		
-	}
-
-	@Override
-	public void fatalError(SAXParseException theArg0) throws SAXException {
-		throw new SAXException(theArg0);		
-		
-	}
-
-	@Override
-	public void warning(SAXParseException theArg0) throws SAXException {
-		Log.get(getTest()).warn("XML Parsing Warning: " + theArg0.getMessage());
-	}
-
-	@Override
     public void receiveMessage(ExecutionContext theCtx, TestMessage<?> theMessage) throws TestFailureException {
         Document parsedMessage = (Document) theMessage.getParsedMessage();
         if (parsedMessage == null) {
             final String rawMessage = theMessage.getRawMessage();
             try {
-                parsedMessage = myParser.parse(new InputSource(new StringReader(rawMessage)));
+                DocumentBuilder parser = myParserFactory.newDocumentBuilder();
+                parser.setErrorHandler(new MyErrorHandler(theCtx));
+                parsedMessage = parser.parse(new InputSource(new StringReader(rawMessage)));
+            } catch (ParserConfigurationException ex) {
+                throw new UnexpectedTestFailureException("Unable to set up XML parser", ex);
             } catch (SAXException ex) {
                 throw new IncorrectMessageReceivedException(getTest(), theMessage, "Unable to parse incoming message: " + ex.getMessage());
             } catch (IOException ex) {
                 throw new UnexpectedTestFailureException(ex);
             }
-            
+
             TestMessage<Document> testMessage = new TestMessage<Document>(rawMessage, parsedMessage);
             validateMessage(testMessage);
         }
@@ -114,4 +93,27 @@ public abstract class AbstractXmlExpectMessage extends AbstractExpectMessage imp
      */
     protected abstract void validateMessage(TestMessage<Document> parsedMessage) throws TestFailureException;
 
+    private class MyErrorHandler implements ErrorHandler {
+        private final ExecutionContext myCtx;
+
+        private MyErrorHandler(ExecutionContext theCtx) {
+            myCtx = theCtx;
+        }
+
+        @Override
+        public void error(SAXParseException theArg0) throws SAXException {
+            throw new SAXException(theArg0);
+        }
+
+        @Override
+        public void fatalError(SAXParseException theArg0) throws SAXException {
+            throw new SAXException(theArg0);
+
+        }
+
+        @Override
+        public void warning(SAXParseException theArg0) throws SAXException {
+            myCtx.getLog().get(getTest()).warn("XML Parsing Warning: " + theArg0.getMessage());
+        }
+    }
 }

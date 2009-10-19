@@ -28,10 +28,10 @@ public class XmlTest {
 		ExecutionContext ctx = new ExecutionContext(battery);
 		ctx.execute("ExpectSameMessage", "ExpectDifferentMessage");
 
-		Assert.assertTrue(ctx.getTestFailures().containsKey(battery.getTestNames2Tests().get("ExpectDifferentMessage")));
-		Assert.assertTrue(ctx.getTestSuccesses().contains(battery.getTestNames2Tests().get("ExpectSameMessage")));
+		Assert.assertTrue(ctx.getTestFailures().containsKey(battery.getTestByName("ExpectDifferentMessage")));
+		Assert.assertTrue(ctx.getTestSuccesses().contains(battery.getTestByName("ExpectSameMessage")));
 
-        String failReason = ctx.getTestFailures().get(battery.getTestNames2Tests().get("ExpectDifferentMessage")).describeReason();
+        String failReason = ctx.getTestFailures().get(battery.getTestByName("ExpectDifferentMessage")).describeReason();
         System.out.println(failReason);
 
 	}

@@ -24,7 +24,7 @@ package ca.uhn.hunit.junit;
 
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.run.IExecutionListener;
-import ca.uhn.hunit.test.ITest;
+import ca.uhn.hunit.test.TestImpl;
 import junit.framework.AssertionFailedError;
 
 /**
@@ -32,15 +32,15 @@ import junit.framework.AssertionFailedError;
  */
 public class Junit3FailureListener implements IExecutionListener {
 
-    public void testStarted(ITest theTest) {
+    public void testStarted(TestImpl theTest) {
         // nothing
     }
 
-    public void testFailed(ITest theTest, TestFailureException theException) {
+    public void testFailed(TestImpl theTest, TestFailureException theException) {
         throw new AssertionFailedError(theTest.getName() + " Failure! - " + theException.describeReason());
     }
 
-    public void testPassed(ITest theTest) {
+    public void testPassed(TestImpl theTest) {
         // nothing
     }
 

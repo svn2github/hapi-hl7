@@ -42,6 +42,7 @@ public class TypedValueListTableModel extends AbstractTableModel {
     private final ArrayList<String> myNames = new ArrayList<String>();
     private final ArrayList<Object> myArgs = new ArrayList<Object>();
     private final ArrayList<Class<?>> myArgTypes = new ArrayList<Class<?>>();
+    private final String[] myNamedColumnNames = {"Name", "Value", "Type" };
 
     public TypedValueListTableModel(boolean theNamed) {
         myNamed = theNamed;
@@ -67,6 +68,15 @@ public class TypedValueListTableModel extends AbstractTableModel {
             }
         }
 
+    }
+
+    @Override
+    public String getColumnName(int column) {
+        if (!myNamed) {
+            column++;
+        }
+
+        return myNamedColumnNames[column];
     }
 
     public int getColumnCount() {

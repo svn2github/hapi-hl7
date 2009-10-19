@@ -34,17 +34,17 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jToolBar1" alignment="0" pref="590" max="32767" attributes="0"/>
+          <Component id="jToolBar1" alignment="0" pref="758" max="32767" attributes="0"/>
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="myProgressBar" alignment="0" pref="149" max="32767" attributes="0"/>
-                  <Component id="jScrollPane1" alignment="0" pref="149" max="32767" attributes="0"/>
+                  <Component id="myProgressBar" alignment="0" pref="233" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" alignment="0" pref="233" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
                   <Component id="myStatusLabel" min="-2" max="-2" attributes="1"/>
-                  <Component id="myTestContextPanel" pref="415" max="32767" attributes="2"/>
+                  <Component id="myTestContextPanel" pref="499" max="32767" attributes="2"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
@@ -56,8 +56,8 @@
               <Component id="jToolBar1" min="-2" pref="25" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="myTestContextPanel" pref="320" max="32767" attributes="0"/>
-                  <Component id="jScrollPane1" alignment="1" pref="320" max="32767" attributes="0"/>
+                  <Component id="myTestContextPanel" pref="471" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" alignment="1" pref="471" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">

@@ -37,12 +37,19 @@ import ca.uhn.hunit.test.TestBatteryImpl;
 public class TestBatteryTreeNode extends DefaultMutableTreeNode {
 
 	private static final long serialVersionUID = 1949757870372912053L;
+    private final TestBatteryImpl myBattery;
 
 	public TestBatteryTreeNode(TestBatteryImpl theBattery) {
 		super(theBattery);
 
-		add(new TestBatteryInterfacesTreeNode(theBattery));
-		add(new TestBatteryMessagesTreeNode(theBattery));
+        myBattery = theBattery;
 	}
 
+
+    public void setModel(MyTreeModel theModel) {
+		add(new ExecutionsTreeNode(myBattery, theModel));
+		add(new TestBatteryTestsTreeNode(myBattery));
+		add(new TestBatteryInterfacesTreeNode(myBattery, theModel));
+		add(new TestBatteryMessagesTreeNode(myBattery));
+    }
 }

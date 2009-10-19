@@ -24,57 +24,41 @@
  * and open the template in the editor.
  */
 
-package ca.uhn.hunit.swing.controller.ctx;
+package ca.uhn.hunit.swing.ui.event.expect;
 
-import ca.uhn.hunit.swing.ui.SwingRunner;
+import ca.uhn.hunit.event.AbstractEvent;
+import ca.uhn.hunit.event.ISpecificMessageEvent;
 import ca.uhn.hunit.test.TestBatteryImpl;
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.UIManager;
+import javax.swing.DefaultComboBoxModel;
 
 /**
  *
  * @author James
  */
-public class SwingRunnerController {
-    private final SwingRunner myView;
+public class MessageComboBoxModel extends DefaultComboBoxModel {
+    private static final long serialVersionUID = 1L;
 
-    public SwingRunnerController() throws Exception {
+    private final TestBatteryImpl myBattery;
 
-        File defFile = new File("src/test/resources/unit_tests_jms.xml");
-        if (!defFile.exists()) {
-            throw new IOException();
+    public MessageComboBoxModel(TestBatteryImpl theBattery, ISpecificMessageEvent theEvent) {
+        if (theBattery == null) {
+            theBattery = new TestBatteryImpl();
         }
-		final TestBatteryImpl batteryImpl = new TestBatteryImpl(defFile);
-        myView = new SwingRunner(this, batteryImpl);
+        myBattery = theBattery;
 
-        myView.setVisible(true);
+        if (theEvent != null) {
+            setSelectedItem(theEvent.getMessageId());
+        }
     }
 
+    @Override
+    public Object getElementAt(int index) {
+        return myBattery.getMessages().get(index).getId();
+    }
 
-
-        /**
-    * @param args the command line arguments
-     * @throws JAXBException
-     * @throws ConfigurationException
-     * @throws InterfaceWontStartException
-     * @throws URISyntaxException
-    */
-    public static void main(String args[]) throws Exception {
-            UIManager.setLookAndFeel(
-                UIManager.getSystemLookAndFeelClassName());
-
-            java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    new SwingRunnerController();
-                } catch (Exception ex) {
-                    Logger.getLogger(SwingRunnerController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
+    @Override
+    public int getSize() {
+        return myBattery.getMessages().size();
     }
 
 

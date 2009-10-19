@@ -43,7 +43,6 @@ import ca.uhn.hunit.ex.InterfaceWontStopException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.test.TestImpl;
-import ca.uhn.hunit.util.Log;
 import ca.uhn.hunit.util.TypedValueListTableModel;
 import ca.uhn.hunit.xsd.JavaArgument;
 import ca.uhn.hunit.xsd.AbstractJmsInterface;
@@ -137,7 +136,7 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
 	public TestMessage<?> receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException {
 		start(theCtx);
 
-		Log.get(this).info( "Waiting to receive message");
+		theCtx.getLog().get(this).info( "Waiting to receive message");
 
 		String message = null;
 		try {
@@ -155,7 +154,7 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
 				return null;
 			}
 						
-			Log.get(this).info( "Received message (" + message.length() + " bytes)");
+			theCtx.getLog().get(this).info( "Received message (" + message.length() + " bytes)");
 
 		    return new TestMessage<Object>(message, null);
 
@@ -169,7 +168,7 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
 	public void sendMessage(TestImpl theTest, ExecutionContext theCtx, final TestMessage<?> theMessage) throws TestFailureException {
 		start(theCtx);
 
-		Log.get(this).info( "Sending message (" + theMessage.getRawMessage().length() + " bytes)");
+		theCtx.getLog().get(this).info( "Sending message (" + theMessage.getRawMessage().length() + " bytes)");
 
 		try {
 		    MessageCreator mc = new MessageCreator() {
@@ -188,7 +187,7 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
                     return textMessage;
                 }};
             myJmsTemplate.send(myQueueName, mc);
-			Log.get(this).info( "Sent message");
+			theCtx.getLog().get(this).info( "Sent message");
 		} catch (JmsException e) {
 			throw new InterfaceWontSendException(this, e.getMessage(), e);
 		}
@@ -235,7 +234,7 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
                         continue;
 					}
 					cleared++;
-					Log.get(this).info( "Cleared message");
+					theCtx.getLog().get(this).info( "Cleared message");
                     try {
                         Thread.sleep(250);
                     } catch (InterruptedException e) {
@@ -243,14 +242,15 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
                     }
                     readUntil = System.currentTimeMillis() + getClearMillis();
 				} catch (JMSException e) {
-				    Log.get(this).warn("Error while clearing queue: " + e.getMessage());
+				    theCtx.getLog().get(this).warn("Error while clearing queue: " + e.getMessage());
                 }
 			}
-			Log.get(this).info( "Cleared " + cleared + " messages from interface before starting");
+			theCtx.getLog().get(this).info( "Cleared " + cleared + " messages from interface before starting");
 		}
 		
-		Log.get(this).info( "Started interface successfully");
+		theCtx.getLog().get(this).info( "Started interface successfully");
 		myStarted = true;
+        firePropertyChange(INTERFACE_STARTED_PROPERTY, false, true);
 	}
 
     private String doReceiveMessage() throws JMSException {
@@ -272,9 +272,10 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
 			return;
 		}
 
-		Log.get(this).info( "Stopping interface");
+		theCtx.getLog().get(this).info( "Stopping interface");
 
 		myStarted = false;
+        firePropertyChange(INTERFACE_STARTED_PROPERTY, true, false);
 	}
 
 	@Override

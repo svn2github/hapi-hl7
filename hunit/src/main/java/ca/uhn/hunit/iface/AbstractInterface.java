@@ -26,19 +26,19 @@ import ca.uhn.hunit.ex.InterfaceWontStopException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.util.AbstractModelClass;
 import ca.uhn.hunit.xsd.Interface;
 
-public abstract class AbstractInterface implements Comparable<AbstractInterface> {
+public abstract class AbstractInterface extends AbstractModelClass implements Comparable<AbstractInterface> {
+
+    public static final String INTERFACE_STARTED_PROPERTY = "INTERFACE_STARTED_PROPERTY";
+    public static final String INTERFACE_ID_PROPERTY = "INTERFACE_ID_PROPERTY";
 
 	private Interface myConfig;
 	private String myId;
 	private Boolean myAutostart;
 	private Integer myClearMillis;
     private Boolean myClear;
-
-	public String getId() {
-		return myId;
-	}
 
 	public AbstractInterface(Interface theConfig) {
 		myConfig = theConfig;
@@ -102,5 +102,17 @@ public abstract class AbstractInterface implements Comparable<AbstractInterface>
     public int getClearMillis() {
         return myClearMillis;
     }
+
+
+    public void setId(String theId) {
+        String oldValue = myId;
+        myId = theId;
+        firePropertyChange(INTERFACE_ID_PROPERTY, oldValue, myId);
+    }
+
+	public String getId() {
+		return myId;
+	}
+
 
 }

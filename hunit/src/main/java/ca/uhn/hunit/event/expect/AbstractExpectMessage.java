@@ -29,10 +29,10 @@ import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.xsd.ExpectMessage;
 
-public abstract class AbstractExpectMessage extends AbstractExpect {
+public abstract class AbstractExpectMessage<T> extends AbstractExpect {
 
-	public AbstractExpectMessage(TestBatteryImpl theBattery, TestImpl theTest, ExpectMessage theConfig) throws ConfigurationException {
-		super(theBattery, theTest, theConfig);
+	public AbstractExpectMessage(TestImpl theTest, ExpectMessage theConfig) throws ConfigurationException {
+		super(theTest, theConfig);
 	}
 
 	@Override

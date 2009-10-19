@@ -42,7 +42,6 @@ import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
-import ca.uhn.hunit.util.Log;
 
 public class TestRunner {
 
@@ -98,17 +97,17 @@ public class TestRunner {
 		ExecutionContext ctx = new ExecutionContext(batteryImpl);
 		ctx.execute(testsToExecute);
 
-		Log.get(batteryImpl).info("----------------------------------------------------");
-		Log.get(batteryImpl).info("The following tests passed:");
+		ctx.getLog().get(batteryImpl).info("----------------------------------------------------");
+		ctx.getLog().get(batteryImpl).info("The following tests passed:");
 		for (TestImpl next : ctx.getTestSuccesses()) {
-			Log.get(batteryImpl).info(" * " + next.getName());
+			ctx.getLog().get(batteryImpl).info(" * " + next.getName());
 		}
-		Log.get(batteryImpl).info( "----------------------------------------------------");
+		ctx.getLog().get(batteryImpl).info( "----------------------------------------------------");
 
 		if (!ctx.getTestFailures().isEmpty()) {
-			Log.get(batteryImpl).info( "Warning, the some tests failed!");
+			ctx.getLog().get(batteryImpl).info( "Warning, the some tests failed!");
 			for (Map.Entry<TestImpl, TestFailureException> next : ctx.getTestFailures().entrySet()) {
-				Log.get(batteryImpl).info( "The following test failed: " + next.getKey().getName() + " - Reason: " + next.getValue().describeReason());
+				ctx.getLog().get(batteryImpl).info( "The following test failed: " + next.getKey().getName() + " - Reason: " + next.getValue().describeReason());
 			}
 		}
 	}

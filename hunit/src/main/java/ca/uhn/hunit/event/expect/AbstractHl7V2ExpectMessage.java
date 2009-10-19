@@ -29,11 +29,11 @@ import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.xsd.HL7V2ExpectAbstract;
 
-public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage {
+public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage<Message> {
 
 
-	public AbstractHl7V2ExpectMessage(TestImpl theTest, TestBatteryImpl theBattery, HL7V2ExpectAbstract theConfig) throws ConfigurationException {
-		super(theBattery, theTest, theConfig);
+	public AbstractHl7V2ExpectMessage(TestImpl theTest, HL7V2ExpectAbstract theConfig) throws ConfigurationException {
+		super(theTest, theConfig);
 	}
 
 	@Override

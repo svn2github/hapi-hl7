@@ -21,97 +21,43 @@
  */
 package ca.uhn.hunit.test;
 
-import ca.uhn.hunit.event.AbstractEvent;
-import ca.uhn.hunit.event.send.Hl7V2SendMessageImpl;
-import ca.uhn.hunit.event.expect.Hl7V2ExpectRulesImpl;
-import ca.uhn.hunit.event.expect.Hl7V2ExpectSpecificMessageImpl;
-import ca.uhn.hunit.event.expect.ExpectNoMessageImpl;
-import ca.uhn.hunit.event.expect.XmlExpectSpecificMessage;
-import ca.uhn.hunit.event.send.XmlSendMessageImpl;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 
 import ca.uhn.hunit.ex.ConfigurationException;
-import ca.uhn.hunit.xsd.ExpectMessageAny;
-import ca.uhn.hunit.xsd.ExpectNoMessage;
-import ca.uhn.hunit.xsd.SendMessageAny;
 import ca.uhn.hunit.xsd.Test;
 
-public class TestImpl implements ITest {
+public class TestImpl {
 
 	private String myName;
-	private HashMap<String, ArrayList<AbstractEvent>> myEvents = new HashMap<String, ArrayList<AbstractEvent>>();
-	private TestBatteryImpl myBattery; 
+	private TestBatteryImpl myBattery;
+    private final TestEventsModel myEventsModel;
 	
 	public TestImpl(TestBatteryImpl theBattery, Test theConfig) throws ConfigurationException {
 		myName = theConfig.getName();
 		myBattery = theBattery;
-		
-		for (Object next : theConfig.getSendMessageOrExpectMessageOrExpectNoMessage()) {
-			AbstractEvent event = null;
-			
-			if (next instanceof SendMessageAny) {
-				SendMessageAny nextSm = (SendMessageAny)next;
-				if (nextSm.getXml() != null) {
-					event = (new XmlSendMessageImpl(theBattery, this, nextSm.getXml()));
-				} else if (nextSm.getHl7V2() != null) {
-					event = (new Hl7V2SendMessageImpl(theBattery, this, nextSm.getHl7V2()));
-				} else {
-					throw new ConfigurationException("Unknown event type: " + next.getClass());
-				}
-			} else if (next instanceof ExpectMessageAny) {
-				ExpectMessageAny nextEm = (ExpectMessageAny) next;
-				if (nextEm.getHl7V2Specific() != null) {
-					event = (new Hl7V2ExpectSpecificMessageImpl(theBattery, this, nextEm.getHl7V2Specific()));
-				} else if (nextEm.getHl7V2Rules() != null) {
-					event = (new Hl7V2ExpectRulesImpl(theBattery, this, nextEm.getHl7V2Rules()));
-				} else if (nextEm.getHl7V2Ack() != null) {
-					event = (new Hl7V2ExpectRulesImpl(theBattery, this, nextEm.getHl7V2Ack()));
-				} else if (nextEm.getXmlSpecific() != null) {
-					event = new XmlExpectSpecificMessage(theBattery, this, nextEm.getXmlSpecific());
-				} else {
-					throw new ConfigurationException("Unknown event type: " + next.getClass());
-				}
-            } else if (next instanceof ExpectNoMessage) {
-                event = new ExpectNoMessageImpl(theBattery, this, (ExpectNoMessage)next);
-			} else {
-				throw new ConfigurationException("Unknown event type: " + next.getClass());
-			}
-			
-			if (event == null) {
-				continue;
-			}
-			
-			String interfaceId = event.getInterfaceId();
-			if (!myEvents.containsKey(interfaceId)) {
-				myEvents.put(interfaceId, new ArrayList<AbstractEvent>());
-			}
-			myEvents.get(interfaceId).add(event);
-			
-		}
+
+        myEventsModel = new TestEventsModel(this);
+        myEventsModel.initFromXml(theConfig);
+        
 	}
 	
 	
+    public TestBatteryImpl getBattery() {
+        return myBattery;
+    }
 
 
-
-	/* (non-Javadoc)
-	 * @see ca.uhn.hunit.test.ITest#getName()
+	/**
+     * {@inheritDoc }
 	 */
 	public String getName() {
 		return myName;
 	}
 
+    
+    public TestEventsModel getEventsModel() {
+        return myEventsModel;
+    }
 
-	public Set<String> getInterfacesUsed() {
-		return myEvents.keySet();
-	}
 
-
-	public List<AbstractEvent> getEventsForInterface(String theInterfaceId) {
-		return myEvents.get(theInterfaceId);
-	}
 	
 }

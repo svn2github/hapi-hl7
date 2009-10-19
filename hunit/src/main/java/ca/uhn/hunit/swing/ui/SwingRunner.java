@@ -40,12 +40,16 @@ import ca.uhn.hunit.swing.controller.ctx.AbstractContextController;
 import ca.uhn.hunit.swing.controller.ctx.Hl7V2MessageEditorController;
 import ca.uhn.hunit.swing.controller.ctx.JmsInterfaceContextController;
 import ca.uhn.hunit.swing.controller.ctx.MllpHl7v2InterfaceEditorContextController;
-import ca.uhn.hunit.swing.controller.ctx.SwingRunnerController;
+import ca.uhn.hunit.swing.controller.SwingRunnerController;
+import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.swing.model.InterfaceTreeNode;
 import ca.uhn.hunit.swing.model.InterfacesTreeRenderer;
 import ca.uhn.hunit.swing.model.MessageTreeNode;
+import ca.uhn.hunit.swing.model.MyTreeModel;
 import ca.uhn.hunit.swing.model.TestBatteryTreeNode;
+import ca.uhn.hunit.swing.model.TestTreeNode;
 import ca.uhn.hunit.test.TestBatteryImpl;
+import ca.uhn.hunit.test.TestImpl;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 
@@ -54,6 +58,8 @@ import javax.swing.JPanel;
  * @author James
  */
 public class SwingRunner extends javax.swing.JFrame {
+
+    private static final long serialVersionUID = 1L;
 
     private TestBatteryImpl myBattery;
     private final SwingRunnerController myController;
@@ -66,7 +72,7 @@ public class SwingRunner extends javax.swing.JFrame {
 
         initComponents();
 
-        myTestTree.setModel(new DefaultTreeModel(new TestBatteryTreeNode(myBattery), true));
+        myTestTree.setModel(new MyTreeModel(myBattery));
         myTestTree.setCellRenderer(new InterfacesTreeRenderer());
     }
 
@@ -119,16 +125,16 @@ public class SwingRunner extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 590, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 758, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(myProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE))
+                    .addComponent(myProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(myStatusLabel)
-                    .addComponent(myTestContextPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 415, Short.MAX_VALUE))
+                    .addComponent(myTestContextPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 499, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -137,8 +143,8 @@ public class SwingRunner extends javax.swing.JFrame {
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(myTestContextPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE))
+                    .addComponent(myTestContextPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 471, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 471, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(myProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -169,7 +175,10 @@ public class SwingRunner extends javax.swing.JFrame {
             } else {
                 System.out.println("Unknown message: " + selectedModelObject);
             }
-
+        } else if (selectedModelObject instanceof TestTreeNode) {
+            TestTreeNode treeNode = (TestTreeNode) selectedModelObject;
+            TestImpl test = (TestImpl) treeNode.getUserObject();
+            ctxController = new TestEditorController(test);
         } else {
             System.out.println(selectedModelObject);
         }
@@ -178,8 +187,11 @@ public class SwingRunner extends javax.swing.JFrame {
         if (ctxController != null) {
             final JPanel view = ctxController.getView();
             myTestContextPanel.add(view, BorderLayout.CENTER);
-            myTestContextPanel.validate();
+//            myTestContextPanel.validate();
         }
+
+        validate();
+
     }//GEN-LAST:event_myTestTreeValueChanged
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;

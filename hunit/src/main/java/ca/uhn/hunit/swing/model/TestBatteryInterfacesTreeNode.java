@@ -32,35 +32,37 @@ import ca.uhn.hunit.test.TestBatteryImpl;
 public class TestBatteryInterfacesTreeNode extends DefaultMutableTreeNode implements PropertyChangeListener {
 
 	private static final long serialVersionUID = -4977729790093086397L;
+    private final TestBatteryImpl myBattery;
+    private final MyTreeModel myModel;
 	
-	private InterfacesModel myModel;
 	
-	
-	public TestBatteryInterfacesTreeNode(TestBatteryImpl theBattery) {
+	public TestBatteryInterfacesTreeNode(TestBatteryImpl theBattery, MyTreeModel theModel) {
 //		super(INTERFACES);
-		
-		myModel = new InterfacesModel(theBattery);
+
+        myBattery = theBattery;
+        myModel = theModel;
+
 		theBattery.addPropertyChangeListener(TestBatteryImpl.PROP_INTERFACES, this);
 		updateChildren();
 	}
 
 	private void updateChildren() {
 		int index = 0;
-		for (AbstractInterface next : myModel.getInterfaces()) {
+		for (AbstractInterface next : myBattery.getInterfaces()) {
 			if (getChildCount() <= index) {
-				InterfaceTreeNode newChild = new InterfaceTreeNode(next);
+				InterfaceTreeNode newChild = new InterfaceTreeNode(next, myModel);
 				add(newChild);
 			} else {
 				InterfaceTreeNode nextNode = (InterfaceTreeNode) getChildAt(index);
 				if (!nextNode.getUserObject().equals(next)) {
-					InterfaceTreeNode newChild = new InterfaceTreeNode(next);
+					InterfaceTreeNode newChild = new InterfaceTreeNode(next, myModel);
 					insert(newChild, index);
 				}
 			}
 			index++;
 		}
 		
-		while (getChildCount() > myModel.getInterfaces().size()) {
+		while (getChildCount() > myBattery.getInterfaces().size()) {
 			remove(getChildCount() - 1);
 		}
 	}

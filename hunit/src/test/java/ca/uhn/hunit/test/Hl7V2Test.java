@@ -25,8 +25,8 @@ public class Hl7V2Test {
 		ExecutionContext ctx = new ExecutionContext(battery);
 		ctx.execute("ExpectSpecific Test");
 		
-		Assert.assertFalse(ctx.getTestFailures().containsKey(battery.getTestNames2Tests().get("ExpectSpecific Test")));
-		Assert.assertTrue(ctx.getTestSuccesses().contains(battery.getTestNames2Tests().get("ExpectSpecific Test")));
+		Assert.assertFalse(ctx.getTestFailures().containsKey(battery.getTestByName("ExpectSpecific Test")));
+		Assert.assertTrue(ctx.getTestSuccesses().contains(battery.getTestByName("ExpectSpecific Test")));
 	}
 
 	@Test
@@ -38,7 +38,7 @@ public class Hl7V2Test {
 		ExecutionContext ctx = new ExecutionContext(battery);
 		ctx.execute("ExpectSpecific Test");
 		
-		ITest test = battery.getTestNames2Tests().get("ExpectSpecific Test");
+		TestImpl test = battery.getTestByName("ExpectSpecific Test");
 		Assert.assertFalse(ctx.getTestSuccesses().contains(test));
 		Assert.assertTrue(ctx.getTestFailures().containsKey(test));
 	}
@@ -53,11 +53,11 @@ public class Hl7V2Test {
 		ExecutionContext ctx = new ExecutionContext(battery);
 		ctx.execute("ExpectSpecific Test", "ExpectSecond Test");
 		
-		ITest test = battery.getTestNames2Tests().get("ExpectSpecific Test");
+		TestImpl test = battery.getTestByName("ExpectSpecific Test");
 		Assert.assertTrue(ctx.getTestSuccesses().contains(test));
 		Assert.assertFalse(ctx.getTestFailures().containsKey(test));
 		
-		test = battery.getTestNames2Tests().get("ExpectSecond Test");
+		test = battery.getTestByName("ExpectSecond Test");
 		Assert.assertFalse(ctx.getTestSuccesses().contains(test));
 		Assert.assertTrue(ctx.getTestFailures().containsKey(test));
 

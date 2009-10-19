@@ -32,7 +32,6 @@ import ca.uhn.hunit.ex.InterfaceWontStopException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.event.expect.AbstractExpect;
-import ca.uhn.hunit.util.Log;
 
 public class TestBatteryExecutionThread extends Thread {
 
@@ -40,7 +39,7 @@ public class TestBatteryExecutionThread extends Thread {
 	private boolean myStopped;
 	private AbstractInterface myInterface;
 	private TestFailureException myFailed;
-	private List<AbstractEvent> myEvents = new LinkedList<AbstractEvent>();
+	private final List<AbstractEvent> myEvents = new LinkedList<AbstractEvent>();
 	private AbstractEvent myCurrentEvent;
 	private boolean myReady = false;
 
@@ -120,21 +119,19 @@ public class TestBatteryExecutionThread extends Thread {
 			myInterface.stop(myCtx);
 		} catch (InterfaceWontStopException e) {
 			myFailed = e;
-			Log.get(myInterface).error("Can't stop interface: " + e.describeReason());
+			myCtx.getLog().get(myInterface).error("Can't stop interface: " + e.describeReason());
 		}
 
 		myReady = false;
 
 	}
 
-	public void addEvents(List<AbstractEvent> theEvents) {
+	public void addEvent(AbstractEvent theEvent) {
 		if (myFailed != null) {
-			for (AbstractEvent abstractEvent : theEvents) {
-				myCtx.addFailure(abstractEvent.getTest(), myFailed);
-			}
+				myCtx.addFailure(theEvent.getTest(), myFailed);
 		} else {
 			synchronized (myEvents) {
-				myEvents.addAll(theEvents);
+				myEvents.add(theEvent);
 			}
 		}
 	}

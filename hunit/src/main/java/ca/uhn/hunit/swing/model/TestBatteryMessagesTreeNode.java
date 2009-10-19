@@ -38,7 +38,7 @@ public class TestBatteryMessagesTreeNode extends DefaultMutableTreeNode implemen
 	
 	public TestBatteryMessagesTreeNode(TestBatteryImpl theBattery) {
         myBattery = theBattery;
-		theBattery.addPropertyChangeListener(TestBatteryImpl.PROP_INTERFACES, this);
+		theBattery.addPropertyChangeListener(TestBatteryImpl.PROP_MESSAGES, this);
 		updateChildren();
 	}
 

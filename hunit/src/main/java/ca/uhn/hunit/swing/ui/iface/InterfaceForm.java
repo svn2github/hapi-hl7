@@ -35,6 +35,8 @@ import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.swing.controller.ctx.AbstractInterfaceEditorContextController;
 import ca.uhn.hunit.swing.ui.AbstractContextForm;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  *
@@ -48,6 +50,25 @@ public class InterfaceForm extends AbstractContextForm<AbstractInterfaceEditorCo
     /** Creates new form InterfaceForm */
     public InterfaceForm() {
         initComponents();
+
+        myIdTextBox.getDocument().addDocumentListener(new DocumentListener() {
+
+            public void insertUpdate(DocumentEvent e) {
+                updateId();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                updateId();
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                updateId();
+            }
+        });
+    }
+
+    private void updateId() {
+        myController.setId(myIdTextBox.getText());
     }
 
     /** This method is called from within the constructor to
@@ -127,6 +148,7 @@ public class InterfaceForm extends AbstractContextForm<AbstractInterfaceEditorCo
                 .addGap(18, 18, 18))
         );
     }// </editor-fold>//GEN-END:initComponents
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

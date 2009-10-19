@@ -34,7 +34,7 @@ import ca.uhn.hunit.xsd.ExpectNoMessage;
  * TODO: add!
  * 
  * @author <a href="mailto:james.agnew@uhn.on.ca">James Agnew</a>
- * @version $Revision: 1.1 $ updated on $Date: 2009-10-04 19:16:25 $ by $Author: jamesagnew $
+ * @version $Revision: 1.2 $ updated on $Date: 2009-10-19 13:37:27 $ by $Author: jamesagnew $
  */
 public class ExpectNoMessageImpl extends AbstractExpect
 {
@@ -48,8 +48,8 @@ public class ExpectNoMessageImpl extends AbstractExpect
      * @param theConfig
      * @throws ConfigurationException 
      */
-    public ExpectNoMessageImpl(TestBatteryImpl theBattery, TestImpl theTest, ExpectNoMessage theConfig) throws ConfigurationException {
-        super(theBattery, theTest, theConfig);
+    public ExpectNoMessageImpl(TestImpl theTest, ExpectNoMessage theConfig) throws ConfigurationException {
+        super(theTest, theConfig);
         
         Long receiveTimeout = theConfig.getReceiveTimeoutMillis();
         myReceiveTimeout = receiveTimeout != null ? receiveTimeout : 120000L;

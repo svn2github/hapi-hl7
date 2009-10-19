@@ -19,25 +19,32 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-package ca.uhn.hunit.util;
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
-import ca.uhn.hunit.iface.AbstractInterface;
-import ca.uhn.hunit.test.ITest;
-import ca.uhn.hunit.test.TestBatteryImpl;
-import org.apache.commons.logging.LogFactory;
+package ca.uhn.hunit.l10n;
 
-public class Log {
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
 
-    public static org.apache.commons.logging.Log get(AbstractInterface theInterface) {
-        return LogFactory.getLog("hunit.interface." + theInterface.getId());
+/**
+ * Provides UI resourcebundle for strings
+ */
+public class Strings {
+    private static ResourceBundle ourStrings;
+
+    private Strings() {
+        // nothing
     }
 
-    public static org.apache.commons.logging.Log get(ITest theTest) {
-        return LogFactory.getLog("hunit.test." + theTest.getName());
-    }
-
-    public static org.apache.commons.logging.Log get(TestBatteryImpl theTest) {
-        return LogFactory.getLog("hunit.battery." + theTest.getName());
+    /** Factory method */
+    public static final ResourceBundle getInstance() {
+        if (ourStrings == null) {
+            ourStrings = PropertyResourceBundle.getBundle("ca.uhn.hunit.l10n.UiStrings");
+        }
+        return ourStrings;
     }
 
 }

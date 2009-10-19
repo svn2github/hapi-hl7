@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 /**
  *
@@ -32,7 +33,7 @@ public class XmlMessageCompareTest {
         String expected = "<test><child1>content1</child1><child2>content2</child2></test>";
         String actual = "<test><child1>content1</child1><child2>content2</child2></test>";
 
-        myCompare.compare(new TestMessage(expected), new TestMessage(actual));
+        myCompare.compare(new TestMessage<Document>(expected), new TestMessage<Document>(actual));
 
         Assert.assertTrue(myCompare.describeDifference(), myCompare.isSame());
     }
@@ -42,7 +43,7 @@ public class XmlMessageCompareTest {
         String expected = "<test><child1>content1</child1><child2>content2</child2></test>";
         String actual = "<test>\r\n  <child1>content1</child1>\r\n  <child2>content2</child2>\r\n</test>\r\n";
 
-        myCompare.compare(new TestMessage(expected), new TestMessage(actual));
+        myCompare.compare(new TestMessage<Document>(expected), new TestMessage<Document>(actual));
 
         Assert.assertTrue(myCompare.describeDifference(), myCompare.isSame());
     }
@@ -53,7 +54,7 @@ public class XmlMessageCompareTest {
         String expected = "<test><child1>content1</child1><child2>content2</child2></test>";
         String actual = "<test>\r\n  <child1>content2</child1>\r\n  <child2>content1</child2>\r\n</test>\r\n";
 
-        myCompare.compare(new TestMessage(expected), new TestMessage(actual));
+        myCompare.compare(new TestMessage<Document>(expected), new TestMessage<Document>(actual));
 
         Assert.assertFalse(myCompare.isSame());
 

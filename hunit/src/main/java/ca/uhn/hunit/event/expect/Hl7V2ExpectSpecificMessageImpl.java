@@ -21,26 +21,25 @@
  */
 package ca.uhn.hunit.event.expect;
 
+import ca.uhn.hunit.event.ISpecificMessageEvent;
 import ca.uhn.hunit.test.*;
-import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hunit.compare.hl7v2.Hl7V2MessageCompare;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.ex.TestFailureException;
-import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.xsd.Hl7V2ExpectSpecificMessage;
 
-public class Hl7V2ExpectSpecificMessageImpl extends AbstractHl7V2ExpectMessage {
+public class Hl7V2ExpectSpecificMessageImpl extends AbstractHl7V2ExpectMessage implements ISpecificMessageEvent {
 
 	private String myMessageId;
 	private Hl7V2MessageImpl myMessageProvider;
 	
-	public Hl7V2ExpectSpecificMessageImpl(TestBatteryImpl theBattery, TestImpl theTest, Hl7V2ExpectSpecificMessage theConfig) throws ConfigurationException {
-		super(theTest, theBattery, theConfig);
+	public Hl7V2ExpectSpecificMessageImpl(TestImpl theTest, Hl7V2ExpectSpecificMessage theConfig) throws ConfigurationException {
+		super(theTest, theConfig);
 		
 		myMessageId = theConfig.getMessageId();
 		AbstractMessage messageProvider = getBattery().getMessage(myMessageId);
@@ -64,5 +63,21 @@ public class Hl7V2ExpectSpecificMessageImpl extends AbstractHl7V2ExpectMessage {
 		}
 		
 	}
+
+
+    public String getMessageId() {
+        return myMessageId;
+    }
+
+    
+    public void setMessageId(String theMessageId) {
+        String oldValue = theMessageId;
+        this.myMessageId = theMessageId;
+        firePropertyChange(MESSAGE_ID_PROPERTY, oldValue, myMessageId);
+    }
+
+    public Class<?> getMessageClass() {
+        return Message.class;
+    }
 
 }

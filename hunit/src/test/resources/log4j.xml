@@ -10,6 +10,10 @@
 		<level value="info" />
 		<appender-ref ref="stdout" />
 	</logger>
+	<logger name="ca.uhn.hunit" additivity="false">
+		<level value="info" />
+		<appender-ref ref="stdout" />
+	</logger>
 	<root>
         <priority value="ERROR"></priority>
         <appender-ref ref="stdout"/>

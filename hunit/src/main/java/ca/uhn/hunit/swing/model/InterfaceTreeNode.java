@@ -26,21 +26,37 @@
 
 package ca.uhn.hunit.swing.model;
 
+import java.beans.PropertyChangeEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import ca.uhn.hunit.iface.AbstractInterface;
-import ca.uhn.hunit.test.TestBatteryImpl;
+import java.beans.PropertyChangeListener;
 
 /**
  *
  * @author James
  */
-public class InterfaceTreeNode extends DefaultMutableTreeNode {
+public class InterfaceTreeNode extends DefaultMutableTreeNode implements PropertyChangeListener {
 
 	private static final long serialVersionUID = 1949757870372912053L;
+    private final MyTreeModel myModel;
+    private final AbstractInterface myInterface;
 
-	public InterfaceTreeNode(AbstractInterface theInterface) {
+	public InterfaceTreeNode(AbstractInterface theInterface, MyTreeModel theModel) {
 		super(theInterface, false);
+
+        myModel = theModel;
+        myInterface = theInterface;
+
+        myInterface.addPropertyChangeListener(AbstractInterface.INTERFACE_ID_PROPERTY, this);
+        myInterface.addPropertyChangeListener(AbstractInterface.INTERFACE_STARTED_PROPERTY, this);
 	}
+
+    /**
+     * {@inheritDoc }
+     */
+    public void propertyChange(PropertyChangeEvent evt) {
+        myModel.nodeChanged(this);
+    }
 
 }

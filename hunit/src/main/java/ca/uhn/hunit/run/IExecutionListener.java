@@ -23,17 +23,17 @@
 package ca.uhn.hunit.run;
 
 import ca.uhn.hunit.ex.TestFailureException;
-import ca.uhn.hunit.test.ITest;
+import ca.uhn.hunit.test.TestImpl;
 
 /**
  * Listens to an {@link ExecutionContext} for updates to running tests
  */
 public interface IExecutionListener {
 
-    void testStarted(ITest theTest);
+    void testStarted(TestImpl theTest);
 
-    void testFailed(ITest theTest, TestFailureException theException);
+    void testFailed(TestImpl theTest, TestFailureException theException);
 
-    void testPassed(ITest theTest);
+    void testPassed(TestImpl theTest);
     
 }

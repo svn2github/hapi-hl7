@@ -28,15 +28,12 @@ import ca.uhn.hunit.xsd.ExpectEvent;
 
 public abstract class AbstractExpect extends AbstractEvent {
 
-	private TestImpl myTest;
     private long myReceiveTimeout;
     private boolean myWaitForCompletion;
 
-	public AbstractExpect(TestBatteryImpl theBattery, TestImpl theTest, ExpectEvent theConfig) throws ConfigurationException {
-		super(theBattery, theTest, theConfig);
+	public AbstractExpect(TestImpl theTest, ExpectEvent theConfig) throws ConfigurationException {
+		super(theTest, theConfig);
 
-		myTest = theTest;
-		
 		Long receiveTimeout = theConfig.getReceiveTimeoutMillis();
 		myReceiveTimeout = receiveTimeout != null ? receiveTimeout : 120000L;
 		
@@ -52,9 +49,5 @@ public abstract class AbstractExpect extends AbstractEvent {
 	    return myReceiveTimeout;
 	}
 	
-	
-	public TestImpl getTest() {
-		return myTest;
-	}
 	
 }
