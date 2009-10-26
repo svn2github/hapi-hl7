@@ -27,10 +27,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
@@ -44,7 +43,6 @@ import ca.uhn.hunit.ex.InterfaceWontSendException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.ex.InterfaceWontStopException;
 import ca.uhn.hunit.ex.TestFailureException;
-import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.l10n.Strings;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.test.TestBatteryImpl;
@@ -53,9 +51,12 @@ import ca.uhn.hunit.util.TypedValueListTableModel;
 import ca.uhn.hunit.xsd.JavaArgument;
 import ca.uhn.hunit.xsd.AbstractJmsInterface;
 import ca.uhn.hunit.xsd.NamedJavaArgument;
+import java.util.Collections;
+import javax.jms.MessageListener;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.apache.commons.lang.StringUtils;
 
-public abstract class AbstractJmsInterfaceImpl<T extends Object> extends AbstractInterface {
+public abstract class AbstractJmsInterfaceImpl<T extends Object> extends AbstractInterface implements MessageListener {
 
 	private boolean myStarted;
 	private boolean myStopped;
@@ -68,6 +69,8 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
     private boolean myPubSubDomain;
     private final TypedValueListTableModel myConstructorArgsTableModel;
     private final TypedValueListTableModel myMessagePropertyTableModel;
+    private final List<Message> myReceivedMessages = Collections.synchronizedList(new ArrayList<Message>());
+    private DefaultMessageListenerContainer myMessageListenerContainer;
 
 	public AbstractJmsInterfaceImpl(TestBatteryImpl theBattery, AbstractJmsInterface theConfig) throws ConfigurationException {
 		super(theBattery, theConfig);
@@ -222,8 +225,23 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
         
 		connectionFactory = new JmsConnectionFactory(connectionFactory, myUsername, myPassword);
 		myJmsTemplate = new JmsTemplate(connectionFactory);
-		myJmsTemplate.setReceiveTimeout(250);
+		myJmsTemplate.setReceiveTimeout(1000);
         myJmsTemplate.setPubSubDomain(myPubSubDomain);
+
+        if (myPubSubDomain) {
+//            myMessageListenerContainer = new DefaultMessageListenerContainer();
+//            myMessageListenerContainer.setBeanName(getId());
+//            myMessageListenerContainer.setAutoStartup(true);
+//            myMessageListenerContainer.setAcceptMessagesWhileStopping(false);
+//            myMessageListenerContainer.setClientId("hUnit");
+//            myMessageListenerContainer.setConcurrentConsumers(1);
+//            myMessageListenerContainer.setConnectionFactory(connectionFactory);
+//            myMessageListenerContainer.setPubSubDomain(myPubSubDomain);
+//            myMessageListenerContainer.setDurableSubscriptionName("hUnit");
+//            myMessageListenerContainer.setSubscriptionDurable(true);
+//            myMessageListenerContainer.set
+//            myMessageListenerContainer.afterPropertiesSet();
+        }
 
 		if (isClear()) {
 			long readUntil = System.currentTimeMillis() + getClearMillis();
@@ -349,6 +367,10 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
 
     public void setUsername(String myUsername) {
         this.myUsername = myUsername;
+    }
+
+    public void onMessage(Message arg0) {
+        myReceivedMessages.add(arg0);
     }
 
 

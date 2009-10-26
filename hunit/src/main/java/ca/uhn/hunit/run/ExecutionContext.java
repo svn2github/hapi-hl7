@@ -202,20 +202,29 @@ public class ExecutionContext implements Runnable {
         }
 
         // Wait until all threads are ready to start
-        for (TestBatteryExecutionThread next : interface2thread.values()) {
-            if (!next.isReady()) {
-                try {
-                    Thread.sleep(250);
-                } catch (InterruptedException e) {
-                    // nothing
+        boolean stillWaiting = false;
+        do {
+            stillWaiting = false;
+            for (TestBatteryExecutionThread next : interface2thread.values()) {
+                if (!next.isReady()) {
+                    stillWaiting = true;
+                    try {
+                        Thread.sleep(250);
+                    } catch (InterruptedException e) {
+                        // nothing
+                    }
                 }
             }
-        }
+        } while (stillWaiting);
+
+        getLog().get(myBattery).info("All interfaces are ready to proceed");
 
         // Start executing
         for (TestImpl nextTest : tests) {
 
+            getLog().get(nextTest).info("Starting test");
             myTestExecutionStatuses.put(nextTest, ExecutionStatusEnum.RUNNING);
+
             for (IExecutionListener next : myListeners) {
                 next.testStarted(nextTest);
             }
@@ -259,6 +268,8 @@ public class ExecutionContext implements Runnable {
             if (!myTestFailures.containsKey(nextTest)) {
                 addSuccess(nextTest);
             }
+
+            getLog().get(nextTest).info("Finished test");
 
         }
 

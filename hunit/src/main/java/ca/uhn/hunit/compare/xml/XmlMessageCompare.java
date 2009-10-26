@@ -25,7 +25,6 @@ import ca.uhn.hunit.compare.ICompare;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
 import java.io.IOException;
-import javax.xml.parsers.ParserConfigurationException;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;

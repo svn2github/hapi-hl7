@@ -35,13 +35,15 @@ import ca.uhn.hunit.xsd.SendMessage;
 import java.beans.PropertyVetoException;
 
 public abstract class AbstractSendMessage<T> extends AbstractEvent implements ISpecificMessageEvent {
+
     private AbstractMessage myMessage;
 
 	public AbstractSendMessage(TestImpl theTest, SendMessage theConfig) throws ConfigurationException {
 		super(theTest, theConfig);
-        
+
         String messageId = theConfig.getMessageId();
         myMessage = theTest.getBattery().getMessage(messageId);
+        
 	}
 
 	@Override

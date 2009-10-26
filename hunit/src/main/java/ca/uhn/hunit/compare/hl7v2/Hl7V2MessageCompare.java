@@ -46,7 +46,7 @@ import ca.uhn.hunit.compare.ICompare;
 import ca.uhn.hunit.util.Pair;
 import ca.uhn.hunit.util.StringUtil;
 
-public class Hl7V2MessageCompare implements ICompare {
+public class Hl7V2MessageCompare implements ICompare<Message> {
 
     private GroupComparison myComparison;
     private PipeParser myEncodingParser;
@@ -108,9 +108,9 @@ public class Hl7V2MessageCompare implements ICompare {
             }
             for (int i = lowerCommonIndex; i < children2.length; i++) {
                 if (children2[i] instanceof Segment) {
-                    structureComparisons.add(new SegmentComparison(children2[i].getName(), (Segment) children2[i], null));
-                } else {
                     structureComparisons.add(new SegmentComparison(children2[i].getName(), null, (Segment) children2[i]));
+                } else {
+                    structureComparisons.add(new GroupComparison(null, (Group) children2[i]));
                 }
             }
 
@@ -259,11 +259,22 @@ public class Hl7V2MessageCompare implements ICompare {
     /**
      * {@inheritDoc }
      */
-    public void compare(TestMessage theExpectMessage, TestMessage theActualMessage) throws UnexpectedTestFailureException {
+    public void compare(TestMessage<Message> theExpectMessage, TestMessage<Message> theActualMessage) throws UnexpectedTestFailureException {
         try {
             myExpectedMessage = theExpectMessage;
             myActualMessage = theActualMessage;
-            myComparison = compareGroups((Message) theExpectMessage.getParsedMessage(), (Message) theActualMessage.getParsedMessage());
+
+			if (myExpectedMessage.getParsedMessage() == null) {
+				myExpectedMessage.setParsedMessage(myEncodingParser.parse(myExpectedMessage.getRawMessage()));
+			}
+			if (myActualMessage.getParsedMessage() == null) {
+				myActualMessage.setParsedMessage(myEncodingParser.parse(myActualMessage.getRawMessage()));
+			}
+
+			Message expectedParsedMessage = theExpectMessage.getParsedMessage();
+			Message actualParsedMessage = theActualMessage.getParsedMessage();
+
+            myComparison = compareGroups(expectedParsedMessage,actualParsedMessage);
         } catch (HL7Exception ex) {
             throw new UnexpectedTestFailureException(ex);
         }
@@ -281,9 +292,9 @@ public class Hl7V2MessageCompare implements ICompare {
             }
             if (nextSegment.getActualSegment() != null) {
                 retVal.append("Actual  : ").append(
-                        PipeParser.encode(nextSegment.getExpectSegment(), myEncodingCharacters)).append("\r\n");
+                        PipeParser.encode(nextSegment.getActualSegment(), myEncodingCharacters)).append("\r\n");
             }
-            if (!nextSegment.isSame()) {
+            if (!nextSegment.isSame() && nextSegment.getFieldComparisons() != null) {
                 int fieldIndex = 0;
                 for (FieldComparison next : nextSegment.getFieldComparisons()) {
                     fieldIndex++;

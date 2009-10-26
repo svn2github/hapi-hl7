@@ -63,12 +63,14 @@ public class TestBatteryExecutionThread extends Thread {
 
 		try {
 			if (myInterface.isAutostart() && !myInterface.isStarted()) {
-				myInterface.start(myCtx);
+				myCtx.getLog().get(myInterface).info("Interface is marked as \"autostart\". Going to start it.");
+                myInterface.start(myCtx);
 			}
 		} catch (InterfaceWontStartException e) {
 			myFailed = e;
 		}
 
+		myCtx.getLog().get(myInterface).info("Ready to begin execution");
 		myReady = true;
 
 		while (!myStopped) {
