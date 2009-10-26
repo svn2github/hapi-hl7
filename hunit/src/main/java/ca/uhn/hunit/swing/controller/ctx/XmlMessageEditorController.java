@@ -19,34 +19,36 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
-package ca.uhn.hunit.swing.model;
+package ca.uhn.hunit.swing.controller.ctx;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-
-import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.msg.XmlMessageImpl;
+import ca.uhn.hunit.swing.ui.msg.XmlMessageEditorForm;
 
 /**
  *
  * @author James
  */
-public class TestTreeNode extends DefaultMutableTreeNode {
-
-	private static final long serialVersionUID = 1949757870372912053L;
-    private final TestImpl myTest;
-
-	public TestTreeNode(TestImpl theTest) {
-		super(theTest, false);
-
-        myTest = theTest;
-	}
+public class XmlMessageEditorController extends AbstractMessageEditorController<XmlMessageEditorForm, XmlMessageImpl> {
+    private final XmlMessageEditorForm myView;
+    private final XmlMessageImpl myMessage;
 
 
-    public TestImpl getTest() {
-        return myTest;
+    public XmlMessageEditorController(XmlMessageImpl theMessage) {
+        myView = new XmlMessageEditorForm();
+        myMessage = theMessage;
+
+        myView.setController(this);
     }
+
+    @Override
+    public XmlMessageEditorForm getView() {
+        return myView;
+    }
+
+    @Override
+    public XmlMessageImpl getMessage() {
+        return myMessage;
+    }
+
 }

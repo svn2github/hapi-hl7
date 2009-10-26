@@ -59,4 +59,8 @@ public class InterfaceTreeNode extends DefaultMutableTreeNode implements Propert
         myModel.nodeChanged(this);
     }
 
+    public AbstractInterface getInterface() {
+        return myInterface;
+    }
+
 }

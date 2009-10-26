@@ -25,27 +25,25 @@
  */
 
 /*
- * Hl7V2MessageEditorForm.java
+ * XmlMessageEditorForm.java
  *
- * Created on 8-Oct-2009, 8:39:14 AM
+ * Created on 26-Oct-2009, 8:33:23 AM
  */
 
 package ca.uhn.hunit.swing.ui.msg;
 
-import ca.uhn.hunit.swing.controller.ctx.Hl7V2MessageEditorController;
+import ca.uhn.hunit.swing.controller.ctx.XmlMessageEditorController;
 import ca.uhn.hunit.swing.ui.AbstractContextForm;
 
 /**
  *
  * @author James
  */
-public class Hl7V2MessageEditorForm extends AbstractContextForm<Hl7V2MessageEditorController> {
+public class XmlMessageEditorForm extends AbstractContextForm<XmlMessageEditorController> {
+    private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 1;
-
-
-    /** Creates new form Hl7V2MessageEditorForm */
-    public Hl7V2MessageEditorForm() {
+    /** Creates new form XmlMessageEditorForm */
+    public XmlMessageEditorForm() {
         initComponents();
     }
 
@@ -68,21 +66,17 @@ public class Hl7V2MessageEditorForm extends AbstractContextForm<Hl7V2MessageEdit
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 408, Short.MAX_VALUE)
+            .addGap(0, 410, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addGap(4, 4, 4)
-                    .addComponent(myMessageForm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGap(4, 4, 4)))
+                .addComponent(myMessageForm, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGap(0, 322, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addGap(0, 0, 0)
-                    .addComponent(myMessageForm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGap(0, 0, 0)))
+                    .addContainerGap()
+                    .addComponent(myMessageForm, javax.swing.GroupLayout.DEFAULT_SIZE, 311, Short.MAX_VALUE)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -97,14 +91,8 @@ public class Hl7V2MessageEditorForm extends AbstractContextForm<Hl7V2MessageEdit
         );
     }// </editor-fold>//GEN-END:initComponents
 
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel jPanel1;
-    private ca.uhn.hunit.swing.ui.msg.MessageForm myMessageForm;
-    // End of variables declaration//GEN-END:variables
-
     @Override
-    public void setController(Hl7V2MessageEditorController theController) {
+    public void setController(XmlMessageEditorController theController) {
         myMessageForm.setController(theController);
     }
 
@@ -112,5 +100,11 @@ public class Hl7V2MessageEditorForm extends AbstractContextForm<Hl7V2MessageEdit
     public void tearDown() {
         myMessageForm.tearDown();
     }
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel jPanel1;
+    private ca.uhn.hunit.swing.ui.msg.MessageForm myMessageForm;
+    // End of variables declaration//GEN-END:variables
 
 }

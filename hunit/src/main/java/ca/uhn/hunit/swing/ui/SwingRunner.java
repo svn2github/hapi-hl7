@@ -31,9 +31,11 @@
  */
 package ca.uhn.hunit.swing.ui;
 
+import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.iface.JmsInterfaceImpl;
 
 import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
+import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.swing.controller.ctx.AbstractContextController;
 import ca.uhn.hunit.swing.controller.ctx.Hl7V2MessageEditorController;
@@ -194,9 +196,10 @@ public class SwingRunner extends javax.swing.JFrame {
         jToolBar2.setBorder(null);
         jToolBar2.setRollover(true);
 
+        myAddButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ca/uhn/hunit/ui/resources/images/add.png"))); // NOI18N
         myAddButton.setText(bundle.getString("batterylist.buttons.add")); // NOI18N
         myAddButton.setFocusable(false);
-        myAddButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        myAddButton.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         myAddButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         myAddButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -260,32 +263,19 @@ public class SwingRunner extends javax.swing.JFrame {
 
     private void myTestTreeValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_myTestTreeValueChanged
         Object selectedModelObject = evt.getPath().getLastPathComponent();
-        AbstractContextController<?> ctxController = null;
 
         if (selectedModelObject instanceof InterfaceTreeNode) {
-            InterfaceTreeNode interfaceTreeNode = (InterfaceTreeNode) selectedModelObject;
-            if (interfaceTreeNode.getUserObject() instanceof MllpHl7V2InterfaceImpl) {
-                ctxController = new MllpHl7v2InterfaceEditorContextController((MllpHl7V2InterfaceImpl) interfaceTreeNode.getUserObject());
-            } else if (interfaceTreeNode.getUserObject() instanceof JmsInterfaceImpl) {
-                ctxController = new JmsInterfaceContextController((JmsInterfaceImpl) interfaceTreeNode.getUserObject());
-            } else {
-                System.out.println("Unknown interface: " + selectedModelObject);
-            }
+            final AbstractInterface selectedInterface = ((InterfaceTreeNode) selectedModelObject).getInterface();
+            myController.selectInterface(selectedInterface);
         } else if (selectedModelObject instanceof MessageTreeNode) {
-            MessageTreeNode treeNode = (MessageTreeNode) selectedModelObject;
-            if (treeNode.getUserObject() instanceof Hl7V2MessageImpl) {
-                ctxController = new Hl7V2MessageEditorController((Hl7V2MessageImpl) treeNode.getUserObject());
-            } else {
-                System.out.println("Unknown message: " + selectedModelObject);
-            }
+            AbstractMessage<?> message = ((MessageTreeNode) selectedModelObject).getMessage();
+            myController.selectMessage(message);
         } else if (selectedModelObject instanceof TestTreeNode) {
-            TestTreeNode treeNode = (TestTreeNode) selectedModelObject;
-            TestImpl test = (TestImpl) treeNode.getUserObject();
-            ctxController = new TestEditorController(test);
+            TestImpl test = ((TestTreeNode) selectedModelObject).getTest();
+            myController.selectTest(test);
         } else {
             System.out.println(selectedModelObject);
         }
-        setContextController(ctxController);
 
     }//GEN-LAST:event_myTestTreeValueChanged
 

@@ -69,7 +69,7 @@ public class XmlMessageImpl extends AbstractMessage<Document> {
     @Override
     public void setSourceMessage(final String text) throws PropertyVetoException {
         try {
-            myText = text;
+            myText = text.trim();
             DocumentBuilderFactory parserFactory = DocumentBuilderFactory.newInstance();
             parserFactory.setValidating(false);
             DocumentBuilder parser = parserFactory.newDocumentBuilder();

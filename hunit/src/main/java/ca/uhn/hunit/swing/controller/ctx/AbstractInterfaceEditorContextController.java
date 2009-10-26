@@ -27,8 +27,8 @@
 package ca.uhn.hunit.swing.controller.ctx;
 
 import ca.uhn.hunit.iface.AbstractInterface;
+import ca.uhn.hunit.swing.ui.AbstractContextForm;
 import java.beans.PropertyVetoException;
-import javax.swing.JPanel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -36,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author James
  */
-public abstract class AbstractInterfaceEditorContextController<T extends AbstractInterface, V extends JPanel> extends AbstractContextController<V> {
+public abstract class AbstractInterfaceEditorContextController<T extends AbstractInterface, V extends AbstractContextForm<?>> extends AbstractContextController<V> {
     private static final Log ourLog = LogFactory.getLog(AbstractInterfaceEditorContextController.class);
 
     private final T myModel;
@@ -63,8 +63,8 @@ public abstract class AbstractInterfaceEditorContextController<T extends Abstrac
         myModel.setClearMillis(theValue);
     }
 
-    public void setClear(boolean theClear) {
-        myModel.setClear(theClear);
+    public void setClear(boolean theClearselected) {
+        myModel.setClear(theClearselected);
     }
 
 }

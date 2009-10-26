@@ -26,13 +26,20 @@
 
 package ca.uhn.hunit.swing.controller.ctx;
 
-import javax.swing.JPanel;
+import ca.uhn.hunit.swing.ui.AbstractContextForm;
 
 /**
  * Base class for a controller for the right hand pane
  */
-public abstract class AbstractContextController<V extends JPanel> {
+public abstract class AbstractContextController<V extends AbstractContextForm<?>> {
 
     public abstract V getView();
+
+    /**
+     * Invoked when the controller is being disposed
+     */
+    public void tearDown() {
+        getView().tearDown();
+    }
 
 }

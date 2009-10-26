@@ -38,9 +38,17 @@ public class MessageTreeNode extends DefaultMutableTreeNode {
 
 	private static final long serialVersionUID = 1949757870372912053L;
 
+    private AbstractMessage<?> myMessage;
+
 	public MessageTreeNode(AbstractMessage<?> theMessage) {
 		super(theMessage, false);
+
+        myMessage = theMessage;
 	}
 
+    
+    public AbstractMessage<?> getMessage() {
+        return myMessage;
+    }
 
 }
