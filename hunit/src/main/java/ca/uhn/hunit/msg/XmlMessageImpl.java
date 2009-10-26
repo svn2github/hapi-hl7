@@ -29,6 +29,7 @@ package ca.uhn.hunit.msg;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.xsd.XmlMessageDefinition;
+import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.io.StringReader;
 import javax.xml.parsers.DocumentBuilder;
@@ -41,15 +42,23 @@ import org.xml.sax.SAXException;
 /**
  * XML Message implementation
  */
-public class XmlMessageImpl extends AbstractMessage {
+public class XmlMessageImpl extends AbstractMessage<Document> {
 
     private String myText;
     private Document myDocument;
 
     public XmlMessageImpl(XmlMessageDefinition theDefinition) throws ConfigurationException {
         super(theDefinition);
+        try {
             final String text = theDefinition.getText();
-        setSourceMessage(text);
+            setSourceMessage(text);
+        } catch (PropertyVetoException ex) {
+            throw new ConfigurationException(ex);
+        }
+    }
+
+    public XmlMessageImpl(String theId) {
+        super(theId);
     }
 
     @Override
@@ -58,7 +67,7 @@ public class XmlMessageImpl extends AbstractMessage {
     }
 
     @Override
-    public void setSourceMessage(final String text) throws ConfigurationException {
+    public void setSourceMessage(final String text) throws PropertyVetoException {
         try {
             myText = text;
             DocumentBuilderFactory parserFactory = DocumentBuilderFactory.newInstance();
@@ -67,17 +76,22 @@ public class XmlMessageImpl extends AbstractMessage {
             StringReader inputStream = new StringReader(myText);
             myDocument = parser.parse(new InputSource(inputStream));
         } catch (SAXException ex) {
-            throw new ConfigurationException("Failed to parse XML message", ex);
+            throw new PropertyVetoException("Failed to parse XML message: " + ex.getMessage(), null);
         } catch (IOException ex) {
-            throw new ConfigurationException("Failed to parse XML message", ex);
+            throw new PropertyVetoException("Failed to parse XML message: " + ex.getMessage(), null);
         } catch (ParserConfigurationException ex) {
-            throw new ConfigurationException("Failed to parse XML message", ex);
+            throw new PropertyVetoException("Failed to parse XML message: " + ex.getMessage(), null);
         }
     }
 
     @Override
     public String getSourceMessage() {
         return myText;
+    }
+
+    @Override
+    public Class<Document> getMessageClass() {
+        return Document.class;
     }
 
 

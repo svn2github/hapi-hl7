@@ -34,16 +34,22 @@ package ca.uhn.hunit.swing.ui.tests;
 import ca.uhn.hunit.event.AbstractEvent;
 import ca.uhn.hunit.event.expect.Hl7V2ExpectSpecificMessageImpl;
 import ca.uhn.hunit.event.send.Hl7V2SendMessageImpl;
+import ca.uhn.hunit.l10n.Colours;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.swing.ui.AbstractContextForm;
 import ca.uhn.hunit.swing.ui.event.EventEditorDefaultPane;
 import ca.uhn.hunit.swing.ui.event.expect.Hl7V2ExpectSpecificMessageEditorForm;
 import ca.uhn.hunit.swing.ui.event.expect.Hl7V2SendMessageEditorForm;
-import java.awt.BorderLayout;
-import javax.swing.JLabel;
+import java.awt.Color;
+import java.beans.PropertyVetoException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 /**
  *
@@ -59,6 +65,31 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
         initComponents();
 
         myEventsTable.setDefaultRenderer(Object.class, new EventListCellRenderer());
+        ((BasicSplitPaneUI) mySplitPane.getUI()).getDivider().setBorder(null);
+
+        myNameTextField.getDocument().addDocumentListener(new DocumentListener() {
+
+            public void insertUpdate(DocumentEvent e) {
+                nameValueChanged();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                nameValueChanged();
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                nameValueChanged();
+            }
+        });
+    }
+
+    private void nameValueChanged() {
+        try {
+            myController.getTest().setName(myNameTextField.getText());
+            myNameTextField.setBackground(Colours.getTextFieldOk());
+        } catch (PropertyVetoException ex) {
+            myNameTextField.setBackground(Colours.getTextFieldError());
+        }
     }
 
     /** This method is called from within the constructor to
@@ -72,8 +103,8 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
 
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jSplitPane1 = new javax.swing.JSplitPane();
+        myNameTextField = new javax.swing.JTextField();
+        mySplitPane = new javax.swing.JSplitPane();
         jPanel2 = new javax.swing.JPanel();
         jToolBar2 = new javax.swing.JToolBar();
         myAddEventButton = new javax.swing.JButton();
@@ -85,7 +116,12 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
 
         jLabel1.setText("Name");
 
-        jTextField1.setText("jTextField1");
+        myNameTextField.setText("jTextField1");
+        myNameTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myNameTextFieldActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -94,18 +130,19 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE))
+                .addComponent(myNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(myNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        mySplitPane.setBorder(null);
+        mySplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("ca/uhn/hunit/l10n/UiStrings"); // NOI18N
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("eventlist.border"))); // NOI18N
@@ -137,8 +174,8 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 606, Short.MAX_VALUE)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 606, Short.MAX_VALUE)
+            .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -149,37 +186,40 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
                 .addContainerGap())
         );
 
-        jSplitPane1.setLeftComponent(jPanel2);
+        mySplitPane.setTopComponent(jPanel2);
 
         myEventEditorScrollPane.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("eventeditor.bordertitle"))); // NOI18N
-        jSplitPane1.setRightComponent(myEventEditorScrollPane);
+        mySplitPane.setRightComponent(myEventEditorScrollPane);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
+            .addComponent(mySplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 407, Short.MAX_VALUE))
+                .addComponent(mySplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 407, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void myNameTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myNameTextFieldActionPerformed
+    }//GEN-LAST:event_myNameTextFieldActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JButton myAddEventButton;
     private javax.swing.JScrollPane myEventEditorScrollPane;
     private javax.swing.JTable myEventsTable;
+    private javax.swing.JTextField myNameTextField;
+    private javax.swing.JSplitPane mySplitPane;
     // End of variables declaration//GEN-END:variables
 
     @Override
@@ -188,6 +228,8 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
 
         myEventsTable.setModel(myController.getTest().getEventsModel());
         myEventsTable.getSelectionModel().addListSelectionListener(this);
+
+        myNameTextField.setText(myController.getTest().getName());
 
         updateEditorPane();
     }

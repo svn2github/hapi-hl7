@@ -27,6 +27,7 @@
 package ca.uhn.hunit.swing.controller.ctx;
 
 import ca.uhn.hunit.iface.AbstractInterface;
+import java.beans.PropertyVetoException;
 import javax.swing.JPanel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,10 +49,22 @@ public abstract class AbstractInterfaceEditorContextController<T extends Abstrac
         return myModel;
     }
 
-    public void setId(String text) {
+    public void setId(String text) throws PropertyVetoException {
         ourLog.info("Setting ID to " + text);
-        
         myModel.setId(text);
+    }
+
+    public void setAutostart(boolean theAutostart) {
+        ourLog.info("Setting autostart to " + theAutostart);
+        myModel.setAutostart(theAutostart);
+    }
+
+    public void setClearMillis(int theValue) {
+        myModel.setClearMillis(theValue);
+    }
+
+    public void setClear(boolean theClear) {
+        myModel.setClear(theClear);
     }
 
 }

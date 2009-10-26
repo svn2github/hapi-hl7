@@ -29,17 +29,26 @@ import ca.uhn.hl7v2.validation.impl.ValidationContextImpl;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.xsd.Hl7V2MessageDefinition;
+import java.beans.PropertyVetoException;
 
-public class Hl7V2MessageImpl extends AbstractMessage {
+public class Hl7V2MessageImpl extends AbstractMessage<Message> {
+    private static final long serialVersionUID = 1L;
 
 	private String myText;
 	private Message myParsedMessage;
     private String mySourceMessage;
 
+	public Hl7V2MessageImpl(String theId) {
+		super(theId);
+	}
+
 	public Hl7V2MessageImpl(Hl7V2MessageDefinition theConfig) throws ConfigurationException {
 		super(theConfig);
-
-        setSourceMessage(theConfig.getText());
+        try {
+            setSourceMessage(theConfig.getText());
+        } catch (PropertyVetoException ex) {
+            throw new ConfigurationException(ex);
+        }
 	}
 
 	@Override
@@ -48,7 +57,7 @@ public class Hl7V2MessageImpl extends AbstractMessage {
 	}
 
     @Override
-    public void setSourceMessage(String theMessage) throws ConfigurationException {
+    public void setSourceMessage(String theMessage) throws PropertyVetoException {
         mySourceMessage = theMessage.trim();
         myText = mySourceMessage.replaceAll("(\\r|\\n)+", "\r");
         PipeParser parser = new PipeParser();
@@ -58,9 +67,9 @@ public class Hl7V2MessageImpl extends AbstractMessage {
             myParsedMessage = parser.parse(myText);
             myText = parser.encode(myParsedMessage);
         } catch (EncodingNotSupportedException e) {
-            throw new ConfigurationException(e);
+            throw new PropertyVetoException(e.getMessage(), null);
         } catch (HL7Exception e) {
-            throw new ConfigurationException(e);
+            throw new PropertyVetoException(e.getMessage(), null);
         }
 
         mySourceMessage = myText.replaceAll("\\r", "\r\n");
@@ -69,6 +78,11 @@ public class Hl7V2MessageImpl extends AbstractMessage {
     @Override
     public String getSourceMessage() {
         return mySourceMessage;
+    }
+
+    @Override
+    public Class<Message> getMessageClass() {
+        return Message.class;
     }
 	
 	

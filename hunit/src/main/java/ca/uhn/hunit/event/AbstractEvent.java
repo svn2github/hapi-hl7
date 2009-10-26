@@ -29,6 +29,7 @@ import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.AbstractModelClass;
 import ca.uhn.hunit.xsd.Event;
+import java.beans.PropertyVetoException;
 
 /**
  * An event is a single action taken within a test. A single test therefore is
@@ -38,11 +39,12 @@ public abstract class AbstractEvent extends AbstractModelClass {
 
     public static final String INTERFACE_ID_PROPERTY = "INTERFACE_ID_PROPERTY";
 
-	private String myInterfaceId;
+	private AbstractInterface myInterface;
 	private TestImpl myTest;
 
-	public AbstractEvent(TestImpl theTest, Event theConfig) {
-		myInterfaceId = theConfig.getInterfaceId();
+	public AbstractEvent(TestImpl theTest, Event theConfig) throws ConfigurationException {
+        String interfaceId = theConfig.getInterfaceId();
+        myInterface = theTest.getBattery().getInterface(interfaceId);
 		myTest = theTest;
 	}
 	
@@ -57,11 +59,11 @@ public abstract class AbstractEvent extends AbstractModelClass {
 	}
 
 	public String getInterfaceId() {
-		return myInterfaceId;
+		return myInterface.getId();
 	}
 
 	public AbstractInterface getInterface() throws ConfigurationException {
-		return myTest.getBattery().getInterface(myInterfaceId);
+		return myInterface;
 	}
 
     /**
@@ -71,13 +73,18 @@ public abstract class AbstractEvent extends AbstractModelClass {
         return "event.summary." + getClass().getName();
     }
 
-    public void setInterfaceId(String string) {
-        if (string == null || !myTest.getBattery().getInterfaceIds().contains(string)) {
-            return;
+    public void setInterfaceId(String theInterfaceId) throws PropertyVetoException {
+        AbstractInterface newInterface;
+        try {
+            newInterface = getBattery().getInterface(theInterfaceId);
+        } catch (ConfigurationException ex) {
+            throw new PropertyVetoException(ex.getMessage(), null);
         }
-        String oldValue = myInterfaceId;
-        myInterfaceId = string;
-        firePropertyChange(INTERFACE_ID_PROPERTY, oldValue, myInterfaceId);
+
+        String oldValue = myInterface.getId();
+        fireVetoableChange(INTERFACE_ID_PROPERTY, oldValue, theInterfaceId);
+        this.myInterface = newInterface;
+        firePropertyChange(INTERFACE_ID_PROPERTY, oldValue, theInterfaceId);
     }
 
 }

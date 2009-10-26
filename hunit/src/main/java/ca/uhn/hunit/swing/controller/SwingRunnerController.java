@@ -26,6 +26,7 @@
 
 package ca.uhn.hunit.swing.controller;
 
+import ca.uhn.hunit.swing.controller.ctx.BatteryExecutionContextController;
 import ca.uhn.hunit.swing.ui.SwingRunner;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import java.io.File;
@@ -40,6 +41,7 @@ import javax.swing.UIManager;
  */
 public class SwingRunnerController {
     private final SwingRunner myView;
+    private final TestBatteryImpl myBattery;
 
     public SwingRunnerController() throws Exception {
 
@@ -47,8 +49,8 @@ public class SwingRunnerController {
         if (!defFile.exists()) {
             throw new IOException();
         }
-		final TestBatteryImpl batteryImpl = new TestBatteryImpl(defFile);
-        myView = new SwingRunner(this, batteryImpl);
+		myBattery = new TestBatteryImpl(defFile);
+        myView = new SwingRunner(this, myBattery);
 
         myView.setVisible(true);
     }
@@ -75,6 +77,19 @@ public class SwingRunnerController {
                 }
             }
         });
+    }
+
+    public void execute() {
+        BatteryExecutionContextController ctxController = new BatteryExecutionContextController(myBattery);
+        myView.setContextController(ctxController);
+    }
+
+    public void addMessageHl7V2() {
+        myBattery.addEmptyMessageHl7V2();
+    }
+
+    public void addMessageXml() {
+        myBattery.addEmptyMessageXml();
     }
 
 

@@ -32,7 +32,6 @@
 package ca.uhn.hunit.swing.ui;
 
 import ca.uhn.hunit.iface.JmsInterfaceImpl;
-import javax.swing.tree.DefaultTreeModel;
 
 import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
 import ca.uhn.hunit.msg.Hl7V2MessageImpl;
@@ -46,12 +45,18 @@ import ca.uhn.hunit.swing.model.InterfaceTreeNode;
 import ca.uhn.hunit.swing.model.InterfacesTreeRenderer;
 import ca.uhn.hunit.swing.model.MessageTreeNode;
 import ca.uhn.hunit.swing.model.MyTreeModel;
-import ca.uhn.hunit.swing.model.TestBatteryTreeNode;
 import ca.uhn.hunit.swing.model.TestTreeNode;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
 import java.awt.BorderLayout;
+import java.util.Enumeration;
 import javax.swing.JPanel;
+import javax.swing.LookAndFeel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 /**
  *
@@ -63,6 +68,7 @@ public class SwingRunner extends javax.swing.JFrame {
 
     private TestBatteryImpl myBattery;
     private final SwingRunnerController myController;
+    private final MyTreeModel myTreeModel;
 
     /** Creates new form SwingRunner
      * @param theBatteryImpl */
@@ -72,8 +78,14 @@ public class SwingRunner extends javax.swing.JFrame {
 
         initComponents();
 
-        myTestTree.setModel(new MyTreeModel(myBattery));
+        myTreeModel = new MyTreeModel(myBattery);
+        myTestTree.setModel(myTreeModel);
         myTestTree.setCellRenderer(new InterfacesTreeRenderer());
+        
+        ((BasicSplitPaneUI) myOuterSplitPane.getUI()).getDivider().setBorder(null);
+
+        expandTreeModel(myTreeModel.getBatteryRoot());
+
     }
 
     /** This method is called from within the constructor to
@@ -85,27 +97,92 @@ public class SwingRunner extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        myAddPopupMenu = new javax.swing.JPopupMenu();
+        myAddTestMenu = new javax.swing.JMenu();
+        myAddTestEmptyMenuItem = new javax.swing.JMenuItem();
+        myAddMessageMenu = new javax.swing.JMenu();
+        myAddMessageHl7V2 = new javax.swing.JMenuItem();
+        myAddMessageXml = new javax.swing.JMenuItem();
         jToolBar1 = new javax.swing.JToolBar();
-        jButton1 = new javax.swing.JButton();
-        myProgressBar = new javax.swing.JProgressBar();
-        myStatusLabel = new javax.swing.JLabel();
+        myButtonOpen = new javax.swing.JButton();
+        myButtonSave = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JToolBar.Separator();
+        myExecuteButton = new javax.swing.JButton();
+        jSeparator1 = new javax.swing.JToolBar.Separator();
+        myOuterSplitPane = new javax.swing.JSplitPane();
+        jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         myTestTree = new javax.swing.JTree();
+        jToolBar2 = new javax.swing.JToolBar();
+        myAddButton = new javax.swing.JButton();
         myTestContextPanel = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         myFileMenu = new javax.swing.JMenu();
+
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("ca/uhn/hunit/l10n/UiStrings"); // NOI18N
+        myAddTestMenu.setText(bundle.getString("batterylist.buttons.add.test")); // NOI18N
+
+        myAddTestEmptyMenuItem.setText(bundle.getString("batterylist.buttons.add.test.empty")); // NOI18N
+        myAddTestMenu.add(myAddTestEmptyMenuItem);
+
+        myAddPopupMenu.add(myAddTestMenu);
+
+        myAddMessageMenu.setText(bundle.getString("batterylist.buttons.add.message")); // NOI18N
+
+        myAddMessageHl7V2.setText(bundle.getString("batterylist.buttons.add.message.hl7v2")); // NOI18N
+        myAddMessageHl7V2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myAddMessageHl7V2ActionPerformed(evt);
+            }
+        });
+        myAddMessageMenu.add(myAddMessageHl7V2);
+
+        myAddMessageXml.setText(bundle.getString("batterylist.buttons.add.message.xml")); // NOI18N
+        myAddMessageXml.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myAddMessageXmlActionPerformed(evt);
+            }
+        });
+        myAddMessageMenu.add(myAddMessageXml);
+
+        myAddPopupMenu.add(myAddMessageMenu);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jToolBar1.setRollover(true);
 
-        jButton1.setText("jButton1");
-        jButton1.setFocusable(false);
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton1);
+        myButtonOpen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ca/uhn/hunit/ui/resources/images/open.png"))); // NOI18N
+        myButtonOpen.setText(bundle.getString("toolbar.open")); // NOI18N
+        myButtonOpen.setFocusable(false);
+        myButtonOpen.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        myButtonOpen.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(myButtonOpen);
 
-        myStatusLabel.setText("jLabel1");
+        myButtonSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ca/uhn/hunit/ui/resources/images/save.png"))); // NOI18N
+        myButtonSave.setText(bundle.getString("toolbar.save")); // NOI18N
+        myButtonSave.setFocusable(false);
+        myButtonSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        myButtonSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(myButtonSave);
+        jToolBar1.add(jSeparator2);
+
+        myExecuteButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ca/uhn/hunit/ui/resources/images/button_execute.png"))); // NOI18N
+        myExecuteButton.setText(bundle.getString("toolbar.execute")); // NOI18N
+        myExecuteButton.setFocusable(false);
+        myExecuteButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        myExecuteButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        myExecuteButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myExecuteButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(myExecuteButton);
+        jToolBar1.add(jSeparator1);
+
+        myOuterSplitPane.setBorder(null);
+        myOuterSplitPane.setDividerLocation(200);
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("runner.battery.panel"))); // NOI18N
 
         myTestTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
             public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
@@ -114,8 +191,46 @@ public class SwingRunner extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(myTestTree);
 
-        myTestContextPanel.setLayout(new java.awt.BorderLayout());
+        jToolBar2.setBorder(null);
+        jToolBar2.setRollover(true);
 
+        myAddButton.setText(bundle.getString("batterylist.buttons.add")); // NOI18N
+        myAddButton.setFocusable(false);
+        myAddButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        myAddButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        myAddButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myAddButtonActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(myAddButton);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jToolBar2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        myOuterSplitPane.setLeftComponent(jPanel1);
+
+        myTestContextPanel.setLayout(new java.awt.BorderLayout());
+        myOuterSplitPane.setRightComponent(myTestContextPanel);
+
+        myFileMenu.setMnemonic('F');
         myFileMenu.setText("File");
         jMenuBar1.add(myFileMenu);
 
@@ -125,30 +240,18 @@ public class SwingRunner extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 758, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(myProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(myStatusLabel)
-                    .addComponent(myTestContextPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 499, Short.MAX_VALUE))
-                .addContainerGap())
+            .addComponent(jToolBar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 758, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(myOuterSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 738, Short.MAX_VALUE)
+                .addGap(10, 10, 10))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(myTestContextPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 471, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 471, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(myProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(myStatusLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(myOuterSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 523, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -182,26 +285,64 @@ public class SwingRunner extends javax.swing.JFrame {
         } else {
             System.out.println(selectedModelObject);
         }
+        setContextController(ctxController);
 
+    }//GEN-LAST:event_myTestTreeValueChanged
+
+    private void myExecuteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myExecuteButtonActionPerformed
+        myController.execute();
+    }//GEN-LAST:event_myExecuteButtonActionPerformed
+
+    private void myAddButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myAddButtonActionPerformed
+        myAddPopupMenu.show(myAddButton, 0, myAddButton.getHeight());
+    }//GEN-LAST:event_myAddButtonActionPerformed
+
+    private void myAddMessageHl7V2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myAddMessageHl7V2ActionPerformed
+        myController.addMessageHl7V2();
+    }//GEN-LAST:event_myAddMessageHl7V2ActionPerformed
+
+    private void myAddMessageXmlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myAddMessageXmlActionPerformed
+        myController.addMessageXml();
+    }//GEN-LAST:event_myAddMessageXmlActionPerformed
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JToolBar.Separator jSeparator1;
+    private javax.swing.JToolBar.Separator jSeparator2;
+    private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JToolBar jToolBar2;
+    private javax.swing.JButton myAddButton;
+    private javax.swing.JMenuItem myAddMessageHl7V2;
+    private javax.swing.JMenu myAddMessageMenu;
+    private javax.swing.JMenuItem myAddMessageXml;
+    private javax.swing.JPopupMenu myAddPopupMenu;
+    private javax.swing.JMenuItem myAddTestEmptyMenuItem;
+    private javax.swing.JMenu myAddTestMenu;
+    private javax.swing.JButton myButtonOpen;
+    private javax.swing.JButton myButtonSave;
+    private javax.swing.JButton myExecuteButton;
+    private javax.swing.JMenu myFileMenu;
+    private javax.swing.JSplitPane myOuterSplitPane;
+    private javax.swing.JPanel myTestContextPanel;
+    private javax.swing.JTree myTestTree;
+    // End of variables declaration//GEN-END:variables
+
+    public void setContextController(AbstractContextController<?> ctxController) {
         myTestContextPanel.removeAll();
         if (ctxController != null) {
             final JPanel view = ctxController.getView();
             myTestContextPanel.add(view, BorderLayout.CENTER);
-//            myTestContextPanel.validate();
         }
-
         validate();
+    }
 
-    }//GEN-LAST:event_myTestTreeValueChanged
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JToolBar jToolBar1;
-    private javax.swing.JMenu myFileMenu;
-    private javax.swing.JProgressBar myProgressBar;
-    private javax.swing.JLabel myStatusLabel;
-    private javax.swing.JPanel myTestContextPanel;
-    private javax.swing.JTree myTestTree;
-    // End of variables declaration//GEN-END:variables
+    private void expandTreeModel(TreeNode root) {
+        myTestTree.expandPath(new TreePath(myTreeModel.getPathToRoot(root)));
+
+        for (Enumeration enumeration = root.children(); enumeration.hasMoreElements(); ) {
+            expandTreeModel((TreeNode) enumeration.nextElement());
+        }
+    }
 }

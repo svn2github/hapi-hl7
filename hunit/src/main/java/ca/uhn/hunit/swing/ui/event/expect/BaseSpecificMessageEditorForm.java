@@ -34,6 +34,9 @@ package ca.uhn.hunit.swing.ui.event.expect;
 
 import ca.uhn.hunit.event.ISpecificMessageEvent;
 import ca.uhn.hunit.test.TestBatteryImpl;
+import java.beans.PropertyVetoException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -96,16 +99,18 @@ public class BaseSpecificMessageEditorForm extends javax.swing.JPanel {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(myMessageComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(jLabel1)
+                .addComponent(myMessageComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void myMessageComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myMessageComboBoxActionPerformed
-        myEvent.setMessageId((String) myMessageComboBox.getModel().getSelectedItem());
+        try {
+            myEvent.setMessageId((String) myMessageComboBox.getModel().getSelectedItem());
+        } catch (PropertyVetoException ex) {
+            myMessageComboBox.setSelectedItem(myEvent.getMessage().getId());
+        }
     }//GEN-LAST:event_myMessageComboBoxActionPerformed
 
 

@@ -32,16 +32,16 @@ import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.xsd.SendMessage;
+import java.beans.PropertyVetoException;
 
 public abstract class AbstractSendMessage<T> extends AbstractEvent implements ISpecificMessageEvent {
-
-
-	private String myInterfaceId;
-    private String myMessageId;
-
+    private AbstractMessage myMessage;
 
 	public AbstractSendMessage(TestImpl theTest, SendMessage theConfig) throws ConfigurationException {
 		super(theTest, theConfig);
+        
+        String messageId = theConfig.getMessageId();
+        myMessage = theTest.getBattery().getMessage(messageId);
 	}
 
 	@Override
@@ -49,11 +49,10 @@ public abstract class AbstractSendMessage<T> extends AbstractEvent implements IS
         
         try {
             
-            AbstractMessage messageProvider = getBattery().getMessage(myMessageId);
-            TestMessage<?> message = messageProvider.getTestMessage();
+            TestMessage<?> message = myMessage.getTestMessage();
 
             message = massageMessage((TestMessage<T>) message);
-            AbstractInterface iface = getBattery().getInterface(myInterfaceId);
+            AbstractInterface iface = getBattery().getInterface(getInterfaceId());
             iface.sendMessage(getTest(), theCtx, message);
 
         } catch (ConfigurationException ex) {
@@ -71,15 +70,23 @@ public abstract class AbstractSendMessage<T> extends AbstractEvent implements IS
 	public abstract TestMessage<T> massageMessage(TestMessage<T> theInput) throws TestFailureException;
 
 
-    public String getMessageId() {
-        return myMessageId;
+    public AbstractMessage getMessage() {
+        return myMessage;
     }
 
 
-    public void setMessageId(String theMessageId) {
-        String oldValue = theMessageId;
-        this.myMessageId = theMessageId;
-        firePropertyChange(MESSAGE_ID_PROPERTY, oldValue, myMessageId);
+    public void setMessageId(String theMessageId) throws PropertyVetoException {
+        AbstractMessage newMessage;
+        try {
+            newMessage = getBattery().getMessage(theMessageId);
+        } catch (ConfigurationException ex) {
+            throw new PropertyVetoException(ex.getMessage(), null);
+        }
+
+        String oldValue = myMessage.getId();
+        fireVetoableChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
+        this.myMessage = newMessage;
+        firePropertyChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
     }
 
 }

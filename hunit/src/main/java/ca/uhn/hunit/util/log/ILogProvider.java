@@ -24,13 +24,19 @@ package ca.uhn.hunit.util.log;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
+import org.apache.commons.logging.Log;
 
 public interface ILogProvider {
 
-    org.apache.commons.logging.Log get(AbstractInterface theInterface);
+    Log get(AbstractInterface theInterface);
 
-    org.apache.commons.logging.Log get(TestImpl theTest);
+    Log get(TestImpl theTest);
 
-    org.apache.commons.logging.Log get(TestBatteryImpl theTest);
+    Log get(TestBatteryImpl theTest);
+
+    /**
+     * Gets the system log
+     */
+    Log getSystem(Class<?> theClass);
 
 }

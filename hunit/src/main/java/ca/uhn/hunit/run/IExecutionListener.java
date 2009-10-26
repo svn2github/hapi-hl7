@@ -23,6 +23,7 @@
 package ca.uhn.hunit.run;
 
 import ca.uhn.hunit.ex.TestFailureException;
+import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
 
 /**
@@ -30,10 +31,16 @@ import ca.uhn.hunit.test.TestImpl;
  */
 public interface IExecutionListener {
 
+    void batteryStarted(TestBatteryImpl theBattery);
+
+    void batteryFailed(TestBatteryImpl theBattery);
+
+    void batteryPassed(TestBatteryImpl theBattery);
+
     void testStarted(TestImpl theTest);
 
     void testFailed(TestImpl theTest, TestFailureException theException);
 
     void testPassed(TestImpl theTest);
-    
+
 }

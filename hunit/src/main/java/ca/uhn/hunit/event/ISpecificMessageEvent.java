@@ -26,6 +26,9 @@
 
 package ca.uhn.hunit.event;
 
+import ca.uhn.hunit.msg.AbstractMessage;
+import java.beans.PropertyVetoException;
+
 /**
  *
  * @author James
@@ -33,9 +36,9 @@ package ca.uhn.hunit.event;
 public interface ISpecificMessageEvent {
     String MESSAGE_ID_PROPERTY = "MESSAGE_ID_PROPERTY";
 
-    String getMessageId();
+    AbstractMessage getMessage();
 
-    void setMessageId(String theMessageId);
+    void setMessageId(String theMessageId) throws PropertyVetoException;
 
     public Class<?> getMessageClass();
 

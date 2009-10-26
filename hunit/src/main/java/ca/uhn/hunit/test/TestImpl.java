@@ -23,9 +23,15 @@ package ca.uhn.hunit.test;
 
 
 import ca.uhn.hunit.ex.ConfigurationException;
+import ca.uhn.hunit.l10n.Strings;
+import ca.uhn.hunit.util.AbstractModelClass;
 import ca.uhn.hunit.xsd.Test;
+import java.beans.PropertyVetoException;
+import org.apache.commons.lang.StringUtils;
 
-public class TestImpl {
+public class TestImpl extends AbstractModelClass {
+
+    public static final String NAME_PROPERTY = "TEST_NAME_PROPERTY";
 
 	private String myName;
 	private TestBatteryImpl myBattery;
@@ -56,6 +62,23 @@ public class TestImpl {
     
     public TestEventsModel getEventsModel() {
         return myEventsModel;
+    }
+
+    public void setName(String theName) throws PropertyVetoException {
+        if (StringUtils.equals(myName, theName)) {
+            return;
+        }
+        if (StringUtils.isEmpty(theName)) {
+            throw new PropertyVetoException(Strings.getInstance().getString("test.name.empty"), null);
+        }
+        if (myBattery.getTestNames().contains(theName)) {
+            throw new PropertyVetoException(Strings.getInstance().getString("test.name.duplicate"), null);
+        }
+
+        String oldValue = myName;
+        fireVetoableChange(NAME_PROPERTY, oldValue, theName);
+        myName = theName;
+        firePropertyChange(NAME_PROPERTY, oldValue, theName);
     }
 
 

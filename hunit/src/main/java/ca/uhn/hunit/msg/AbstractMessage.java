@@ -21,11 +21,11 @@
  */
 package ca.uhn.hunit.msg;
 
-import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.xsd.MessageDefinition;
+import java.beans.PropertyVetoException;
 
-public abstract class AbstractMessage {
+public abstract class AbstractMessage<T> {
 
 	protected String myId;
 
@@ -33,17 +33,43 @@ public abstract class AbstractMessage {
 		myId = theConfig.getId();
 	}
 
-	public abstract TestMessage getTestMessage();
+	public AbstractMessage(String theId) {
+		myId = theId;
+	}
 
+    public abstract TestMessage<T> getTestMessage();
+
+    public abstract Class<? extends T> getMessageClass();
 
     public abstract String getSourceMessage();
 
-
-    public abstract void setSourceMessage(String theSourceMessage) throws ConfigurationException;
-
+    public abstract void setSourceMessage(String theSourceMessage) throws PropertyVetoException;
 
 	public String getId() {
 		return myId;
 	}
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AbstractMessage<T> other = (AbstractMessage<T>) obj;
+        if ((this.myId == null) ? (other.myId != null) : !this.myId.equals(other.myId)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 17 * hash + (this.myId != null ? this.myId.hashCode() : 0);
+        return hash;
+    }
+
+    
 }

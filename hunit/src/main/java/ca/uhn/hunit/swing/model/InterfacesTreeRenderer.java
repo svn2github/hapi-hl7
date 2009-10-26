@@ -23,28 +23,20 @@ package ca.uhn.hunit.swing.model;
 
 import java.awt.Component;
 
-import java.beans.PropertyChangeEvent;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.msg.AbstractMessage;
+import ca.uhn.hunit.msg.Hl7V2MessageImpl;
+import ca.uhn.hunit.msg.XmlMessageImpl;
 import ca.uhn.hunit.swing.ui.ImageFactory;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
-import ca.uhn.hunit.util.AbstractModelClass;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.tree.TreeNode;
 
-public class InterfacesTreeRenderer extends DefaultTreeCellRenderer implements PropertyChangeListener {
+public class InterfacesTreeRenderer extends DefaultTreeCellRenderer {
 
     private static final long serialVersionUID = 1L;
-
-    private AbstractModelClass myUserObject = null;
-    private List<String> myRegisteredProperties = new ArrayList<String>();
-    private TreeNode myTreeNode;
 
 	@Override
 	public Component getTreeCellRendererComponent(JTree theTree, Object theValue, boolean theSelected, boolean theExpanded, boolean theLeaf, int theRow, boolean theHasFocus) {
@@ -55,7 +47,9 @@ public class InterfacesTreeRenderer extends DefaultTreeCellRenderer implements P
 	}
 
     private void updateContent(Object theValue) {
-		if (theValue instanceof TestBatteryTreeNode) {
+		setIcon(null);
+
+        if (theValue instanceof TestBatteryTreeNode) {
 			TestBatteryTreeNode node = (TestBatteryTreeNode)theValue;
 			TestBatteryImpl battery = (TestBatteryImpl)node.getUserObject();
 			setText(battery.getName());
@@ -80,46 +74,29 @@ public class InterfacesTreeRenderer extends DefaultTreeCellRenderer implements P
                 setIcon(ImageFactory.getInterfaceOff());
             }
 
-//            registerPropertyListeners((TreeNode)theValue, ai, AbstractInterface.INTERFACE_ID_PROPERTY, AbstractInterface.INTERFACE_STARTED_PROPERTY);
-
 		} else if (theValue instanceof MessageTreeNode) {
 			MessageTreeNode node = (MessageTreeNode)theValue;
 			AbstractMessage ai = (AbstractMessage)node.getUserObject();
 			String name = ai.getId();
 			setText(name);
+
+            if (ai instanceof Hl7V2MessageImpl) {
+                setIcon(ImageFactory.getMessageHl7());
+            } else if (ai instanceof XmlMessageImpl) {
+                setIcon(ImageFactory.getMessageXml());
+            }
+
 		} else if (theValue instanceof TestTreeNode) {
+
 			TestTreeNode node = (TestTreeNode)theValue;
 			TestImpl ai = (TestImpl)node.getUserObject();
 			String name = ai.getName();
 			setText(name);
+            setIcon(ImageFactory.getTest());
+
 		} else {
 			setText("--" + theValue.toString());
 		}
-    }
-
-    public void propertyChange(PropertyChangeEvent evt) {
-        updateContent(myTreeNode);
-    }
-
-    private void registerPropertyListeners(TreeNode theTreeNode, AbstractModelClass theObject, String... theProperties) {
-        if (myUserObject == theObject) {
-            return;
-        }
-
-        if (myUserObject != null) {
-            for (String next : theProperties) {
-                myUserObject.removePropertyChangeListener(next, this);
-            }
-        }
-
-        myUserObject = theObject;
-        myTreeNode = theTreeNode;
-
-        if (myUserObject != null) {
-            for (String next : theProperties) {
-                myUserObject.addPropertyChangeListener(next, this);
-            }
-        }
     }
 
 }

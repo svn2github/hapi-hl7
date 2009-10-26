@@ -32,6 +32,7 @@ import ca.uhn.hunit.ex.InterfaceWontStopException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.event.expect.AbstractExpect;
+import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 
 public class TestBatteryExecutionThread extends Thread {
 
@@ -102,9 +103,11 @@ public class TestBatteryExecutionThread extends Thread {
 				synchronized (myEvents) {
 					myEvents.clear();
 				}
-			} catch (ConfigurationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+			} catch (Exception e) {
+                myCtx.getLog().get(myCtx.getBattery()).error("Unexpected failure during test execution: " + e.getMessage(), e);
+                myFailed = new UnexpectedTestFailureException(e);
+				myCtx.addFailure(myCurrentEvent.getTest(), myFailed);
+                break;
             }
 
 			synchronized (myEvents) {

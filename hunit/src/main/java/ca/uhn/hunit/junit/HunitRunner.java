@@ -115,6 +115,18 @@ public class HunitRunner extends Runner {
                 Description description = myTestName2Description.get(theTest.getName());
                 notifier.fireTestStarted(description);
             }
+
+            public void batteryStarted(TestBatteryImpl theBattery) {
+                // nothing
+            }
+
+            public void batteryFailed(TestBatteryImpl theBattery) {
+                // nothing
+            }
+
+            public void batteryPassed(TestBatteryImpl theBattery) {
+                // nothing
+            }
         });
 
         //notifier.fireTestRunStarted(myDescription);

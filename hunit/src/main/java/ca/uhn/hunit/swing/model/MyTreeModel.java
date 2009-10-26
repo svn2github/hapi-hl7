@@ -35,12 +35,17 @@ import javax.swing.tree.DefaultTreeModel;
  */
 public class MyTreeModel extends DefaultTreeModel {
     private static final long serialVersionUID = 1L;
+    private final TestBatteryTreeNode myRoot;
     
     public MyTreeModel(TestBatteryImpl theBattery) {
         super(new TestBatteryTreeNode(theBattery), true);
 
-        TestBatteryTreeNode root = (TestBatteryTreeNode)this.getRoot();
-        root.setModel(this);
+        myRoot = (TestBatteryTreeNode)this.getRoot();
+        myRoot.setModel(this);
+    }
+
+    public TestBatteryTreeNode getBatteryRoot() {
+        return myRoot;
     }
 
 

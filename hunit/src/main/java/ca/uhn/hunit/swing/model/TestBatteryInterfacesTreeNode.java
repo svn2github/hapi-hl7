@@ -69,6 +69,7 @@ public class TestBatteryInterfacesTreeNode extends DefaultMutableTreeNode implem
 
 	public void propertyChange(PropertyChangeEvent theEvt) {
 		updateChildren();
+        myModel.nodeStructureChanged(this);
 	}
 
 }

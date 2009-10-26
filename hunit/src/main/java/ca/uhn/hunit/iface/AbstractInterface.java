@@ -24,10 +24,15 @@ package ca.uhn.hunit.iface;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.ex.InterfaceWontStopException;
 import ca.uhn.hunit.ex.TestFailureException;
+import ca.uhn.hunit.l10n.Strings;
+import ca.uhn.hunit.l10n.Strings;
 import ca.uhn.hunit.run.ExecutionContext;
+import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.AbstractModelClass;
 import ca.uhn.hunit.xsd.Interface;
+import java.beans.PropertyVetoException;
+import org.apache.commons.lang.StringUtils;
 
 public abstract class AbstractInterface extends AbstractModelClass implements Comparable<AbstractInterface> {
 
@@ -39,9 +44,11 @@ public abstract class AbstractInterface extends AbstractModelClass implements Co
 	private Boolean myAutostart;
 	private Integer myClearMillis;
     private Boolean myClear;
+    private final TestBatteryImpl myBattery;
 
-	public AbstractInterface(Interface theConfig) {
-		myConfig = theConfig;
+	public AbstractInterface(TestBatteryImpl theBattery, Interface theConfig) {
+		myBattery = theBattery;
+        myConfig = theConfig;
 		myId = theConfig.getId();
 		myAutostart = theConfig.isAutostart();
 		if (myAutostart == null) {
@@ -90,7 +97,11 @@ public abstract class AbstractInterface extends AbstractModelClass implements Co
 	public boolean isAutostart() {
 		return myAutostart;
 	}
-	
+
+    public void setAutostart(boolean theAutostart) {
+        myAutostart = theAutostart;
+    }
+
 	public int compareTo(AbstractInterface theO) {
 		return myId.compareTo(theO.myId);
 	}
@@ -99,15 +110,33 @@ public abstract class AbstractInterface extends AbstractModelClass implements Co
         return myClear;
     }
 
+    public void setClear(boolean theClear) {
+        myClear = theClear;
+    }
+
     public int getClearMillis() {
         return myClearMillis;
     }
 
+    public void setClearMillis(int theClearMillis) {
+        myClearMillis = theClearMillis;
+    }
 
-    public void setId(String theId) {
+
+    public void setId(String theId) throws PropertyVetoException {
+        if (StringUtils.equals(theId, myId)) {
+            return;
+        }
+        if (StringUtils.isEmpty(theId)) {
+            throw new PropertyVetoException(Strings.getInstance().getString("interface.id.empty"), null);
+        }
+        if (myBattery.getInterfaceIds().contains(theId)) {
+            throw new PropertyVetoException(Strings.getInstance().getString("interface.id.duplicate"), null);
+        }
+
         String oldValue = myId;
+        firePropertyChange(INTERFACE_ID_PROPERTY, oldValue, theId);
         myId = theId;
-        firePropertyChange(INTERFACE_ID_PROPERTY, oldValue, myId);
     }
 
 	public String getId() {

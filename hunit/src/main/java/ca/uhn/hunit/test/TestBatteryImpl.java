@@ -43,6 +43,7 @@ import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.msg.XmlMessageImpl;
+import ca.uhn.hunit.util.IdUtil;
 import ca.uhn.hunit.xsd.AnyInterface;
 import ca.uhn.hunit.xsd.AnyMessageDefinitions;
 import ca.uhn.hunit.xsd.Hl7V2MessageDefinition;
@@ -50,7 +51,6 @@ import ca.uhn.hunit.xsd.MessageDefinition;
 import ca.uhn.hunit.xsd.Test;
 import ca.uhn.hunit.xsd.TestBattery;
 import ca.uhn.hunit.xsd.XmlMessageDefinition;
-import java.util.Collection;
 
 public class TestBatteryImpl extends AbstractPropertyChangeSupport {
 
@@ -60,10 +60,10 @@ public class TestBatteryImpl extends AbstractPropertyChangeSupport {
 	
 	private TestBattery myConfig;
 	private Map<String, AbstractInterface> myId2Interface = new HashMap<String, AbstractInterface>();
-	private Map<String, AbstractMessage> myId2Message = new HashMap<String, AbstractMessage>();
+	private Map<String, AbstractMessage<?>> myId2Message = new HashMap<String, AbstractMessage<?>>();
 	private String myName;
     private final BatteryTestModel myTestModel = new BatteryTestModel(this);
-    private final List<AbstractMessage> myMessages = new ArrayList<AbstractMessage>();
+    private final List<AbstractMessage<?>> myMessages = new ArrayList<AbstractMessage<?>>();
 	
 	public TestBatteryImpl(TestBattery theConfig) throws ConfigurationException, InterfaceWontStartException {
 		myConfig = theConfig;
@@ -133,9 +133,9 @@ public class TestBatteryImpl extends AbstractPropertyChangeSupport {
 
 			AbstractInterface nextIf;
 			if (next.getMllpHl7V2Interface() != null) {
-				nextIf = new MllpHl7V2InterfaceImpl(next.getMllpHl7V2Interface());
+				nextIf = new MllpHl7V2InterfaceImpl(this, next.getMllpHl7V2Interface());
 			} else if (next.getJmsInterface() != null) {
-	            nextIf = new JmsInterfaceImpl(next.getJmsInterface());
+	            nextIf = new JmsInterfaceImpl(this, next.getJmsInterface());
 			} else {
 				throw new ConfigurationException("Unknown interface type in battery " + myName);
 			}
@@ -168,7 +168,7 @@ public class TestBatteryImpl extends AbstractPropertyChangeSupport {
 		return myTestModel.getTestNames();
 	}
 
-    public List<AbstractMessage> getMessages() {
+    public List<AbstractMessage<?>> getMessages() {
         return myMessages;
     }
 
@@ -178,6 +178,22 @@ public class TestBatteryImpl extends AbstractPropertyChangeSupport {
 
     public Set<String> getInterfaceIds() {
         return myId2Interface.keySet();
+    }
+
+    public void addEmptyMessageHl7V2() {
+        Hl7V2MessageImpl newMessage = new Hl7V2MessageImpl(IdUtil.nextId(myId2Message.keySet()));
+        addMessage(newMessage);
+    }
+
+    public void addEmptyMessageXml() {
+        XmlMessageImpl newMessage = new XmlMessageImpl(IdUtil.nextId(myId2Message.keySet()));
+        addMessage(newMessage);
+    }
+
+    private void addMessage(AbstractMessage<?> newMessage) {
+        myId2Message.put(newMessage.getId(), newMessage);
+        myMessages.add(newMessage);
+        firePropertyChange(PROP_MESSAGES, null, newMessage);
     }
 
 }

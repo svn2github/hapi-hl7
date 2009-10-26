@@ -19,22 +19,16 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
- * InterfaceForm.java
- *
- * Created on 4-Oct-2009, 5:22:57 PM
- */
 package ca.uhn.hunit.swing.ui.iface;
 
 import ca.uhn.hunit.iface.AbstractInterface;
+import ca.uhn.hunit.l10n.Colours;
 import ca.uhn.hunit.swing.controller.ctx.AbstractInterfaceEditorContextController;
 import ca.uhn.hunit.swing.ui.AbstractContextForm;
+import java.beans.PropertyVetoException;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -50,25 +44,15 @@ public class InterfaceForm extends AbstractContextForm<AbstractInterfaceEditorCo
     /** Creates new form InterfaceForm */
     public InterfaceForm() {
         initComponents();
-
-        myIdTextBox.getDocument().addDocumentListener(new DocumentListener() {
-
-            public void insertUpdate(DocumentEvent e) {
-                updateId();
-            }
-
-            public void removeUpdate(DocumentEvent e) {
-                updateId();
-            }
-
-            public void changedUpdate(DocumentEvent e) {
-                updateId();
-            }
-        });
     }
 
     private void updateId() {
-        myController.setId(myIdTextBox.getText());
+        try {
+            myController.setId(myIdTextBox.getText());
+            myIdTextBox.setBackground(Colours.getTextFieldOk());
+        } catch (PropertyVetoException ex) {
+            myIdTextBox.setBackground(Colours.getTextFieldError());
+        }
     }
 
     /** This method is called from within the constructor to
@@ -106,6 +90,8 @@ public class InterfaceForm extends AbstractContextForm<AbstractInterfaceEditorCo
 
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel4.setText("Clear For Millis");
+
+        myClearForMillisSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(100)));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -172,6 +158,48 @@ public class InterfaceForm extends AbstractContextForm<AbstractInterfaceEditorCo
     public void setController(AbstractInterfaceEditorContextController<?, ?> theController) {
         this.myController = theController;
         setValues();
+
+        myIdTextBox.getDocument().addDocumentListener(new DocumentListener() {
+        // <editor-fold defaultstate="collapsed" desc="Listener">
+
+            public void insertUpdate(DocumentEvent e) {
+                updateId();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                updateId();
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                updateId();
+            }
+        // </editor-fold>
+        });
+
+        myAutostartCheckBox.getModel().addChangeListener(new ChangeListener() {
+        // <editor-fold defaultstate="collapsed" desc="Listener">
+            public void stateChanged(ChangeEvent e) {
+                myController.setAutostart(myAutostartCheckBox.isSelected());
+            }
+        // </editor-fold>
+        });
+
+        myClearForMillisSpinner.getModel().addChangeListener(new ChangeListener() {
+        // <editor-fold defaultstate="collapsed" desc="Listener">
+            public void stateChanged(ChangeEvent e) {
+                myController.setClearMillis(((Number)myClearForMillisSpinner.getValue()).intValue());
+            }
+        // </editor-fold>
+        });
+
+        myClearOnStartupCheckbox.getModel().addChangeListener(new ChangeListener() {
+        // <editor-fold defaultstate="collapsed" desc="Listener">
+            public void stateChanged(ChangeEvent e) {
+                myController.setClear(myClearOnStartupCheckbox.isSelected());
+            }
+        // </editor-fold>
+        });
+
     }
 
     @Override

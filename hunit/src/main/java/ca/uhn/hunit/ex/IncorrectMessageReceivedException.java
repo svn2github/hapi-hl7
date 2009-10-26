@@ -37,38 +37,38 @@ public class IncorrectMessageReceivedException extends TestFailureException
     private static final long serialVersionUID = -7116214031563429174L;
 
     private TestImpl myTest;
-    private TestMessage myMessageReceived;
+    private TestMessage<?> myMessageReceived;
     private String myProblem;
-    private TestMessage myMessageExpected;
-    private ICompare myMessageCompare;
+    private TestMessage<?> myMessageExpected;
+    private ICompare<?> myMessageCompare;
 
 
-    public IncorrectMessageReceivedException(TestImpl theExpect, TestMessage theMessageReceived,
+    public IncorrectMessageReceivedException(TestImpl theExpect, TestMessage<?> theMessageReceived,
             String theProblem) {
         this(theExpect, null, null, theMessageReceived, theProblem);
     }
 
 
-    public IncorrectMessageReceivedException(TestImpl theExpect, TestMessage theMessageExpected,
-            TestMessage theMessageReceived, String theProblem) {
+    public IncorrectMessageReceivedException(TestImpl theExpect, TestMessage<?> theMessageExpected,
+            TestMessage<?> theMessageReceived, String theProblem) {
         this(theExpect, null, theMessageExpected, theMessageReceived, theProblem);
     }
 
 
     public IncorrectMessageReceivedException(TestImpl theExpect, Throwable theCause,
-            TestMessage theMessageReceived, String theProblem) {
+            TestMessage<?> theMessageReceived, String theProblem) {
         this(theExpect, theCause, null, theMessageReceived, theProblem);
     }
 
 
     public IncorrectMessageReceivedException(TestImpl theExpect, Throwable theCause,
-            TestMessage theMessageExpected, TestMessage theMessageReceived, String theProblem) {
+            TestMessage<?> theMessageExpected, TestMessage<?> theMessageReceived, String theProblem) {
         this(theExpect, theCause, theMessageExpected, theMessageReceived, theProblem, null);
     }
 
 
-    public IncorrectMessageReceivedException(TestImpl theTest, Throwable theCause, TestMessage theExpectMessage,
-            TestMessage theActualMessage, String theProblem, ICompare theMessageCompare) {
+    public IncorrectMessageReceivedException(TestImpl theTest, Throwable theCause, TestMessage<?> theExpectMessage,
+            TestMessage<?> theActualMessage, String theProblem, ICompare<?> theMessageCompare) {
         super(theCause);
         myTest = theTest;
         myMessageExpected = theExpectMessage;
@@ -83,7 +83,7 @@ public class IncorrectMessageReceivedException extends TestFailureException
     }
 
 
-    public TestMessage getMessageReceived() {
+    public TestMessage<?> getMessageReceived() {
         return myMessageReceived;
     }
 
@@ -93,7 +93,7 @@ public class IncorrectMessageReceivedException extends TestFailureException
     }
 
 
-    public TestMessage getMessageExpected() {
+    public TestMessage<?> getMessageExpected() {
         return myMessageExpected;
     }
 

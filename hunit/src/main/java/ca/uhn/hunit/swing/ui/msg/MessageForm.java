@@ -29,11 +29,14 @@
  *
  * Created on 7-Oct-2009, 9:54:02 PM
  */
-
 package ca.uhn.hunit.swing.ui.msg;
 
+import ca.uhn.hunit.l10n.Colours;
 import ca.uhn.hunit.swing.controller.ctx.AbstractMessageEditorController;
 import ca.uhn.hunit.swing.ui.AbstractContextForm;
+import java.beans.PropertyVetoException;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 
 /**
  *
@@ -43,14 +46,10 @@ public class MessageForm extends AbstractContextForm<AbstractMessageEditorContro
 
     private static final long serialVersionUID = 1;
 
-
     /** Creates new form Hl7V2MessageForm */
     public MessageForm() {
         initComponents();
     }
-
-
-
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -85,21 +84,29 @@ public class MessageForm extends AbstractContextForm<AbstractMessageEditorContro
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea myMessageTextArea;
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void setController(AbstractMessageEditorController<?, ?> theController) {
+    public void setController(final AbstractMessageEditorController<?, ?> theController) {
         myMessageTextArea.setText(theController.getMessage().getSourceMessage());
+        myMessageTextArea.getDocument().addUndoableEditListener(new UndoableEditListener() {
+
+            public void undoableEditHappened(UndoableEditEvent e) {
+                try {
+                    theController.getMessage().setSourceMessage(myMessageTextArea.getText());
+                    myMessageTextArea.setBackground(Colours.getTextFieldOk());
+                } catch (PropertyVetoException ex) {
+                    myMessageTextArea.setBackground(Colours.getTextFieldError());
+                }
+            }
+        });
     }
 
     @Override
     public void tearDown() {
         // nothing
     }
-
 }

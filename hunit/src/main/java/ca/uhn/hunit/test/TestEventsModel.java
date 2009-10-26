@@ -34,7 +34,6 @@ import ca.uhn.hunit.event.expect.XmlExpectSpecificMessageImpl;
 import ca.uhn.hunit.event.send.Hl7V2SendMessageImpl;
 import ca.uhn.hunit.event.send.XmlSendMessageImpl;
 import ca.uhn.hunit.ex.ConfigurationException;
-import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.xsd.ExpectMessageAny;
 import ca.uhn.hunit.xsd.ExpectNoMessage;
 import ca.uhn.hunit.xsd.SendMessageAny;
@@ -43,11 +42,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.swing.table.AbstractTableModel;
 
 /**

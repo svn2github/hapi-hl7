@@ -34,11 +34,15 @@ public class TestBatteryTestsTreeNode extends DefaultMutableTreeNode implements 
 
 	private static final long serialVersionUID = -4977729790093086397L;
     private final TestBatteryImpl myBattery;
+    private final MyTreeModel myModel;
 	
 	
-	public TestBatteryTestsTreeNode(TestBatteryImpl theBattery) {
+	public TestBatteryTestsTreeNode(TestBatteryImpl theBattery, MyTreeModel theModel) {
 		myBattery = theBattery;
+        myModel = theModel;
+        
         myBattery.addPropertyChangeListener(TestBatteryImpl.PROP_TESTS, this);
+
 		updateChildren();
 	}
 
@@ -46,6 +50,10 @@ public class TestBatteryTestsTreeNode extends DefaultMutableTreeNode implements 
 		int index = 0;
         final List<TestImpl> tests = myBattery.getTests();
 		for (TestImpl next : tests) {
+
+            next.removePropertyChangeListener(TestImpl.NAME_PROPERTY, this);
+            next.addPropertyChangeListener(TestImpl.NAME_PROPERTY, this);
+
 			if (getChildCount() <= index) {
 				TestTreeNode newChild = new TestTreeNode(next);
 				add(newChild);
@@ -65,7 +73,13 @@ public class TestBatteryTestsTreeNode extends DefaultMutableTreeNode implements 
 	}
 
 	public void propertyChange(PropertyChangeEvent theEvt) {
-		updateChildren();
+		if (theEvt.getPropertyName().equals(TestBatteryImpl.PROP_TESTS)) {
+            updateChildren();
+            myModel.nodeStructureChanged(this);
+        } else {
+            myModel.reload(this);
+        }
+
 	}
 
 }

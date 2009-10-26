@@ -49,57 +49,56 @@ import ca.uhn.hunit.ex.SendOrReceiveFailureException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.run.ExecutionContext;
+import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
-import ca.uhn.hunit.util.log.ILogProvider;
 import ca.uhn.hunit.xsd.Interface;
 import ca.uhn.hunit.xsd.MllpHl7V2Interface;
 
 public class MllpHl7V2InterfaceImpl extends AbstractInterface {
 
-	private static final String CLIENT = "client";
-	private static final String SERVER = "server";
-	
-	private String myIp;
-	private int myPort;
-	private boolean myClientMode;
-	private boolean myStarted;
-	private Socket mySocket;
-	private Integer myConnectionTimeout;
-	private ServerSocket myServerSocket;
-	private MinLLPReader myReader;
-	private MinLLPWriter myWriter;
-	private boolean myStopped;
-	private Parser myParser;
-	private Boolean myAutoAck;
-	private String myEncoding;
+    private static final String CLIENT = "client";
+    private static final String SERVER = "server";
+    private String myIp;
+    private int myPort;
+    private boolean myClientMode;
+    private boolean myStarted;
+    private Socket mySocket;
+    private Integer myConnectionTimeout;
+    private ServerSocket myServerSocket;
+    private MinLLPReader myReader;
+    private MinLLPWriter myWriter;
+    private boolean myStopped;
+    private Parser myParser;
+    private Boolean myAutoAck;
+    private String myEncoding;
 
-	public MllpHl7V2InterfaceImpl(MllpHl7V2Interface theConfig) {
-		super(theConfig);
-		myIp = theConfig.getIp();
-		myPort = theConfig.getPort();
-		myClientMode = theConfig.getMode().equalsIgnoreCase(CLIENT);
-		myStarted = false;
-		myConnectionTimeout = theConfig.getConnectionTimeoutMillis();
-		myStopped = false;
-		
-		if (myConnectionTimeout == null) {
-			myConnectionTimeout = 10000;
-		}
-		
-		myEncoding = theConfig.getEncoding();
-		if ("XML".equals(myEncoding)) {
-			myParser = new DefaultXMLParser();
-		} else {
-			myParser = new PipeParser();
-		}
-		myParser.setValidationContext(new ValidationContextImpl());
+    public MllpHl7V2InterfaceImpl(TestBatteryImpl theBattery, MllpHl7V2Interface theConfig) {
+        super(theBattery, theConfig);
+        myIp = theConfig.getIp();
+        myPort = theConfig.getPort();
+        myClientMode = theConfig.getMode().equalsIgnoreCase(CLIENT);
+        myStarted = false;
+        myConnectionTimeout = theConfig.getConnectionTimeoutMillis();
+        myStopped = false;
 
-		myAutoAck = theConfig.isAutoAck();
-		if (myAutoAck == null) {
-			myAutoAck = true;
-		}
+        if (myConnectionTimeout == null) {
+            myConnectionTimeout = 10000;
+        }
 
-	}
+        myEncoding = theConfig.getEncoding();
+        if ("XML".equals(myEncoding)) {
+            myParser = new DefaultXMLParser();
+        } else {
+            myParser = new PipeParser();
+        }
+        myParser.setValidationContext(new ValidationContextImpl());
+
+        myAutoAck = theConfig.isAutoAck();
+        if (myAutoAck == null) {
+            myAutoAck = true;
+        }
+
+    }
 
     public boolean isAutoAck() {
         return myAutoAck;
@@ -149,254 +148,253 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
         this.myPort = myPort;
     }
 
-	@Override
-	public TestMessage receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException {
-		start(theCtx);
+    @Override
+    public TestMessage receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException {
+        start(theCtx);
 
-		theCtx.getLog().get(this).info( "Waiting to receive message");
+        theCtx.getLog().get(this).info("Waiting to receive message");
 
-		String message = null;
-		Message parsedMessage;
-		try {
-			long endTime = System.currentTimeMillis() + theTimeout;
-			while (!myStopped && message == null && System.currentTimeMillis() < endTime) {
-				if (!mySocket.isConnected()) {
-					theCtx.getLog().get(this).info( "Socket appears to be disconnected, attempting to reconnect");
-					startInterface(theCtx);
-				}
-				
-				try {
-					message = myReader.getMessage();
-				} catch (SocketTimeoutException e) {
-					// ignore
-				}
-			}
-			if (myStopped || message == null) {
-				return null;
-			}
-			
-			theCtx.getLog().get(this).info( "Received message (" + message.length() + " bytes)");
+        String message = null;
+        Message parsedMessage;
+        try {
+            long endTime = System.currentTimeMillis() + theTimeout;
+            while (!myStopped && message == null && System.currentTimeMillis() < endTime) {
+                if (!mySocket.isConnected()) {
+                    theCtx.getLog().get(this).info("Socket appears to be disconnected, attempting to reconnect");
+                    startInterface(theCtx);
+                }
 
-			try {
-				parsedMessage = myParser.parse(message);
-			} catch (EncodingNotSupportedException e) {
-				throw new SendOrReceiveFailureException("Encoding issue: ", e);
-			} catch (HL7Exception e) {
-				throw new SendOrReceiveFailureException("HL7 issue: ", e);
-			}
+                try {
+                    message = myReader.getMessage();
+                } catch (SocketTimeoutException e) {
+                    // ignore
+                }
+            }
+            if (myStopped || message == null) {
+                return null;
+            }
 
-			if (myAutoAck) {
-				try {
-					Message ack = DefaultApplication.makeACK((Segment) parsedMessage.get("MSH"));
-					String reply = myParser.encode(ack);
+            theCtx.getLog().get(this).info("Received message (" + message.length() + " bytes)");
 
-					theCtx.getLog().get(this).info( "Sending HL7 v2 ACK (" + reply.length() + " bytes)");
-					sendMessage(theTest, theCtx, new TestMessage(reply));
-				} catch (EncodingNotSupportedException e) {
-					throw new SendOrReceiveFailureException("Encoding issue: ", e);
-				} catch (HL7Exception e) {
-					throw new SendOrReceiveFailureException("HL7 issue: ", e);
-				} catch (IOException e) {
-					throw new SendOrReceiveFailureException("IO issue: ", e);
-				}
-				
-			}
+            try {
+                parsedMessage = myParser.parse(message);
+            } catch (EncodingNotSupportedException e) {
+                throw new SendOrReceiveFailureException("Encoding issue: ", e);
+            } catch (HL7Exception e) {
+                throw new SendOrReceiveFailureException("HL7 issue: ", e);
+            }
 
-		     return new TestMessage(myParser.encode(parsedMessage), parsedMessage);
+            if (myAutoAck) {
+                try {
+                    Message ack = DefaultApplication.makeACK((Segment) parsedMessage.get("MSH"));
+                    String reply = myParser.encode(ack);
 
-		} catch (LLPException e) {
-			throw new InterfaceWontReceiveException(this, e.getMessage(), e);
-		} catch (IOException e) {
-			throw new InterfaceWontReceiveException(this, e.getMessage(), e);
-		} catch (HL7Exception e) {
+                    theCtx.getLog().get(this).info("Sending HL7 v2 ACK (" + reply.length() + " bytes)");
+                    sendMessage(theTest, theCtx, new TestMessage(reply));
+                } catch (EncodingNotSupportedException e) {
+                    throw new SendOrReceiveFailureException("Encoding issue: ", e);
+                } catch (HL7Exception e) {
+                    throw new SendOrReceiveFailureException("HL7 issue: ", e);
+                } catch (IOException e) {
+                    throw new SendOrReceiveFailureException("IO issue: ", e);
+                }
+
+            }
+
+            return new TestMessage(myParser.encode(parsedMessage), parsedMessage);
+
+        } catch (LLPException e) {
+            throw new InterfaceWontReceiveException(this, e.getMessage(), e);
+        } catch (IOException e) {
+            throw new InterfaceWontReceiveException(this, e.getMessage(), e);
+        } catch (HL7Exception e) {
             throw new InterfaceWontReceiveException(this, e.getMessage(), e);
         }
 
-	}
+    }
 
-	@Override
-	public void sendMessage(TestImpl theTest, ExecutionContext theCtx, TestMessage theMessage) throws InterfaceException, UnexpectedTestFailureException {
-		start(theCtx);
+    @Override
+    public void sendMessage(TestImpl theTest, ExecutionContext theCtx, TestMessage theMessage) throws InterfaceException, UnexpectedTestFailureException {
+        start(theCtx);
 
-		if (theMessage.getRawMessage() == null) {
-			try {
-				theMessage.setRawMessage(myParser.encode((Message) theMessage.getParsedMessage()));
-			} catch (HL7Exception e) {
-				throw new UnexpectedTestFailureException("Can't encode message to send it: " + e.getMessage());
-			}
-		}
-		
-		theCtx.getLog().get(this).info( "Sending message (" + theMessage.getRawMessage().length() + " bytes)");
+        if (theMessage.getRawMessage() == null) {
+            try {
+                theMessage.setRawMessage(myParser.encode((Message) theMessage.getParsedMessage()));
+            } catch (HL7Exception e) {
+                throw new UnexpectedTestFailureException("Can't encode message to send it: " + e.getMessage());
+            }
+        }
 
-		try {
-			myWriter.writeMessage(theMessage.getRawMessage());
-			theCtx.getLog().get(this).info( "Sent message");
-		} catch (LLPException e) {
-			throw new InterfaceWontSendException(this, e.getMessage(), e);
-		} catch (IOException e) {
-			throw new InterfaceWontSendException(this, e.getMessage(), e);
-		}
+        theCtx.getLog().get(this).info("Sending message (" + theMessage.getRawMessage().length() + " bytes)");
 
-	}
+        try {
+            myWriter.writeMessage(theMessage.getRawMessage());
+            theCtx.getLog().get(this).info("Sent message");
+        } catch (LLPException e) {
+            throw new InterfaceWontSendException(this, e.getMessage(), e);
+        } catch (IOException e) {
+            throw new InterfaceWontSendException(this, e.getMessage(), e);
+        }
 
-	@Override
-	public void start(ExecutionContext theCtx) throws InterfaceWontStartException {
-		if (myStarted) {
-			return;
-		}
+    }
 
-		startInterface(theCtx);
+    @Override
+    public void start(ExecutionContext theCtx) throws InterfaceWontStartException {
+        if (myStarted) {
+            return;
+        }
 
-		if (isClear()) {
-			long readUntil = System.currentTimeMillis() + getClearMillis();
-			int cleared = 0;
-			while (System.currentTimeMillis() < readUntil) {
-				try {
-					String message = myReader.getMessage();
-					if (message == null) {
-					    try {
+        startInterface(theCtx);
+
+        if (isClear()) {
+            long readUntil = System.currentTimeMillis() + getClearMillis();
+            int cleared = 0;
+            while (System.currentTimeMillis() < readUntil) {
+                try {
+                    String message = myReader.getMessage();
+                    if (message == null) {
+                        try {
                             Thread.sleep(250);
                         } catch (InterruptedException e) {
                             // nothing
                         }
                         continue;
-					}
-					Message parsedMessage = myParser.parse(message);
-					Message response = DefaultApplication.makeACK((Segment)parsedMessage.get("MSH"));
-					message = myParser.encode(response);
-					myWriter.writeMessage(message);
-					cleared++;
-					theCtx.getLog().get(this).info( "Cleared message");
+                    }
+                    Message parsedMessage = myParser.parse(message);
+                    Message response = DefaultApplication.makeACK((Segment) parsedMessage.get("MSH"));
+                    message = myParser.encode(response);
+                    myWriter.writeMessage(message);
+                    cleared++;
+                    theCtx.getLog().get(this).info("Cleared message");
                     try {
                         Thread.sleep(250);
                     } catch (InterruptedException e) {
                         // nothing
                     }
                     readUntil = System.currentTimeMillis() + getClearMillis();
-				} catch (LLPException e) {
-					// ignore
-				} catch (IOException e) {
-					break;
-				} catch (EncodingNotSupportedException e) {
+                } catch (LLPException e) {
+                    // ignore
+                } catch (IOException e) {
+                    break;
+                } catch (EncodingNotSupportedException e) {
                     // ignore
                 } catch (HL7Exception e) {
                     // ignore
                 }
-			}
-			theCtx.getLog().get(this).info( "Cleared " + cleared + " messages from interface before starting");
-		}
-		
-		myStarted = true;
+            }
+            theCtx.getLog().get(this).info("Cleared " + cleared + " messages from interface before starting");
+        }
+
+        myStarted = true;
         firePropertyChange(INTERFACE_STARTED_PROPERTY, false, true);
-	}
+    }
 
-	private void startInterface(ExecutionContext theCtx) throws InterfaceWontStartException {
-		mySocket = null;
-		myServerSocket = null;
-		
-		if (myClientMode) {
-			theCtx.getLog().get(this).info( "Starting CLIENT interface to " + myIp + ":" + myPort);
-			try {
+    private void startInterface(ExecutionContext theCtx) throws InterfaceWontStartException {
+        mySocket = null;
+        myServerSocket = null;
 
-				long endTime = System.currentTimeMillis() + myConnectionTimeout;
-				while (!myStopped && !(mySocket != null && mySocket.isConnected()) && System.currentTimeMillis() < endTime) {
-					mySocket = new Socket();
-					try {
-						mySocket.connect(new InetSocketAddress(myIp, myPort), 500);
-					} catch (SocketTimeoutException e) {
-						// ignore
-					}
-				}
-				if (myStopped) {
-					return;
-				}
+        if (myClientMode) {
+            theCtx.getLog().get(this).info("Starting CLIENT interface to " + myIp + ":" + myPort);
+            try {
 
-				if (!mySocket.isConnected()) {
-					throw new InterfaceWontStartException(this, "Could not connect to " + myIp + ":" + myPort);
-				}
-				
-			} catch (IOException e) {
-				throw new InterfaceWontStartException(this, e.getMessage(), e);
-			}
-		} else {
-			theCtx.getLog().get(this).info( "Starting SERVER interface on port " + myPort);
-			try {
-				myServerSocket = new ServerSocket(myPort);
-				myServerSocket.setSoTimeout(250);
-				
-				long endTime = System.currentTimeMillis() + myConnectionTimeout;
-				while (!myStopped && mySocket == null && System.currentTimeMillis() < endTime) {
-					try {
-						mySocket = myServerSocket.accept();
-					} catch (SocketTimeoutException e) {
-						// ignore
-					}
-				}
-				
-				if (mySocket == null) {
-					throw new InterfaceWontStartException(this, "Timed out waiting for connection on port " + myPort);
-				}
-				
-			} catch (IOException e) {
-				throw new InterfaceWontStartException(this, e.getMessage(), e);
-			}
-		}
+                long endTime = System.currentTimeMillis() + myConnectionTimeout;
+                while (!myStopped && !(mySocket != null && mySocket.isConnected()) && System.currentTimeMillis() < endTime) {
+                    mySocket = new Socket();
+                    try {
+                        mySocket.connect(new InetSocketAddress(myIp, myPort), 500);
+                    } catch (SocketTimeoutException e) {
+                        // ignore
+                    }
+                }
+                if (myStopped) {
+                    return;
+                }
 
-		try {
-			mySocket.setSoTimeout(250);
-			myReader = new MinLLPReader(mySocket.getInputStream());
-			myWriter = new MinLLPWriter(mySocket.getOutputStream());
-		} catch (SocketException e) {
-			throw new InterfaceWontStartException(this, e.getMessage(), e);
-		} catch (IOException e) {
-			throw new InterfaceWontStartException(this, e.getMessage(), e);
-		}
-		
-		theCtx.getLog().get(this).info( "Started interface successfully");
-	}
+                if (!mySocket.isConnected()) {
+                    throw new InterfaceWontStartException(this, "Could not connect to " + myIp + ":" + myPort);
+                }
 
-	@Override
-	public void stop(ExecutionContext theCtx) throws InterfaceWontStopException {
-		if (!myStarted) {
-			return;
-		}
-		if (myStopped) {
-			return;
-		}
+            } catch (IOException e) {
+                throw new InterfaceWontStartException(this, e.getMessage(), e);
+            }
+        } else {
+            theCtx.getLog().get(this).info("Starting SERVER interface on port " + myPort);
+            try {
+                myServerSocket = new ServerSocket(myPort);
+                myServerSocket.setSoTimeout(250);
 
-		theCtx.getLog().get(this).info( "Stopping interface");
+                long endTime = System.currentTimeMillis() + myConnectionTimeout;
+                while (!myStopped && mySocket == null && System.currentTimeMillis() < endTime) {
+                    try {
+                        mySocket = myServerSocket.accept();
+                    } catch (SocketTimeoutException e) {
+                        // ignore
+                    }
+                }
 
-		try {
-			if (myServerSocket != null) {
-				myServerSocket.close();
-			}
-			if (mySocket != null) {
-				mySocket.close();
-			}
-		} catch (IOException e) {
-			throw new InterfaceWontStopException(this, e.getMessage(), e);
-		}
+                if (mySocket == null) {
+                    throw new InterfaceWontStartException(this, "Timed out waiting for connection on port " + myPort);
+                }
 
-		myStarted = false;
+            } catch (IOException e) {
+                throw new InterfaceWontStartException(this, e.getMessage(), e);
+            }
+        }
+
+        try {
+            mySocket.setSoTimeout(250);
+            myReader = new MinLLPReader(mySocket.getInputStream());
+            myWriter = new MinLLPWriter(mySocket.getOutputStream());
+        } catch (SocketException e) {
+            throw new InterfaceWontStartException(this, e.getMessage(), e);
+        } catch (IOException e) {
+            throw new InterfaceWontStartException(this, e.getMessage(), e);
+        }
+
+        theCtx.getLog().get(this).info("Started interface successfully");
+    }
+
+    @Override
+    public void stop(ExecutionContext theCtx) throws InterfaceWontStopException {
+        if (!myStarted) {
+            return;
+        }
+        if (myStopped) {
+            return;
+        }
+
+        theCtx.getLog().get(this).info("Stopping interface");
+
+        try {
+            if (myServerSocket != null) {
+                myServerSocket.close();
+            }
+            if (mySocket != null) {
+                mySocket.close();
+            }
+        } catch (IOException e) {
+            throw new InterfaceWontStopException(this, e.getMessage(), e);
+        }
+
+        myStarted = false;
         firePropertyChange(INTERFACE_STARTED_PROPERTY, true, false);
-	}
+    }
 
-	@Override
-	public boolean isStarted() {
-		return myStarted;
-	}
+    @Override
+    public boolean isStarted() {
+        return myStarted;
+    }
 
-	@Override
-	public Interface exportConfig() {
-		MllpHl7V2Interface retVal = new MllpHl7V2Interface();
-		super.exportConfig(retVal);
-		retVal.setAutoAck(myAutoAck);
-		retVal.setConnectionTimeoutMillis(myConnectionTimeout);
-		retVal.setEncoding(myEncoding);
-		retVal.setMode(myClientMode ? CLIENT : SERVER);
-		retVal.setIp(myIp);
-		retVal.setPort(myPort);
-		return retVal;
-	}
-
+    @Override
+    public Interface exportConfig() {
+        MllpHl7V2Interface retVal = new MllpHl7V2Interface();
+        super.exportConfig(retVal);
+        retVal.setAutoAck(myAutoAck);
+        retVal.setConnectionTimeoutMillis(myConnectionTimeout);
+        retVal.setEncoding(myEncoding);
+        retVal.setMode(myClientMode ? CLIENT : SERVER);
+        retVal.setIp(myIp);
+        retVal.setPort(myPort);
+        return retVal;
+    }
 }

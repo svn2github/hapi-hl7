@@ -32,21 +32,21 @@ import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.xsd.Hl7V2ExpectSpecificMessage;
+import java.beans.PropertyVetoException;
 
 public class Hl7V2ExpectSpecificMessageImpl extends AbstractHl7V2ExpectMessage implements ISpecificMessageEvent {
 
-	private String myMessageId;
 	private Hl7V2MessageImpl myMessageProvider;
 	
 	public Hl7V2ExpectSpecificMessageImpl(TestImpl theTest, Hl7V2ExpectSpecificMessage theConfig) throws ConfigurationException {
 		super(theTest, theConfig);
 		
-		myMessageId = theConfig.getMessageId();
-		AbstractMessage messageProvider = getBattery().getMessage(myMessageId);
-		if (!(messageProvider instanceof Hl7V2MessageImpl)) {
-			throw new ConfigurationException("Message with ID[" + myMessageId + "] is not an HL7 v2 message type so it can not be used with this expect");
+        String messageId = theConfig.getMessageId();
+        AbstractMessage message = theTest.getBattery().getMessage(messageId);
+		if (!(message instanceof Hl7V2MessageImpl)) {
+			throw new ConfigurationException("Message with ID[" + messageId + "] is not an HL7 v2 message type so it can not be used with this expect");
 		}
-		myMessageProvider = (Hl7V2MessageImpl) messageProvider;
+		myMessageProvider = (Hl7V2MessageImpl) message;
 	}
 
 	@Override
@@ -65,15 +65,23 @@ public class Hl7V2ExpectSpecificMessageImpl extends AbstractHl7V2ExpectMessage i
 	}
 
 
-    public String getMessageId() {
-        return myMessageId;
+    public Hl7V2MessageImpl getMessage() {
+        return myMessageProvider;
     }
 
-    
-    public void setMessageId(String theMessageId) {
-        String oldValue = theMessageId;
-        this.myMessageId = theMessageId;
-        firePropertyChange(MESSAGE_ID_PROPERTY, oldValue, myMessageId);
+
+    public void setMessageId(String theMessageId) throws PropertyVetoException {
+        AbstractMessage newMessage;
+        try {
+            newMessage = getBattery().getMessage(theMessageId);
+        } catch (ConfigurationException ex) {
+            throw new PropertyVetoException(ex.getMessage(), null);
+        }
+
+        String oldValue = myMessageProvider.getId();
+        fireVetoableChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
+        this.myMessageProvider = (Hl7V2MessageImpl) newMessage;
+        firePropertyChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
     }
 
     public Class<?> getMessageClass() {

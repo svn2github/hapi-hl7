@@ -25,6 +25,7 @@ package ca.uhn.hunit.iface;
 
 
 import ca.uhn.hunit.ex.ConfigurationException;
+import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.xsd.Interface;
 import ca.uhn.hunit.xsd.JmsInterface;
 
@@ -33,8 +34,8 @@ import ca.uhn.hunit.xsd.JmsInterface;
  */
 public class JmsInterfaceImpl extends AbstractJmsInterfaceImpl<String> {
 
-	public JmsInterfaceImpl(JmsInterface theConfig) throws ConfigurationException {
-		super(theConfig);
+	public JmsInterfaceImpl(TestBatteryImpl theBattery, JmsInterface theConfig) throws ConfigurationException {
+		super(theBattery, theConfig);
 	}
 
 

@@ -23,10 +23,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ca.uhn.hunit.swing.ui;
 
 import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.ImageIcon;
 import org.springframework.util.ResourceUtils;
 
@@ -36,12 +37,39 @@ import org.springframework.util.ResourceUtils;
  */
 public class ImageFactory {
 
+    private static Map<String, ImageIcon> ourIcons = new HashMap<String, ImageIcon>();
+
     private static ImageIcon getImageIcon(String theLocation) {
-        try {
-            return new ImageIcon(ResourceUtils.getURL("classpath:" + theLocation));
-        } catch (FileNotFoundException ex) {
-            throw new Error(ex);
+        ImageIcon retVal = ourIcons.get(theLocation);
+        if (retVal == null) {
+            try {
+                retVal = new ImageIcon(ResourceUtils.getURL("classpath:" + theLocation));
+                ourIcons.put(theLocation, retVal);
+            } catch (FileNotFoundException ex) {
+                throw new Error(ex);
+            }
         }
+        return retVal;
+    }
+
+    public static ImageIcon getMessageHl7() {
+        return getImageIcon("ca/uhn/hunit/ui/resources/images/message_hl7.png");
+    }
+
+    public static ImageIcon getTest() {
+        return getImageIcon("ca/uhn/hunit/ui/resources/images/test.png");
+    }
+
+    public static ImageIcon getMessageXml() {
+        return getImageIcon("ca/uhn/hunit/ui/resources/images/message_xml.png");
+    }
+
+    public static ImageIcon getTabLog() {
+        return getImageIcon("ca/uhn/hunit/ui/resources/images/tab_log.png");
+    }
+
+    public static ImageIcon getButtonExecute() {
+        return getImageIcon("ca/uhn/hunit/ui/resources/images/button_execute.png");
     }
 
     public static ImageIcon getInterfaceOn() {
@@ -52,4 +80,15 @@ public class ImageFactory {
         return getImageIcon("ca/uhn/hunit/ui/resources/images/interface_off.png");
     }
 
+    public static ImageIcon getTestRunning() {
+        return getImageIcon("ca/uhn/hunit/ui/resources/images/test_running.png");
+    }
+
+    public static ImageIcon getTestFailed() {
+        return getImageIcon("ca/uhn/hunit/ui/resources/images/test_failed.png");
+    }
+
+    public static ImageIcon getTestPassed() {
+        return getImageIcon("ca/uhn/hunit/ui/resources/images/test_passed.png");
+    }
 }

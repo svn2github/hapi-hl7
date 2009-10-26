@@ -19,11 +19,11 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-
 package ca.uhn.hunit.junit;
 
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.run.IExecutionListener;
+import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
 import junit.framework.AssertionFailedError;
 
@@ -44,4 +44,15 @@ public class Junit3FailureListener implements IExecutionListener {
         // nothing
     }
 
+    public void batteryStarted(TestBatteryImpl theBattery) {
+        // nothing
+    }
+
+    public void batteryFailed(TestBatteryImpl theBattery) {
+        // nothing
+    }
+
+    public void batteryPassed(TestBatteryImpl theBattery) {
+        // nothing
+    }
 }

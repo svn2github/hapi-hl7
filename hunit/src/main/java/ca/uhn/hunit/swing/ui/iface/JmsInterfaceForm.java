@@ -33,8 +33,17 @@
 package ca.uhn.hunit.swing.ui.iface;
 
 import ca.uhn.hunit.iface.JmsInterfaceImpl;
+import ca.uhn.hunit.l10n.Colours;
 import ca.uhn.hunit.swing.controller.ctx.JmsInterfaceContextController;
 import ca.uhn.hunit.swing.ui.AbstractContextForm;
+import java.awt.Color;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.beans.PropertyVetoException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 
 /**
  *
@@ -181,16 +190,54 @@ public class JmsInterfaceForm extends AbstractContextForm<JmsInterfaceContextCon
 
 
     public void setController(JmsInterfaceContextController theController) {
-        JmsInterfaceImpl model = theController.getModel();
+        final JmsInterfaceImpl model = theController.getModel();
         
         myConstructorArgsTable.setModel(model.getConstructorArgsTableModel());
 
         myConnectionFactoryTextBox.setText(model.getConnectionFactoryClass().getCanonicalName());
+        myConnectionFactoryTextBox.getDocument().addUndoableEditListener(new UndoableEditListener() {
+            public void undoableEditHappened(UndoableEditEvent e) {
+                try {
+                    model.setConnectionFactoryClass(Class.forName(myConnectionFactoryTextBox.getText()));
+                    myConnectionFactoryTextBox.setBackground(Colours.getTextFieldOk());
+                } catch (ClassNotFoundException ex) {
+                    myConnectionFactoryTextBox.setBackground(Colours.getTextFieldError());
+                }
+            }
+        });
+
         myUsernameTextBox.setText(model.getUsername());
+        myUsernameTextBox.getDocument().addUndoableEditListener(new UndoableEditListener() {
+            public void undoableEditHappened(UndoableEditEvent e) {
+                model.setUsername(myUsernameTextBox.getText());
+            }
+        });
+
         myPasswordTextBox.setText(model.getPassword());
+        myPasswordTextBox.getDocument().addUndoableEditListener(new UndoableEditListener() {
+            public void undoableEditHappened(UndoableEditEvent e) {
+                model.setPassword(myPasswordTextBox.getText());
+            }
+        });
+
         myQueueNameTextBox.setText(model.getQueueName());
+        myQueueNameTextBox.getDocument().addUndoableEditListener(new UndoableEditListener() {
+            public void undoableEditHappened(UndoableEditEvent e) {
+                try {
+                    model.setQueueName(myQueueNameTextBox.getText());
+                    myQueueNameTextBox.setBackground(Colours.getTextFieldOk());
+                } catch (PropertyVetoException ex) {
+                    myQueueNameTextBox.setBackground(Colours.getTextFieldError());
+                }
+            }
+        });
+
         myQueueTopicCombo.setSelectedIndex(model.isPubSubDomain() ? 1 : 0);
-        
+        myQueueTopicCombo.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                model.setPubSubDomain(myQueueTopicCombo.getSelectedIndex() == 1);
+            }
+        });
     }
 
     public void tearDown() {

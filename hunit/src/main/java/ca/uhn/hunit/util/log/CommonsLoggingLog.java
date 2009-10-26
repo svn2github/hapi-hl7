@@ -24,20 +24,25 @@ package ca.uhn.hunit.util.log;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class CommonsLoggingLog implements ILogProvider {
 
-    public org.apache.commons.logging.Log get(AbstractInterface theInterface) {
+    public Log get(AbstractInterface theInterface) {
         return LogFactory.getLog("hunit.interface." + theInterface.getId());
     }
 
-    public org.apache.commons.logging.Log get(TestImpl theTest) {
+    public Log get(TestImpl theTest) {
         return LogFactory.getLog("hunit.test." + theTest.getName());
     }
 
-    public org.apache.commons.logging.Log get(TestBatteryImpl theTest) {
+    public Log get(TestBatteryImpl theTest) {
         return LogFactory.getLog("hunit.battery." + theTest.getName());
+    }
+
+    public Log getSystem(Class<?> theClass) {
+        return LogFactory.getLog("hunit.system." + theClass.getName());
     }
 
 }

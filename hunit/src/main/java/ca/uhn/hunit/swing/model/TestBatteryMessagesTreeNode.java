@@ -34,22 +34,24 @@ public class TestBatteryMessagesTreeNode extends DefaultMutableTreeNode implemen
 	private static final long serialVersionUID = -4977729790093086397L;
 	
     private final TestBatteryImpl myBattery;
+    private final MyTreeModel myModel;
 	
 	
-	public TestBatteryMessagesTreeNode(TestBatteryImpl theBattery) {
+	public TestBatteryMessagesTreeNode(TestBatteryImpl theBattery, MyTreeModel theModel) {
         myBattery = theBattery;
+        myModel = theModel;
 		theBattery.addPropertyChangeListener(TestBatteryImpl.PROP_MESSAGES, this);
 		updateChildren();
 	}
 
 	private void updateChildren() {
 		int index = 0;
-		for (AbstractMessage next : myBattery.getMessages()) {
+		for (AbstractMessage<?> next : myBattery.getMessages()) {
 			if (getChildCount() <= index) {
 				MessageTreeNode newChild = new MessageTreeNode(next);
 				add(newChild);
 			} else {
-				InterfaceTreeNode nextNode = (InterfaceTreeNode) getChildAt(index);
+				MessageTreeNode nextNode = (MessageTreeNode) getChildAt(index);
 				if (!nextNode.getUserObject().equals(next)) {
 					MessageTreeNode newChild = new MessageTreeNode(next);
 					insert(newChild, index);
@@ -58,13 +60,15 @@ public class TestBatteryMessagesTreeNode extends DefaultMutableTreeNode implemen
 			index++;
 		}
 		
-		while (getChildCount() > myBattery.getInterfaces().size()) {
+		while (getChildCount() > myBattery.getMessages().size()) {
 			remove(getChildCount() - 1);
 		}
 	}
 
 	public void propertyChange(PropertyChangeEvent theEvt) {
 		updateChildren();
+
+        myModel.nodeStructureChanged(this);
 	}
 
 }

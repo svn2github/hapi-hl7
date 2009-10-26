@@ -47,7 +47,7 @@ public class MessageComboBoxModel extends DefaultComboBoxModel {
         myBattery = theBattery;
 
         if (theEvent != null) {
-            setSelectedItem(theEvent.getMessageId());
+            setSelectedItem(theEvent.getMessage().getId());
         }
     }
 
