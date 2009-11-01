@@ -22,8 +22,10 @@
 package ca.uhn.hunit.event.expect;
 
 import ca.uhn.hunit.event.AbstractEvent;
+import ca.uhn.hunit.event.InterfaceInteractionEnum;
 import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.ex.ConfigurationException;
+import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.ExpectEvent;
 
 public abstract class AbstractExpect extends AbstractEvent {
@@ -49,5 +51,19 @@ public abstract class AbstractExpect extends AbstractEvent {
 	    return myReceiveTimeout;
 	}
 	
-	
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public InterfaceInteractionEnum getInteractionType() {
+        return InterfaceInteractionEnum.RECEIVE;
+    }
+
+    public Event exportConfig(ExpectEvent theConfig) {
+        super.exportConfig(theConfig);
+        theConfig.setReceiveTimeoutMillis(myReceiveTimeout);
+        theConfig.setWaitForCompletion(myWaitForCompletion);
+        return theConfig;
+    }
+
 }

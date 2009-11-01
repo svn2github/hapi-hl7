@@ -23,14 +23,18 @@
 package ca.uhn.hunit.swing.ui.run;
 
 import ca.uhn.hunit.iface.AbstractInterface;
+import ca.uhn.hunit.swing.model.LogTableModel;
+import ca.uhn.hunit.swing.ui.ImageFactory;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.util.log.LogEvent;
 import ca.uhn.hunit.util.log.LogLevel;
 import java.awt.Color;
 import java.awt.Component;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
@@ -43,7 +47,27 @@ public class LogTableCellRenderer extends DefaultTableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         setForeground(Color.black);
-        if (value instanceof String) {
+        setIcon(null);
+        setHorizontalTextPosition(SwingConstants.RIGHT);
+
+        if (column == LogTableModel.COLUMN_MESSAGE) {
+            LogEvent event = (LogEvent) value;
+            setText(event.getMessage());
+            if (event.getEventCode() != null) {
+                switch (event.getEventCode()) {
+                    case TEST_FAILED:
+                        setIcon(ImageFactory.getTestFailed());
+                        break;
+                    case TEST_PASSED:
+                        setIcon(ImageFactory.getTestPassed());
+                        break;
+                    case TEST_STARTED:
+                        setIcon(ImageFactory.getTestRunning());
+                        break;
+                }
+            }
+
+        } else if (value instanceof String) {
             setText((String)value);
         } else if (value instanceof Date) {
             setText(ourTimeFormat.format((Date)value));

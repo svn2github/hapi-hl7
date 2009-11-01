@@ -51,6 +51,7 @@ import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.xsd.AnyInterface;
 import ca.uhn.hunit.xsd.Interface;
 import ca.uhn.hunit.xsd.MllpHl7V2Interface;
 
@@ -80,24 +81,35 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
         myStarted = false;
         myConnectionTimeout = theConfig.getConnectionTimeoutMillis();
         myStopped = false;
+        myEncoding = theConfig.getEncoding();
+        myAutoAck = theConfig.isAutoAck();
 
+        init();
+    }
+
+    /**
+     * Empty instance constructor
+     */
+    public MllpHl7V2InterfaceImpl(TestBatteryImpl theBattery, String theId) {
+        super(theBattery, theId);
+
+        init();
+    }
+
+
+    private void init() {
         if (myConnectionTimeout == null) {
             myConnectionTimeout = 10000;
         }
-
-        myEncoding = theConfig.getEncoding();
         if ("XML".equals(myEncoding)) {
             myParser = new DefaultXMLParser();
         } else {
             myParser = new PipeParser();
         }
-        myParser.setValidationContext(new ValidationContextImpl());
-
-        myAutoAck = theConfig.isAutoAck();
         if (myAutoAck == null) {
             myAutoAck = true;
         }
-
+        myParser.setValidationContext(new ValidationContextImpl());
     }
 
     public boolean isAutoAck() {
@@ -385,16 +397,29 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
         return myStarted;
     }
 
+    /**
+     * Subclasses should make use of this method to export AbstractInterface properties into
+     * the return value for {@link #exportConfigToXml()}
+     */
+    protected MllpHl7V2Interface exportConfig(MllpHl7V2Interface theConfig) {
+        super.exportConfig(theConfig);
+        theConfig.setAutoAck(myAutoAck);
+        theConfig.setConnectionTimeoutMillis(myConnectionTimeout);
+        theConfig.setEncoding(myEncoding);
+        theConfig.setMode(myClientMode ? CLIENT : SERVER);
+        theConfig.setIp(myIp);
+        theConfig.setPort(myPort);
+        return theConfig;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
     @Override
-    public Interface exportConfig() {
-        MllpHl7V2Interface retVal = new MllpHl7V2Interface();
-        super.exportConfig(retVal);
-        retVal.setAutoAck(myAutoAck);
-        retVal.setConnectionTimeoutMillis(myConnectionTimeout);
-        retVal.setEncoding(myEncoding);
-        retVal.setMode(myClientMode ? CLIENT : SERVER);
-        retVal.setIp(myIp);
-        retVal.setPort(myPort);
+    public AnyInterface exportConfigToXml() {
+        AnyInterface retVal = new AnyInterface();
+        retVal.setMllpHl7V2Interface(exportConfig(new MllpHl7V2Interface()));
         return retVal;
     }
+
 }

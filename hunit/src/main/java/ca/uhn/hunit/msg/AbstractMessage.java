@@ -22,10 +22,11 @@
 package ca.uhn.hunit.msg;
 
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.util.AbstractModelClass;
 import ca.uhn.hunit.xsd.MessageDefinition;
 import java.beans.PropertyVetoException;
 
-public abstract class AbstractMessage<T> {
+public abstract class AbstractMessage<T> extends AbstractModelClass {
 
 	protected String myId;
 
@@ -70,6 +71,22 @@ public abstract class AbstractMessage<T> {
         hash = 17 * hash + (this.myId != null ? this.myId.hashCode() : 0);
         return hash;
     }
+
+
+    /**
+     * Subclasses should make use of this method to export AbstractInterface properties into
+     * the return value for {@link #exportConfigToXml()}
+     */
+    protected MessageDefinition exportConfig(MessageDefinition theConfig) {
+        theConfig.setId(myId);
+        return theConfig;
+    }
+
+    /**
+     * Declare a concrete type for subclass implementations of this method
+     */
+    @Override
+    public abstract MessageDefinition exportConfigToXml();
 
     
 }

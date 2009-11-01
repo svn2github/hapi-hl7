@@ -24,6 +24,7 @@ package ca.uhn.hunit.swing.controller.ctx;
 
 import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.swing.ui.msg.Hl7V2MessageEditorForm;
+import ca.uhn.hunit.util.log.ILogProvider;
 
 /**
  *
@@ -34,7 +35,9 @@ public class Hl7V2MessageEditorController extends AbstractMessageEditorControlle
     private final Hl7V2MessageImpl myMessage;
 
 
-    public Hl7V2MessageEditorController(Hl7V2MessageImpl theMessage) {
+    public Hl7V2MessageEditorController(ILogProvider theLog, Hl7V2MessageImpl theMessage) {
+        super(theLog);
+        
         myView = new Hl7V2MessageEditorForm();
         myMessage = theMessage;
 

@@ -54,6 +54,17 @@ public abstract class AbstractEvent extends AbstractModelClass {
 
 	public abstract void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException;
 
+    public abstract InterfaceInteractionEnum getInteractionType();
+
+    /**
+     * Subclasses should override this and pass their config to the super implementation
+     * before returning the generated object
+     */
+    public Event exportConfig(Event theConfigToPopulate) {
+        theConfigToPopulate.setInterfaceId(myInterface.getId());
+        return theConfigToPopulate;
+    }
+
 	public TestBatteryImpl getBattery() {
 		return myTest.getBattery();
 	}

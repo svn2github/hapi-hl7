@@ -40,6 +40,8 @@ import ca.uhn.hunit.swing.ui.AbstractContextForm;
 import ca.uhn.hunit.swing.ui.ImageFactory;
 import ca.uhn.hunit.test.TestImpl;
 import javax.swing.JPanel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 /**
@@ -71,13 +73,13 @@ public class TestExecutionForm extends AbstractContextForm<BatteryExecutionConte
 
         mySplitPane = new javax.swing.JSplitPane();
         myTestsPanel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        myTestsScrollPane = new javax.swing.JScrollPane();
         myTestsTable = new javax.swing.JTable();
         myTabbedPane = new javax.swing.JTabbedPane();
         myLogPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        myLogScrollPane = new javax.swing.JScrollPane();
         myLogTable = new javax.swing.JTable();
 
         mySplitPane.setBorder(null);
@@ -101,7 +103,7 @@ public class TestExecutionForm extends AbstractContextForm<BatteryExecutionConte
         ));
         myTestsTable.setShowHorizontalLines(false);
         myTestsTable.setShowVerticalLines(false);
-        jScrollPane1.setViewportView(myTestsTable);
+        myTestsScrollPane.setViewportView(myTestsTable);
 
         javax.swing.GroupLayout myTestsPanelLayout = new javax.swing.GroupLayout(myTestsPanel);
         myTestsPanel.setLayout(myTestsPanelLayout);
@@ -109,13 +111,13 @@ public class TestExecutionForm extends AbstractContextForm<BatteryExecutionConte
             myTestsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, myTestsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
+                .addComponent(myTestsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
                 .addContainerGap())
         );
         myTestsPanelLayout.setVerticalGroup(
             myTestsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(myTestsPanelLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
+                .addComponent(myTestsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -139,7 +141,7 @@ public class TestExecutionForm extends AbstractContextForm<BatteryExecutionConte
         ));
         myLogTable.setShowHorizontalLines(false);
         myLogTable.setShowVerticalLines(false);
-        jScrollPane2.setViewportView(myLogTable);
+        myLogScrollPane.setViewportView(myLogTable);
 
         javax.swing.GroupLayout myLogPanelLayout = new javax.swing.GroupLayout(myLogPanel);
         myLogPanel.setLayout(myLogPanelLayout);
@@ -148,7 +150,7 @@ public class TestExecutionForm extends AbstractContextForm<BatteryExecutionConte
             .addGroup(myLogPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(myLogPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 401, Short.MAX_VALUE)
+                    .addComponent(myLogScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 401, Short.MAX_VALUE)
                     .addGroup(myLogPanelLayout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -162,7 +164,7 @@ public class TestExecutionForm extends AbstractContextForm<BatteryExecutionConte
                     .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
+                .addComponent(myLogScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -186,13 +188,13 @@ public class TestExecutionForm extends AbstractContextForm<BatteryExecutionConte
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPanel myLogPanel;
+    private javax.swing.JScrollPane myLogScrollPane;
     private javax.swing.JTable myLogTable;
     private javax.swing.JSplitPane mySplitPane;
     private javax.swing.JTabbedPane myTabbedPane;
     private javax.swing.JPanel myTestsPanel;
+    private javax.swing.JScrollPane myTestsScrollPane;
     private javax.swing.JTable myTestsTable;
     // End of variables declaration//GEN-END:variables
 
@@ -213,6 +215,13 @@ public class TestExecutionForm extends AbstractContextForm<BatteryExecutionConte
 //        myTestsTable.getColumnModel().getColumn(0).setMaxWidth(100);
         myTestsTable.getColumnModel().getColumn(1).setPreferredWidth(100);
         myTestsTable.doLayout();
+
+        myController.getLogTableModel().addTableModelListener(new TableModelListener() {
+            public void tableChanged(TableModelEvent e) {
+                int scrollMax = myLogScrollPane.getVerticalScrollBar().getMaximum();
+                myLogScrollPane.getVerticalScrollBar().setValue(scrollMax);
+            }
+        });
 
     }
 

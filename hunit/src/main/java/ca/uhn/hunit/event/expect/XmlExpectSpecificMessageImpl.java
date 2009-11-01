@@ -30,14 +30,12 @@ import ca.uhn.hunit.compare.xml.XmlMessageCompare;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.ex.TestFailureException;
-import ca.uhn.hunit.msg.AbstractMessage;
-import ca.uhn.hunit.xsd.MessageSource;
-import ca.uhn.hunit.xsd.XMLExpectMessage;
 import ca.uhn.hunit.xsd.XMLExpectSpecificMessage;
 import ca.uhn.hunit.iface.TestMessage;
-import ca.uhn.hunit.msg.XmlMessageImpl;
-import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.xsd.Event;
+import ca.uhn.hunit.xsd.ExpectMessage;
+import ca.uhn.hunit.xsd.ExpectMessageAny;
 import org.w3c.dom.Document;
 
 /**
@@ -45,32 +43,36 @@ import org.w3c.dom.Document;
  * @author James
  */
 public class XmlExpectSpecificMessageImpl extends AbstractXmlExpectMessage {
-    private final String myMessageId;
-    private final XmlMessageImpl myMessageProvider;
 
     public XmlExpectSpecificMessageImpl(TestImpl theTest, XMLExpectSpecificMessage theConfig) throws ConfigurationException {
         super(theTest, theConfig);
-
-		myMessageId = theConfig.getMessageId();
-		AbstractMessage messageProvider = getBattery().getMessage(myMessageId);
-		if (!(messageProvider instanceof XmlMessageImpl)) {
-			throw new ConfigurationException("Message with ID[" + myMessageId + "] is not an HL7 v2 message type so it can not be used with this expect");
-		}
-		myMessageProvider = (XmlMessageImpl) messageProvider;
-
     }
 
     @Override
     protected void validateMessage(TestMessage<Document> parsedMessage) throws TestFailureException {
-        TestMessage<Document> expect = myMessageProvider.getTestMessage();
+        TestMessage<Document> expect = getMessage().getTestMessage();
         XmlMessageCompare compare = new XmlMessageCompare();
         compare.compare(expect, parsedMessage);
-
-        System.out.println("+++" + compare.isSame());
 
         if (compare.isSame() == false) {
             throw new IncorrectMessageReceivedException(getTest(), null, expect, parsedMessage, "Inforrect message received", compare);
         }
+    }
+
+    public XMLExpectSpecificMessage exportConfig(XMLExpectSpecificMessage theConfig) {
+        if (theConfig == null) {
+            theConfig = new XMLExpectSpecificMessage();
+        }
+        super.exportConfig(theConfig);
+        return theConfig;
+    }
+
+    @Override
+    public ExpectMessageAny exportConfigToXml() {
+        ExpectMessageAny expectMessage = new ExpectMessageAny();
+        XMLExpectSpecificMessage retVal = exportConfig(new XMLExpectSpecificMessage());
+        expectMessage.setXmlSpecific(retVal);
+        return expectMessage;
     }
 
 }

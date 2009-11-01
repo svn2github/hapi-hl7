@@ -24,25 +24,132 @@ package ca.uhn.hunit.util.log;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class CommonsLoggingLog implements ILogProvider {
 
-    public Log get(AbstractInterface theInterface) {
-        return LogFactory.getLog("hunit.interface." + theInterface.getId());
+    private static final Map<String, ILog> ourLogs = Collections.synchronizedMap(new HashMap<String, ILog>());
+
+    private static ILog getLog(String theName) {
+        ILog retVal = ourLogs.get(theName);
+        if (retVal == null) {
+            retVal = new MyLog(theName);
+            ourLogs.put(theName, retVal);
+        }
+        return retVal;
     }
 
-    public Log get(TestImpl theTest) {
-        return LogFactory.getLog("hunit.test." + theTest.getName());
+    public ILog get(AbstractInterface theInterface) {
+        return getLog("hunit.interface." + theInterface.getId());
     }
 
-    public Log get(TestBatteryImpl theTest) {
-        return LogFactory.getLog("hunit.battery." + theTest.getName());
+    public ILog get(TestImpl theTest) {
+        return getLog("hunit.test." + theTest.getName());
     }
 
-    public Log getSystem(Class<?> theClass) {
-        return LogFactory.getLog("hunit.system." + theClass.getName());
+    public ILog get(TestBatteryImpl theTest) {
+        return getLog("hunit.battery." + theTest.getName());
     }
 
+    public ILog getSystem(Class<?> theClass) {
+        return getLog("hunit.system." + theClass.getName());
+    }
+
+
+    private static class MyLog implements ILog
+    {
+        private Log myWrappedLog;
+
+        private MyLog(String theLog) {
+            myWrappedLog = LogFactory.getLog(theLog);
+        }
+
+        public void info(Object message, EventCodeEnum theEventCode) {
+            myWrappedLog.info(message);
+        }
+
+        public void error(Object message, Throwable t, EventCodeEnum theEventCode) {
+            myWrappedLog.error(message, t);
+        }
+
+        public boolean isDebugEnabled() {
+            return myWrappedLog.isDebugEnabled();
+        }
+
+        public boolean isErrorEnabled() {
+            return myWrappedLog.isErrorEnabled();
+        }
+
+        public boolean isFatalEnabled() {
+            return myWrappedLog.isFatalEnabled();
+        }
+
+        public boolean isInfoEnabled() {
+            return myWrappedLog.isInfoEnabled();
+        }
+
+        public boolean isTraceEnabled() {
+            return myWrappedLog.isTraceEnabled();
+        }
+
+        public boolean isWarnEnabled() {
+            return myWrappedLog.isWarnEnabled();
+        }
+
+        public void trace(Object message) {
+            myWrappedLog.trace(message);
+        }
+
+        public void trace(Object message, Throwable t) {
+            myWrappedLog.trace(message, t);
+        }
+
+        public void debug(Object message) {
+            myWrappedLog.debug(message);
+        }
+
+        public void debug(Object message, Throwable t) {
+            myWrappedLog.debug(message, t);
+        }
+
+        public void info(Object message) {
+            myWrappedLog.info(message);
+        }
+
+        public void info(Object message, Throwable t) {
+            myWrappedLog.info(message, t);
+        }
+
+        public void warn(Object message) {
+            myWrappedLog.warn(message);
+        }
+
+        public void warn(Object message, Throwable t) {
+            myWrappedLog.warn(message, t);
+        }
+
+        public void error(Object message) {
+            myWrappedLog.error(message);
+        }
+
+        public void error(Object message, Throwable t) {
+            myWrappedLog.error(message, t);
+        }
+
+        public void fatal(Object message) {
+            myWrappedLog.fatal(message);
+        }
+
+        public void fatal(Object message, Throwable t) {
+            myWrappedLog.fatal(message, t);
+        }
+
+        public void error(Object theMessage, EventCodeEnum theEventCode) {
+            myWrappedLog.error(theMessage);
+        }
+    }
 }

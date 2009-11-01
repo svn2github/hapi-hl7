@@ -28,6 +28,7 @@ package ca.uhn.hunit.swing.controller.ctx;
 
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.swing.ui.AbstractContextForm;
+import ca.uhn.hunit.util.log.ILogProvider;
 import java.beans.PropertyVetoException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,7 +42,8 @@ public abstract class AbstractInterfaceEditorContextController<T extends Abstrac
 
     private final T myModel;
 
-    public AbstractInterfaceEditorContextController(T theModel) {
+    public AbstractInterfaceEditorContextController(ILogProvider theLog, T theModel) {
+        super(theLog);
         myModel = theModel;
     }
 

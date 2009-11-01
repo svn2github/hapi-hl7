@@ -25,61 +25,61 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import java.util.List;
+import javax.swing.event.TableModelEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
+import javax.swing.event.TableModelListener;
 
-public class TestBatteryTestsTreeNode extends DefaultMutableTreeNode implements PropertyChangeListener {
+public class TestBatteryTestsTreeNode extends DefaultMutableTreeNode implements TableModelListener, PropertyChangeListener {
 
-	private static final long serialVersionUID = -4977729790093086397L;
+    private static final long serialVersionUID = -4977729790093086397L;
     private final TestBatteryImpl myBattery;
     private final MyTreeModel myModel;
-	
-	
-	public TestBatteryTestsTreeNode(TestBatteryImpl theBattery, MyTreeModel theModel) {
-		myBattery = theBattery;
+
+    public TestBatteryTestsTreeNode(TestBatteryImpl theBattery, MyTreeModel theModel) {
+        myBattery = theBattery;
         myModel = theModel;
-        
-        myBattery.addPropertyChangeListener(TestBatteryImpl.PROP_TESTS, this);
 
-		updateChildren();
-	}
+        myBattery.getTestModel().addTableModelListener(this);
 
-	private void updateChildren() {
-		int index = 0;
+        updateChildren();
+    }
+
+    private void updateChildren() {
+        int index = 0;
         final List<TestImpl> tests = myBattery.getTests();
-		for (TestImpl next : tests) {
+        for (TestImpl next : tests) {
 
             next.removePropertyChangeListener(TestImpl.NAME_PROPERTY, this);
             next.addPropertyChangeListener(TestImpl.NAME_PROPERTY, this);
 
-			if (getChildCount() <= index) {
-				TestTreeNode newChild = new TestTreeNode(next);
-				add(newChild);
-			} else {
-				TestTreeNode nextNode = (TestTreeNode) getChildAt(index);
-				if (!nextNode.getUserObject().equals(next)) {
-					TestTreeNode newChild = new TestTreeNode(next);
-					insert(newChild, index);
-				}
-			}
-			index++;
-		}
-		
-		while (getChildCount() > tests.size()) {
-			remove(getChildCount() - 1);
-		}
-	}
-
-	public void propertyChange(PropertyChangeEvent theEvt) {
-		if (theEvt.getPropertyName().equals(TestBatteryImpl.PROP_TESTS)) {
-            updateChildren();
-            myModel.nodeStructureChanged(this);
-        } else {
-            myModel.reload(this);
+            if (getChildCount() <= index) {
+                TestTreeNode newChild = new TestTreeNode(next);
+                add(newChild);
+            } else {
+                TestTreeNode nextNode = (TestTreeNode) getChildAt(index);
+                if (!nextNode.getUserObject().equals(next)) {
+                    TestTreeNode newChild = new TestTreeNode(next);
+                    insert(newChild, index);
+                }
+            }
+            index++;
         }
 
-	}
+        while (getChildCount() > tests.size()) {
+            remove(getChildCount() - 1);
+        }
+    }
 
+    public void propertyChange(PropertyChangeEvent theEvt) {
+        updateChildren();
+        myModel.nodeStructureChanged(this);
+    }
+
+    public void tableChanged(TableModelEvent e) {
+        updateChildren();
+        myModel.reload(this);
+    }
 }

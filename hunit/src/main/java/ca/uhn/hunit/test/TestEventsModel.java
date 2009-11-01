@@ -27,6 +27,7 @@
 package ca.uhn.hunit.test;
 
 import ca.uhn.hunit.event.AbstractEvent;
+import ca.uhn.hunit.event.InterfaceInteractionEnum;
 import ca.uhn.hunit.event.expect.ExpectNoMessageImpl;
 import ca.uhn.hunit.event.expect.Hl7V2ExpectRulesImpl;
 import ca.uhn.hunit.event.expect.Hl7V2ExpectSpecificMessageImpl;
@@ -43,8 +44,10 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -58,6 +61,7 @@ public class TestEventsModel extends AbstractTableModel implements PropertyChang
     private final List<AbstractEvent> myEvents = new ArrayList<AbstractEvent>();
     private final List<String> myInterfaces = new ArrayList<String>();
     private final Map<String, AbstractEvent[]> myInterfaceId2Events = new HashMap<String, AbstractEvent[]>();
+    private final Map<String, Set<InterfaceInteractionEnum>> myInterfaceId2InterfaceInteractionEnums = new HashMap<String, Set<InterfaceInteractionEnum>>();
 
     private final TestImpl myTest;
 
@@ -83,6 +87,14 @@ public class TestEventsModel extends AbstractTableModel implements PropertyChang
         return myInterfaces.get(column);
     }
 
+    /**
+     * Populates theConfig with the events in this model
+     */
+    public void exportConfig(Test theConfig) {
+        for (AbstractEvent next : myEvents) {
+            theConfig.getSendMessageOrExpectMessageOrExpectNoMessage().add(next.exportConfigToXml());
+        }
+    }
 
 
     public void initFromXml(Test theConfig) throws ConfigurationException {
@@ -148,9 +160,12 @@ public class TestEventsModel extends AbstractTableModel implements PropertyChang
     }
 
     private void sortInterfaces() {
+
         // Sort events by interface
         myInterfaces.clear();
         myInterfaceId2Events.clear();
+        myInterfaceId2InterfaceInteractionEnums.clear();
+
         int index = 0;
         for (AbstractEvent nextEvent : myEvents) {
             String interfaceId = nextEvent.getInterfaceId();
@@ -160,8 +175,12 @@ public class TestEventsModel extends AbstractTableModel implements PropertyChang
             if (!myInterfaceId2Events.containsKey(interfaceId)) {
                 myInterfaceId2Events.put(interfaceId, new AbstractEvent[myEvents.size()]);
             }
+            if (!myInterfaceId2InterfaceInteractionEnums.containsKey(interfaceId)) {
+                myInterfaceId2InterfaceInteractionEnums.put(interfaceId, new HashSet<InterfaceInteractionEnum>());
+            }
             AbstractEvent[] array = myInterfaceId2Events.get(interfaceId);
             array[index] = nextEvent;
+            myInterfaceId2InterfaceInteractionEnums.get(interfaceId).add(nextEvent.getInteractionType());
             index++;
         }
 
@@ -171,6 +190,10 @@ public class TestEventsModel extends AbstractTableModel implements PropertyChang
 
     public AbstractEvent getEvent(int selectedRow) {
         return myEvents.get(selectedRow);
+    }
+
+    public Map<String, Set<InterfaceInteractionEnum>> getInterfaceInteractionTypes() {
+        return myInterfaceId2InterfaceInteractionEnums;
     }
 
 }

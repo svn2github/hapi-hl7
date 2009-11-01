@@ -30,6 +30,7 @@ import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.iface.JmsInterfaceImpl;
 import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
+import ca.uhn.hunit.l10n.Strings;
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.msg.XmlMessageImpl;
@@ -40,15 +41,19 @@ import ca.uhn.hunit.swing.controller.ctx.JmsInterfaceContextController;
 import ca.uhn.hunit.swing.controller.ctx.MllpHl7v2InterfaceEditorContextController;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.swing.controller.ctx.XmlMessageEditorController;
+import ca.uhn.hunit.swing.ui.DialogUtil;
 import ca.uhn.hunit.swing.ui.SwingRunner;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.util.log.LogCapturingLog;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.UIManager;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.bind.JAXBException;
 
 /**
@@ -58,8 +63,9 @@ import javax.xml.bind.JAXBException;
 public class SwingRunnerController {
 
     private final SwingRunner myView;
-    private final TestBatteryImpl myBattery;
+    private TestBatteryImpl myBattery;
     private AbstractContextController<?> myCtxController;
+    private final LogCapturingLog myLog;
 
     public SwingRunnerController() throws Exception {
 
@@ -68,8 +74,9 @@ public class SwingRunnerController {
             throw new IOException();
         }
         myBattery = new TestBatteryImpl(defFile);
-        myView = new SwingRunner(this, myBattery);
 
+        myLog = new LogCapturingLog();
+        myView = new SwingRunner(this, myBattery);
         myView.setVisible(true);
     }
 
@@ -115,9 +122,9 @@ public class SwingRunnerController {
     public void selectInterface(AbstractInterface userObject) {
         AbstractContextController<?> ctxController;
         if (userObject instanceof MllpHl7V2InterfaceImpl) {
-            ctxController = new MllpHl7v2InterfaceEditorContextController((MllpHl7V2InterfaceImpl) userObject);
+            ctxController = new MllpHl7v2InterfaceEditorContextController(myLog, (MllpHl7V2InterfaceImpl) userObject);
         } else if (userObject instanceof JmsInterfaceImpl) {
-            ctxController = new JmsInterfaceContextController((JmsInterfaceImpl) userObject);
+            ctxController = new JmsInterfaceContextController(myLog, (JmsInterfaceImpl) userObject);
         } else {
             System.out.println("Unknown interface: " + userObject);
             return;
@@ -129,15 +136,22 @@ public class SwingRunnerController {
     public void selectMessage(AbstractMessage<?> theMessage) {
         AbstractContextController<?> ctxController;
         if (theMessage instanceof Hl7V2MessageImpl) {
-            ctxController = new Hl7V2MessageEditorController((Hl7V2MessageImpl) theMessage);
+            ctxController = new Hl7V2MessageEditorController(myLog, (Hl7V2MessageImpl) theMessage);
         } else if (theMessage instanceof XmlMessageImpl) {
-            ctxController = new XmlMessageEditorController((XmlMessageImpl) theMessage);
+            ctxController = new XmlMessageEditorController(myLog, (XmlMessageImpl) theMessage);
         } else {
             System.out.println("Unknown message: " + theMessage);
             return;
         }
 
         navigateTo(ctxController);
+    }
+
+    private JFileChooser createFileChooser() {
+        JFileChooser chooser = new JFileChooser(".");
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter("hUnit Battery", "hunit.xml", "xml"));
+        chooser.setAcceptAllFileFilterUsed(true);
+        return chooser;
     }
 
     private void navigateTo(AbstractContextController<?> ctxController) {
@@ -149,7 +163,92 @@ public class SwingRunnerController {
     }
 
     public void selectTest(TestImpl test) {
-        TestEditorController ctxController = new TestEditorController(test);
-        navigateTo(myCtxController);
+        TestEditorController ctxController = new TestEditorController(myLog, test);
+        navigateTo(ctxController);
+    }
+
+    public void addInterfaceMllpHl7v2() {
+        myBattery.addEmptyInterfaceMllpHl7V2();
+    }
+
+    public LogCapturingLog getLog() {
+        return myLog;
+    }
+
+    public void save() {
+        try {
+            myBattery.save();
+            String message = Strings.getMessage("command.save.success");
+            myLog.getSystem(getClass()).info(message);
+        } catch (IOException ex) {
+            String message = Strings.getMessage("error.problem_during_save", ex.getMessage());
+            myLog.getSystem(getClass()).error(message, ex);
+            DialogUtil.showErrorMessage(myView, message);
+        } catch (JAXBException ex) {
+            String message = Strings.getMessage("error.problem_during_save", ex.getMessage());
+            myLog.getSystem(getClass()).error(message, ex);
+            DialogUtil.showErrorMessage(myView, message);
+        }
+
+    }
+
+    public void saveAs() {
+        JFileChooser chooser = createFileChooser();
+
+        int value = chooser.showSaveDialog(myView);
+        if (value == JFileChooser.APPROVE_OPTION) {
+
+            File selectedFile = chooser.getSelectedFile();
+            if (selectedFile.getName().indexOf(".") == -1) {
+                selectedFile = new File(selectedFile.getAbsolutePath() + ".hunit.xml");
+            }
+
+            if (selectedFile.exists()) {
+                String message = Strings.getMessage("command.save.confirm_overwrite", selectedFile.getName());
+                if (!DialogUtil.showOkCancelDialog(myView, message)) {
+                    return;
+                }
+            }
+
+            myBattery.setFile(selectedFile);
+            try {
+                myBattery.save();
+                String message = Strings.getMessage("command.save.success");
+                myLog.getSystem(getClass()).info(message);
+            } catch (IOException ex) {
+                String message = Strings.getMessage("error.problem_during_save", ex.getMessage());
+                myLog.getSystem(getClass()).error(message, ex);
+                DialogUtil.showErrorMessage(myView, message);
+            } catch (JAXBException ex) {
+                String message = Strings.getMessage("error.problem_during_save", ex.getMessage());
+                myLog.getSystem(getClass()).error(message, ex);
+                DialogUtil.showErrorMessage(myView, message);
+            }
+
+        }
+    }
+
+    public void open() {
+        JFileChooser chooser = createFileChooser();
+
+        int value = chooser.showOpenDialog(myView);
+        if (value == JFileChooser.APPROVE_OPTION) {
+            File inputFile = chooser.getSelectedFile();
+            try {
+                TestBatteryImpl newBattery = new TestBatteryImpl(inputFile, myLog);
+                myBattery = newBattery;
+                myView.setBattery(myBattery);
+                String message = Strings.getMessage("command.load.success");
+                myLog.getSystem(getClass()).info(message);
+            } catch (JAXBException ex) {
+                String message = Strings.getMessage("command.load.error.jaxb", ex.getMessage());
+                myLog.getSystem(getClass()).error(message, ex);
+                DialogUtil.showErrorMessage(myView, message);
+            } catch (ConfigurationException ex) {
+                String message = Strings.getMessage("command.load.error.config", ex.getMessage());
+                myLog.getSystem(getClass()).error(message, ex);
+                DialogUtil.showErrorMessage(myView, message);
+            }
+        }
     }
 }

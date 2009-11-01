@@ -94,5 +94,24 @@ public class XmlMessageImpl extends AbstractMessage<Document> {
         return Document.class;
     }
 
+    /**
+     * Subclasses should make use of this method to export AbstractInterface properties into
+     * the return value for {@link #exportConfigToXml()}
+     */
+    protected XmlMessageDefinition exportConfig(XmlMessageDefinition theConfig) {
+        super.exportConfig(theConfig);
+        theConfig.setText(myText);
+        return theConfig;
+    }
+
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public XmlMessageDefinition exportConfigToXml() {
+        return exportConfig(new XmlMessageDefinition());
+    }
+
 
 }

@@ -29,6 +29,8 @@ import java.util.List;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.xsd.Event;
+import ca.uhn.hunit.xsd.ExpectMessageAny;
 import ca.uhn.hunit.xsd.Hl7V2ExpectAck;
 import ca.uhn.hunit.xsd.Hl7V2ExpectNak;
 import ca.uhn.hunit.xsd.Hl7V2ExpectRules;
@@ -37,7 +39,10 @@ import ca.uhn.hunit.xsd.TerserMessageRule;
 public class Hl7V2ExpectRulesImpl extends AbstractHl7V2ExpectMessage {
 
 	private List<TerserRuleImpl> myRules = new ArrayList<TerserRuleImpl>();
-	
+
+    private boolean myExpectAck = false;
+    private boolean myExpectNak = false;
+
 	public Hl7V2ExpectRulesImpl(TestImpl theTest, Hl7V2ExpectRules theConfig) throws ConfigurationException {
 		super(theTest, theConfig);
 		
@@ -49,12 +54,14 @@ public class Hl7V2ExpectRulesImpl extends AbstractHl7V2ExpectMessage {
 	public Hl7V2ExpectRulesImpl(TestImpl theTest, Hl7V2ExpectAck theConfig) throws ConfigurationException {
 		this(theTest, (Hl7V2ExpectRules)theConfig);
 
+        myExpectAck = true;
 		addRule(TerserRuleImpl.getValuesInstance(this, "/MSA-1", "AA"));
 	}
 
 	public Hl7V2ExpectRulesImpl(TestBatteryImpl theBattery, TestImpl theTest, Hl7V2ExpectNak theConfig) throws ConfigurationException {
 		this(theTest, (Hl7V2ExpectRules)theConfig);
 		
+        myExpectNak = false;
 		addRule(TerserRuleImpl.getNotValuesInstance(this, "/MSA-1", "AA"));
 	}
 
@@ -68,5 +75,35 @@ public class Hl7V2ExpectRulesImpl extends AbstractHl7V2ExpectMessage {
 			next.validate(theMessage);
 		}
 	}
+
+    @Override
+    public ExpectMessageAny exportConfigToXml() {
+        Hl7V2ExpectRules retVal = new Hl7V2ExpectRules();
+
+        ExpectMessageAny expectMessage = new ExpectMessageAny();
+        if (myExpectAck) {
+            retVal = new Hl7V2ExpectAck();
+            expectMessage.setHl7V2Ack((Hl7V2ExpectAck) retVal);
+        } else if (myExpectNak) {
+            retVal = new Hl7V2ExpectNak();
+            expectMessage.setHl7V2Nak((Hl7V2ExpectNak) retVal);
+        } else {
+            expectMessage.setHl7V2Rules(retVal);
+        }
+
+        retVal = exportConfig(retVal);
+
+        return expectMessage;
+    }
+
+    public Hl7V2ExpectRules exportConfig(Hl7V2ExpectRules theConfig) {
+        super.exportConfig(theConfig);
+
+		for (TerserRuleImpl next : myRules) {
+			theConfig.getRule().add(next.exportConfig());
+		}
+
+        return theConfig;
+    }
 
 }

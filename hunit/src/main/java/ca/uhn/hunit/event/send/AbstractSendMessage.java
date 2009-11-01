@@ -23,6 +23,7 @@ package ca.uhn.hunit.event.send;
 
 import ca.uhn.hunit.event.AbstractEvent;
 import ca.uhn.hunit.event.ISpecificMessageEvent;
+import ca.uhn.hunit.event.InterfaceInteractionEnum;
 import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
@@ -31,19 +32,20 @@ import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.run.ExecutionContext;
+import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.SendMessage;
+import ca.uhn.hunit.xsd.SendMessageAny;
 import java.beans.PropertyVetoException;
 
-public abstract class AbstractSendMessage<T> extends AbstractEvent implements ISpecificMessageEvent {
+public abstract class AbstractSendMessage<V, T extends AbstractMessage<V>> extends AbstractEvent implements ISpecificMessageEvent {
 
-    private AbstractMessage myMessage;
+    private T myMessage;
 
 	public AbstractSendMessage(TestImpl theTest, SendMessage theConfig) throws ConfigurationException {
 		super(theTest, theConfig);
 
         String messageId = theConfig.getMessageId();
-        myMessage = theTest.getBattery().getMessage(messageId);
-        
+        myMessage = (T)theTest.getBattery().getMessage(messageId);
 	}
 
 	@Override
@@ -51,9 +53,9 @@ public abstract class AbstractSendMessage<T> extends AbstractEvent implements IS
         
         try {
             
-            TestMessage<?> message = myMessage.getTestMessage();
+            TestMessage<V> message = myMessage.getTestMessage();
 
-            message = massageMessage((TestMessage<T>) message);
+            message = massageMessage(message);
             AbstractInterface iface = getBattery().getInterface(getInterfaceId());
             iface.sendMessage(getTest(), theCtx, message);
 
@@ -69,18 +71,27 @@ public abstract class AbstractSendMessage<T> extends AbstractEvent implements IS
      * Subclasses should override this method to perform any message massaging
      * they need to do. It is ok to just return the object passed in.
      */
-	public abstract TestMessage<T> massageMessage(TestMessage<T> theInput) throws TestFailureException;
+	public abstract TestMessage<V> massageMessage(TestMessage<V> theInput) throws TestFailureException;
 
 
-    public AbstractMessage getMessage() {
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public InterfaceInteractionEnum getInteractionType() {
+        return InterfaceInteractionEnum.SEND;
+    }
+
+
+    public AbstractMessage<?> getMessage() {
         return myMessage;
     }
 
 
     public void setMessageId(String theMessageId) throws PropertyVetoException {
-        AbstractMessage newMessage;
+        T newMessage;
         try {
-            newMessage = getBattery().getMessage(theMessageId);
+            newMessage = (T)getBattery().getMessage(theMessageId);
         } catch (ConfigurationException ex) {
             throw new PropertyVetoException(ex.getMessage(), null);
         }
@@ -90,5 +101,18 @@ public abstract class AbstractSendMessage<T> extends AbstractEvent implements IS
         this.myMessage = newMessage;
         firePropertyChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
     }
+
+
+    public SendMessage exportConfig(SendMessage theConfig) {
+        super.exportConfig(theConfig);
+        theConfig.setMessageId(myMessage.getId());
+        return theConfig;
+    }
+
+    /**
+     * Overriding to provide a specific type requirement
+     */
+    @Override
+    public abstract SendMessageAny exportConfigToXml();
 
 }

@@ -27,12 +27,28 @@
 package ca.uhn.hunit.swing.controller.ctx;
 
 import ca.uhn.hunit.swing.ui.AbstractContextForm;
+import ca.uhn.hunit.util.log.ILogProvider;
 
 /**
  * Base class for a controller for the right hand pane
  */
 public abstract class AbstractContextController<V extends AbstractContextForm<?>> {
 
+
+    private ILogProvider myLog;
+
+    /**
+     * Constructor
+     * 
+     * @param theLog The global log provider
+     */
+    public AbstractContextController(ILogProvider theLog) {
+        myLog = theLog;
+    }
+
+    /**
+     * Provide the view associated with this controller
+     */
     public abstract V getView();
 
     /**
@@ -40,6 +56,10 @@ public abstract class AbstractContextController<V extends AbstractContextForm<?>
      */
     public void tearDown() {
         getView().tearDown();
+    }
+
+    public ILogProvider getLog() {
+        return myLog;
     }
 
 }

@@ -65,7 +65,9 @@ public class BatteryTestModel extends AbstractTableModel {
     }
 
     public void initFromXml(List<Test> theTestList) throws ConfigurationException {
-		for (Test next : theTestList) {
+        myTestNames2Tests.clear();
+        myTests.clear();
+        for (Test next : theTestList) {
 			TestImpl nextTest = new TestImpl(myBattery, next);
 			if (myTestNames2Tests.containsKey(nextTest.getName())) {
 				throw new ConfigurationException("Duplicate test name detected: " + nextTest.getName());
@@ -73,6 +75,8 @@ public class BatteryTestModel extends AbstractTableModel {
 			myTestNames2Tests.put(nextTest.getName(), nextTest);
 			myTests.add(nextTest);
 		}
+
+        fireTableStructureChanged();
     }
 
     public List<TestImpl> getTests() {

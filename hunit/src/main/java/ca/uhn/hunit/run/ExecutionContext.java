@@ -22,6 +22,7 @@
 package ca.uhn.hunit.run;
 
 import ca.uhn.hunit.test.TestEventsModel;
+import ca.uhn.hunit.util.log.ILog;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.log.CommonsLoggingLog;
+import ca.uhn.hunit.util.log.EventCodeEnum;
 import ca.uhn.hunit.util.log.ILogProvider;
 import java.util.Collections;
 
@@ -69,8 +71,9 @@ public class ExecutionContext implements Runnable {
         myListeners.add(theListener);
     }
 
+
     public void addFailure(TestImpl theTest, TestFailureException theException) {
-        myLog.get(theTest).error("Failure: " + theException.getMessage());
+        myLog.get(theTest).error("Failure: " + theException.getMessage(), EventCodeEnum.TEST_FAILED);
         myTestFailures.put(theTest, theException);
         myTestExecutionStatuses.put(theTest, ExecutionStatusEnum.FAILED);
 
@@ -81,7 +84,7 @@ public class ExecutionContext implements Runnable {
     }
 
     public void addSuccess(TestImpl theTest) {
-        myLog.get(theTest).info("Success!");
+        myLog.get(theTest).info("Success!", EventCodeEnum.TEST_PASSED);
         myTestSuccesses.add(theTest);
         myTestExecutionStatuses.put(theTest, ExecutionStatusEnum.PASSED);
 
@@ -221,8 +224,12 @@ public class ExecutionContext implements Runnable {
 
         // Start executing
         for (TestImpl nextTest : tests) {
+            final ILog testLog = getLog().get(nextTest);
 
-            getLog().get(nextTest).info("Starting test");
+            if (testLog.isInfoEnabled()) {
+                testLog.info("Starting test", EventCodeEnum.TEST_STARTED);
+            }
+
             myTestExecutionStatuses.put(nextTest, ExecutionStatusEnum.RUNNING);
 
             for (IExecutionListener next : myListeners) {
@@ -269,7 +276,9 @@ public class ExecutionContext implements Runnable {
                 addSuccess(nextTest);
             }
 
-            getLog().get(nextTest).info("Finished test");
+            if (testLog.isDebugEnabled()) {
+                testLog.debug("Finished test");
+            }
 
         }
 

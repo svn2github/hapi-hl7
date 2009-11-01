@@ -28,6 +28,7 @@ package ca.uhn.hunit.swing.controller.ctx;
 
 import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
 import ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceEditorForm;
+import ca.uhn.hunit.util.log.ILogProvider;
 
 /**
  *
@@ -39,8 +40,8 @@ public class MllpHl7v2InterfaceEditorContextController extends AbstractInterface
     /**
      * Constructor
      */
-    public MllpHl7v2InterfaceEditorContextController(MllpHl7V2InterfaceImpl theModel) {
-        super(theModel);
+    public MllpHl7v2InterfaceEditorContextController(ILogProvider theLog, MllpHl7V2InterfaceImpl theModel) {
+        super(theLog, theModel);
 
         myView = new MllpHl7v2InterfaceEditorForm();
         myView.setController(this);

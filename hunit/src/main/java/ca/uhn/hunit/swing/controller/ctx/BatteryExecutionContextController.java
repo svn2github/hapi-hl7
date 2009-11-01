@@ -52,11 +52,13 @@ public class BatteryExecutionContextController extends AbstractContextController
     private final Thread myExecutionThread;
 
     public BatteryExecutionContextController(TestBatteryImpl theBattery) {
+        super(new LogCapturingLog());
+        LogCapturingLog log = (LogCapturingLog) getLog();
+
         myBattery = theBattery;
         myExecutionContext = new ExecutionContext(theBattery);
         myExecutionContext.addListener(new MyExecutionListener());
         
-        LogCapturingLog log = new LogCapturingLog();
         myExecutionContext.setLog(log);
 
         myExecutionModel = new ExecutionTestsTableModel(myExecutionContext);

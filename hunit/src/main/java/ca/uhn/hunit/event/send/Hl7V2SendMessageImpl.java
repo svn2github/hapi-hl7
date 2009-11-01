@@ -32,14 +32,16 @@ import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.msg.Hl7V2MessageImpl;
+import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.Hl7V2SendMessage;
+import ca.uhn.hunit.xsd.SendMessageAny;
 
-public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message> implements ISpecificMessageEvent {
+public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message, Hl7V2MessageImpl> implements ISpecificMessageEvent {
     private String myEncoding;
     private Parser myParser;
 
-	public Hl7V2SendMessageImpl(TestImpl theTest, 
-			Hl7V2SendMessage theConfig) throws ConfigurationException {
+	public Hl7V2SendMessageImpl(TestImpl theTest, Hl7V2SendMessage theConfig) throws ConfigurationException {
 		super(theTest, theConfig);
 
         myEncoding = theConfig.getEncoding();
@@ -69,5 +71,22 @@ public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message> implement
         return Message.class;
     }
 
+
+    public Hl7V2SendMessage exportConfig(Hl7V2SendMessage theConfig) {
+        if (theConfig == null) {
+            theConfig = new Hl7V2SendMessage();
+        }
+        super.exportConfig(theConfig);
+        theConfig.setEncoding(myEncoding);
+        return theConfig;
+    }
+
+    @Override
+    public SendMessageAny exportConfigToXml() {
+        SendMessageAny sendMessage = new SendMessageAny();
+        Hl7V2SendMessage retVal = exportConfig(new Hl7V2SendMessage());
+        sendMessage.setHl7V2(retVal);
+        return sendMessage;
+    }
 
 }

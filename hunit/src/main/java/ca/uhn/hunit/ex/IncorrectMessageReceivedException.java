@@ -24,6 +24,7 @@ package ca.uhn.hunit.ex;
 import ca.uhn.hunit.compare.ICompare;
 import ca.uhn.hunit.compare.hl7v2.Hl7V2MessageCompare;
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.l10n.Strings;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.StringUtil;
 
@@ -69,7 +70,7 @@ public class IncorrectMessageReceivedException extends TestFailureException
 
     public IncorrectMessageReceivedException(TestImpl theTest, Throwable theCause, TestMessage<?> theExpectMessage,
             TestMessage<?> theActualMessage, String theProblem, ICompare<?> theMessageCompare) {
-        super(theCause);
+        super(Strings.getMessage("execution.failure.title.ca.uhn.hunit.ex.IncorrectMessageReceivedException"), theCause);
         myTest = theTest;
         myMessageExpected = theExpectMessage;
         myMessageReceived = theActualMessage;

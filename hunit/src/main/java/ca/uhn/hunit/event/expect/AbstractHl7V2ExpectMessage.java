@@ -22,14 +22,16 @@
 package ca.uhn.hunit.event.expect;
 
 import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.run.ExecutionContext;
+import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.HL7V2ExpectAbstract;
 
-public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage<Message> {
+public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage<Hl7V2MessageImpl> {
 
 
 	public AbstractHl7V2ExpectMessage(TestImpl theTest, HL7V2ExpectAbstract theConfig) throws ConfigurationException {
@@ -47,5 +49,10 @@ public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage<M
 	}
 
 	public abstract void validateMessage(TestMessage<Message> theMessage) throws TestFailureException;
-	
+
+    protected Event exportConfig(HL7V2ExpectAbstract theConfig) {
+        super.exportConfig(theConfig);
+        return theConfig;
+    }
+
 }

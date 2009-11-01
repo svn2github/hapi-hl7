@@ -25,11 +25,11 @@ import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.ex.InterfaceWontStopException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.l10n.Strings;
-import ca.uhn.hunit.l10n.Strings;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.AbstractModelClass;
+import ca.uhn.hunit.xsd.AnyInterface;
 import ca.uhn.hunit.xsd.Interface;
 import java.beans.PropertyVetoException;
 import org.apache.commons.lang.StringUtils;
@@ -38,73 +38,81 @@ public abstract class AbstractInterface extends AbstractModelClass implements Co
 
     public static final String INTERFACE_STARTED_PROPERTY = "INTERFACE_STARTED_PROPERTY";
     public static final String INTERFACE_ID_PROPERTY = "INTERFACE_ID_PROPERTY";
-
-	private Interface myConfig;
-	private String myId;
-	private Boolean myAutostart;
-	private Integer myClearMillis;
+    private String myId;
+    private Boolean myAutostart;
+    private Integer myClearMillis;
     private Boolean myClear;
     private final TestBatteryImpl myBattery;
 
-	public AbstractInterface(TestBatteryImpl theBattery, Interface theConfig) {
-		myBattery = theBattery;
-        myConfig = theConfig;
-		myId = theConfig.getId();
-		myAutostart = theConfig.isAutostart();
-		if (myAutostart == null) {
-			myAutostart = true;
-		}
-		myClearMillis = theConfig.getClearMillis();
+    public AbstractInterface(TestBatteryImpl theBattery, Interface theConfig) {
+        myBattery = theBattery;
+        myId = theConfig.getId();
+        myAutostart = theConfig.isAutostart();
+        myClearMillis = theConfig.getClearMillis();
+        myClear = theConfig.isClear();
+
+        init();
+    }
+
+    public AbstractInterface(TestBatteryImpl theBattery, String theId) {
+        myBattery = theBattery;
+        myId = theId;
+
+        init();
+    }
+
+
+    private void init() {
+        if (myAutostart == null) {
+            myAutostart = true;
+        }
         if (myClearMillis == null) {
             myClearMillis = 100;
         }
-   		myClear = theConfig.isClear();
-		if (myClear == null) {
-		    myClear = true;
-		}
+        if (myClear == null) {
+            myClear = true;
+        }
+    }
 
 
-	}
+    /**
+     * Subclasses should make use of this method to export AbstractInterface properties into
+     * the return value for {@link #exportConfigToXml()}
+     */
+    protected Interface exportConfig(Interface theConfig) {
+        theConfig.setAutostart(myAutostart);
+        theConfig.setId(myId);
+        theConfig.setClearMillis(myClearMillis);
+        theConfig.setClear(myClear);
+        return theConfig;
+    }
 
-	public Interface getConfig() {
-		return myConfig;
-	}
+    /**
+     * Starts the interface
+     * @param theCtx The current exection context
+     * @throws InterfaceWontStartException If the interface won't start
+     */
+    public abstract void start(ExecutionContext theCtx) throws InterfaceWontStartException;
 
-	/**
-	 * Subclasses are expected to implement this method and provide their configuration
-	 */
-	public abstract Interface exportConfig();
-	
-	/**
-	 * Subclasses should make use of this method to export AbstractInterface properties into
-	 * the return value for {@link #exportConfig()}  
-	 */
-	protected void exportConfig(Interface theConfig) {
-		theConfig.setAutostart(myAutostart);
-		theConfig.setId(myId);
-	}
-	
-	public abstract void start(ExecutionContext theCtx) throws InterfaceWontStartException;
-	
-	public abstract void stop(ExecutionContext theCtx) throws InterfaceWontStopException;
-	
-	public abstract TestMessage<?> receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException;
-	
-	public abstract void sendMessage(TestImpl theTest, ExecutionContext theCtx, TestMessage<?> theMessage) throws TestFailureException;
+    public abstract void stop(ExecutionContext theCtx) throws InterfaceWontStopException;
 
-	public abstract boolean isStarted();
-	
-	public boolean isAutostart() {
-		return myAutostart;
-	}
+    public abstract TestMessage<?> receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException;
+
+    public abstract void sendMessage(TestImpl theTest, ExecutionContext theCtx, TestMessage<?> theMessage) throws TestFailureException;
+
+    public abstract boolean isStarted();
+
+    public boolean isAutostart() {
+        return myAutostart;
+    }
 
     public void setAutostart(boolean theAutostart) {
         myAutostart = theAutostart;
     }
 
-	public int compareTo(AbstractInterface theO) {
-		return myId.compareTo(theO.myId);
-	}
+    public int compareTo(AbstractInterface theO) {
+        return myId.compareTo(theO.myId);
+    }
 
     public boolean isClear() {
         return myClear;
@@ -122,7 +130,6 @@ public abstract class AbstractInterface extends AbstractModelClass implements Co
         myClearMillis = theClearMillis;
     }
 
-
     public void setId(String theId) throws PropertyVetoException {
         if (StringUtils.equals(theId, myId)) {
             return;
@@ -139,9 +146,14 @@ public abstract class AbstractInterface extends AbstractModelClass implements Co
         myId = theId;
     }
 
-	public String getId() {
-		return myId;
-	}
+    public String getId() {
+        return myId;
+    }
 
+    /**
+     * Declare a concrete type for subclass implementations of this method
+     */
+    @Override
+    public abstract AnyInterface exportConfigToXml();
 
 }

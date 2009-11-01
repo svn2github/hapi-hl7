@@ -26,7 +26,7 @@ package ca.uhn.hunit.iface;
 
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.test.TestBatteryImpl;
-import ca.uhn.hunit.xsd.Interface;
+import ca.uhn.hunit.xsd.AnyInterface;
 import ca.uhn.hunit.xsd.JmsInterface;
 
 /**
@@ -38,12 +38,28 @@ public class JmsInterfaceImpl extends AbstractJmsInterfaceImpl<String> {
 		super(theBattery, theConfig);
 	}
 
+    public JmsInterfaceImpl(TestBatteryImpl theBattery, String theId) {
+        super(theBattery, theId);
+    }
 
-	@Override
-	public Interface exportConfig() {
-		JmsInterface retVal = new JmsInterface();
-		super.exportConfig(retVal);
-		return retVal;
+
+    /**
+     * Subclasses should make use of this method to export AbstractInterface properties into
+     * the return value for {@link #exportConfigToXml()}
+     */
+	protected JmsInterface exportConfig(JmsInterface theConfig) {
+		super.exportConfig(theConfig);
+		return theConfig;
 	}
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public AnyInterface exportConfigToXml() {
+        AnyInterface retVal = new AnyInterface();
+        retVal.setJmsInterface(exportConfig(new JmsInterface()));
+        return retVal;
+    }
 
 }

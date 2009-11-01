@@ -34,7 +34,7 @@ import java.beans.VetoableChangeSupport;
 /**
  * Base class for a model class
  */
-public class AbstractModelClass {
+public abstract class AbstractModelClass {
 
     private VetoableChangeSupport myVetoableChangeSupport = new VetoableChangeSupport(this);
     private PropertyChangeSupport myPropertyChangeSupport = new PropertyChangeSupport(this);
@@ -147,4 +147,6 @@ public class AbstractModelClass {
         myPropertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
     }
 
+
+    public abstract Object exportConfigToXml();
 }

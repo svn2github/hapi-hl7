@@ -28,12 +28,20 @@ package ca.uhn.hunit.swing.controller.ctx;
 
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.swing.ui.AbstractContextForm;
+import ca.uhn.hunit.util.log.ILogProvider;
 
 /**
  *
  * @author James
  */
-public abstract class AbstractMessageEditorController<T extends AbstractContextForm<?>, M extends AbstractMessage> extends AbstractContextController<T> {
+public abstract class AbstractMessageEditorController<T extends AbstractContextForm<?>, M extends AbstractMessage<?>> extends AbstractContextController<T> {
+
+    /**
+     * Constructor
+     */
+    public AbstractMessageEditorController(ILogProvider theLog) {
+        super(theLog);
+    }
 
     /**
      * Provide the message to edit

@@ -84,6 +84,26 @@ public class Hl7V2MessageImpl extends AbstractMessage<Message> {
     public Class<Message> getMessageClass() {
         return Message.class;
     }
-	
+
+
+    /**
+     * Subclasses should make use of this method to export AbstractInterface properties into
+     * the return value for {@link #exportConfigToXml()}
+     */
+    protected Hl7V2MessageDefinition exportConfig(Hl7V2MessageDefinition theConfig) {
+        super.exportConfig(theConfig);
+        theConfig.setText(mySourceMessage);
+        return theConfig;
+    }
+
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public Hl7V2MessageDefinition exportConfigToXml() {
+        return exportConfig(new Hl7V2MessageDefinition());
+    }
+
 	
 }

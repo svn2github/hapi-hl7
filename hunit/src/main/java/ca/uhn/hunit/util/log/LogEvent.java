@@ -33,18 +33,19 @@ import java.util.Date;
  */
 public class LogEvent {
 
-    private Date myEventTime = new Date();
-
-    private Object myModelObject;
-    private LogLevel myLogLevel;
-    private String myMessage;
-    private Throwable myStackTrace;
+    private final Date myEventTime = new Date();
+    private final Object myModelObject;
+    private final LogLevel myLogLevel;
+    private final String myMessage;
+    private final Throwable myStackTrace;
+    private final EventCodeEnum myEventCode;
 
     public LogEvent(Object theModelObject, LogLevel theLogLevel, String theMessage, Throwable theStackTrace) {
         this.myModelObject = theModelObject;
         this.myLogLevel = theLogLevel;
         this.myMessage = theMessage;
         this.myStackTrace = theStackTrace;
+        this.myEventCode = null;
     }
 
     public LogEvent(Object theModelObject, LogLevel theLogLevel, Object theMessage, Throwable theStackTrace) {
@@ -52,6 +53,15 @@ public class LogEvent {
         this.myLogLevel = theLogLevel;
         this.myMessage = theMessage != null ? theMessage.toString() : "";
         this.myStackTrace = theStackTrace;
+        this.myEventCode = null;
+    }
+
+    public LogEvent(Object theModelObject, LogLevel theLogLevel, Object theMessage, Throwable theStackTrace, EventCodeEnum theEventCode) {
+        this.myModelObject = theModelObject;
+        this.myLogLevel = theLogLevel;
+        this.myMessage = theMessage != null ? theMessage.toString() : "";
+        this.myStackTrace = theStackTrace;
+        this.myEventCode = theEventCode;
     }
 
     public LogLevel getLogLevel() {
@@ -72,6 +82,10 @@ public class LogEvent {
 
     public Date getEventTime() {
         return myEventTime;
+    }
+
+    public EventCodeEnum getEventCode() {
+        return myEventCode;
     }
 
 }

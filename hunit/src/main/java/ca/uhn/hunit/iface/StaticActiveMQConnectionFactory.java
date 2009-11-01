@@ -31,8 +31,9 @@ import javax.jms.JMSException;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 /**
- * TODO: add!
- * 
+ * ConnectionFactory which always returns a shared static instance of an ActiveMQ
+ * connection factory. This is not intended to be a production class, just
+ * for unit test and demonstration purposes.
  */
 public class StaticActiveMQConnectionFactory implements ConnectionFactory
 {
@@ -43,8 +44,26 @@ public class StaticActiveMQConnectionFactory implements ConnectionFactory
     }
 
     /**
+     * Constructor
+     */
+    public StaticActiveMQConnectionFactory() {
+        // nothing
+    }
+
+    /**
+     * Constructor
+     *
+     * @param theString NOT USED, just for demo purposes
+     * @param theInteger NOT USED, just for demo purposes
+     */
+    public StaticActiveMQConnectionFactory(String theString, Integer theInteger) {
+        // nothing
+    }
+
+    /**
      * {@inheritDoc}
      */
+    @Override
     public Connection createConnection() throws JMSException {
         return ourConnectionFactory.createConnection();
     }
@@ -52,6 +71,7 @@ public class StaticActiveMQConnectionFactory implements ConnectionFactory
     /**
      * {@inheritDoc}
      */
+    @Override
     public Connection createConnection(String theArg0, String theArg1) throws JMSException {
         return createConnection();
     }

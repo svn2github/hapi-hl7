@@ -81,6 +81,15 @@ public class TestImpl extends AbstractModelClass {
         firePropertyChange(NAME_PROPERTY, oldValue, theName);
     }
 
+    @Override
+    public Test exportConfigToXml() {
+        Test retVal = new Test();
+        retVal.setName(myName);
+        myEventsModel.exportConfig(retVal);
+        return retVal;
+    }
+
+    
 
 	
 }

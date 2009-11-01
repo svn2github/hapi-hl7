@@ -26,13 +26,30 @@ import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceWontReceiveException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.run.ExecutionContext;
+import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.ExpectMessage;
+import ca.uhn.hunit.xsd.ExpectMessageAny;
+import java.beans.PropertyVetoException;
 
-public abstract class AbstractExpectMessage<T> extends AbstractExpect {
+public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extends AbstractExpect {
+
+    public static final String MESSAGE_ID_PROPERTY = "AEM_MESSAGE_ID_PROPERTY";
+    private T myMessageProvider;
+
+
+    public T getMessage() {
+        return myMessageProvider;
+    }
 
 	public AbstractExpectMessage(TestImpl theTest, ExpectMessage theConfig) throws ConfigurationException {
 		super(theTest, theConfig);
+        try {
+            setMessageId(theConfig.getMessageId());
+        } catch (PropertyVetoException ex) {
+            throw new ConfigurationException();
+        }
 	}
 
 	@Override
@@ -53,5 +70,32 @@ public abstract class AbstractExpectMessage<T> extends AbstractExpect {
 	}
 
 	public abstract void receiveMessage(ExecutionContext theCtx, TestMessage<?> theMessage) throws TestFailureException;
+
+    public String getMessageId() {
+        return myMessageProvider.getId();
+    }
+
+    public void setMessageId(String theMessageId) throws PropertyVetoException {
+        String oldValue = myMessageProvider != null ? myMessageProvider.getId() : null;
+        fireVetoableChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
+        try {
+            myMessageProvider = (T)getBattery().getMessage(theMessageId);
+        } catch (ConfigurationException ex) {
+            throw new PropertyVetoException("Unknown message ID", null);
+        }
+        firePropertyChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
+    }
+
+    public Event exportConfig(ExpectMessage theConfig) {
+        super.exportConfig(theConfig);
+        theConfig.setMessageId(myMessageProvider.getId());
+        return theConfig;
+    }
+
+    /**
+     * Overriding to provide a specific type requirement
+     */
+    @Override
+    public abstract ExpectMessageAny exportConfigToXml();
 
 }

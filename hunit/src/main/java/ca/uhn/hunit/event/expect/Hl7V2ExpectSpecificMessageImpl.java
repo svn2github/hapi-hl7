@@ -29,63 +29,49 @@ import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
-import ca.uhn.hunit.msg.AbstractMessage;
-import ca.uhn.hunit.msg.Hl7V2MessageImpl;
+import ca.uhn.hunit.xsd.Event;
+import ca.uhn.hunit.xsd.ExpectMessageAny;
 import ca.uhn.hunit.xsd.Hl7V2ExpectSpecificMessage;
-import java.beans.PropertyVetoException;
 
 public class Hl7V2ExpectSpecificMessageImpl extends AbstractHl7V2ExpectMessage implements ISpecificMessageEvent {
 
-	private Hl7V2MessageImpl myMessageProvider;
-	
-	public Hl7V2ExpectSpecificMessageImpl(TestImpl theTest, Hl7V2ExpectSpecificMessage theConfig) throws ConfigurationException {
-		super(theTest, theConfig);
-		
-        String messageId = theConfig.getMessageId();
-        AbstractMessage message = theTest.getBattery().getMessage(messageId);
-		if (!(message instanceof Hl7V2MessageImpl)) {
-			throw new ConfigurationException("Message with ID[" + messageId + "] is not an HL7 v2 message type so it can not be used with this expect");
-		}
-		myMessageProvider = (Hl7V2MessageImpl) message;
-	}
-
-	@Override
-	public void validateMessage(TestMessage<Message> theMessage)
-			throws TestFailureException {
-		
-		TestMessage<Message> expectMessage = myMessageProvider.getTestMessage();
-		TestMessage<Message> actualMessage = theMessage;
-		
-		Hl7V2MessageCompare messageCompare = new Hl7V2MessageCompare();
-        messageCompare.compare(expectMessage, actualMessage);
-		if (!messageCompare.isSame()) {
-			throw new IncorrectMessageReceivedException(getTest(), null, expectMessage, actualMessage, "Messages did not match", messageCompare);
-		}
-		
-	}
-
-
-    public Hl7V2MessageImpl getMessage() {
-        return myMessageProvider;
+    public Hl7V2ExpectSpecificMessageImpl(TestImpl theTest, Hl7V2ExpectSpecificMessage theConfig) throws ConfigurationException {
+        super(theTest, theConfig);
     }
 
+    @Override
+    public void validateMessage(TestMessage<Message> theMessage)
+            throws TestFailureException {
 
-    public void setMessageId(String theMessageId) throws PropertyVetoException {
-        AbstractMessage newMessage;
-        try {
-            newMessage = getBattery().getMessage(theMessageId);
-        } catch (ConfigurationException ex) {
-            throw new PropertyVetoException(ex.getMessage(), null);
+        TestMessage<Message> expectMessage = getMessage().getTestMessage();
+        TestMessage<Message> actualMessage = theMessage;
+
+        Hl7V2MessageCompare messageCompare = new Hl7V2MessageCompare();
+        messageCompare.compare(expectMessage, actualMessage);
+        if (!messageCompare.isSame()) {
+            throw new IncorrectMessageReceivedException(getTest(), null, expectMessage, actualMessage, "Messages did not match", messageCompare);
         }
 
-        String oldValue = myMessageProvider.getId();
-        fireVetoableChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
-        this.myMessageProvider = (Hl7V2MessageImpl) newMessage;
-        firePropertyChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
     }
 
     public Class<?> getMessageClass() {
         return Message.class;
+    }
+
+    public Hl7V2ExpectSpecificMessage exportConfig(Hl7V2ExpectSpecificMessage theConfig) {
+        if (theConfig == null) {
+            theConfig = new Hl7V2ExpectSpecificMessage();
+        }
+        super.exportConfig(theConfig);
+        return theConfig;
+    }
+
+    @Override
+    public ExpectMessageAny exportConfigToXml() {
+        ExpectMessageAny expectMessage = new ExpectMessageAny();
+        Hl7V2ExpectSpecificMessage retVal = exportConfig(new Hl7V2ExpectSpecificMessage());
+        expectMessage.setHl7V2Specific(retVal);
+        return expectMessage;
     }
 
 }

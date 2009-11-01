@@ -23,9 +23,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ca.uhn.hunit.l10n;
 
+import java.text.MessageFormat;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
@@ -33,6 +33,7 @@ import java.util.ResourceBundle;
  * Provides UI resourcebundle for strings
  */
 public class Strings {
+
     private static ResourceBundle ourStrings;
 
     private Strings() {
@@ -47,4 +48,15 @@ public class Strings {
         return ourStrings;
     }
 
+    public static final String getMessage(String theMessageBundleKey, Object... theMessages) {
+        String message = Strings.getInstance().getString(theMessageBundleKey);
+        if (theMessages != null && theMessages.length > 0) {
+            message = MessageFormat.format(message, theMessages);
+        }
+        return message;
+    }
+
+    public static String getLineSeparator() {
+        return System.getProperty("line.separator");
+    }
 }

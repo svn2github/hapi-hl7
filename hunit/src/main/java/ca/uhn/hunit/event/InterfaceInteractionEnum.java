@@ -24,34 +24,14 @@
  * and open the template in the editor.
  */
 
-package ca.uhn.hunit.swing.controller.ctx;
-
-import ca.uhn.hunit.iface.JmsInterfaceImpl;
-import ca.uhn.hunit.swing.ui.iface.JmsInterfaceEditorForm;
-import ca.uhn.hunit.util.log.ILogProvider;
+package ca.uhn.hunit.event;
 
 /**
- *
- * @author James
+ * Describes how an event interacts with a specific interface
  */
-public class JmsInterfaceContextController extends AbstractInterfaceEditorContextController<JmsInterfaceImpl, JmsInterfaceEditorForm> {
-    private final JmsInterfaceImpl myModel;
-    private final JmsInterfaceEditorForm myView;
+public enum InterfaceInteractionEnum {
 
-    public JmsInterfaceContextController(ILogProvider theLog, JmsInterfaceImpl theModel) {
-        super(theLog, theModel);
-        myModel = theModel;
-        myView = new JmsInterfaceEditorForm();
-        myView.setController(this);
-    }
-
-    public JmsInterfaceImpl getModel() {
-        return myModel;
-    }
-
-    @Override
-    public JmsInterfaceEditorForm getView() {
-        return myView;
-    }
+    SEND,
+    RECEIVE
 
 }

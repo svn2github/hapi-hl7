@@ -18,10 +18,10 @@ import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.test.TestBatteryImpl;
 
 /**
- * TODO: add!
  * 
- * @author <a href="mailto:james.agnew@uhn.on.ca">James Agnew</a>
- * @version $Revision: 1.2 $ updated on $Date: 2009-10-19 13:37:29 $ by $Author: jamesagnew $
+ * 
+ * @author <a href="mailto:jamesagnew@users.sourceforge.net">James Agnew</a>
+ * @version $Revision: 1.3 $ updated on $Date: 2009-11-01 22:31:04 $ by $Author: jamesagnew $
  */
 public class JmsTest
 {

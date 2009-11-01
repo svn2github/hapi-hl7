@@ -21,6 +21,7 @@
  */
 package ca.uhn.hunit.iface;
 
+import ca.uhn.hunit.event.InterfaceInteractionEnum;
 import java.beans.PropertyVetoException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -50,66 +51,80 @@ import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.TypedValueListTableModel;
 import ca.uhn.hunit.xsd.JavaArgument;
 import ca.uhn.hunit.xsd.AbstractJmsInterface;
+import ca.uhn.hunit.xsd.Interface;
 import ca.uhn.hunit.xsd.NamedJavaArgument;
 import java.util.Collections;
+import java.util.LinkedList;
 import javax.jms.MessageListener;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.apache.commons.lang.StringUtils;
 
-public abstract class AbstractJmsInterfaceImpl<T extends Object> extends AbstractInterface implements MessageListener {
+public abstract class AbstractJmsInterfaceImpl<T extends Object> extends AbstractInterface {
 
-	private boolean myStarted;
-	private boolean myStopped;
+    private boolean myStarted;
+    private boolean myStopped;
     private String myQueueName;
-    private Class< ? > myConnectionFactoryClass;
+    private Class<?> myConnectionFactoryClass;
     private String myUsername;
     private String myPassword;
-    private Constructor< ? > myConstructor;
+    private Constructor<?> myConstructor;
     private JmsTemplate myJmsTemplate;
     private boolean myPubSubDomain;
-    private final TypedValueListTableModel myConstructorArgsTableModel;
-    private final TypedValueListTableModel myMessagePropertyTableModel;
-    private final List<Message> myReceivedMessages = Collections.synchronizedList(new ArrayList<Message>());
+    private final TypedValueListTableModel myConstructorArgsTableModel = new TypedValueListTableModel(false);
+    private final TypedValueListTableModel myMessagePropertyTableModel = new TypedValueListTableModel(true);
+    private final List<Message> myReceivedMessages = Collections.synchronizedList(new LinkedList<Message>());
     private DefaultMessageListenerContainer myMessageListenerContainer;
 
-	public AbstractJmsInterfaceImpl(TestBatteryImpl theBattery, AbstractJmsInterface theConfig) throws ConfigurationException {
-		super(theBattery, theConfig);
-		
-		myQueueName = theConfig.getQueueName();
-		if (myQueueName == null) {
-		    myQueueName = theConfig.getTopicName();
-		    myPubSubDomain = true;
-		}
-		try {
-            myConnectionFactoryClass = Class.forName(theConfig.getConnectionFactory());
-        } catch (ClassNotFoundException e) {
-            throw new ConfigurationException("Unknown connection factory: " + theConfig.getConnectionFactory());
+    public AbstractJmsInterfaceImpl(TestBatteryImpl theBattery, AbstractJmsInterface theConfig) throws ConfigurationException {
+        super(theBattery, theConfig);
+
+        myQueueName = theConfig.getQueueName();
+        if (myQueueName == null) {
+            myQueueName = theConfig.getTopicName();
+            myPubSubDomain = true;
         }
-                
-        myConstructorArgsTableModel = new TypedValueListTableModel(false);
-        myConstructorArgsTableModel.setValues(theConfig.getConnectionFactoryConstructorArg());
+
+        if (theConfig.getConnectionFactory() != null) {
+            try {
+                myConnectionFactoryClass = Class.forName(theConfig.getConnectionFactory());
+            } catch (ClassNotFoundException e) {
+                throw new ConfigurationException("Unknown connection factory: " + theConfig.getConnectionFactory());
+            }
+        }
+
+        myConstructorArgsTableModel.importValuesFromXml(theConfig.getConnectionFactoryConstructorArg());
         try {
-            
             myConstructor = myConnectionFactoryClass.getConstructor(myConstructorArgsTableModel.getArgTypeArray());
         } catch (SecurityException e) {
             throw new ConfigurationException("Error creating connection factory: ", e);
         } catch (NoSuchMethodException e) {
             throw new ConfigurationException("Error creating connection factory: ", e);
         }
-        
-		myUsername = theConfig.getUserName();
-		myPassword = theConfig.getPassword();
-		myStarted = false;
-		myStopped = false;
 
-        myMessagePropertyTableModel = new TypedValueListTableModel(true);
-        myMessagePropertyTableModel.setValues(theConfig.getMessageProperty());
-		
-	}
+        myUsername = theConfig.getUserName();
+        myPassword = theConfig.getPassword();
+        myStarted = false;
+        myStopped = false;
 
-    public static void extractArgsFromXml(List<Class< ? >> theArgTypeList, List<String> theNames, List<Object> theArgs,
+        myMessagePropertyTableModel.importValuesFromXml(theConfig.getMessageProperty());
+
+        init();
+    }
+
+    public AbstractJmsInterfaceImpl(TestBatteryImpl theBattery, String theId) {
+        super(theBattery, theId);
+
+        init();
+    }
+
+    private void init() {
+        myUsername = StringUtils.defaultString(myUsername);
+        myPassword = StringUtils.defaultString(myPassword);
+    }
+
+    public static void extractArgsFromXml(List<Class<?>> theArgTypeList, List<String> theNames, List<Object> theArgs,
             List<JavaArgument> theArgDefinitions) throws ConfigurationException {
-        
+
         for (JavaArgument next : theArgDefinitions) {
             if ("java.lang.String".equals(next.getType())) {
                 theArgTypeList.add(String.class);
@@ -125,94 +140,94 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
             }
 
             if (theNames != null) {
-                theNames.add(((NamedJavaArgument)next).getName());
+                theNames.add(((NamedJavaArgument) next).getName());
             }
         }
     }
 
-    
-    public static void extractNamedArgsFromXml(List<Class< ? >> theArgTypeList, List<String> theNames, List<Object> theArgs,
+    public static void extractNamedArgsFromXml(List<Class<?>> theArgTypeList, List<String> theNames, List<Object> theArgs,
             List<NamedJavaArgument> theArgDefinitions) throws ConfigurationException {
         List<JavaArgument> argDefs = new ArrayList<JavaArgument>();
         for (NamedJavaArgument next : theArgDefinitions) {
             argDefs.add(next);
         }
-        
+
         extractArgsFromXml(theArgTypeList, theNames, theArgs, argDefs);
     }
 
-    
-	@Override
-	public TestMessage<?> receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException {
-		start(theCtx);
+    @Override
+    public TestMessage<?> receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException {
+        start(theCtx);
 
-		theCtx.getLog().get(this).info( "Waiting to receive message");
+        theCtx.getLog().get(this).info("Waiting to receive message");
 
-		String message = null;
-		try {
-			long endTime = System.currentTimeMillis() + theTimeout;
-			while (!myStopped && message == null && System.currentTimeMillis() < endTime) {
-				try {
-					message = doReceiveMessage();
-				} catch (JmsException e) {
-		            throw new InterfaceWontReceiveException(this, e.getMessage(), e);
-				} catch (JMSException e) {
-		            throw new InterfaceWontReceiveException(this, e.getMessage(), e);
+        String message = null;
+        try {
+            long endTime = System.currentTimeMillis() + theTimeout;
+            while (!myStopped && message == null && System.currentTimeMillis() < endTime) {
+                try {
+                    message = doReceiveMessage();
+                } catch (JmsException e) {
+                    throw new InterfaceWontReceiveException(this, e.getMessage(), e);
+                } catch (JMSException e) {
+                    throw new InterfaceWontReceiveException(this, e.getMessage(), e);
                 }
-			}
-			if (myStopped || message == null) {
-				return null;
-			}
-						
-			theCtx.getLog().get(this).info( "Received message (" + message.length() + " bytes)");
+            }
+            if (myStopped || message == null) {
+                return null;
+            }
 
-		    return new TestMessage<Object>(message, null);
+            theCtx.getLog().get(this).info("Received message (" + message.length() + " bytes)");
 
-		} catch (JmsException e) {
-			throw new InterfaceWontReceiveException(this, e.getMessage(), e);
+            return new TestMessage<Object>(message, null);
+
+        } catch (JmsException e) {
+            throw new InterfaceWontReceiveException(this, e.getMessage(), e);
         }
 
-	}
+    }
 
-	@Override
-	public void sendMessage(TestImpl theTest, ExecutionContext theCtx, final TestMessage<?> theMessage) throws TestFailureException {
-		start(theCtx);
+    @Override
+    public void sendMessage(TestImpl theTest, ExecutionContext theCtx, final TestMessage<?> theMessage) throws TestFailureException {
+        start(theCtx);
 
-		theCtx.getLog().get(this).info( "Sending message (" + theMessage.getRawMessage().length() + " bytes)");
+        theCtx.getLog().get(this).info("Sending message (" + theMessage.getRawMessage().length() + " bytes)");
 
-		try {
-		    MessageCreator mc = new MessageCreator() {
+        try {
+            MessageCreator mc = new MessageCreator() {
+
                 public javax.jms.Message createMessage(Session theSession) throws JMSException {
                     TextMessage textMessage = theSession.createTextMessage(theMessage.getRawMessage());
-                    
+
                     for (int i = 0; i < myMessagePropertyTableModel.getRowCount(); i++) {
                         if (java.lang.String.class.equals(myMessagePropertyTableModel.getArgType(i))) {
-                            textMessage.setStringProperty(myMessagePropertyTableModel.getName(i), (String)myMessagePropertyTableModel.getArg(i));
+                            textMessage.setStringProperty(myMessagePropertyTableModel.getName(i), (String) myMessagePropertyTableModel.getArg(i));
                         } else if (java.lang.Integer.class.equals(myMessagePropertyTableModel.getArgType(i))) {
-                            textMessage.setIntProperty(myMessagePropertyTableModel.getName(i), (Integer)myMessagePropertyTableModel.getArg(i));
+                            textMessage.setIntProperty(myMessagePropertyTableModel.getName(i), (Integer) myMessagePropertyTableModel.getArg(i));
                         } else if (int.class.equals(myMessagePropertyTableModel.getArgType(i))) {
-                            textMessage.setIntProperty(myMessagePropertyTableModel.getName(i), (Integer)myMessagePropertyTableModel.getArg(i));
+                            textMessage.setIntProperty(myMessagePropertyTableModel.getName(i), (Integer) myMessagePropertyTableModel.getArg(i));
                         }
                     }
                     return textMessage;
-                }};
+                }
+            };
             myJmsTemplate.send(myQueueName, mc);
-			theCtx.getLog().get(this).info( "Sent message");
-		} catch (JmsException e) {
-			throw new InterfaceWontSendException(this, e.getMessage(), e);
-		}
+            theCtx.getLog().get(this).info("Sent message");
+        } catch (JmsException e) {
+            throw new InterfaceWontSendException(this, e.getMessage(), e);
+        }
 
-	}
+    }
 
-	@Override
-	public void start(ExecutionContext theCtx) throws InterfaceWontStartException {
-		if (myStarted) {
-			return;
-		}
+    @Override
+    public void start(ExecutionContext theCtx) throws InterfaceWontStartException {
+        if (myStarted) {
+            return;
+        }
 
-		ConnectionFactory connectionFactory;
+        ConnectionFactory connectionFactory;
         try {
-            connectionFactory = (ConnectionFactory)myConstructor.newInstance(myConstructorArgsTableModel.getArgArray());
+            connectionFactory = (ConnectionFactory) myConstructor.newInstance(myConstructorArgsTableModel.getArgArray());
         } catch (IllegalArgumentException e1) {
             throw new InterfaceWontStartException(this, e1.getMessage());
         } catch (InstantiationException e1) {
@@ -222,101 +237,124 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
         } catch (InvocationTargetException e1) {
             throw new InterfaceWontStartException(this, e1.getMessage());
         }
-        
-		connectionFactory = new JmsConnectionFactory(connectionFactory, myUsername, myPassword);
-		myJmsTemplate = new JmsTemplate(connectionFactory);
-		myJmsTemplate.setReceiveTimeout(1000);
+
+        connectionFactory = new JmsConnectionFactory(connectionFactory, myUsername, myPassword);
+        myJmsTemplate = new JmsTemplate(connectionFactory);
+        myJmsTemplate.setReceiveTimeout(1000);
         myJmsTemplate.setPubSubDomain(myPubSubDomain);
 
-        if (myPubSubDomain) {
-//            myMessageListenerContainer = new DefaultMessageListenerContainer();
-//            myMessageListenerContainer.setBeanName(getId());
-//            myMessageListenerContainer.setAutoStartup(true);
-//            myMessageListenerContainer.setAcceptMessagesWhileStopping(false);
-//            myMessageListenerContainer.setClientId("hUnit");
-//            myMessageListenerContainer.setConcurrentConsumers(1);
-//            myMessageListenerContainer.setConnectionFactory(connectionFactory);
-//            myMessageListenerContainer.setPubSubDomain(myPubSubDomain);
-//            myMessageListenerContainer.setDurableSubscriptionName("hUnit");
-//            myMessageListenerContainer.setSubscriptionDurable(true);
-//            myMessageListenerContainer.set
-//            myMessageListenerContainer.afterPropertiesSet();
+        final TestBatteryImpl battery = theCtx.getBattery();
+        if (battery.getInterfaceInteractionTypes(getId()).contains(InterfaceInteractionEnum.RECEIVE)) {
+            theCtx.getLog().get(this).info("Interface will be used to receive messages, starting listener");
+            myMessageListenerContainer = new DefaultMessageListenerContainer();
+            myMessageListenerContainer.setBeanName(getId());
+            myMessageListenerContainer.setAutoStartup(true);
+            myMessageListenerContainer.setAcceptMessagesWhileStopping(false);
+            myMessageListenerContainer.setClientId("hUnit");
+            myMessageListenerContainer.setConcurrentConsumers(1);
+            myMessageListenerContainer.setConnectionFactory(connectionFactory);
+            myMessageListenerContainer.setPubSubDomain(myPubSubDomain);
+            myMessageListenerContainer.setDurableSubscriptionName("hUnit");
+            myMessageListenerContainer.setDestinationName(myQueueName);
+            myMessageListenerContainer.setMessageListener(new MyMessageListener(theCtx));
+            myMessageListenerContainer.afterPropertiesSet();
         }
 
-		if (isClear()) {
-			long readUntil = System.currentTimeMillis() + getClearMillis();
-			int cleared = 0;
-			while (System.currentTimeMillis() < readUntil) {
-				try {
+        if (isClear()) {
+            long readUntil = System.currentTimeMillis() + getClearMillis();
+            int cleared = 0;
+            while (System.currentTimeMillis() < readUntil) {
+                try {
                     String message = doReceiveMessage();
-					
-					if (message == null || message.length() == 0) {
-					    try {
+
+                    if (message == null || message.length() == 0) {
+                        try {
                             Thread.sleep(250);
                         } catch (InterruptedException e) {
                             // nothing
                         }
                         continue;
-					}
-					cleared++;
-					theCtx.getLog().get(this).info( "Cleared message");
+                    }
+                    cleared++;
+                    theCtx.getLog().get(this).info("Cleared message");
                     try {
                         Thread.sleep(250);
                     } catch (InterruptedException e) {
                         // nothing
                     }
                     readUntil = System.currentTimeMillis() + getClearMillis();
-				} catch (JMSException e) {
-				    theCtx.getLog().get(this).warn("Error while clearing queue: " + e.getMessage());
+                } catch (JMSException e) {
+                    theCtx.getLog().get(this).warn("Error while clearing queue: " + e.getMessage());
                 }
-			}
-			theCtx.getLog().get(this).info( "Cleared " + cleared + " messages from interface before starting");
-		}
-		
-		theCtx.getLog().get(this).info( "Started interface successfully");
-		myStarted = true;
+            }
+            theCtx.getLog().get(this).info("Cleared " + cleared + " messages from interface before starting");
+        }
+
+        theCtx.getLog().get(this).info("Started interface successfully");
+        myStarted = true;
         firePropertyChange(INTERFACE_STARTED_PROPERTY, false, true);
-	}
+    }
 
     private String doReceiveMessage() throws JMSException {
         String message = null;
-        javax.jms.Message jmsMessage = myJmsTemplate.receive(myQueueName);
+
+//        javax.jms.Message jmsMessage = myJmsTemplate.receive(myQueueName);
+        if (myReceivedMessages.size() == 0) {
+            return null;
+        }
+        Message jmsMessage = myReceivedMessages.remove(0);
+
         if (jmsMessage != null) {
-            TextMessage jmsTextMessage = (TextMessage)jmsMessage;
+            TextMessage jmsTextMessage = (TextMessage) jmsMessage;
             message = jmsTextMessage.getText();
         }
         return message;
     }
 
-	@Override
-	public void stop(ExecutionContext theCtx) throws InterfaceWontStopException {
-		if (!myStarted) {
-			return;
-		}
-		if (myStopped) {
-			return;
-		}
+    @Override
+    public void stop(ExecutionContext theCtx) throws InterfaceWontStopException {
+        if (!myStarted) {
+            return;
+        }
+        if (myStopped) {
+            return;
+        }
 
-		theCtx.getLog().get(this).info( "Stopping interface");
+        theCtx.getLog().get(this).info("Stopping interface");
 
-		myStarted = false;
+        if (myMessageListenerContainer != null) {
+            myMessageListenerContainer.destroy();
+        }
+
+        myStarted = false;
         firePropertyChange(INTERFACE_STARTED_PROPERTY, true, false);
-	}
+    }
 
-	@Override
-	public boolean isStarted() {
-		return myStarted;
-	}
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public boolean isStarted() {
+        return myStarted;
+    }
 
-	protected void exportConfig(AbstractJmsInterface retVal) {
-		super.exportConfig(retVal);
-		retVal.setClear(isClear());
-		retVal.setConnectionFactory(myConnectionFactoryClass.getName());
-		retVal.setPassword(myPassword);
-		retVal.setQueueName(myPubSubDomain ? null : myQueueName);
-		retVal.setTopicName(myPubSubDomain ? myQueueName : null);
-		retVal.setUserName(myUsername);
-	}
+    /**
+     * {@inheritDoc }
+     */
+    protected Interface exportConfig(AbstractJmsInterface retVal) {
+        super.exportConfig(retVal);
+        
+        myConstructorArgsTableModel.exportValuesToXml(retVal.getConnectionFactoryConstructorArg());
+        myMessagePropertyTableModel.exportValuesToXml(retVal.getMessageProperty());
+
+        retVal.setConnectionFactory(myConnectionFactoryClass.getName());
+        retVal.setPassword(myPassword);
+        retVal.setQueueName(myPubSubDomain ? null : myQueueName);
+        retVal.setTopicName(myPubSubDomain ? myQueueName : null);
+        retVal.setUserName(myUsername);
+        
+        return retVal;
+    }
 
     public TypedValueListTableModel getConstructorArgsTableModel() {
         return myConstructorArgsTableModel;
@@ -369,9 +407,17 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
         this.myUsername = myUsername;
     }
 
-    public void onMessage(Message arg0) {
-        myReceivedMessages.add(arg0);
+    private class MyMessageListener implements MessageListener {
+
+        private final ExecutionContext myCtx;
+
+        public MyMessageListener(ExecutionContext theCtx) {
+            myCtx = theCtx;
+        }
+
+        public void onMessage(Message message) {
+            myCtx.getLog().get(AbstractJmsInterfaceImpl.this).info("Message arrived");
+            myReceivedMessages.add(message);
+        }
     }
-
-
 }

@@ -28,15 +28,18 @@ package ca.uhn.hunit.event.send;
 
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.msg.XmlMessageImpl;
 import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.xsd.Event;
+import ca.uhn.hunit.xsd.SendMessageAny;
 import ca.uhn.hunit.xsd.XMLSendMessage;
-import org.jdom.Document;
+import org.w3c.dom.Document;
 
 /**
  *
  * @author James
  */
-public class XmlSendMessageImpl extends AbstractSendMessage<Document> {
+public class XmlSendMessageImpl extends AbstractSendMessage<Document, XmlMessageImpl> {
 
     public XmlSendMessageImpl(TestImpl theTest, XMLSendMessage theConfig) throws ConfigurationException {
         super(theTest, theConfig);
@@ -52,6 +55,23 @@ public class XmlSendMessageImpl extends AbstractSendMessage<Document> {
 
     public Class<Document> getMessageClass() {
         return Document.class;
+    }
+
+    public XMLSendMessage exportConfig(XMLSendMessage theConfig) {
+        if (theConfig == null) {
+            theConfig = new XMLSendMessage();
+        }
+        super.exportConfig(theConfig);
+        return theConfig;
+    }
+
+
+    @Override
+    public SendMessageAny exportConfigToXml() {
+        SendMessageAny sendMessage = new SendMessageAny();
+        XMLSendMessage retVal = exportConfig(new XMLSendMessage());
+        sendMessage.setXml(retVal);
+        return sendMessage;
     }
 
 }

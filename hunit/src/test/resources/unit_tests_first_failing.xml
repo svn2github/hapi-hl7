@@ -7,8 +7,6 @@
 		<hu:interface>
 			<hu:jmsInterface id="test_in_interface">
 				<hu:connection_factory>ca.uhn.hunit.iface.StaticActiveMQConnectionFactory</hu:connection_factory>
-				<hu:connection_factory_constructor_arg type="java.lang.String" value="string value"></hu:connection_factory_constructor_arg>
-				<hu:connection_factory_constructor_arg type="java.lang.Integer" value="1234"></hu:connection_factory_constructor_arg>
 				<hu:queue_name>test_queue</hu:queue_name>
 				<hu:user_name>user</hu:user_name>
 				<hu:password>pass</hu:password>
@@ -24,15 +22,6 @@
 		</hu:interface>
 	</hu:interfaces>
 	<hu:tests>
-		<hu:test>
-			<hu:name>ExpectSameMessage</hu:name>
-			<hu:send_message>
-				<hu:hl7v2 interface_id="test_out_interface" message_id="InputMessage" />
-			</hu:send_message>
-			<hu:expect_message>
-                <hu:hl7v2_specific interface_id="test_in_interface" message_id="InputMessage"/>
-			</hu:expect_message>
-		</hu:test>
         <hu:test>
             <hu:name>ExpectDifferentMessage</hu:name>
             <hu:send_message>
@@ -42,6 +31,15 @@
                 <hu:hl7v2_specific interface_id="test_in_interface" message_id="DifferentOutputMessage"/>
             </hu:expect_message>
         </hu:test>
+		<hu:test>
+			<hu:name>ExpectSameMessage</hu:name>
+			<hu:send_message>
+				<hu:hl7v2 interface_id="test_out_interface" message_id="InputMessage" />
+			</hu:send_message>
+			<hu:expect_message>
+                <hu:hl7v2_specific interface_id="test_in_interface" message_id="InputMessage"/>
+			</hu:expect_message>
+		</hu:test>
 	</hu:tests>
 	<hu:messages>
 		<hu:hl7v2 id="InputMessage">

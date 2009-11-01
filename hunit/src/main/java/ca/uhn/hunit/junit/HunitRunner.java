@@ -65,8 +65,6 @@ public class HunitRunner extends Runner {
         try {
             File file = ResourceUtils.getFile(batteryAnnotation.file());
             myBattery = new TestBatteryImpl(file);
-        } catch (InterfaceWontStartException ex) {
-            throw new InitializationError(Collections.singletonList((Throwable)ex));
         } catch (ConfigurationException ex) {
             throw new InitializationError(Collections.singletonList((Throwable)ex));
         } catch (JAXBException ex) {

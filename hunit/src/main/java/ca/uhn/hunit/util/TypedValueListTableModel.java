@@ -37,18 +37,22 @@ import javax.swing.table.AbstractTableModel;
  * @author James
  */
 public class TypedValueListTableModel extends AbstractTableModel {
+    private static final long serialVersionUID = 1L;
 
     private final boolean myNamed;
     private final ArrayList<String> myNames = new ArrayList<String>();
     private final ArrayList<Object> myArgs = new ArrayList<Object>();
     private final ArrayList<Class<?>> myArgTypes = new ArrayList<Class<?>>();
-    private final String[] myNamedColumnNames = {"Name", "Value", "Type" };
+    private final String[] myNamedColumnNames = {"Name", "Value", "Type"};
 
     public TypedValueListTableModel(boolean theNamed) {
         myNamed = theNamed;
     }
 
-    public void setValues(List<? extends JavaArgument> theArgDefinitions) throws ConfigurationException {
+    /**
+     * Imports the values for this list from an XML config
+     */
+    public void importValuesFromXml(List<? extends JavaArgument> theArgDefinitions) throws ConfigurationException {
         for (JavaArgument next : theArgDefinitions) {
             if ("java.lang.String".equals(next.getType())) {
                 myArgTypes.add(String.class);
@@ -70,8 +74,37 @@ public class TypedValueListTableModel extends AbstractTableModel {
 
     }
 
+    /**
+     * Imports the values for this list from an XML config
+     */
+    public void exportValuesToXml(List<? extends JavaArgument> theArgDefinitions) {
+        for (int i = 0; i < myArgTypes.size(); i++) {
+            Class<?> nextArgType = myArgTypes.get(i);
+            Object nextArg = myArgs.get(i);
+            JavaArgument nextJavaArg = new JavaArgument();
+
+            if (String.class.equals(nextArgType)) {
+                nextJavaArg.setType("java.lang.String");
+                nextJavaArg.setValue((String) nextArg);
+            } else if (Integer.class.equals(nextArgType)) {
+                nextJavaArg.setType("java.lang.Integer");
+                nextJavaArg.setValue(((Integer) nextArg).toString());
+            } else if (int.class.equals(nextArgType)) {
+                nextJavaArg.setType("int");
+                nextJavaArg.setValue(((Integer) nextArg).toString());
+            }
+
+            if (myNamed) {
+                ((NamedJavaArgument) nextJavaArg).setName(myNames.get(i));
+            }
+
+        }
+
+    }
+
     @Override
-    public String getColumnName(int column) {
+    public String getColumnName(
+            int column) {
         if (!myNamed) {
             column++;
         }
@@ -79,6 +112,7 @@ public class TypedValueListTableModel extends AbstractTableModel {
         return myNamedColumnNames[column];
     }
 
+    @Override
     public int getColumnCount() {
         return myNamed ? 3 : 2;
     }
@@ -87,7 +121,8 @@ public class TypedValueListTableModel extends AbstractTableModel {
         return myArgTypes.size();
     }
 
-    public Object getValueAt(int rowIndex, int columnIndex) {
+    public Object getValueAt(
+            int rowIndex, int columnIndex) {
         if (!myNamed) {
             columnIndex++;
         }
@@ -102,10 +137,11 @@ public class TypedValueListTableModel extends AbstractTableModel {
             default:
                 throw new IllegalStateException("Col " + columnIndex);
         }
+
     }
 
-
-    public Object getArg(int theIndex) {
+    public Object getArg(
+            int theIndex) {
         return myArgs.get(theIndex);
     }
 
@@ -113,7 +149,8 @@ public class TypedValueListTableModel extends AbstractTableModel {
         return myArgTypes.get(theIndex);
     }
 
-    public String getName(int theIndex) {
+    public String getName(
+            int theIndex) {
         return myNames.get(theIndex);
     }
 
@@ -124,5 +161,4 @@ public class TypedValueListTableModel extends AbstractTableModel {
     public Object[] getArgArray() {
         return myArgs.toArray(new Object[myArgs.size()]);
     }
-
 }

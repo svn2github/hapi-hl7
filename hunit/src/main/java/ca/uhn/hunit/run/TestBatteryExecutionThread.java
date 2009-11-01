@@ -25,7 +25,6 @@ import ca.uhn.hunit.event.AbstractEvent;
 import java.util.LinkedList;
 import java.util.List;
 
-import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.ex.InterfaceWontStopException;

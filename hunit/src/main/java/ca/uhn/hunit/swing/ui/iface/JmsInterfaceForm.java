@@ -29,21 +29,19 @@
  *
  * Created on 9-Oct-2009, 7:30:51 PM
  */
-
 package ca.uhn.hunit.swing.ui.iface;
 
 import ca.uhn.hunit.iface.JmsInterfaceImpl;
 import ca.uhn.hunit.l10n.Colours;
 import ca.uhn.hunit.swing.controller.ctx.JmsInterfaceContextController;
 import ca.uhn.hunit.swing.ui.AbstractContextForm;
-import java.awt.Color;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyVetoException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
 
 /**
  *
@@ -52,6 +50,7 @@ import javax.swing.event.UndoableEditListener;
 public class JmsInterfaceForm extends AbstractContextForm<JmsInterfaceContextController> {
 
     private static final long serialVersionUID = 1;
+    private Log myLog;
 
     /** Creates new form JmsInterfaceForm */
     public JmsInterfaceForm() {
@@ -82,6 +81,8 @@ public class JmsInterfaceForm extends AbstractContextForm<JmsInterfaceContextCon
 
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel5.setText("Username");
+
+        setPreferredSize(new java.awt.Dimension(401, 500));
 
         myQueueNameTextBox.setText("jTextField1");
 
@@ -123,22 +124,26 @@ public class JmsInterfaceForm extends AbstractContextForm<JmsInterfaceContextCon
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(myQueueTopicCombo, javax.swing.GroupLayout.Alignment.LEADING, 0, 120, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(myConstructorArgsScrollBox, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
-                    .addComponent(myConnectionFactoryTextBox, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
-                    .addComponent(myQueueNameTextBox, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(myQueueTopicCombo, javax.swing.GroupLayout.Alignment.LEADING, 0, 120, Short.MAX_VALUE))
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(myConnectionFactoryTextBox, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)
+                    .addComponent(myQueueNameTextBox, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(myUsernameTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(myPasswordTextBox, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE))))
+                        .addComponent(myPasswordTextBox, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE))
+                    .addComponent(myConstructorArgsScrollBox, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -151,28 +156,18 @@ public class JmsInterfaceForm extends AbstractContextForm<JmsInterfaceContextCon
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(myConnectionFactoryTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(myUsernameTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(myPasswordTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(myUsernameTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(myPasswordTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE))
-                        .addGap(6, 6, 6)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(myConstructorArgsScrollBox, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
-                        .addGap(60, 60, 60)))
-                .addGap(138, 138, 138))
+                    .addComponent(myConstructorArgsScrollBox, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addContainerGap(122, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -188,19 +183,25 @@ public class JmsInterfaceForm extends AbstractContextForm<JmsInterfaceContextCon
     private javax.swing.JTextField myUsernameTextBox;
     // End of variables declaration//GEN-END:variables
 
-
     public void setController(JmsInterfaceContextController theController) {
         final JmsInterfaceImpl model = theController.getModel();
-        
+        myLog = theController.getLog().getSystem(JmsInterfaceForm.class);
+
         myConstructorArgsTable.setModel(model.getConstructorArgsTableModel());
 
+        if (model.getConnectionFactoryClass() != null) {
         myConnectionFactoryTextBox.setText(model.getConnectionFactoryClass().getCanonicalName());
+        } else {
+            myConnectionFactoryTextBox.setBackground(Colours.getTextFieldError());
+        }
         myConnectionFactoryTextBox.getDocument().addUndoableEditListener(new UndoableEditListener() {
+
             public void undoableEditHappened(UndoableEditEvent e) {
                 try {
                     model.setConnectionFactoryClass(Class.forName(myConnectionFactoryTextBox.getText()));
                     myConnectionFactoryTextBox.setBackground(Colours.getTextFieldOk());
                 } catch (ClassNotFoundException ex) {
+                    myLog.error(ex.getMessage());
                     myConnectionFactoryTextBox.setBackground(Colours.getTextFieldError());
                 }
             }
@@ -208,6 +209,7 @@ public class JmsInterfaceForm extends AbstractContextForm<JmsInterfaceContextCon
 
         myUsernameTextBox.setText(model.getUsername());
         myUsernameTextBox.getDocument().addUndoableEditListener(new UndoableEditListener() {
+
             public void undoableEditHappened(UndoableEditEvent e) {
                 model.setUsername(myUsernameTextBox.getText());
             }
@@ -215,18 +217,24 @@ public class JmsInterfaceForm extends AbstractContextForm<JmsInterfaceContextCon
 
         myPasswordTextBox.setText(model.getPassword());
         myPasswordTextBox.getDocument().addUndoableEditListener(new UndoableEditListener() {
+
             public void undoableEditHappened(UndoableEditEvent e) {
                 model.setPassword(myPasswordTextBox.getText());
             }
         });
 
         myQueueNameTextBox.setText(model.getQueueName());
+        if (StringUtils.isBlank(model.getQueueName())) {
+            myQueueNameTextBox.setBackground(Colours.getTextFieldError());
+        }
         myQueueNameTextBox.getDocument().addUndoableEditListener(new UndoableEditListener() {
+
             public void undoableEditHappened(UndoableEditEvent e) {
                 try {
                     model.setQueueName(myQueueNameTextBox.getText());
                     myQueueNameTextBox.setBackground(Colours.getTextFieldOk());
                 } catch (PropertyVetoException ex) {
+                    myLog.error(ex.getMessage());
                     myQueueNameTextBox.setBackground(Colours.getTextFieldError());
                 }
             }
@@ -234,17 +242,14 @@ public class JmsInterfaceForm extends AbstractContextForm<JmsInterfaceContextCon
 
         myQueueTopicCombo.setSelectedIndex(model.isPubSubDomain() ? 1 : 0);
         myQueueTopicCombo.addItemListener(new ItemListener() {
+
             public void itemStateChanged(ItemEvent e) {
                 model.setPubSubDomain(myQueueTopicCombo.getSelectedIndex() == 1);
             }
         });
+
     }
 
     public void tearDown() {
-
     }
-
-
-
-
 }

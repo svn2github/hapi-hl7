@@ -32,17 +32,10 @@
 package ca.uhn.hunit.swing.ui;
 
 import ca.uhn.hunit.iface.AbstractInterface;
-import ca.uhn.hunit.iface.JmsInterfaceImpl;
 
-import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
 import ca.uhn.hunit.msg.AbstractMessage;
-import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.swing.controller.ctx.AbstractContextController;
-import ca.uhn.hunit.swing.controller.ctx.Hl7V2MessageEditorController;
-import ca.uhn.hunit.swing.controller.ctx.JmsInterfaceContextController;
-import ca.uhn.hunit.swing.controller.ctx.MllpHl7v2InterfaceEditorContextController;
 import ca.uhn.hunit.swing.controller.SwingRunnerController;
-import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.swing.model.InterfaceTreeNode;
 import ca.uhn.hunit.swing.model.InterfacesTreeRenderer;
 import ca.uhn.hunit.swing.model.MessageTreeNode;
@@ -53,9 +46,6 @@ import ca.uhn.hunit.test.TestImpl;
 import java.awt.BorderLayout;
 import java.util.Enumeration;
 import javax.swing.JPanel;
-import javax.swing.LookAndFeel;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -70,23 +60,19 @@ public class SwingRunner extends javax.swing.JFrame {
 
     private TestBatteryImpl myBattery;
     private final SwingRunnerController myController;
-    private final MyTreeModel myTreeModel;
+    private MyTreeModel myTreeModel;
 
     /** Creates new form SwingRunner
      * @param theBatteryImpl */
     public SwingRunner(SwingRunnerController theController, TestBatteryImpl theBatteryImpl) {
-        this.myBattery = theBatteryImpl;
         this.myController = theController;
 
         initComponents();
+        setBattery(theBatteryImpl);
 
-        myTreeModel = new MyTreeModel(myBattery);
-        myTestTree.setModel(myTreeModel);
         myTestTree.setCellRenderer(new InterfacesTreeRenderer());
         
         ((BasicSplitPaneUI) myOuterSplitPane.getUI()).getDivider().setBorder(null);
-
-        expandTreeModel(myTreeModel.getBatteryRoot());
 
     }
 
@@ -102,6 +88,9 @@ public class SwingRunner extends javax.swing.JFrame {
         myAddPopupMenu = new javax.swing.JPopupMenu();
         myAddTestMenu = new javax.swing.JMenu();
         myAddTestEmptyMenuItem = new javax.swing.JMenuItem();
+        myAddInterfaceMenu = new javax.swing.JMenu();
+        myAddMllpHl7v2InterfaceMenu = new javax.swing.JMenuItem();
+        myAddJmsInterfaceMenu = new javax.swing.JMenuItem();
         myAddMessageMenu = new javax.swing.JMenu();
         myAddMessageHl7V2 = new javax.swing.JMenuItem();
         myAddMessageXml = new javax.swing.JMenuItem();
@@ -120,6 +109,9 @@ public class SwingRunner extends javax.swing.JFrame {
         myTestContextPanel = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         myFileMenu = new javax.swing.JMenu();
+        myOpenMenuItem = new javax.swing.JMenuItem();
+        mySaveMenuItem = new javax.swing.JMenuItem();
+        mySaveAsMenuItem = new javax.swing.JMenuItem();
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("ca/uhn/hunit/l10n/UiStrings"); // NOI18N
         myAddTestMenu.setText(bundle.getString("batterylist.buttons.add.test")); // NOI18N
@@ -128,6 +120,21 @@ public class SwingRunner extends javax.swing.JFrame {
         myAddTestMenu.add(myAddTestEmptyMenuItem);
 
         myAddPopupMenu.add(myAddTestMenu);
+
+        myAddInterfaceMenu.setText(bundle.getString("batterylist.buttons.add.interface")); // NOI18N
+
+        myAddMllpHl7v2InterfaceMenu.setText(bundle.getString("batterylist.buttons.add.interface.mllp.hl7v2")); // NOI18N
+        myAddMllpHl7v2InterfaceMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myAddMllpHl7v2InterfaceMenuActionPerformed(evt);
+            }
+        });
+        myAddInterfaceMenu.add(myAddMllpHl7v2InterfaceMenu);
+
+        myAddJmsInterfaceMenu.setText(bundle.getString("batterylist.buttons.add.interface.jms")); // NOI18N
+        myAddInterfaceMenu.add(myAddJmsInterfaceMenu);
+
+        myAddPopupMenu.add(myAddInterfaceMenu);
 
         myAddMessageMenu.setText(bundle.getString("batterylist.buttons.add.message")); // NOI18N
 
@@ -158,6 +165,11 @@ public class SwingRunner extends javax.swing.JFrame {
         myButtonOpen.setFocusable(false);
         myButtonOpen.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         myButtonOpen.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        myButtonOpen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myButtonOpenActionPerformed(evt);
+            }
+        });
         jToolBar1.add(myButtonOpen);
 
         myButtonSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ca/uhn/hunit/ui/resources/images/save.png"))); // NOI18N
@@ -165,6 +177,11 @@ public class SwingRunner extends javax.swing.JFrame {
         myButtonSave.setFocusable(false);
         myButtonSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         myButtonSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        myButtonSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myButtonSaveActionPerformed(evt);
+            }
+        });
         jToolBar1.add(myButtonSave);
         jToolBar1.add(jSeparator2);
 
@@ -235,6 +252,38 @@ public class SwingRunner extends javax.swing.JFrame {
 
         myFileMenu.setMnemonic('F');
         myFileMenu.setText("File");
+
+        myOpenMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ca/uhn/hunit/ui/resources/images/open.png"))); // NOI18N
+        myOpenMenuItem.setMnemonic('o');
+        myOpenMenuItem.setText(bundle.getString("toolbar.open")); // NOI18N
+        myOpenMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myOpenMenuItemActionPerformed(evt);
+            }
+        });
+        myFileMenu.add(myOpenMenuItem);
+
+        mySaveMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+        mySaveMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ca/uhn/hunit/ui/resources/images/save.png"))); // NOI18N
+        mySaveMenuItem.setMnemonic('s');
+        mySaveMenuItem.setText(bundle.getString("toolbar.save")); // NOI18N
+        mySaveMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mySaveMenuItemActionPerformed(evt);
+            }
+        });
+        myFileMenu.add(mySaveMenuItem);
+
+        mySaveAsMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ca/uhn/hunit/ui/resources/images/save.png"))); // NOI18N
+        mySaveAsMenuItem.setMnemonic('v');
+        mySaveAsMenuItem.setText(bundle.getString("toolbar.saveas")); // NOI18N
+        mySaveAsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mySaveAsMenuItemActionPerformed(evt);
+            }
+        });
+        myFileMenu.add(mySaveAsMenuItem);
+
         jMenuBar1.add(myFileMenu);
 
         setJMenuBar(jMenuBar1);
@@ -295,6 +344,30 @@ public class SwingRunner extends javax.swing.JFrame {
         myController.addMessageXml();
     }//GEN-LAST:event_myAddMessageXmlActionPerformed
 
+    private void myAddMllpHl7v2InterfaceMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myAddMllpHl7v2InterfaceMenuActionPerformed
+        myController.addInterfaceMllpHl7v2();
+    }//GEN-LAST:event_myAddMllpHl7v2InterfaceMenuActionPerformed
+
+    private void myButtonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myButtonSaveActionPerformed
+        myController.save();
+    }//GEN-LAST:event_myButtonSaveActionPerformed
+
+    private void mySaveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mySaveAsMenuItemActionPerformed
+        myController.saveAs();
+    }//GEN-LAST:event_mySaveAsMenuItemActionPerformed
+
+    private void myButtonOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myButtonOpenActionPerformed
+        myController.open();
+    }//GEN-LAST:event_myButtonOpenActionPerformed
+
+    private void mySaveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mySaveMenuItemActionPerformed
+        myController.save();
+    }//GEN-LAST:event_mySaveMenuItemActionPerformed
+
+    private void myOpenMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myOpenMenuItemActionPerformed
+        myController.open();
+    }//GEN-LAST:event_myOpenMenuItemActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
@@ -304,9 +377,12 @@ public class SwingRunner extends javax.swing.JFrame {
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JButton myAddButton;
+    private javax.swing.JMenu myAddInterfaceMenu;
+    private javax.swing.JMenuItem myAddJmsInterfaceMenu;
     private javax.swing.JMenuItem myAddMessageHl7V2;
     private javax.swing.JMenu myAddMessageMenu;
     private javax.swing.JMenuItem myAddMessageXml;
+    private javax.swing.JMenuItem myAddMllpHl7v2InterfaceMenu;
     private javax.swing.JPopupMenu myAddPopupMenu;
     private javax.swing.JMenuItem myAddTestEmptyMenuItem;
     private javax.swing.JMenu myAddTestMenu;
@@ -314,7 +390,10 @@ public class SwingRunner extends javax.swing.JFrame {
     private javax.swing.JButton myButtonSave;
     private javax.swing.JButton myExecuteButton;
     private javax.swing.JMenu myFileMenu;
+    private javax.swing.JMenuItem myOpenMenuItem;
     private javax.swing.JSplitPane myOuterSplitPane;
+    private javax.swing.JMenuItem mySaveAsMenuItem;
+    private javax.swing.JMenuItem mySaveMenuItem;
     private javax.swing.JPanel myTestContextPanel;
     private javax.swing.JTree myTestTree;
     // End of variables declaration//GEN-END:variables
@@ -331,8 +410,15 @@ public class SwingRunner extends javax.swing.JFrame {
     private void expandTreeModel(TreeNode root) {
         myTestTree.expandPath(new TreePath(myTreeModel.getPathToRoot(root)));
 
-        for (Enumeration enumeration = root.children(); enumeration.hasMoreElements(); ) {
+        for (Enumeration<?> enumeration = root.children(); enumeration.hasMoreElements(); ) {
             expandTreeModel((TreeNode) enumeration.nextElement());
         }
+    }
+
+    public void setBattery(TestBatteryImpl theBatteryImpl) {
+        this.myBattery = theBatteryImpl;
+        myTreeModel = new MyTreeModel(myBattery);
+        myTestTree.setModel(myTreeModel);
+        expandTreeModel(myTreeModel.getBatteryRoot());
     }
 }

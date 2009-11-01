@@ -24,6 +24,7 @@ package ca.uhn.hunit.swing.controller.ctx;
 
 import ca.uhn.hunit.msg.XmlMessageImpl;
 import ca.uhn.hunit.swing.ui.msg.XmlMessageEditorForm;
+import ca.uhn.hunit.util.log.ILogProvider;
 
 /**
  *
@@ -34,7 +35,9 @@ public class XmlMessageEditorController extends AbstractMessageEditorController<
     private final XmlMessageImpl myMessage;
 
 
-    public XmlMessageEditorController(XmlMessageImpl theMessage) {
+    public XmlMessageEditorController(ILogProvider theLog, XmlMessageImpl theMessage) {
+        super(theLog);
+
         myView = new XmlMessageEditorForm();
         myMessage = theMessage;
 

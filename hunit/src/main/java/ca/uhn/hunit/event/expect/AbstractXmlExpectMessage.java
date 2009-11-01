@@ -43,26 +43,29 @@ import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.msg.XmlMessageImpl;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.XMLExpectMessage;
 
 /**
  * Abstract test event to expect an XML message
  */
-public abstract class AbstractXmlExpectMessage extends AbstractExpectMessage<Document> {
+public abstract class AbstractXmlExpectMessage extends AbstractExpectMessage<XmlMessageImpl> {
 
     private final DocumentBuilderFactory myParserFactory;
+    private Boolean myValidateMessage;
 
     public AbstractXmlExpectMessage(TestImpl theTest, XMLExpectMessage theConfig) throws ConfigurationException {
         super(theTest, theConfig);
 
         myParserFactory = DocumentBuilderFactory.newInstance();
-        Boolean validateMessage = theConfig.isValidateMessageUsingDTD();
-        if (validateMessage == null) {
-            validateMessage = false;
+        myValidateMessage = theConfig.isValidateMessageUsingDTD();
+        if (myValidateMessage == null) {
+            myValidateMessage = false;
         }
-        myParserFactory.setValidating(validateMessage);
+        myParserFactory.setValidating(myValidateMessage);
 
     }
 
@@ -92,6 +95,13 @@ public abstract class AbstractXmlExpectMessage extends AbstractExpectMessage<Doc
      * Subclasses must override this method to validate the message received
      */
     protected abstract void validateMessage(TestMessage<Document> parsedMessage) throws TestFailureException;
+
+    public Event exportConfig(XMLExpectMessage theConfig) {
+        super.exportConfig(theConfig);
+        theConfig.setValidateMessageUsingDTD(myValidateMessage);
+        return theConfig;
+    }
+
 
     private class MyErrorHandler implements ErrorHandler {
         private final ExecutionContext myCtx;

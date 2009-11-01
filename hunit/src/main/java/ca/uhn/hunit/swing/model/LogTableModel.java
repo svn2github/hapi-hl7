@@ -99,7 +99,7 @@ public class LogTableModel extends AbstractTableModel implements ILogListener {
             case COLUMN_TIME: return event.getEventTime();
             case COLUMN_LEVEL: return event.getLogLevel();
             case COLUMN_SOURCE: return event.getModelObject();
-            case COLUMN_MESSAGE: return event.getMessage();
+            case COLUMN_MESSAGE: return event;
             default: throw new IllegalArgumentException("" + columnIndex);
         }
     }

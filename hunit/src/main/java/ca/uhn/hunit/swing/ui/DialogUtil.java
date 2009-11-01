@@ -26,7 +26,7 @@
 
 package ca.uhn.hunit.swing.ui;
 
-import ca.uhn.hunit.l10n.Strings;
+import java.awt.Component;
 import javax.swing.JOptionPane;
 
 /**
@@ -35,9 +35,13 @@ import javax.swing.JOptionPane;
  */
 public class DialogUtil {
 
-    public static void showErrorMessage(String theMessageBundleKey) {
-        String message = Strings.getInstance().getString(theMessageBundleKey);
-        JOptionPane.showInternalInputDialog(null, message, "hUnit", JOptionPane.ERROR_MESSAGE);
+    public static void showErrorMessage(Component theParent, String theMessage) {
+        JOptionPane.showMessageDialog(theParent, theMessage, "hUnit", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public static boolean showOkCancelDialog(Component theParent, String message) {
+        int choice = JOptionPane.showConfirmDialog(theParent, message, "hUnit", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+        return (choice == JOptionPane.OK_OPTION);
     }
 
 }

@@ -34,13 +34,10 @@ import ca.uhn.hunit.xsd.ExpectNoMessage;
  * TODO: add!
  * 
  * @author <a href="mailto:james.agnew@uhn.on.ca">James Agnew</a>
- * @version $Revision: 1.2 $ updated on $Date: 2009-10-19 13:37:27 $ by $Author: jamesagnew $
+ * @version $Revision: 1.3 $ updated on $Date: 2009-11-01 22:31:03 $ by $Author: jamesagnew $
  */
 public class ExpectNoMessageImpl extends AbstractExpect
 {
-
-    private long myReceiveTimeout;
-
 
     /**
      * @param theBattery
@@ -50,9 +47,6 @@ public class ExpectNoMessageImpl extends AbstractExpect
      */
     public ExpectNoMessageImpl(TestImpl theTest, ExpectNoMessage theConfig) throws ConfigurationException {
         super(theTest, theConfig);
-        
-        Long receiveTimeout = theConfig.getReceiveTimeoutMillis();
-        myReceiveTimeout = receiveTimeout != null ? receiveTimeout : 120000L;
     }
 
 
@@ -62,11 +56,22 @@ public class ExpectNoMessageImpl extends AbstractExpect
     @Override
     public void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException {
         
-        TestMessage message = getInterface().receiveMessage(getTest(), theCtx, myReceiveTimeout);
+        TestMessage<?> message = getInterface().receiveMessage(getTest(), theCtx, getReceiveTimeout());
         if (message != null) {
             throw new UnexpectedMessageException(getTest(), message, "Unexpected message received");
         }
         
+    }
+
+
+    public Event exportConfig(ExpectNoMessage theConfig) {
+        super.exportConfig(theConfig);
+        return theConfig;
+    }
+
+    @Override
+    public ExpectNoMessage exportConfigToXml() {
+        return (ExpectNoMessage) exportConfig(new ExpectNoMessage());
     }
 
 }

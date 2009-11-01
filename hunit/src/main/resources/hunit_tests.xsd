@@ -297,7 +297,6 @@
 		<complexContent>
 			<extension base="tns:XMLExpectMessage">
 				<sequence>
-					<element name="specificMessage" minOccurs="1" maxOccurs="1" type="tns:MessageSource"/>
 				</sequence>
 			</extension>
 		</complexContent>

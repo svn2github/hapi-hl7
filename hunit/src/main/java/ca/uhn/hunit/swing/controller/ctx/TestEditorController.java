@@ -28,6 +28,7 @@ package ca.uhn.hunit.swing.controller.ctx;
 
 import ca.uhn.hunit.swing.ui.tests.TestEditorForm;
 import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.util.log.ILogProvider;
 
 /**
  *
@@ -37,7 +38,9 @@ public class TestEditorController extends AbstractContextController<TestEditorFo
     private final TestImpl myTest;
     private final TestEditorForm myTestEditorForm;
 
-    public TestEditorController(TestImpl theTest) {
+    public TestEditorController(ILogProvider theLog, TestImpl theTest) {
+        super(theLog);
+
         myTest = theTest;
 
         myTestEditorForm = new TestEditorForm();
