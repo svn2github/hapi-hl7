@@ -1,30 +1,9 @@
-/**
- *
- * The contents of this file are subject to the Mozilla Public License Version 1.1
- * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
- * specific language governing rights and limitations under the License.
- *
- * The Initial Developer of the Original Code is University Health Network. Copyright (C)
- * 2001.  All Rights Reserved.
- *
- * Alternatively, the contents of this file may be used under the terms of the
- * GNU General Public License (the  "GPL"), in which case the provisions of the GPL are
- * applicable instead of those above.  If you wish to allow use of your version of this
- * file only under the terms of the GPL and not to allow others to use your version
- * of this file under the MPL, indicate your decision by deleting  the provisions above
- * and replace  them with the notice and other provisions required by the GPL License.
- * If you do not delete the provisions above, a recipient may use your version of
- * this file under either the MPL or the GPL.
- */
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
 
-package ca.uhn.hunit.swing.ui.event.expect;
+package ca.uhn.hunit.swing.ui.event;
 
 import java.beans.*;
 
@@ -32,12 +11,12 @@ import java.beans.*;
  *
  * @author James
  */
-public class BaseEventEditorFormBeanInfo extends SimpleBeanInfo {
+public class BaseSpecificMessageEditorFormBeanInfo extends SimpleBeanInfo {
 
     // Bean descriptor//GEN-FIRST:BeanDescriptor
     /*lazy BeanDescriptor*/
     private static BeanDescriptor getBdescriptor(){
-        BeanDescriptor beanDescriptor = new BeanDescriptor  ( ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class , null ); // NOI18N//GEN-HEADEREND:BeanDescriptor
+        BeanDescriptor beanDescriptor = new BeanDescriptor  ( ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class , null ); // NOI18N//GEN-HEADEREND:BeanDescriptor
 
     // Here you can add code for customizing the BeanDescriptor.
 
@@ -153,107 +132,107 @@ public class BaseEventEditorFormBeanInfo extends SimpleBeanInfo {
         PropertyDescriptor[] properties = new PropertyDescriptor[101];
     
         try {
-            properties[PROPERTY_accessibleContext] = new PropertyDescriptor ( "accessibleContext", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getAccessibleContext", null ); // NOI18N
-            properties[PROPERTY_actionMap] = new PropertyDescriptor ( "actionMap", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getActionMap", "setActionMap" ); // NOI18N
-            properties[PROPERTY_alignmentX] = new PropertyDescriptor ( "alignmentX", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getAlignmentX", "setAlignmentX" ); // NOI18N
-            properties[PROPERTY_alignmentY] = new PropertyDescriptor ( "alignmentY", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getAlignmentY", "setAlignmentY" ); // NOI18N
-            properties[PROPERTY_ancestorListeners] = new PropertyDescriptor ( "ancestorListeners", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getAncestorListeners", null ); // NOI18N
-            properties[PROPERTY_autoscrolls] = new PropertyDescriptor ( "autoscrolls", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getAutoscrolls", "setAutoscrolls" ); // NOI18N
-            properties[PROPERTY_background] = new PropertyDescriptor ( "background", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getBackground", "setBackground" ); // NOI18N
-            properties[PROPERTY_backgroundSet] = new PropertyDescriptor ( "backgroundSet", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isBackgroundSet", null ); // NOI18N
-            properties[PROPERTY_baselineResizeBehavior] = new PropertyDescriptor ( "baselineResizeBehavior", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getBaselineResizeBehavior", null ); // NOI18N
-            properties[PROPERTY_border] = new PropertyDescriptor ( "border", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getBorder", "setBorder" ); // NOI18N
-            properties[PROPERTY_bounds] = new PropertyDescriptor ( "bounds", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getBounds", "setBounds" ); // NOI18N
-            properties[PROPERTY_colorModel] = new PropertyDescriptor ( "colorModel", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getColorModel", null ); // NOI18N
-            properties[PROPERTY_component] = new IndexedPropertyDescriptor ( "component", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, null, null, "getComponent", null ); // NOI18N
-            properties[PROPERTY_componentCount] = new PropertyDescriptor ( "componentCount", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getComponentCount", null ); // NOI18N
-            properties[PROPERTY_componentListeners] = new PropertyDescriptor ( "componentListeners", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getComponentListeners", null ); // NOI18N
-            properties[PROPERTY_componentOrientation] = new PropertyDescriptor ( "componentOrientation", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getComponentOrientation", "setComponentOrientation" ); // NOI18N
-            properties[PROPERTY_componentPopupMenu] = new PropertyDescriptor ( "componentPopupMenu", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getComponentPopupMenu", "setComponentPopupMenu" ); // NOI18N
-            properties[PROPERTY_components] = new PropertyDescriptor ( "components", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getComponents", null ); // NOI18N
-            properties[PROPERTY_containerListeners] = new PropertyDescriptor ( "containerListeners", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getContainerListeners", null ); // NOI18N
-            properties[PROPERTY_cursor] = new PropertyDescriptor ( "cursor", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getCursor", "setCursor" ); // NOI18N
-            properties[PROPERTY_cursorSet] = new PropertyDescriptor ( "cursorSet", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isCursorSet", null ); // NOI18N
-            properties[PROPERTY_debugGraphicsOptions] = new PropertyDescriptor ( "debugGraphicsOptions", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getDebugGraphicsOptions", "setDebugGraphicsOptions" ); // NOI18N
-            properties[PROPERTY_displayable] = new PropertyDescriptor ( "displayable", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isDisplayable", null ); // NOI18N
-            properties[PROPERTY_doubleBuffered] = new PropertyDescriptor ( "doubleBuffered", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isDoubleBuffered", "setDoubleBuffered" ); // NOI18N
-            properties[PROPERTY_dropTarget] = new PropertyDescriptor ( "dropTarget", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getDropTarget", "setDropTarget" ); // NOI18N
-            properties[PROPERTY_enabled] = new PropertyDescriptor ( "enabled", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isEnabled", "setEnabled" ); // NOI18N
-            properties[PROPERTY_focusable] = new PropertyDescriptor ( "focusable", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isFocusable", "setFocusable" ); // NOI18N
-            properties[PROPERTY_focusCycleRoot] = new PropertyDescriptor ( "focusCycleRoot", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isFocusCycleRoot", "setFocusCycleRoot" ); // NOI18N
-            properties[PROPERTY_focusCycleRootAncestor] = new PropertyDescriptor ( "focusCycleRootAncestor", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getFocusCycleRootAncestor", null ); // NOI18N
-            properties[PROPERTY_focusListeners] = new PropertyDescriptor ( "focusListeners", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getFocusListeners", null ); // NOI18N
-            properties[PROPERTY_focusOwner] = new PropertyDescriptor ( "focusOwner", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isFocusOwner", null ); // NOI18N
-            properties[PROPERTY_focusTraversable] = new PropertyDescriptor ( "focusTraversable", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isFocusTraversable", null ); // NOI18N
-            properties[PROPERTY_focusTraversalKeys] = new IndexedPropertyDescriptor ( "focusTraversalKeys", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, null, null, null, "setFocusTraversalKeys" ); // NOI18N
-            properties[PROPERTY_focusTraversalKeysEnabled] = new PropertyDescriptor ( "focusTraversalKeysEnabled", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getFocusTraversalKeysEnabled", "setFocusTraversalKeysEnabled" ); // NOI18N
-            properties[PROPERTY_focusTraversalPolicy] = new PropertyDescriptor ( "focusTraversalPolicy", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getFocusTraversalPolicy", "setFocusTraversalPolicy" ); // NOI18N
-            properties[PROPERTY_focusTraversalPolicyProvider] = new PropertyDescriptor ( "focusTraversalPolicyProvider", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isFocusTraversalPolicyProvider", "setFocusTraversalPolicyProvider" ); // NOI18N
-            properties[PROPERTY_focusTraversalPolicySet] = new PropertyDescriptor ( "focusTraversalPolicySet", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isFocusTraversalPolicySet", null ); // NOI18N
-            properties[PROPERTY_font] = new PropertyDescriptor ( "font", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getFont", "setFont" ); // NOI18N
-            properties[PROPERTY_fontSet] = new PropertyDescriptor ( "fontSet", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isFontSet", null ); // NOI18N
-            properties[PROPERTY_foreground] = new PropertyDescriptor ( "foreground", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getForeground", "setForeground" ); // NOI18N
-            properties[PROPERTY_foregroundSet] = new PropertyDescriptor ( "foregroundSet", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isForegroundSet", null ); // NOI18N
-            properties[PROPERTY_graphics] = new PropertyDescriptor ( "graphics", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getGraphics", null ); // NOI18N
-            properties[PROPERTY_graphicsConfiguration] = new PropertyDescriptor ( "graphicsConfiguration", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getGraphicsConfiguration", null ); // NOI18N
-            properties[PROPERTY_height] = new PropertyDescriptor ( "height", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getHeight", null ); // NOI18N
-            properties[PROPERTY_hierarchyBoundsListeners] = new PropertyDescriptor ( "hierarchyBoundsListeners", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getHierarchyBoundsListeners", null ); // NOI18N
-            properties[PROPERTY_hierarchyListeners] = new PropertyDescriptor ( "hierarchyListeners", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getHierarchyListeners", null ); // NOI18N
-            properties[PROPERTY_ignoreRepaint] = new PropertyDescriptor ( "ignoreRepaint", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getIgnoreRepaint", "setIgnoreRepaint" ); // NOI18N
-            properties[PROPERTY_inheritsPopupMenu] = new PropertyDescriptor ( "inheritsPopupMenu", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getInheritsPopupMenu", "setInheritsPopupMenu" ); // NOI18N
-            properties[PROPERTY_inputContext] = new PropertyDescriptor ( "inputContext", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getInputContext", null ); // NOI18N
-            properties[PROPERTY_inputMap] = new PropertyDescriptor ( "inputMap", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getInputMap", null ); // NOI18N
-            properties[PROPERTY_inputMethodListeners] = new PropertyDescriptor ( "inputMethodListeners", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getInputMethodListeners", null ); // NOI18N
-            properties[PROPERTY_inputMethodRequests] = new PropertyDescriptor ( "inputMethodRequests", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getInputMethodRequests", null ); // NOI18N
-            properties[PROPERTY_inputVerifier] = new PropertyDescriptor ( "inputVerifier", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getInputVerifier", "setInputVerifier" ); // NOI18N
-            properties[PROPERTY_insets] = new PropertyDescriptor ( "insets", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getInsets", null ); // NOI18N
-            properties[PROPERTY_keyListeners] = new PropertyDescriptor ( "keyListeners", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getKeyListeners", null ); // NOI18N
-            properties[PROPERTY_layout] = new PropertyDescriptor ( "layout", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getLayout", "setLayout" ); // NOI18N
-            properties[PROPERTY_lightweight] = new PropertyDescriptor ( "lightweight", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isLightweight", null ); // NOI18N
-            properties[PROPERTY_locale] = new PropertyDescriptor ( "locale", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getLocale", "setLocale" ); // NOI18N
-            properties[PROPERTY_location] = new PropertyDescriptor ( "location", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getLocation", "setLocation" ); // NOI18N
-            properties[PROPERTY_locationOnScreen] = new PropertyDescriptor ( "locationOnScreen", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getLocationOnScreen", null ); // NOI18N
-            properties[PROPERTY_managingFocus] = new PropertyDescriptor ( "managingFocus", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isManagingFocus", null ); // NOI18N
-            properties[PROPERTY_maximumSize] = new PropertyDescriptor ( "maximumSize", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getMaximumSize", "setMaximumSize" ); // NOI18N
-            properties[PROPERTY_maximumSizeSet] = new PropertyDescriptor ( "maximumSizeSet", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isMaximumSizeSet", null ); // NOI18N
-            properties[PROPERTY_minimumSize] = new PropertyDescriptor ( "minimumSize", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getMinimumSize", "setMinimumSize" ); // NOI18N
-            properties[PROPERTY_minimumSizeSet] = new PropertyDescriptor ( "minimumSizeSet", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isMinimumSizeSet", null ); // NOI18N
-            properties[PROPERTY_mouseListeners] = new PropertyDescriptor ( "mouseListeners", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getMouseListeners", null ); // NOI18N
-            properties[PROPERTY_mouseMotionListeners] = new PropertyDescriptor ( "mouseMotionListeners", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getMouseMotionListeners", null ); // NOI18N
-            properties[PROPERTY_mousePosition] = new PropertyDescriptor ( "mousePosition", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getMousePosition", null ); // NOI18N
-            properties[PROPERTY_mouseWheelListeners] = new PropertyDescriptor ( "mouseWheelListeners", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getMouseWheelListeners", null ); // NOI18N
-            properties[PROPERTY_name] = new PropertyDescriptor ( "name", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getName", "setName" ); // NOI18N
-            properties[PROPERTY_nextFocusableComponent] = new PropertyDescriptor ( "nextFocusableComponent", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getNextFocusableComponent", "setNextFocusableComponent" ); // NOI18N
-            properties[PROPERTY_opaque] = new PropertyDescriptor ( "opaque", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isOpaque", "setOpaque" ); // NOI18N
-            properties[PROPERTY_optimizedDrawingEnabled] = new PropertyDescriptor ( "optimizedDrawingEnabled", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isOptimizedDrawingEnabled", null ); // NOI18N
-            properties[PROPERTY_paintingForPrint] = new PropertyDescriptor ( "paintingForPrint", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isPaintingForPrint", null ); // NOI18N
-            properties[PROPERTY_paintingTile] = new PropertyDescriptor ( "paintingTile", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isPaintingTile", null ); // NOI18N
-            properties[PROPERTY_parent] = new PropertyDescriptor ( "parent", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getParent", null ); // NOI18N
-            properties[PROPERTY_peer] = new PropertyDescriptor ( "peer", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getPeer", null ); // NOI18N
-            properties[PROPERTY_preferredSize] = new PropertyDescriptor ( "preferredSize", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getPreferredSize", "setPreferredSize" ); // NOI18N
-            properties[PROPERTY_preferredSizeSet] = new PropertyDescriptor ( "preferredSizeSet", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isPreferredSizeSet", null ); // NOI18N
-            properties[PROPERTY_propertyChangeListeners] = new PropertyDescriptor ( "propertyChangeListeners", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getPropertyChangeListeners", null ); // NOI18N
-            properties[PROPERTY_registeredKeyStrokes] = new PropertyDescriptor ( "registeredKeyStrokes", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getRegisteredKeyStrokes", null ); // NOI18N
-            properties[PROPERTY_requestFocusEnabled] = new PropertyDescriptor ( "requestFocusEnabled", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isRequestFocusEnabled", "setRequestFocusEnabled" ); // NOI18N
-            properties[PROPERTY_rootPane] = new PropertyDescriptor ( "rootPane", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getRootPane", null ); // NOI18N
-            properties[PROPERTY_showing] = new PropertyDescriptor ( "showing", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isShowing", null ); // NOI18N
-            properties[PROPERTY_size] = new PropertyDescriptor ( "size", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getSize", "setSize" ); // NOI18N
-            properties[PROPERTY_toolkit] = new PropertyDescriptor ( "toolkit", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getToolkit", null ); // NOI18N
-            properties[PROPERTY_toolTipText] = new PropertyDescriptor ( "toolTipText", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getToolTipText", "setToolTipText" ); // NOI18N
-            properties[PROPERTY_topLevelAncestor] = new PropertyDescriptor ( "topLevelAncestor", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getTopLevelAncestor", null ); // NOI18N
-            properties[PROPERTY_transferHandler] = new PropertyDescriptor ( "transferHandler", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getTransferHandler", "setTransferHandler" ); // NOI18N
-            properties[PROPERTY_treeLock] = new PropertyDescriptor ( "treeLock", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getTreeLock", null ); // NOI18N
-            properties[PROPERTY_UI] = new PropertyDescriptor ( "UI", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getUI", "setUI" ); // NOI18N
-            properties[PROPERTY_UIClassID] = new PropertyDescriptor ( "UIClassID", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getUIClassID", null ); // NOI18N
-            properties[PROPERTY_valid] = new PropertyDescriptor ( "valid", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isValid", null ); // NOI18N
-            properties[PROPERTY_validateRoot] = new PropertyDescriptor ( "validateRoot", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isValidateRoot", null ); // NOI18N
-            properties[PROPERTY_verifyInputWhenFocusTarget] = new PropertyDescriptor ( "verifyInputWhenFocusTarget", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getVerifyInputWhenFocusTarget", "setVerifyInputWhenFocusTarget" ); // NOI18N
-            properties[PROPERTY_vetoableChangeListeners] = new PropertyDescriptor ( "vetoableChangeListeners", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getVetoableChangeListeners", null ); // NOI18N
-            properties[PROPERTY_visible] = new PropertyDescriptor ( "visible", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "isVisible", "setVisible" ); // NOI18N
-            properties[PROPERTY_visibleRect] = new PropertyDescriptor ( "visibleRect", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getVisibleRect", null ); // NOI18N
-            properties[PROPERTY_width] = new PropertyDescriptor ( "width", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getWidth", null ); // NOI18N
-            properties[PROPERTY_x] = new PropertyDescriptor ( "x", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getX", null ); // NOI18N
-            properties[PROPERTY_y] = new PropertyDescriptor ( "y", ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "getY", null ); // NOI18N
+            properties[PROPERTY_accessibleContext] = new PropertyDescriptor ( "accessibleContext", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getAccessibleContext", null ); // NOI18N
+            properties[PROPERTY_actionMap] = new PropertyDescriptor ( "actionMap", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getActionMap", "setActionMap" ); // NOI18N
+            properties[PROPERTY_alignmentX] = new PropertyDescriptor ( "alignmentX", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getAlignmentX", "setAlignmentX" ); // NOI18N
+            properties[PROPERTY_alignmentY] = new PropertyDescriptor ( "alignmentY", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getAlignmentY", "setAlignmentY" ); // NOI18N
+            properties[PROPERTY_ancestorListeners] = new PropertyDescriptor ( "ancestorListeners", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getAncestorListeners", null ); // NOI18N
+            properties[PROPERTY_autoscrolls] = new PropertyDescriptor ( "autoscrolls", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getAutoscrolls", "setAutoscrolls" ); // NOI18N
+            properties[PROPERTY_background] = new PropertyDescriptor ( "background", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getBackground", "setBackground" ); // NOI18N
+            properties[PROPERTY_backgroundSet] = new PropertyDescriptor ( "backgroundSet", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isBackgroundSet", null ); // NOI18N
+            properties[PROPERTY_baselineResizeBehavior] = new PropertyDescriptor ( "baselineResizeBehavior", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getBaselineResizeBehavior", null ); // NOI18N
+            properties[PROPERTY_border] = new PropertyDescriptor ( "border", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getBorder", "setBorder" ); // NOI18N
+            properties[PROPERTY_bounds] = new PropertyDescriptor ( "bounds", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getBounds", "setBounds" ); // NOI18N
+            properties[PROPERTY_colorModel] = new PropertyDescriptor ( "colorModel", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getColorModel", null ); // NOI18N
+            properties[PROPERTY_component] = new IndexedPropertyDescriptor ( "component", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, null, null, "getComponent", null ); // NOI18N
+            properties[PROPERTY_componentCount] = new PropertyDescriptor ( "componentCount", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getComponentCount", null ); // NOI18N
+            properties[PROPERTY_componentListeners] = new PropertyDescriptor ( "componentListeners", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getComponentListeners", null ); // NOI18N
+            properties[PROPERTY_componentOrientation] = new PropertyDescriptor ( "componentOrientation", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getComponentOrientation", "setComponentOrientation" ); // NOI18N
+            properties[PROPERTY_componentPopupMenu] = new PropertyDescriptor ( "componentPopupMenu", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getComponentPopupMenu", "setComponentPopupMenu" ); // NOI18N
+            properties[PROPERTY_components] = new PropertyDescriptor ( "components", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getComponents", null ); // NOI18N
+            properties[PROPERTY_containerListeners] = new PropertyDescriptor ( "containerListeners", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getContainerListeners", null ); // NOI18N
+            properties[PROPERTY_cursor] = new PropertyDescriptor ( "cursor", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getCursor", "setCursor" ); // NOI18N
+            properties[PROPERTY_cursorSet] = new PropertyDescriptor ( "cursorSet", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isCursorSet", null ); // NOI18N
+            properties[PROPERTY_debugGraphicsOptions] = new PropertyDescriptor ( "debugGraphicsOptions", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getDebugGraphicsOptions", "setDebugGraphicsOptions" ); // NOI18N
+            properties[PROPERTY_displayable] = new PropertyDescriptor ( "displayable", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isDisplayable", null ); // NOI18N
+            properties[PROPERTY_doubleBuffered] = new PropertyDescriptor ( "doubleBuffered", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isDoubleBuffered", "setDoubleBuffered" ); // NOI18N
+            properties[PROPERTY_dropTarget] = new PropertyDescriptor ( "dropTarget", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getDropTarget", "setDropTarget" ); // NOI18N
+            properties[PROPERTY_enabled] = new PropertyDescriptor ( "enabled", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isEnabled", "setEnabled" ); // NOI18N
+            properties[PROPERTY_focusable] = new PropertyDescriptor ( "focusable", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isFocusable", "setFocusable" ); // NOI18N
+            properties[PROPERTY_focusCycleRoot] = new PropertyDescriptor ( "focusCycleRoot", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isFocusCycleRoot", "setFocusCycleRoot" ); // NOI18N
+            properties[PROPERTY_focusCycleRootAncestor] = new PropertyDescriptor ( "focusCycleRootAncestor", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getFocusCycleRootAncestor", null ); // NOI18N
+            properties[PROPERTY_focusListeners] = new PropertyDescriptor ( "focusListeners", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getFocusListeners", null ); // NOI18N
+            properties[PROPERTY_focusOwner] = new PropertyDescriptor ( "focusOwner", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isFocusOwner", null ); // NOI18N
+            properties[PROPERTY_focusTraversable] = new PropertyDescriptor ( "focusTraversable", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isFocusTraversable", null ); // NOI18N
+            properties[PROPERTY_focusTraversalKeys] = new IndexedPropertyDescriptor ( "focusTraversalKeys", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, null, null, null, "setFocusTraversalKeys" ); // NOI18N
+            properties[PROPERTY_focusTraversalKeysEnabled] = new PropertyDescriptor ( "focusTraversalKeysEnabled", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getFocusTraversalKeysEnabled", "setFocusTraversalKeysEnabled" ); // NOI18N
+            properties[PROPERTY_focusTraversalPolicy] = new PropertyDescriptor ( "focusTraversalPolicy", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getFocusTraversalPolicy", "setFocusTraversalPolicy" ); // NOI18N
+            properties[PROPERTY_focusTraversalPolicyProvider] = new PropertyDescriptor ( "focusTraversalPolicyProvider", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isFocusTraversalPolicyProvider", "setFocusTraversalPolicyProvider" ); // NOI18N
+            properties[PROPERTY_focusTraversalPolicySet] = new PropertyDescriptor ( "focusTraversalPolicySet", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isFocusTraversalPolicySet", null ); // NOI18N
+            properties[PROPERTY_font] = new PropertyDescriptor ( "font", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getFont", "setFont" ); // NOI18N
+            properties[PROPERTY_fontSet] = new PropertyDescriptor ( "fontSet", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isFontSet", null ); // NOI18N
+            properties[PROPERTY_foreground] = new PropertyDescriptor ( "foreground", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getForeground", "setForeground" ); // NOI18N
+            properties[PROPERTY_foregroundSet] = new PropertyDescriptor ( "foregroundSet", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isForegroundSet", null ); // NOI18N
+            properties[PROPERTY_graphics] = new PropertyDescriptor ( "graphics", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getGraphics", null ); // NOI18N
+            properties[PROPERTY_graphicsConfiguration] = new PropertyDescriptor ( "graphicsConfiguration", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getGraphicsConfiguration", null ); // NOI18N
+            properties[PROPERTY_height] = new PropertyDescriptor ( "height", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getHeight", null ); // NOI18N
+            properties[PROPERTY_hierarchyBoundsListeners] = new PropertyDescriptor ( "hierarchyBoundsListeners", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getHierarchyBoundsListeners", null ); // NOI18N
+            properties[PROPERTY_hierarchyListeners] = new PropertyDescriptor ( "hierarchyListeners", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getHierarchyListeners", null ); // NOI18N
+            properties[PROPERTY_ignoreRepaint] = new PropertyDescriptor ( "ignoreRepaint", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getIgnoreRepaint", "setIgnoreRepaint" ); // NOI18N
+            properties[PROPERTY_inheritsPopupMenu] = new PropertyDescriptor ( "inheritsPopupMenu", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getInheritsPopupMenu", "setInheritsPopupMenu" ); // NOI18N
+            properties[PROPERTY_inputContext] = new PropertyDescriptor ( "inputContext", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getInputContext", null ); // NOI18N
+            properties[PROPERTY_inputMap] = new PropertyDescriptor ( "inputMap", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getInputMap", null ); // NOI18N
+            properties[PROPERTY_inputMethodListeners] = new PropertyDescriptor ( "inputMethodListeners", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getInputMethodListeners", null ); // NOI18N
+            properties[PROPERTY_inputMethodRequests] = new PropertyDescriptor ( "inputMethodRequests", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getInputMethodRequests", null ); // NOI18N
+            properties[PROPERTY_inputVerifier] = new PropertyDescriptor ( "inputVerifier", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getInputVerifier", "setInputVerifier" ); // NOI18N
+            properties[PROPERTY_insets] = new PropertyDescriptor ( "insets", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getInsets", null ); // NOI18N
+            properties[PROPERTY_keyListeners] = new PropertyDescriptor ( "keyListeners", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getKeyListeners", null ); // NOI18N
+            properties[PROPERTY_layout] = new PropertyDescriptor ( "layout", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getLayout", "setLayout" ); // NOI18N
+            properties[PROPERTY_lightweight] = new PropertyDescriptor ( "lightweight", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isLightweight", null ); // NOI18N
+            properties[PROPERTY_locale] = new PropertyDescriptor ( "locale", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getLocale", "setLocale" ); // NOI18N
+            properties[PROPERTY_location] = new PropertyDescriptor ( "location", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getLocation", "setLocation" ); // NOI18N
+            properties[PROPERTY_locationOnScreen] = new PropertyDescriptor ( "locationOnScreen", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getLocationOnScreen", null ); // NOI18N
+            properties[PROPERTY_managingFocus] = new PropertyDescriptor ( "managingFocus", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isManagingFocus", null ); // NOI18N
+            properties[PROPERTY_maximumSize] = new PropertyDescriptor ( "maximumSize", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getMaximumSize", "setMaximumSize" ); // NOI18N
+            properties[PROPERTY_maximumSizeSet] = new PropertyDescriptor ( "maximumSizeSet", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isMaximumSizeSet", null ); // NOI18N
+            properties[PROPERTY_minimumSize] = new PropertyDescriptor ( "minimumSize", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getMinimumSize", "setMinimumSize" ); // NOI18N
+            properties[PROPERTY_minimumSizeSet] = new PropertyDescriptor ( "minimumSizeSet", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isMinimumSizeSet", null ); // NOI18N
+            properties[PROPERTY_mouseListeners] = new PropertyDescriptor ( "mouseListeners", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getMouseListeners", null ); // NOI18N
+            properties[PROPERTY_mouseMotionListeners] = new PropertyDescriptor ( "mouseMotionListeners", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getMouseMotionListeners", null ); // NOI18N
+            properties[PROPERTY_mousePosition] = new PropertyDescriptor ( "mousePosition", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getMousePosition", null ); // NOI18N
+            properties[PROPERTY_mouseWheelListeners] = new PropertyDescriptor ( "mouseWheelListeners", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getMouseWheelListeners", null ); // NOI18N
+            properties[PROPERTY_name] = new PropertyDescriptor ( "name", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getName", "setName" ); // NOI18N
+            properties[PROPERTY_nextFocusableComponent] = new PropertyDescriptor ( "nextFocusableComponent", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getNextFocusableComponent", "setNextFocusableComponent" ); // NOI18N
+            properties[PROPERTY_opaque] = new PropertyDescriptor ( "opaque", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isOpaque", "setOpaque" ); // NOI18N
+            properties[PROPERTY_optimizedDrawingEnabled] = new PropertyDescriptor ( "optimizedDrawingEnabled", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isOptimizedDrawingEnabled", null ); // NOI18N
+            properties[PROPERTY_paintingForPrint] = new PropertyDescriptor ( "paintingForPrint", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isPaintingForPrint", null ); // NOI18N
+            properties[PROPERTY_paintingTile] = new PropertyDescriptor ( "paintingTile", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isPaintingTile", null ); // NOI18N
+            properties[PROPERTY_parent] = new PropertyDescriptor ( "parent", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getParent", null ); // NOI18N
+            properties[PROPERTY_peer] = new PropertyDescriptor ( "peer", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getPeer", null ); // NOI18N
+            properties[PROPERTY_preferredSize] = new PropertyDescriptor ( "preferredSize", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getPreferredSize", "setPreferredSize" ); // NOI18N
+            properties[PROPERTY_preferredSizeSet] = new PropertyDescriptor ( "preferredSizeSet", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isPreferredSizeSet", null ); // NOI18N
+            properties[PROPERTY_propertyChangeListeners] = new PropertyDescriptor ( "propertyChangeListeners", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getPropertyChangeListeners", null ); // NOI18N
+            properties[PROPERTY_registeredKeyStrokes] = new PropertyDescriptor ( "registeredKeyStrokes", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getRegisteredKeyStrokes", null ); // NOI18N
+            properties[PROPERTY_requestFocusEnabled] = new PropertyDescriptor ( "requestFocusEnabled", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isRequestFocusEnabled", "setRequestFocusEnabled" ); // NOI18N
+            properties[PROPERTY_rootPane] = new PropertyDescriptor ( "rootPane", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getRootPane", null ); // NOI18N
+            properties[PROPERTY_showing] = new PropertyDescriptor ( "showing", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isShowing", null ); // NOI18N
+            properties[PROPERTY_size] = new PropertyDescriptor ( "size", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getSize", "setSize" ); // NOI18N
+            properties[PROPERTY_toolkit] = new PropertyDescriptor ( "toolkit", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getToolkit", null ); // NOI18N
+            properties[PROPERTY_toolTipText] = new PropertyDescriptor ( "toolTipText", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getToolTipText", "setToolTipText" ); // NOI18N
+            properties[PROPERTY_topLevelAncestor] = new PropertyDescriptor ( "topLevelAncestor", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getTopLevelAncestor", null ); // NOI18N
+            properties[PROPERTY_transferHandler] = new PropertyDescriptor ( "transferHandler", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getTransferHandler", "setTransferHandler" ); // NOI18N
+            properties[PROPERTY_treeLock] = new PropertyDescriptor ( "treeLock", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getTreeLock", null ); // NOI18N
+            properties[PROPERTY_UI] = new PropertyDescriptor ( "UI", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getUI", "setUI" ); // NOI18N
+            properties[PROPERTY_UIClassID] = new PropertyDescriptor ( "UIClassID", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getUIClassID", null ); // NOI18N
+            properties[PROPERTY_valid] = new PropertyDescriptor ( "valid", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isValid", null ); // NOI18N
+            properties[PROPERTY_validateRoot] = new PropertyDescriptor ( "validateRoot", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isValidateRoot", null ); // NOI18N
+            properties[PROPERTY_verifyInputWhenFocusTarget] = new PropertyDescriptor ( "verifyInputWhenFocusTarget", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getVerifyInputWhenFocusTarget", "setVerifyInputWhenFocusTarget" ); // NOI18N
+            properties[PROPERTY_vetoableChangeListeners] = new PropertyDescriptor ( "vetoableChangeListeners", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getVetoableChangeListeners", null ); // NOI18N
+            properties[PROPERTY_visible] = new PropertyDescriptor ( "visible", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "isVisible", "setVisible" ); // NOI18N
+            properties[PROPERTY_visibleRect] = new PropertyDescriptor ( "visibleRect", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getVisibleRect", null ); // NOI18N
+            properties[PROPERTY_width] = new PropertyDescriptor ( "width", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getWidth", null ); // NOI18N
+            properties[PROPERTY_x] = new PropertyDescriptor ( "x", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getX", null ); // NOI18N
+            properties[PROPERTY_y] = new PropertyDescriptor ( "y", ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "getY", null ); // NOI18N
         }
         catch(IntrospectionException e) {
             e.printStackTrace();
@@ -284,19 +263,19 @@ public class BaseEventEditorFormBeanInfo extends SimpleBeanInfo {
         EventSetDescriptor[] eventSets = new EventSetDescriptor[13];
     
         try {
-            eventSets[EVENT_ancestorListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "ancestorListener", javax.swing.event.AncestorListener.class, new String[] {"ancestorAdded", "ancestorRemoved", "ancestorMoved"}, "addAncestorListener", "removeAncestorListener" ); // NOI18N
-            eventSets[EVENT_componentListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "componentListener", java.awt.event.ComponentListener.class, new String[] {"componentResized", "componentMoved", "componentShown", "componentHidden"}, "addComponentListener", "removeComponentListener" ); // NOI18N
-            eventSets[EVENT_containerListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "containerListener", java.awt.event.ContainerListener.class, new String[] {"componentAdded", "componentRemoved"}, "addContainerListener", "removeContainerListener" ); // NOI18N
-            eventSets[EVENT_focusListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "focusListener", java.awt.event.FocusListener.class, new String[] {"focusGained", "focusLost"}, "addFocusListener", "removeFocusListener" ); // NOI18N
-            eventSets[EVENT_hierarchyBoundsListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "hierarchyBoundsListener", java.awt.event.HierarchyBoundsListener.class, new String[] {"ancestorMoved", "ancestorResized"}, "addHierarchyBoundsListener", "removeHierarchyBoundsListener" ); // NOI18N
-            eventSets[EVENT_hierarchyListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "hierarchyListener", java.awt.event.HierarchyListener.class, new String[] {"hierarchyChanged"}, "addHierarchyListener", "removeHierarchyListener" ); // NOI18N
-            eventSets[EVENT_inputMethodListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "inputMethodListener", java.awt.event.InputMethodListener.class, new String[] {"inputMethodTextChanged", "caretPositionChanged"}, "addInputMethodListener", "removeInputMethodListener" ); // NOI18N
-            eventSets[EVENT_keyListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "keyListener", java.awt.event.KeyListener.class, new String[] {"keyTyped", "keyPressed", "keyReleased"}, "addKeyListener", "removeKeyListener" ); // NOI18N
-            eventSets[EVENT_mouseListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "mouseListener", java.awt.event.MouseListener.class, new String[] {"mouseClicked", "mousePressed", "mouseReleased", "mouseEntered", "mouseExited"}, "addMouseListener", "removeMouseListener" ); // NOI18N
-            eventSets[EVENT_mouseMotionListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "mouseMotionListener", java.awt.event.MouseMotionListener.class, new String[] {"mouseDragged", "mouseMoved"}, "addMouseMotionListener", "removeMouseMotionListener" ); // NOI18N
-            eventSets[EVENT_mouseWheelListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "mouseWheelListener", java.awt.event.MouseWheelListener.class, new String[] {"mouseWheelMoved"}, "addMouseWheelListener", "removeMouseWheelListener" ); // NOI18N
-            eventSets[EVENT_propertyChangeListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "propertyChangeListener", java.beans.PropertyChangeListener.class, new String[] {"propertyChange"}, "addPropertyChangeListener", "removePropertyChangeListener" ); // NOI18N
-            eventSets[EVENT_vetoableChangeListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm.class, "vetoableChangeListener", java.beans.VetoableChangeListener.class, new String[] {"vetoableChange"}, "addVetoableChangeListener", "removeVetoableChangeListener" ); // NOI18N
+            eventSets[EVENT_ancestorListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "ancestorListener", javax.swing.event.AncestorListener.class, new String[] {"ancestorAdded", "ancestorRemoved", "ancestorMoved"}, "addAncestorListener", "removeAncestorListener" ); // NOI18N
+            eventSets[EVENT_componentListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "componentListener", java.awt.event.ComponentListener.class, new String[] {"componentResized", "componentMoved", "componentShown", "componentHidden"}, "addComponentListener", "removeComponentListener" ); // NOI18N
+            eventSets[EVENT_containerListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "containerListener", java.awt.event.ContainerListener.class, new String[] {"componentAdded", "componentRemoved"}, "addContainerListener", "removeContainerListener" ); // NOI18N
+            eventSets[EVENT_focusListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "focusListener", java.awt.event.FocusListener.class, new String[] {"focusGained", "focusLost"}, "addFocusListener", "removeFocusListener" ); // NOI18N
+            eventSets[EVENT_hierarchyBoundsListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "hierarchyBoundsListener", java.awt.event.HierarchyBoundsListener.class, new String[] {"ancestorMoved", "ancestorResized"}, "addHierarchyBoundsListener", "removeHierarchyBoundsListener" ); // NOI18N
+            eventSets[EVENT_hierarchyListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "hierarchyListener", java.awt.event.HierarchyListener.class, new String[] {"hierarchyChanged"}, "addHierarchyListener", "removeHierarchyListener" ); // NOI18N
+            eventSets[EVENT_inputMethodListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "inputMethodListener", java.awt.event.InputMethodListener.class, new String[] {"inputMethodTextChanged", "caretPositionChanged"}, "addInputMethodListener", "removeInputMethodListener" ); // NOI18N
+            eventSets[EVENT_keyListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "keyListener", java.awt.event.KeyListener.class, new String[] {"keyTyped", "keyPressed", "keyReleased"}, "addKeyListener", "removeKeyListener" ); // NOI18N
+            eventSets[EVENT_mouseListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "mouseListener", java.awt.event.MouseListener.class, new String[] {"mouseClicked", "mousePressed", "mouseReleased", "mouseEntered", "mouseExited"}, "addMouseListener", "removeMouseListener" ); // NOI18N
+            eventSets[EVENT_mouseMotionListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "mouseMotionListener", java.awt.event.MouseMotionListener.class, new String[] {"mouseDragged", "mouseMoved"}, "addMouseMotionListener", "removeMouseMotionListener" ); // NOI18N
+            eventSets[EVENT_mouseWheelListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "mouseWheelListener", java.awt.event.MouseWheelListener.class, new String[] {"mouseWheelMoved"}, "addMouseWheelListener", "removeMouseWheelListener" ); // NOI18N
+            eventSets[EVENT_propertyChangeListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "propertyChangeListener", java.beans.PropertyChangeListener.class, new String[] {"propertyChange"}, "addPropertyChangeListener", "removePropertyChangeListener" ); // NOI18N
+            eventSets[EVENT_vetoableChangeListener] = new EventSetDescriptor ( ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class, "vetoableChangeListener", java.beans.VetoableChangeListener.class, new String[] {"vetoableChange"}, "addVetoableChangeListener", "removeVetoableChangeListener" ); // NOI18N
         }
         catch(IntrospectionException e) {
             e.printStackTrace();
@@ -435,26 +414,27 @@ public class BaseEventEditorFormBeanInfo extends SimpleBeanInfo {
     private static final int METHOD_resize125 = 125;
     private static final int METHOD_revalidate126 = 126;
     private static final int METHOD_scrollRectToVisible127 = 127;
-    private static final int METHOD_setBounds128 = 128;
-    private static final int METHOD_setComponentZOrder129 = 129;
-    private static final int METHOD_setDefaultLocale130 = 130;
-    private static final int METHOD_show131 = 131;
+    private static final int METHOD_setBattery128 = 128;
+    private static final int METHOD_setBounds129 = 129;
+    private static final int METHOD_setComponentZOrder130 = 130;
+    private static final int METHOD_setDefaultLocale131 = 131;
     private static final int METHOD_show132 = 132;
-    private static final int METHOD_size133 = 133;
-    private static final int METHOD_toString134 = 134;
-    private static final int METHOD_transferFocus135 = 135;
-    private static final int METHOD_transferFocusBackward136 = 136;
-    private static final int METHOD_transferFocusDownCycle137 = 137;
-    private static final int METHOD_transferFocusUpCycle138 = 138;
-    private static final int METHOD_unregisterKeyboardAction139 = 139;
-    private static final int METHOD_update140 = 140;
-    private static final int METHOD_updateUI141 = 141;
-    private static final int METHOD_validate142 = 142;
+    private static final int METHOD_show133 = 133;
+    private static final int METHOD_size134 = 134;
+    private static final int METHOD_toString135 = 135;
+    private static final int METHOD_transferFocus136 = 136;
+    private static final int METHOD_transferFocusBackward137 = 137;
+    private static final int METHOD_transferFocusDownCycle138 = 138;
+    private static final int METHOD_transferFocusUpCycle139 = 139;
+    private static final int METHOD_unregisterKeyboardAction140 = 140;
+    private static final int METHOD_update141 = 141;
+    private static final int METHOD_updateUI142 = 142;
+    private static final int METHOD_validate143 = 143;
 
     // Method array 
     /*lazy MethodDescriptor*/
     private static MethodDescriptor[] getMdescriptor(){
-        MethodDescriptor[] methods = new MethodDescriptor[143];
+        MethodDescriptor[] methods = new MethodDescriptor[144];
     
         try {
             methods[METHOD_action0] = new MethodDescriptor(java.awt.Component.class.getMethod("action", new Class[] {java.awt.Event.class, java.lang.Object.class})); // NOI18N
@@ -713,36 +693,38 @@ public class BaseEventEditorFormBeanInfo extends SimpleBeanInfo {
             methods[METHOD_revalidate126].setDisplayName ( "" );
             methods[METHOD_scrollRectToVisible127] = new MethodDescriptor(javax.swing.JComponent.class.getMethod("scrollRectToVisible", new Class[] {java.awt.Rectangle.class})); // NOI18N
             methods[METHOD_scrollRectToVisible127].setDisplayName ( "" );
-            methods[METHOD_setBounds128] = new MethodDescriptor(java.awt.Component.class.getMethod("setBounds", new Class[] {int.class, int.class, int.class, int.class})); // NOI18N
-            methods[METHOD_setBounds128].setDisplayName ( "" );
-            methods[METHOD_setComponentZOrder129] = new MethodDescriptor(java.awt.Container.class.getMethod("setComponentZOrder", new Class[] {java.awt.Component.class, int.class})); // NOI18N
-            methods[METHOD_setComponentZOrder129].setDisplayName ( "" );
-            methods[METHOD_setDefaultLocale130] = new MethodDescriptor(javax.swing.JComponent.class.getMethod("setDefaultLocale", new Class[] {java.util.Locale.class})); // NOI18N
-            methods[METHOD_setDefaultLocale130].setDisplayName ( "" );
-            methods[METHOD_show131] = new MethodDescriptor(java.awt.Component.class.getMethod("show", new Class[] {})); // NOI18N
-            methods[METHOD_show131].setDisplayName ( "" );
-            methods[METHOD_show132] = new MethodDescriptor(java.awt.Component.class.getMethod("show", new Class[] {boolean.class})); // NOI18N
+            methods[METHOD_setBattery128] = new MethodDescriptor(ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm.class.getMethod("setBattery", new Class[] {ca.uhn.hunit.test.TestBatteryImpl.class, ca.uhn.hunit.event.ISpecificMessageEvent.class})); // NOI18N
+            methods[METHOD_setBattery128].setDisplayName ( "" );
+            methods[METHOD_setBounds129] = new MethodDescriptor(java.awt.Component.class.getMethod("setBounds", new Class[] {int.class, int.class, int.class, int.class})); // NOI18N
+            methods[METHOD_setBounds129].setDisplayName ( "" );
+            methods[METHOD_setComponentZOrder130] = new MethodDescriptor(java.awt.Container.class.getMethod("setComponentZOrder", new Class[] {java.awt.Component.class, int.class})); // NOI18N
+            methods[METHOD_setComponentZOrder130].setDisplayName ( "" );
+            methods[METHOD_setDefaultLocale131] = new MethodDescriptor(javax.swing.JComponent.class.getMethod("setDefaultLocale", new Class[] {java.util.Locale.class})); // NOI18N
+            methods[METHOD_setDefaultLocale131].setDisplayName ( "" );
+            methods[METHOD_show132] = new MethodDescriptor(java.awt.Component.class.getMethod("show", new Class[] {})); // NOI18N
             methods[METHOD_show132].setDisplayName ( "" );
-            methods[METHOD_size133] = new MethodDescriptor(java.awt.Component.class.getMethod("size", new Class[] {})); // NOI18N
-            methods[METHOD_size133].setDisplayName ( "" );
-            methods[METHOD_toString134] = new MethodDescriptor(java.awt.Component.class.getMethod("toString", new Class[] {})); // NOI18N
-            methods[METHOD_toString134].setDisplayName ( "" );
-            methods[METHOD_transferFocus135] = new MethodDescriptor(java.awt.Component.class.getMethod("transferFocus", new Class[] {})); // NOI18N
-            methods[METHOD_transferFocus135].setDisplayName ( "" );
-            methods[METHOD_transferFocusBackward136] = new MethodDescriptor(java.awt.Container.class.getMethod("transferFocusBackward", new Class[] {})); // NOI18N
-            methods[METHOD_transferFocusBackward136].setDisplayName ( "" );
-            methods[METHOD_transferFocusDownCycle137] = new MethodDescriptor(java.awt.Container.class.getMethod("transferFocusDownCycle", new Class[] {})); // NOI18N
-            methods[METHOD_transferFocusDownCycle137].setDisplayName ( "" );
-            methods[METHOD_transferFocusUpCycle138] = new MethodDescriptor(java.awt.Component.class.getMethod("transferFocusUpCycle", new Class[] {})); // NOI18N
-            methods[METHOD_transferFocusUpCycle138].setDisplayName ( "" );
-            methods[METHOD_unregisterKeyboardAction139] = new MethodDescriptor(javax.swing.JComponent.class.getMethod("unregisterKeyboardAction", new Class[] {javax.swing.KeyStroke.class})); // NOI18N
-            methods[METHOD_unregisterKeyboardAction139].setDisplayName ( "" );
-            methods[METHOD_update140] = new MethodDescriptor(javax.swing.JComponent.class.getMethod("update", new Class[] {java.awt.Graphics.class})); // NOI18N
-            methods[METHOD_update140].setDisplayName ( "" );
-            methods[METHOD_updateUI141] = new MethodDescriptor(javax.swing.JPanel.class.getMethod("updateUI", new Class[] {})); // NOI18N
-            methods[METHOD_updateUI141].setDisplayName ( "" );
-            methods[METHOD_validate142] = new MethodDescriptor(java.awt.Container.class.getMethod("validate", new Class[] {})); // NOI18N
-            methods[METHOD_validate142].setDisplayName ( "" );
+            methods[METHOD_show133] = new MethodDescriptor(java.awt.Component.class.getMethod("show", new Class[] {boolean.class})); // NOI18N
+            methods[METHOD_show133].setDisplayName ( "" );
+            methods[METHOD_size134] = new MethodDescriptor(java.awt.Component.class.getMethod("size", new Class[] {})); // NOI18N
+            methods[METHOD_size134].setDisplayName ( "" );
+            methods[METHOD_toString135] = new MethodDescriptor(java.awt.Component.class.getMethod("toString", new Class[] {})); // NOI18N
+            methods[METHOD_toString135].setDisplayName ( "" );
+            methods[METHOD_transferFocus136] = new MethodDescriptor(java.awt.Component.class.getMethod("transferFocus", new Class[] {})); // NOI18N
+            methods[METHOD_transferFocus136].setDisplayName ( "" );
+            methods[METHOD_transferFocusBackward137] = new MethodDescriptor(java.awt.Container.class.getMethod("transferFocusBackward", new Class[] {})); // NOI18N
+            methods[METHOD_transferFocusBackward137].setDisplayName ( "" );
+            methods[METHOD_transferFocusDownCycle138] = new MethodDescriptor(java.awt.Container.class.getMethod("transferFocusDownCycle", new Class[] {})); // NOI18N
+            methods[METHOD_transferFocusDownCycle138].setDisplayName ( "" );
+            methods[METHOD_transferFocusUpCycle139] = new MethodDescriptor(java.awt.Component.class.getMethod("transferFocusUpCycle", new Class[] {})); // NOI18N
+            methods[METHOD_transferFocusUpCycle139].setDisplayName ( "" );
+            methods[METHOD_unregisterKeyboardAction140] = new MethodDescriptor(javax.swing.JComponent.class.getMethod("unregisterKeyboardAction", new Class[] {javax.swing.KeyStroke.class})); // NOI18N
+            methods[METHOD_unregisterKeyboardAction140].setDisplayName ( "" );
+            methods[METHOD_update141] = new MethodDescriptor(javax.swing.JComponent.class.getMethod("update", new Class[] {java.awt.Graphics.class})); // NOI18N
+            methods[METHOD_update141].setDisplayName ( "" );
+            methods[METHOD_updateUI142] = new MethodDescriptor(javax.swing.JPanel.class.getMethod("updateUI", new Class[] {})); // NOI18N
+            methods[METHOD_updateUI142].setDisplayName ( "" );
+            methods[METHOD_validate143] = new MethodDescriptor(java.awt.Container.class.getMethod("validate", new Class[] {})); // NOI18N
+            methods[METHOD_validate143].setDisplayName ( "" );
         }
         catch( Exception e) {}//GEN-HEADEREND:Methods
 

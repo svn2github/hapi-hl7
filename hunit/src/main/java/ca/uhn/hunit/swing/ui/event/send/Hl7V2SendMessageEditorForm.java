@@ -30,34 +30,29 @@
  * Created on 17-Oct-2009, 2:27:34 PM
  */
 
-package ca.uhn.hunit.swing.ui.event.expect;
+package ca.uhn.hunit.swing.ui.event.send;
 
+import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.event.expect.Hl7V2ExpectSpecificMessageImpl;
 import ca.uhn.hunit.event.send.Hl7V2SendMessageImpl;
+import ca.uhn.hunit.swing.ui.event.AbstractEventEditorForm;
 import ca.uhn.hunit.test.TestBatteryImpl;
 
 /**
  *
  * @author James
  */
-public class Hl7V2SendMessageEditorForm extends javax.swing.JPanel {
+public class Hl7V2SendMessageEditorForm extends AbstractEventEditorForm<Hl7V2SendMessageImpl> {
     private static final long serialVersionUID = 1L;
     
-    private final TestBatteryImpl myBattery;
-    private final Hl7V2SendMessageImpl myEvent;
+    private TestBatteryImpl myBattery;
+    private Hl7V2SendMessageImpl myEvent;
+    private TestEditorController myController;
 
     /** Creates new form Hl7V2ExpectSpecificMessageEditorForm */
     public Hl7V2SendMessageEditorForm() {
         myBattery = new TestBatteryImpl();
         myEvent = null;
-
-        initComponents();
-    }
-
-    /** Creates new form Hl7V2ExpectSpecificMessageEditorForm */
-    public Hl7V2SendMessageEditorForm(TestBatteryImpl theBattery, Hl7V2SendMessageImpl theEvent) {
-        myBattery = theBattery;
-        myEvent = theEvent;
 
         initComponents();
     }
@@ -71,32 +66,50 @@ public class Hl7V2SendMessageEditorForm extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        baseEventEditorForm1 = new ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm();
-        myEventEditorForm = new BaseEventEditorForm(myBattery, myEvent);
-        mySpecificMessageEditorForm = new BaseSpecificMessageEditorForm(myBattery, myEvent);
+        myEventTypeForm = new ca.uhn.hunit.swing.ui.event.EventTypeForm();
+        myBaseEventEditorForm = new ca.uhn.hunit.swing.ui.event.BaseEventEditorForm();
+        myBaseSpecificMessageEditorForm = new ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm();
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(myEventEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(mySpecificMessageEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(myEventTypeForm, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
+            .addComponent(myBaseEventEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
+            .addComponent(myBaseSpecificMessageEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(myEventEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(myEventTypeForm, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mySpecificMessageEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(myBaseEventEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(myBaseSpecificMessageEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm baseEventEditorForm1;
-    private ca.uhn.hunit.swing.ui.event.expect.BaseEventEditorForm myEventEditorForm;
-    private ca.uhn.hunit.swing.ui.event.expect.BaseSpecificMessageEditorForm mySpecificMessageEditorForm;
+    private ca.uhn.hunit.swing.ui.event.BaseEventEditorForm myBaseEventEditorForm;
+    private ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm myBaseSpecificMessageEditorForm;
+    private ca.uhn.hunit.swing.ui.event.EventTypeForm myEventTypeForm;
     // End of variables declaration//GEN-END:variables
+
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public void setController(TestEditorController theController, TestBatteryImpl theBattery, Hl7V2SendMessageImpl theEvent) {
+        myBattery = theBattery;
+        myEvent = theEvent;
+        myController = theController;
+
+        myBaseEventEditorForm.setController(theController, theBattery, theEvent);
+        myBaseSpecificMessageEditorForm.setController(theController, theBattery, theEvent);
+        myEventTypeForm.setController(theController, theBattery, theEvent);
+    }
 
 }

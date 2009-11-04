@@ -24,43 +24,31 @@
  * and open the template in the editor.
  */
 
-package ca.uhn.hunit.swing.ui.event.expect;
+package ca.uhn.hunit.swing.ui.tests;
 
 import ca.uhn.hunit.event.AbstractEvent;
-import ca.uhn.hunit.test.TestBatteryImpl;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.text.AbstractDocument.AbstractElement;
+import ca.uhn.hunit.l10n.Strings;
+import javax.swing.table.DefaultTableCellRenderer;
 
 /**
- *
- * @author James
+ * CellRenderer for event list
  */
-public class InterfaceComboBoxModel extends DefaultComboBoxModel {
+public class EventListTableCellRenderer extends DefaultTableCellRenderer {
+
     private static final long serialVersionUID = 1L;
 
-    private final TestBatteryImpl myBattery;
-
-    public InterfaceComboBoxModel(TestBatteryImpl theBattery, AbstractEvent theEvent) {
-        if (theBattery == null) {
-            theBattery = new TestBatteryImpl();
-        }
-        myBattery = theBattery;
-
-        if (theEvent != null) {
-            setSelectedItem(theEvent.getInterfaceId());
-        }
-    }
-
     @Override
-    public Object getElementAt(int index) {
-        return myBattery.getInterfaces().get(index).getId();
+    protected void setValue(Object value) {
+        AbstractEvent event = (AbstractEvent) value;
+        if (event == null) {
+            setText("");
+        } else {
+            String text = Strings.getInstance().getString(event.getResourceBundleSummaryKey());
+            if (text == null) {
+                text = event.getClass().getName();
+            }
+            setText(text);
+        }
     }
-
-    @Override
-    public int getSize() {
-        return myBattery.getInterfaces().size();
-    }
-
-    
 
 }

@@ -32,11 +32,16 @@
 
 package ca.uhn.hunit.swing.ui.event;
 
+import ca.uhn.hunit.event.AbstractEvent;
+import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
+import ca.uhn.hunit.test.TestBatteryImpl;
+
 /**
  *
  * @author James
  */
-public class EventEditorDefaultPane extends javax.swing.JPanel {
+public class EventEditorDefaultPane extends AbstractEventEditorForm<AbstractEvent> {
+    private static final long serialVersionUID = 1L;
 
     /** Creates new form EventEditorDefaultPane */
     public EventEditorDefaultPane() {
@@ -79,5 +84,10 @@ public class EventEditorDefaultPane extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void setController(TestEditorController theController, TestBatteryImpl theBattery, AbstractEvent theEvent) {
+        // ignore
+    }
 
 }

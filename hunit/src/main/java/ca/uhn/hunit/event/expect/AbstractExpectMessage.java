@@ -21,6 +21,7 @@
  */
 package ca.uhn.hunit.event.expect;
 
+import ca.uhn.hunit.event.ISpecificMessageEvent;
 import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceWontReceiveException;
@@ -33,12 +34,12 @@ import ca.uhn.hunit.xsd.ExpectMessage;
 import ca.uhn.hunit.xsd.ExpectMessageAny;
 import java.beans.PropertyVetoException;
 
-public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extends AbstractExpect {
+public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extends AbstractExpect implements ISpecificMessageEvent {
 
     public static final String MESSAGE_ID_PROPERTY = "AEM_MESSAGE_ID_PROPERTY";
     private T myMessageProvider;
 
-
+    @Override
     public T getMessage() {
         return myMessageProvider;
     }

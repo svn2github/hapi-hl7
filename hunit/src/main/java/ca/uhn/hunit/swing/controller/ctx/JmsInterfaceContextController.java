@@ -23,18 +23,22 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ca.uhn.hunit.swing.controller.ctx;
 
 import ca.uhn.hunit.iface.JmsInterfaceImpl;
 import ca.uhn.hunit.swing.ui.iface.JmsInterfaceEditorForm;
+import ca.uhn.hunit.swing.ui.util.IBeanDefinitionController;
+import ca.uhn.hunit.util.TypedValueListTableModel;
 import ca.uhn.hunit.util.log.ILogProvider;
+import java.beans.PropertyVetoException;
+import javax.jms.ConnectionFactory;
 
 /**
  *
  * @author James
  */
 public class JmsInterfaceContextController extends AbstractInterfaceEditorContextController<JmsInterfaceImpl, JmsInterfaceEditorForm> {
+
     private final JmsInterfaceImpl myModel;
     private final JmsInterfaceEditorForm myView;
 
@@ -45,6 +49,14 @@ public class JmsInterfaceContextController extends AbstractInterfaceEditorContex
         myView.setController(this);
     }
 
+    public IBeanDefinitionController getConstructorArgsController() {
+        return new MyConstructorArgsController();
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
     public JmsInterfaceImpl getModel() {
         return myModel;
     }
@@ -54,4 +66,29 @@ public class JmsInterfaceContextController extends AbstractInterfaceEditorContex
         return myView;
     }
 
+
+    private class MyConstructorArgsController implements IBeanDefinitionController
+    {
+
+        @Override
+        public Class<?> getInitialClass() {
+            return myModel.getConnectionFactoryClass();
+        }
+
+        @Override
+        public Class<?> getRequiredSuperclass() {
+            return ConnectionFactory.class;
+        }
+
+        @Override
+        public TypedValueListTableModel getConstructorArgsTableModel() {
+            return myModel.getConstructorArgsTableModel();
+        }
+
+        @Override
+        public void setSelectedClass(Class<?> theClass) throws PropertyVetoException {
+            myModel.setConnectionFactoryClass(theClass);
+        }
+
+    }
 }

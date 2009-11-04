@@ -27,6 +27,7 @@
 package ca.uhn.hunit.swing.controller.ctx;
 
 import ca.uhn.hunit.swing.ui.tests.TestEditorForm;
+import ca.uhn.hunit.test.TestEventsModel;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.log.ILogProvider;
 

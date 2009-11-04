@@ -37,14 +37,11 @@ import ca.uhn.hunit.event.send.Hl7V2SendMessageImpl;
 import ca.uhn.hunit.l10n.Colours;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.swing.ui.AbstractContextForm;
+import ca.uhn.hunit.swing.ui.event.AbstractEventEditorForm;
 import ca.uhn.hunit.swing.ui.event.EventEditorDefaultPane;
 import ca.uhn.hunit.swing.ui.event.expect.Hl7V2ExpectSpecificMessageEditorForm;
-import ca.uhn.hunit.swing.ui.event.expect.Hl7V2SendMessageEditorForm;
-import java.awt.Color;
+import ca.uhn.hunit.swing.ui.event.send.Hl7V2SendMessageEditorForm;
 import java.beans.PropertyVetoException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
@@ -59,12 +56,13 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
 
     private static final long serialVersionUID = 1L;
     private TestEditorController myController;
+    private int myCurrentlySelectedRow = -2;
 
     /** Creates new form TestEditorForm */
     public TestEditorForm() {
         initComponents();
 
-        myEventsTable.setDefaultRenderer(Object.class, new EventListCellRenderer());
+        myEventsTable.setDefaultRenderer(Object.class, new EventListTableCellRenderer());
         ((BasicSplitPaneUI) mySplitPane.getUI()).getDivider().setBorder(null);
 
         myNameTextField.getDocument().addDocumentListener(new DocumentListener() {
@@ -108,8 +106,11 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
         jPanel2 = new javax.swing.JPanel();
         jToolBar2 = new javax.swing.JToolBar();
         myAddEventButton = new javax.swing.JButton();
+        myUpButton = new javax.swing.JButton();
+        myDownButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         myEventsTable = new javax.swing.JTable();
+        jLabel2 = new javax.swing.JLabel();
         myEventEditorScrollPane = new javax.swing.JScrollPane();
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Test ID"));
@@ -142,6 +143,7 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
         );
 
         mySplitPane.setBorder(null);
+        mySplitPane.setDividerLocation(250);
         mySplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("ca/uhn/hunit/l10n/UiStrings"); // NOI18N
@@ -150,11 +152,36 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
         jToolBar2.setBorder(null);
         jToolBar2.setRollover(true);
 
-        myAddEventButton.setText(bundle.getString("eventlist.buttons.add")); // NOI18N
+        myAddEventButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ca/uhn/hunit/ui/resources/images/add.png"))); // NOI18N
+        myAddEventButton.setText(bundle.getString("listeditor.add")); // NOI18N
         myAddEventButton.setFocusable(false);
-        myAddEventButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        myAddEventButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         myAddEventButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar2.add(myAddEventButton);
+
+        myUpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ca/uhn/hunit/ui/resources/images/move_task_up.png"))); // NOI18N
+        myUpButton.setText(bundle.getString("listeditor.up")); // NOI18N
+        myUpButton.setFocusable(false);
+        myUpButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        myUpButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        myUpButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myUpButtonActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(myUpButton);
+
+        myDownButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ca/uhn/hunit/ui/resources/images/move_task_down.png"))); // NOI18N
+        myDownButton.setText(bundle.getString("listeditor.down")); // NOI18N
+        myDownButton.setFocusable(false);
+        myDownButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        myDownButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        myDownButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myDownButtonActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(myDownButton);
 
         myEventsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -170,20 +197,28 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
         myEventsTable.setShowVerticalLines(false);
         jScrollPane1.setViewportView(myEventsTable);
 
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setText(bundle.getString("eventlist.instructions")); // NOI18N
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 598, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         mySplitPane.setTopComponent(jPanel2);
@@ -203,23 +238,35 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mySplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 407, Short.MAX_VALUE))
+                .addComponent(mySplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 479, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void myNameTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myNameTextFieldActionPerformed
     }//GEN-LAST:event_myNameTextFieldActionPerformed
+
+    private void myUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myUpButtonActionPerformed
+        myController.getTest().getEventsModel().moveUp(getSelectedEvent());
+    }//GEN-LAST:event_myUpButtonActionPerformed
+
+    private void myDownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myDownButtonActionPerformed
+        myController.getTest().getEventsModel().moveDown(getSelectedEvent());
+    }//GEN-LAST:event_myDownButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JButton myAddEventButton;
+    private javax.swing.JButton myDownButton;
     private javax.swing.JScrollPane myEventEditorScrollPane;
     private javax.swing.JTable myEventsTable;
     private javax.swing.JTextField myNameTextField;
     private javax.swing.JSplitPane mySplitPane;
+    private javax.swing.JButton myUpButton;
     // End of variables declaration//GEN-END:variables
 
     @Override
@@ -244,17 +291,47 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
 
     }
 
+    public AbstractEvent getSelectedEvent() {
+        int selectedRow = myEventsTable.getSelectedRow();
+        if (selectedRow != -1) {
+            return myController.getTest().getEventsModel().getEvent(selectedRow);
+        } else {
+            return null;
+        }
+
+    }
+
     private void updateEditorPane() {
         int selectedRow = myEventsTable.getSelectedRow();
-        JPanel editorForm = null;
+
+        if (selectedRow == myCurrentlySelectedRow) {
+            return;
+        }
+        myCurrentlySelectedRow = selectedRow;
+
+        AbstractEventEditorForm editorForm = null;
         if (selectedRow != -1) {
+
             AbstractEvent event = myController.getTest().getEventsModel().getEvent(selectedRow);
             if (event instanceof Hl7V2ExpectSpecificMessageImpl) {
-                editorForm = new Hl7V2ExpectSpecificMessageEditorForm(myController.getTest().getBattery(), (Hl7V2ExpectSpecificMessageImpl) event);
+                editorForm = new Hl7V2ExpectSpecificMessageEditorForm();
+                editorForm.setController(myController, myController.getTest().getBattery(), (Hl7V2ExpectSpecificMessageImpl) event);
             } else if (event instanceof Hl7V2SendMessageImpl) {
-                editorForm = new Hl7V2SendMessageEditorForm(myController.getTest().getBattery(), (Hl7V2SendMessageImpl) event);
+                editorForm = new Hl7V2SendMessageEditorForm();
+                editorForm.setController(myController, myController.getTest().getBattery(), (Hl7V2SendMessageImpl) event);
             }
+
+            myUpButton.setEnabled(true);
+            myDownButton.setEnabled(true);
+
+        } else {
+
+            myUpButton.setEnabled(false);
+            myDownButton.setEnabled(false);
+
         }
+
+
         if (editorForm == null) {
             editorForm = new EventEditorDefaultPane();
         }

@@ -30,38 +30,30 @@
  * Created on 17-Oct-2009, 1:40:22 PM
  */
 
-package ca.uhn.hunit.swing.ui.event.expect;
+package ca.uhn.hunit.swing.ui.event;
 
+import ca.uhn.hunit.swing.model.InterfaceComboBoxModel;
 import ca.uhn.hunit.event.AbstractEvent;
+import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import java.beans.PropertyVetoException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author James
  */
-public class BaseEventEditorForm extends javax.swing.JPanel {
+public class BaseEventEditorForm extends AbstractEventEditorForm<AbstractEvent> {
     private static final long serialVersionUID = 1L;
-    private final TestBatteryImpl myBattery;
-    private final AbstractEvent myEvent;
+    private TestBatteryImpl myBattery;
+    private AbstractEvent myEvent;
+    private TestEditorController myController;
 
     /** Creates new form InterfaceBasedEventEditorForm */
     public BaseEventEditorForm() {
         initComponents();
-
-        myBattery = new TestBatteryImpl();
-        myEvent = null;
     }
 
-    /** Creates new form InterfaceBasedEventEditorForm */
-    public BaseEventEditorForm(TestBatteryImpl theBattery, AbstractEvent theEvent) {
-        myBattery = theBattery;
-        myEvent = theEvent;
-
-        initComponents();
-    }
+    
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -78,8 +70,10 @@ public class BaseEventEditorForm extends javax.swing.JPanel {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("ca/uhn/hunit/l10n/UiStrings"); // NOI18N
         jLabel1.setText(bundle.getString("eventeditor.interface")); // NOI18N
+        jLabel1.setMaximumSize(new java.awt.Dimension(55, 14));
+        jLabel1.setMinimumSize(new java.awt.Dimension(55, 14));
+        jLabel1.setPreferredSize(new java.awt.Dimension(55, 14));
 
-        myInterfaceCombobox.setModel(new InterfaceComboBoxModel(myBattery, myEvent));
         myInterfaceCombobox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 myInterfaceComboboxActionPerformed(evt);
@@ -91,15 +85,15 @@ public class BaseEventEditorForm extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(myInterfaceCombobox, 0, 260, Short.MAX_VALUE))
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(myInterfaceCombobox, 0, 312, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(jLabel1)
-                .addComponent(myInterfaceCombobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(myInterfaceCombobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -117,5 +111,19 @@ public class BaseEventEditorForm extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JComboBox myInterfaceCombobox;
     // End of variables declaration//GEN-END:variables
+
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public void setController(TestEditorController theController, TestBatteryImpl theBattery, AbstractEvent theEvent) {
+        myController = theController;
+        myBattery = theBattery;
+        myEvent = theEvent;
+
+        myInterfaceCombobox.setModel(new InterfaceComboBoxModel(myBattery, myEvent));
+    }
+
 
 }

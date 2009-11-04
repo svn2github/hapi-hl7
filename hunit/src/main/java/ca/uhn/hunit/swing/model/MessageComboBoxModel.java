@@ -24,7 +24,7 @@
  * and open the template in the editor.
  */
 
-package ca.uhn.hunit.swing.ui.event.expect;
+package ca.uhn.hunit.swing.model;
 
 import ca.uhn.hunit.event.AbstractEvent;
 import ca.uhn.hunit.event.ISpecificMessageEvent;

@@ -29,10 +29,13 @@
  *
  * Created on 17-Oct-2009, 3:02:48 PM
  */
+package ca.uhn.hunit.swing.ui.event;
 
-package ca.uhn.hunit.swing.ui.event.expect;
-
+import ca.uhn.hunit.event.AbstractEvent;
+import ca.uhn.hunit.swing.model.MessageComboBoxModel;
+import ca.uhn.hunit.swing.ui.event.expect.*;
 import ca.uhn.hunit.event.ISpecificMessageEvent;
+import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import java.beans.PropertyVetoException;
 import java.util.logging.Level;
@@ -42,28 +45,17 @@ import java.util.logging.Logger;
  *
  * @author James
  */
-public class BaseSpecificMessageEditorForm extends javax.swing.JPanel {
-    private static final long serialVersionUID = 1L;
+public class BaseSpecificMessageEditorForm extends AbstractEventEditorForm<AbstractEvent> {
 
-    private final TestBatteryImpl myBattery;
-    private final ISpecificMessageEvent myEvent;
+    private static final long serialVersionUID = 1L;
+    private TestBatteryImpl myBattery;
+    private ISpecificMessageEvent myEvent;
+    private TestEditorController myController;
 
     /** Creates new form BaseSpecificMessageEditorForm */
     public BaseSpecificMessageEditorForm() {
         initComponents();
-
-        myBattery = new TestBatteryImpl();
-        myEvent = null;
     }
-
-    /** Creates new form BaseSpecificMessageEditorForm */
-    public BaseSpecificMessageEditorForm(TestBatteryImpl theBattery, ISpecificMessageEvent theEvent) {
-        myBattery = theBattery;
-        myEvent = theEvent;
-        
-        initComponents();
-    }
-
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -81,7 +73,6 @@ public class BaseSpecificMessageEditorForm extends javax.swing.JPanel {
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("ca/uhn/hunit/l10n/UiStrings"); // NOI18N
         jLabel1.setText(bundle.getString("eventeditor.message")); // NOI18N
 
-        myMessageComboBox.setModel(new MessageComboBoxModel(myBattery, myEvent));
         myMessageComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 myMessageComboBoxActionPerformed(evt);
@@ -93,9 +84,9 @@ public class BaseSpecificMessageEditorForm extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(myMessageComboBox, 0, 260, Short.MAX_VALUE))
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(myMessageComboBox, 0, 312, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -112,11 +103,23 @@ public class BaseSpecificMessageEditorForm extends javax.swing.JPanel {
             myMessageComboBox.setSelectedItem(myEvent.getMessage().getId());
         }
     }//GEN-LAST:event_myMessageComboBoxActionPerformed
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JComboBox myMessageComboBox;
     // End of variables declaration//GEN-END:variables
+
+
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public void setController(TestEditorController theController, TestBatteryImpl theBattery, AbstractEvent theEvent) {
+        myController = theController;
+        myBattery = theBattery;
+        myEvent = (ISpecificMessageEvent) theEvent;
+
+        myMessageComboBox.setModel(new MessageComboBoxModel(myBattery, myEvent));
+    }
 
 }

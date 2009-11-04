@@ -196,4 +196,30 @@ public class TestEventsModel extends AbstractTableModel implements PropertyChang
         return myInterfaceId2InterfaceInteractionEnums;
     }
 
+    /**
+     * Moves the item up in the list
+     */
+    public void moveUp(AbstractEvent selectedEvent) {
+        int oldIndex = myEvents.indexOf(selectedEvent);
+        if (oldIndex > 0) {
+            AbstractEvent replacing = myEvents.get(oldIndex - 1);
+            myEvents.set(oldIndex - 1, selectedEvent);
+            myEvents.set(oldIndex, replacing);
+        }
+        sortInterfaces();
+    }
+
+    /**
+     * Moves the item down in the list
+     */
+    public void moveDown(AbstractEvent selectedEvent) {
+        int oldIndex = myEvents.indexOf(selectedEvent);
+        if (oldIndex < (myEvents.size() - 1)) {
+            AbstractEvent replacing = myEvents.get(oldIndex + 1);
+            myEvents.set(oldIndex + 1, selectedEvent);
+            myEvents.set(oldIndex, replacing);
+        }
+        sortInterfaces();
+    }
+
 }

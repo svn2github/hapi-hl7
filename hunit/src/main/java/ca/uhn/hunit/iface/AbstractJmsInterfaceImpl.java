@@ -60,6 +60,7 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.apache.commons.lang.StringUtils;
 
 public abstract class AbstractJmsInterfaceImpl<T extends Object> extends AbstractInterface {
+    public static final String CONNECTION_FACTORY_CLASS_PROPERTY = AbstractJmsInterfaceImpl.class + "CONNECTION_FACTORY_CLASS_PROPERTY";
 
     private boolean myStarted;
     private boolean myStopped;
@@ -196,6 +197,7 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
         try {
             MessageCreator mc = new MessageCreator() {
 
+                @Override
                 public javax.jms.Message createMessage(Session theSession) throws JMSException {
                     TextMessage textMessage = theSession.createTextMessage(theMessage.getRawMessage());
 
@@ -368,8 +370,15 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
         return myConnectionFactoryClass;
     }
 
-    public void setConnectionFactoryClass(Class<?> myConnectionFactoryClass) {
-        this.myConnectionFactoryClass = myConnectionFactoryClass;
+    public void setConnectionFactoryClass(Class<?> theConnectionFactoryClass) throws PropertyVetoException {
+        Class<?> oldValue = theConnectionFactoryClass;
+        if (!theConnectionFactoryClass.isAssignableFrom(ConnectionFactory.class)) {
+            throw new PropertyVetoException("Must extend " + ConnectionFactory.class, null);
+        }
+
+        fireVetoableChange(CONNECTION_FACTORY_CLASS_PROPERTY, oldValue, theConnectionFactoryClass);
+        this.myConnectionFactoryClass = theConnectionFactoryClass;
+        firePropertyChange(CONNECTION_FACTORY_CLASS_PROPERTY, oldValue, theConnectionFactoryClass);
     }
 
     public String getPassword() {

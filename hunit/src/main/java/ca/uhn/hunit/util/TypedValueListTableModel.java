@@ -37,8 +37,8 @@ import javax.swing.table.AbstractTableModel;
  * @author James
  */
 public class TypedValueListTableModel extends AbstractTableModel {
-    private static final long serialVersionUID = 1L;
 
+    private static final long serialVersionUID = 1L;
     private final boolean myNamed;
     private final ArrayList<String> myNames = new ArrayList<String>();
     private final ArrayList<Object> myArgs = new ArrayList<Object>();
@@ -160,5 +160,34 @@ public class TypedValueListTableModel extends AbstractTableModel {
 
     public Object[] getArgArray() {
         return myArgs.toArray(new Object[myArgs.size()]);
+    }
+
+    /**
+     * Replaces the existing type/data combinations with new entries matching the given
+     * types. Where possible, existing data is preserved.
+     */
+    public void setTypes(List<Class<?>> theTypes) {
+        if (myNamed) {
+            throw new IllegalStateException();
+        }
+
+        for (int i = 0; i < theTypes.size(); i++) {
+
+            if (i >= myArgTypes.size()) {
+                myArgTypes.add(theTypes.get(i));
+                myArgs.add(null);
+            } else if (!myArgTypes.get(i).equals(theTypes.get(i))) {
+                myArgTypes.set(i, theTypes.get(i));
+                myArgs.set(i, null);
+            }
+
+        }
+
+        while (myArgTypes.size() > theTypes.size()) {
+            myArgTypes.remove(theTypes.size());
+            myArgs.remove(theTypes.size());
+        }
+
+        fireTableDataChanged();
     }
 }
