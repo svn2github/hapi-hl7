@@ -57,18 +57,18 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="myTestsScrollPane" pref="394" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                      <Component id="myTestsScrollPane" pref="399" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="myTestsScrollPane" pref="112" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="myTestsScrollPane" pref="118" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -91,6 +91,7 @@
                         <Column editable="true" title="Title 4" type="java.lang.Object"/>
                       </Table>
                     </Property>
+                    <Property name="fillsViewportHeight" type="boolean" value="true"/>
                     <Property name="showHorizontalLines" type="boolean" value="false"/>
                     <Property name="showVerticalLines" type="boolean" value="false"/>
                   </Properties>
@@ -191,6 +192,7 @@
                             <Column editable="true" title="Title 4" type="java.lang.Object"/>
                           </Table>
                         </Property>
+                        <Property name="fillsViewportHeight" type="boolean" value="true"/>
                         <Property name="showHorizontalLines" type="boolean" value="false"/>
                         <Property name="showVerticalLines" type="boolean" value="false"/>
                       </Properties>

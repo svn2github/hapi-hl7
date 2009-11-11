@@ -97,6 +97,8 @@ public class FailureUnexpectedTestFailureTab extends javax.swing.JPanel {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("execution.failure.ca.uhn.hunit.ex.UnexpectedTestFailureException.stacktrace"))); // NOI18N
 
+        jScrollPane1.setBorder(null);
+
         myStackTraceTextArea.setColumns(20);
         myStackTraceTextArea.setRows(5);
         jScrollPane1.setViewportView(myStackTraceTextArea);

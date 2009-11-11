@@ -33,13 +33,13 @@ import java.beans.PropertyVetoException;
  *
  * @author James
  */
-public interface ISpecificMessageEvent {
+public interface ISpecificMessageEvent<T extends AbstractMessage> {
     String MESSAGE_ID_PROPERTY = "MESSAGE_ID_PROPERTY";
 
-    AbstractMessage getMessage();
+    T getMessage();
 
     void setMessageId(String theMessageId) throws PropertyVetoException;
 
-    public Class<?> getMessageClass();
+    public Class<T> getMessageClass();
 
 }

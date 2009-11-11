@@ -23,7 +23,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ca.uhn.hunit.test;
 
 import ca.uhn.hunit.event.AbstractEvent;
@@ -54,15 +53,14 @@ import javax.swing.table.AbstractTableModel;
  *
  * @author James
  */
+
 public class TestEventsModel extends AbstractTableModel implements PropertyChangeListener {
 
     private static final long serialVersionUID = 1L;
-
     private final List<AbstractEvent> myEvents = new ArrayList<AbstractEvent>();
     private final List<String> myInterfaces = new ArrayList<String>();
     private final Map<String, AbstractEvent[]> myInterfaceId2Events = new HashMap<String, AbstractEvent[]>();
     private final Map<String, Set<InterfaceInteractionEnum>> myInterfaceId2InterfaceInteractionEnums = new HashMap<String, Set<InterfaceInteractionEnum>>();
-
     private final TestImpl myTest;
 
     public TestEventsModel(TestImpl theTest) {
@@ -92,53 +90,52 @@ public class TestEventsModel extends AbstractTableModel implements PropertyChang
      */
     public void exportConfig(Test theConfig) {
         for (AbstractEvent next : myEvents) {
-            theConfig.getSendMessageOrExpectMessageOrExpectNoMessage().add(next.exportConfigToXml());
+            theConfig.getSendMessageOrExpectMessageOrExpectNoMessage().add(next.exportConfigToXmlAndEncapsulate());
         }
     }
-
 
     public void initFromXml(Test theConfig) throws ConfigurationException {
 
         myEvents.clear();
 
         for (Object next : theConfig.getSendMessageOrExpectMessageOrExpectNoMessage()) {
-			AbstractEvent event = null;
+            AbstractEvent event = null;
 
-			if (next instanceof SendMessageAny) {
-				SendMessageAny nextSm = (SendMessageAny)next;
-				if (nextSm.getXml() != null) {
-					event = (new XmlSendMessageImpl(myTest, nextSm.getXml()));
-				} else if (nextSm.getHl7V2() != null) {
-					event = (new Hl7V2SendMessageImpl(myTest, nextSm.getHl7V2()));
-				} else {
-					throw new ConfigurationException("Unknown event type: " + next.getClass());
-				}
-			} else if (next instanceof ExpectMessageAny) {
-				ExpectMessageAny nextEm = (ExpectMessageAny) next;
-				if (nextEm.getHl7V2Specific() != null) {
-					event = (new Hl7V2ExpectSpecificMessageImpl(myTest, nextEm.getHl7V2Specific()));
-				} else if (nextEm.getHl7V2Rules() != null) {
-					event = (new Hl7V2ExpectRulesImpl(myTest, nextEm.getHl7V2Rules()));
-				} else if (nextEm.getHl7V2Ack() != null) {
-					event = (new Hl7V2ExpectRulesImpl(myTest, nextEm.getHl7V2Ack()));
-				} else if (nextEm.getXmlSpecific() != null) {
-					event = new XmlExpectSpecificMessageImpl(myTest, nextEm.getXmlSpecific());
-				} else {
-					throw new ConfigurationException("Unknown event type: " + next.getClass());
-				}
+            if (next instanceof SendMessageAny) {
+                SendMessageAny nextSm = (SendMessageAny) next;
+                if (nextSm.getXml() != null) {
+                    event = (new XmlSendMessageImpl(myTest, nextSm.getXml()));
+                } else if (nextSm.getHl7V2() != null) {
+                    event = (new Hl7V2SendMessageImpl(myTest, nextSm.getHl7V2()));
+                } else {
+                    throw new ConfigurationException("Unknown event type: " + next.getClass());
+                }
+            } else if (next instanceof ExpectMessageAny) {
+                ExpectMessageAny nextEm = (ExpectMessageAny) next;
+                if (nextEm.getHl7V2Specific() != null) {
+                    event = (new Hl7V2ExpectSpecificMessageImpl(myTest, nextEm.getHl7V2Specific()));
+                } else if (nextEm.getHl7V2Rules() != null) {
+                    event = (new Hl7V2ExpectRulesImpl(myTest, nextEm.getHl7V2Rules()));
+                } else if (nextEm.getHl7V2Ack() != null) {
+                    event = (new Hl7V2ExpectRulesImpl(myTest, nextEm.getHl7V2Ack()));
+                } else if (nextEm.getXmlSpecific() != null) {
+                    event = new XmlExpectSpecificMessageImpl(myTest, nextEm.getXmlSpecific());
+                } else {
+                    throw new ConfigurationException("Unknown event type: " + next.getClass());
+                }
             } else if (next instanceof ExpectNoMessage) {
-                event = new ExpectNoMessageImpl(myTest, (ExpectNoMessage)next);
-			} else {
-				throw new ConfigurationException("Unknown event type: " + next.getClass());
-			}
+                event = new ExpectNoMessageImpl(myTest, (ExpectNoMessage) next);
+            } else {
+                throw new ConfigurationException("Unknown event type: " + next.getClass());
+            }
 
-			if (event == null) {
-				continue;
-			}
+            if (event == null) {
+                continue;
+            }
 
             event.addPropertyChangeListener(AbstractEvent.INTERFACE_ID_PROPERTY, this);
             myEvents.add(event);
-		}
+        }
 
         sortInterfaces();
 
@@ -148,11 +145,11 @@ public class TestEventsModel extends AbstractTableModel implements PropertyChang
         return Arrays.asList(myInterfaceId2Events.get(theInterfaceId));
     }
 
-    
     public List<String> getInterfaceIds() {
         return myInterfaces;
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (AbstractEvent.INTERFACE_ID_PROPERTY.equals(evt.getPropertyName())) {
             sortInterfaces();
@@ -184,8 +181,15 @@ public class TestEventsModel extends AbstractTableModel implements PropertyChang
             index++;
         }
 
+        // Figure out which interfaces are actually being used
+        myInterfaces.clear();
+        for (String nextId : myTest.getBattery().getInterfaceIds()) {
+            if (myInterfaceId2Events.containsKey(nextId)) {
+                myInterfaces.add(nextId);
+            }
+        }
+
         super.fireTableStructureChanged();
-        super.fireTableDataChanged();
     }
 
     public AbstractEvent getEvent(int selectedRow) {
@@ -199,27 +203,47 @@ public class TestEventsModel extends AbstractTableModel implements PropertyChang
     /**
      * Moves the item up in the list
      */
-    public void moveUp(AbstractEvent selectedEvent) {
+    public int moveUp(AbstractEvent selectedEvent) {
         int oldIndex = myEvents.indexOf(selectedEvent);
         if (oldIndex > 0) {
             AbstractEvent replacing = myEvents.get(oldIndex - 1);
             myEvents.set(oldIndex - 1, selectedEvent);
             myEvents.set(oldIndex, replacing);
+            sortInterfaces();
+            return oldIndex - 1;
         }
-        sortInterfaces();
+
+        return oldIndex;
     }
 
     /**
      * Moves the item down in the list
      */
-    public void moveDown(AbstractEvent selectedEvent) {
+    public int moveDown(AbstractEvent selectedEvent) {
         int oldIndex = myEvents.indexOf(selectedEvent);
         if (oldIndex < (myEvents.size() - 1)) {
             AbstractEvent replacing = myEvents.get(oldIndex + 1);
             myEvents.set(oldIndex + 1, selectedEvent);
             myEvents.set(oldIndex, replacing);
+            sortInterfaces();
+
+            return oldIndex + 1;
         }
-        sortInterfaces();
+
+        return oldIndex;
     }
 
+    /**
+     * Replaces an event in the event list with a new event at the same index
+     * @param theEvent The event to replace
+     * @param theNewEvent The event to replace it with
+     */
+    public int replaceEvent(AbstractEvent theEvent, AbstractEvent theNewEvent) {
+        int index = myEvents.indexOf(theEvent);
+        myEvents.set(index, theNewEvent);
+        sortInterfaces();
+
+        return index;
+    }
+    
 }

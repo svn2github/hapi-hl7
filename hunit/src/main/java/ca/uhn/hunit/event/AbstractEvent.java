@@ -98,4 +98,16 @@ public abstract class AbstractEvent extends AbstractModelClass {
         firePropertyChange(INTERFACE_ID_PROPERTY, oldValue, theInterfaceId);
     }
 
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public abstract Event exportConfigToXml();
+
+    /**
+     * Overriding to provide a specific type requirement
+     */
+    public abstract Object exportConfigToXmlAndEncapsulate();
+
+
 }

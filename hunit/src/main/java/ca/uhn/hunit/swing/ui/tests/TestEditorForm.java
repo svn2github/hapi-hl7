@@ -41,6 +41,7 @@ import ca.uhn.hunit.swing.ui.event.AbstractEventEditorForm;
 import ca.uhn.hunit.swing.ui.event.EventEditorDefaultPane;
 import ca.uhn.hunit.swing.ui.event.expect.Hl7V2ExpectSpecificMessageEditorForm;
 import ca.uhn.hunit.swing.ui.event.send.Hl7V2SendMessageEditorForm;
+import ca.uhn.hunit.test.TestEventsModel;
 import java.beans.PropertyVetoException;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -246,11 +247,15 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
     }//GEN-LAST:event_myNameTextFieldActionPerformed
 
     private void myUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myUpButtonActionPerformed
-        myController.getTest().getEventsModel().moveUp(getSelectedEvent());
+        final TestEventsModel eventsModel = myController.getTest().getEventsModel();
+        int newIndex = eventsModel.moveUp(getSelectedEvent());
+
+        myEventsTable.getSelectionModel().setSelectionInterval(newIndex, newIndex);
     }//GEN-LAST:event_myUpButtonActionPerformed
 
     private void myDownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myDownButtonActionPerformed
-        myController.getTest().getEventsModel().moveDown(getSelectedEvent());
+        int newIndex = myController.getTest().getEventsModel().moveDown(getSelectedEvent());
+        myEventsTable.getSelectionModel().setSelectionInterval(newIndex, newIndex);
     }//GEN-LAST:event_myDownButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -337,5 +342,12 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
         }
         myEventEditorScrollPane.setViewportView(editorForm);
         myEventEditorScrollPane.validate();
+    }
+
+    /**
+     * Sets the selection index in the event model table
+     */
+    public void setSelectedEventIndex(int theSelectedIndex) {
+        myEventsTable.getSelectionModel().setSelectionInterval(theSelectedIndex, theSelectedIndex);
     }
 }

@@ -67,10 +67,18 @@ public class XmlSendMessageImpl extends AbstractSendMessage<Document, XmlMessage
 
 
     @Override
-    public SendMessageAny exportConfigToXml() {
-        SendMessageAny sendMessage = new SendMessageAny();
+    public XMLSendMessage exportConfigToXml() {
         XMLSendMessage retVal = exportConfig(new XMLSendMessage());
-        sendMessage.setXml(retVal);
+        return retVal;
+    }
+
+    /**
+     * Overriding to provide a specific type requirement
+     */
+    @Override
+    public SendMessageAny exportConfigToXmlAndEncapsulate() {
+        SendMessageAny sendMessage = new SendMessageAny();
+        sendMessage.setXml(exportConfigToXml());
         return sendMessage;
     }
 

@@ -70,8 +70,11 @@ public class FailureIncorrectMessageReceivedTab extends javax.swing.JPanel {
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("ca/uhn/hunit/l10n/UiStrings"); // NOI18N
         jLabel1.setText(bundle.getString("execution.failure.ca.uhn.hunit.ex.IncorrectMessageReceivedException")); // NOI18N
 
+        jScrollPane1.setBorder(null);
+
         myDifferenceDescriptionArea.setColumns(20);
         myDifferenceDescriptionArea.setRows(5);
+        myDifferenceDescriptionArea.setBorder(null);
         jScrollPane1.setViewportView(myDifferenceDescriptionArea);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);

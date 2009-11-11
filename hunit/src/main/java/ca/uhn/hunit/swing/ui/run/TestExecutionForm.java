@@ -101,6 +101,7 @@ public class TestExecutionForm extends AbstractContextForm<BatteryExecutionConte
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        myTestsTable.setFillsViewportHeight(true);
         myTestsTable.setShowHorizontalLines(false);
         myTestsTable.setShowVerticalLines(false);
         myTestsScrollPane.setViewportView(myTestsTable);
@@ -109,16 +110,16 @@ public class TestExecutionForm extends AbstractContextForm<BatteryExecutionConte
         myTestsPanel.setLayout(myTestsPanelLayout);
         myTestsPanelLayout.setHorizontalGroup(
             myTestsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, myTestsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(myTestsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
-                .addContainerGap())
+            .addGroup(myTestsPanelLayout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(myTestsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 399, Short.MAX_VALUE)
+                .addGap(5, 5, 5))
         );
         myTestsPanelLayout.setVerticalGroup(
             myTestsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(myTestsPanelLayout.createSequentialGroup()
-                .addComponent(myTestsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(myTestsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)
+                .addGap(5, 5, 5))
         );
 
         mySplitPane.setTopComponent(myTestsPanel);
@@ -139,6 +140,7 @@ public class TestExecutionForm extends AbstractContextForm<BatteryExecutionConte
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        myLogTable.setFillsViewportHeight(true);
         myLogTable.setShowHorizontalLines(false);
         myLogTable.setShowVerticalLines(false);
         myLogScrollPane.setViewportView(myLogTable);

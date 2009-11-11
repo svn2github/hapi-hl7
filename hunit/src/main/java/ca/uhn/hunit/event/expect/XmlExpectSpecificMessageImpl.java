@@ -33,8 +33,6 @@ import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.xsd.XMLExpectSpecificMessage;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.test.TestImpl;
-import ca.uhn.hunit.xsd.Event;
-import ca.uhn.hunit.xsd.ExpectMessage;
 import ca.uhn.hunit.xsd.ExpectMessageAny;
 import org.w3c.dom.Document;
 
@@ -67,12 +65,32 @@ public class XmlExpectSpecificMessageImpl extends AbstractXmlExpectMessage {
         return theConfig;
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @Override
-    public ExpectMessageAny exportConfigToXml() {
-        ExpectMessageAny expectMessage = new ExpectMessageAny();
+    public XMLExpectSpecificMessage exportConfigToXml() {
         XMLExpectSpecificMessage retVal = exportConfig(new XMLExpectSpecificMessage());
-        expectMessage.setXmlSpecific(retVal);
-        return expectMessage;
+        return retVal;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public ExpectMessageAny exportConfigToXmlAndEncapsulate() {
+        ExpectMessageAny retVal = new ExpectMessageAny();
+        retVal.setXmlSpecific(exportConfigToXml());
+        return retVal;
+    }
+
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public Class<?> getMessageClass() {
+        return Document.class;
     }
 
 }

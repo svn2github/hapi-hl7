@@ -66,12 +66,24 @@ public class Hl7V2ExpectSpecificMessageImpl extends AbstractHl7V2ExpectMessage i
         return theConfig;
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @Override
-    public ExpectMessageAny exportConfigToXml() {
-        ExpectMessageAny expectMessage = new ExpectMessageAny();
+    public Hl7V2ExpectSpecificMessage exportConfigToXml() {
         Hl7V2ExpectSpecificMessage retVal = exportConfig(new Hl7V2ExpectSpecificMessage());
-        expectMessage.setHl7V2Specific(retVal);
-        return expectMessage;
+        return retVal;
     }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public ExpectMessageAny exportConfigToXmlAndEncapsulate() {
+        ExpectMessageAny retVal = new ExpectMessageAny();
+        retVal.setHl7V2Specific(exportConfigToXml());
+        return retVal;
+    }
+
 
 }

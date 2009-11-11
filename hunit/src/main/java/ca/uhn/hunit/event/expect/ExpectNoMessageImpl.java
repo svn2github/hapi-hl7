@@ -34,7 +34,7 @@ import ca.uhn.hunit.xsd.ExpectNoMessage;
  * TODO: add!
  * 
  * @author <a href="mailto:james.agnew@uhn.on.ca">James Agnew</a>
- * @version $Revision: 1.3 $ updated on $Date: 2009-11-01 22:31:03 $ by $Author: jamesagnew $
+ * @version $Revision: 1.4 $ updated on $Date: 2009-11-11 04:19:29 $ by $Author: jamesagnew $
  */
 public class ExpectNoMessageImpl extends AbstractExpect
 {
@@ -72,6 +72,11 @@ public class ExpectNoMessageImpl extends AbstractExpect
     @Override
     public ExpectNoMessage exportConfigToXml() {
         return (ExpectNoMessage) exportConfig(new ExpectNoMessage());
+    }
+
+    @Override
+    public Object exportConfigToXmlAndEncapsulate() {
+        return exportConfigToXml();
     }
 
 }

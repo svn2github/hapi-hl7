@@ -5,10 +5,31 @@
 
 package ca.uhn.hunit.event;
 
+import ca.uhn.hunit.event.expect.ExpectNoMessageImpl;
+import ca.uhn.hunit.event.expect.Hl7V2ExpectSpecificMessageImpl;
+import ca.uhn.hunit.ex.ConfigurationException;
+import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.ClassNameComparator;
+import ca.uhn.hunit.xsd.Event;
+import ca.uhn.hunit.xsd.ExpectNoMessage;
+import ca.uhn.hunit.xsd.Hl7V2ExpectRules;
+import ca.uhn.hunit.xsd.Hl7V2ExpectSpecificMessage;
+import ca.uhn.hunit.xsd.Hl7V2SendMessage;
+import ca.uhn.hunit.xsd.XMLExpectMessage;
+import ca.uhn.hunit.xsd.XMLExpectSpecificMessage;
+import ca.uhn.hunit.xsd.XMLSendMessage;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.bind.JAXB;
 
 /**
  *
@@ -19,18 +40,21 @@ public class EventFactory {
     public static final EventFactory INSTANCE = new EventFactory();
 
     private final List<Class<? extends AbstractEvent>> myEventClasses;
+    private final Map<Class<? extends AbstractEvent>, Class<? extends Event>> myEventClasses2ConfigTypes;
 
     public EventFactory() {
-        myEventClasses = new ArrayList<Class<? extends AbstractEvent>>();
+        myEventClasses2ConfigTypes = new HashMap<Class<? extends AbstractEvent>, Class<? extends Event>>();
 
-        myEventClasses.add(ca.uhn.hunit.event.expect.ExpectNoMessageImpl.class);
-        myEventClasses.add(ca.uhn.hunit.event.expect.Hl7V2ExpectRulesImpl.class);
-        myEventClasses.add(ca.uhn.hunit.event.expect.Hl7V2ExpectSpecificMessageImpl.class);
-        myEventClasses.add(ca.uhn.hunit.event.expect.XmlExpectSpecificMessageImpl.class);
+        myEventClasses2ConfigTypes.put(ExpectNoMessageImpl.class, ExpectNoMessage.class);
+        
+        myEventClasses2ConfigTypes.put(ca.uhn.hunit.event.expect.Hl7V2ExpectRulesImpl.class, Hl7V2ExpectRules.class);
+        myEventClasses2ConfigTypes.put(ca.uhn.hunit.event.expect.Hl7V2ExpectSpecificMessageImpl.class, Hl7V2ExpectSpecificMessage.class);
+        myEventClasses2ConfigTypes.put(ca.uhn.hunit.event.expect.XmlExpectSpecificMessageImpl.class, XMLExpectSpecificMessage.class);
 
-        myEventClasses.add(ca.uhn.hunit.event.send.Hl7V2SendMessageImpl.class);
-        myEventClasses.add(ca.uhn.hunit.event.send.XmlSendMessageImpl.class);
+        myEventClasses2ConfigTypes.put(ca.uhn.hunit.event.send.Hl7V2SendMessageImpl.class, Hl7V2SendMessage.class);
+        myEventClasses2ConfigTypes.put(ca.uhn.hunit.event.send.XmlSendMessageImpl.class, XMLSendMessage.class);
 
+        myEventClasses = new ArrayList<Class<? extends AbstractEvent>>(myEventClasses2ConfigTypes.keySet());
         Collections.sort(myEventClasses, new ClassNameComparator());
     }
 
@@ -39,5 +63,52 @@ public class EventFactory {
      */
     public List<Class<? extends AbstractEvent>> getEventClasses() {
         return myEventClasses;
+    }
+
+    /**
+     * Creates an instance of an event class using a config which may be new or recycled from
+     * an existing event, possibly of another type
+     *
+     * @param theClass
+     * @param theTest
+     * @param theInitialConfig
+     * @return
+     */
+    public AbstractEvent create(Class<? extends AbstractEvent> theClass, TestImpl theTest, Event theInitialConfig) throws ConfigurationException {
+
+        Class<? extends Event> configType = myEventClasses2ConfigTypes.get(theClass);
+        try {
+            
+            Constructor<? extends AbstractEvent> constructor = theClass.getConstructor(TestImpl.class, configType);
+            final Event convertConfig = convertConfig(theInitialConfig, configType);
+            AbstractEvent event = constructor.newInstance(theTest,convertConfig);
+            return event;
+
+        } catch (InstantiationException ex) {
+            throw new ConfigurationException(ex);
+        } catch (IllegalAccessException ex) {
+            throw new ConfigurationException(ex);
+        } catch (IllegalArgumentException ex) {
+            throw new ConfigurationException(ex);
+        } catch (InvocationTargetException ex) {
+            throw new ConfigurationException(ex);
+        } catch (NoSuchMethodException ex) {
+            throw new ConfigurationException(ex);
+        } catch (SecurityException ex) {
+            throw new ConfigurationException(ex);
+        }
+
+    }
+
+
+    private <T extends Event> T convertConfig(Event theInitialConfig, Class<T> theDesiredClass) {
+        if (theInitialConfig.getClass().equals(theDesiredClass)) {
+            return (T) theInitialConfig;
+        }
+
+        StringWriter stringWriter = new StringWriter();
+        JAXB.marshal(theInitialConfig, stringWriter);
+
+        return JAXB.unmarshal(new StringReader(stringWriter.toString()), theDesiredClass);
     }
 }

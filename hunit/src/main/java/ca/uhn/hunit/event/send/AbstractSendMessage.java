@@ -109,10 +109,17 @@ public abstract class AbstractSendMessage<V, T extends AbstractMessage<V>> exten
         return theConfig;
     }
 
+
     /**
      * Overriding to provide a specific type requirement
      */
     @Override
-    public abstract SendMessageAny exportConfigToXml();
+    public abstract SendMessage exportConfigToXml();
+
+
+    /**
+     * Overriding to provide a specific type requirement
+     */
+    public abstract SendMessageAny exportConfigToXmlAndEncapsulate();
 
 }

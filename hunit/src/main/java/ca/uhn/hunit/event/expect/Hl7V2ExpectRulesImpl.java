@@ -29,7 +29,6 @@ import java.util.List;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.iface.TestMessage;
-import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.ExpectMessageAny;
 import ca.uhn.hunit.xsd.Hl7V2ExpectAck;
 import ca.uhn.hunit.xsd.Hl7V2ExpectNak;
@@ -77,23 +76,23 @@ public class Hl7V2ExpectRulesImpl extends AbstractHl7V2ExpectMessage {
 	}
 
     @Override
-    public ExpectMessageAny exportConfigToXml() {
+    public Hl7V2ExpectRules exportConfigToXml() {
         Hl7V2ExpectRules retVal = new Hl7V2ExpectRules();
 
-        ExpectMessageAny expectMessage = new ExpectMessageAny();
-        if (myExpectAck) {
-            retVal = new Hl7V2ExpectAck();
-            expectMessage.setHl7V2Ack((Hl7V2ExpectAck) retVal);
-        } else if (myExpectNak) {
-            retVal = new Hl7V2ExpectNak();
-            expectMessage.setHl7V2Nak((Hl7V2ExpectNak) retVal);
-        } else {
-            expectMessage.setHl7V2Rules(retVal);
-        }
+//        ExpectMessageAny expectMessage = new ExpectMessageAny();
+//        if (myExpectAck) {
+//            retVal = new Hl7V2ExpectAck();
+//            expectMessage.setHl7V2Ack((Hl7V2ExpectAck) retVal);
+//        } else if (myExpectNak) {
+//            retVal = new Hl7V2ExpectNak();
+//            expectMessage.setHl7V2Nak((Hl7V2ExpectNak) retVal);
+//        } else {
+//            expectMessage.setHl7V2Rules(retVal);
+//        }
 
         retVal = exportConfig(retVal);
 
-        return expectMessage;
+        return retVal;
     }
 
     public Hl7V2ExpectRules exportConfig(Hl7V2ExpectRules theConfig) {
@@ -104,6 +103,24 @@ public class Hl7V2ExpectRulesImpl extends AbstractHl7V2ExpectMessage {
 		}
 
         return theConfig;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public Class<?> getMessageClass() {
+        return Message.class;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public ExpectMessageAny exportConfigToXmlAndEncapsulate() {
+        ExpectMessageAny retVal = new ExpectMessageAny();
+        retVal.setHl7V2Rules(exportConfigToXml());
+        return retVal;
     }
 
 }

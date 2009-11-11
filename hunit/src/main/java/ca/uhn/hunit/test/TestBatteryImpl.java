@@ -205,8 +205,12 @@ public class TestBatteryImpl extends AbstractModelClass {
         return myTestModel.getTests();
     }
 
-    public Set<String> getInterfaceIds() {
-        return myId2Interface.keySet();
+    public List<String> getInterfaceIds() {
+        ArrayList<String> retVal = new ArrayList<String>();
+        for (AbstractInterface next : myInterfaces) {
+            retVal.add(next.getId());
+        }
+        return retVal;
     }
 
     public Set<InterfaceInteractionEnum> getInterfaceInteractionTypes(String theInterfaceId) {

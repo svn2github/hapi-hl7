@@ -81,11 +81,23 @@ public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message, Hl7V2Mess
         return theConfig;
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @Override
-    public SendMessageAny exportConfigToXml() {
-        SendMessageAny sendMessage = new SendMessageAny();
+    public Hl7V2SendMessage exportConfigToXml() {
         Hl7V2SendMessage retVal = exportConfig(new Hl7V2SendMessage());
-        sendMessage.setHl7V2(retVal);
+        return retVal;
+    }
+
+
+    /**
+     * Overriding to provide a specific type requirement
+     */
+    @Override
+    public SendMessageAny exportConfigToXmlAndEncapsulate() {
+        SendMessageAny sendMessage = new SendMessageAny();
+        sendMessage.setHl7V2(exportConfigToXml());
         return sendMessage;
     }
 

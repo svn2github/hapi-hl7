@@ -97,6 +97,6 @@ public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extend
      * Overriding to provide a specific type requirement
      */
     @Override
-    public abstract ExpectMessageAny exportConfigToXml();
+    public abstract ExpectMessageAny exportConfigToXmlAndEncapsulate();
 
 }
