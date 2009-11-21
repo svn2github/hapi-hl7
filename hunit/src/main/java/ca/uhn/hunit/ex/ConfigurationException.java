@@ -21,21 +21,19 @@
  */
 package ca.uhn.hunit.ex;
 
-public class ConfigurationException extends Exception {
-
-	public ConfigurationException() {
-	}
+public class ConfigurationException extends TestFailureException {
 
 	public ConfigurationException(String theMessage) {
 		super(theMessage);
 	}
 
-	public ConfigurationException(Throwable theCause) {
-		super(theCause);
-	}
-
 	public ConfigurationException(String theMessage, Throwable theCause) {
 		super(theMessage, theCause);
 	}
+
+    @Override
+    public String describeReason() {
+        return getMessage();
+    }
 
 }

@@ -40,6 +40,7 @@ import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
 import ca.uhn.hl7v2.validation.impl.ValidationContextImpl;
+import ca.uhn.hunit.event.InterfaceInteractionEnum;
 import ca.uhn.hunit.ex.InterfaceException;
 import ca.uhn.hunit.ex.InterfaceWontReceiveException;
 import ca.uhn.hunit.ex.InterfaceWontSendException;
@@ -257,8 +258,9 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
         }
 
         startInterface(theCtx);
-
-        if (isClear()) {
+        
+        TestBatteryImpl battery = theCtx.getBattery();
+        if (isClear() && battery.getInterfaceInteractionTypes(getId()).contains(InterfaceInteractionEnum.RECEIVE)) {
             long readUntil = System.currentTimeMillis() + getClearMillis();
             int cleared = 0;
             while (System.currentTimeMillis() < readUntil) {

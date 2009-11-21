@@ -27,6 +27,7 @@ Welcome
   hUnit is a sub-project of the {{{http://hl7api.sf.net/}HAPI project}}, which aims to provide a full featured and open HL7
   message parsing library. 
 
+[images/v03/execution.png]
 
 What is hUnit?
 
@@ -40,13 +41,21 @@ What is hUnit?
   * It is multithreaded and asynchronous, allowing for messages to be transmitted to one
     interface at the same time as messages are being received by another.
     
-  * It uses XML to represent tests, allowing non-java developers to develop good unit tests.
+  * It uses XML to represent tests and has a UI for editing tests, allowing non-java developers
+    to develop good unit tests. This also means that test files can be edited by hand. hUnit also
+    allows you to execute your tests in an automated way using JUnit 3 or 4.
   
   * It aims to be as flexible as possible. Currently only HL7-in-HL7-out verification is possible,
     but much more should be possible soon. We'd love to hear what you think might be useful.
     
 
 What's New?
+
+* November 21, 2009
+
+  hUnit 0.3 has been released! This release introduced the Swing based GUI for hUnit. See
+  the screenshots page for details.
+
 
 * October 7, 2009
 

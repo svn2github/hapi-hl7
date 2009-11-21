@@ -53,7 +53,7 @@ public class XmlMessageImpl extends AbstractMessage<Document> {
             final String text = theDefinition.getText();
             setSourceMessage(text);
         } catch (PropertyVetoException ex) {
-            throw new ConfigurationException(ex);
+            throw new ConfigurationException(ex.getMessage(), ex);
         }
     }
 

@@ -35,6 +35,7 @@ import ca.uhn.hunit.event.AbstractEvent;
 import ca.uhn.hunit.swing.model.MessageComboBoxModel;
 import ca.uhn.hunit.swing.ui.event.expect.*;
 import ca.uhn.hunit.event.ISpecificMessageEvent;
+import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import java.beans.PropertyVetoException;
@@ -98,7 +99,12 @@ public class BaseSpecificMessageEditorForm extends AbstractEventEditorForm<Abstr
 
     private void myMessageComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myMessageComboBoxActionPerformed
         try {
-            myEvent.setMessageId((String) myMessageComboBox.getModel().getSelectedItem());
+            final Object selectedItem = myMessageComboBox.getModel().getSelectedItem();
+            if (selectedItem == MessageComboBoxModel.NONE_SELECTED) {
+                myEvent.setMessageId(null);
+            } else {
+                myEvent.setMessageId((String) ((AbstractMessage<?>)selectedItem).getId());
+            }
         } catch (PropertyVetoException ex) {
             myMessageComboBox.setSelectedItem(myEvent.getMessage().getId());
         }
@@ -114,12 +120,13 @@ public class BaseSpecificMessageEditorForm extends AbstractEventEditorForm<Abstr
      * {@inheritDoc }
      */
     @Override
-    public void setController(TestEditorController theController, TestBatteryImpl theBattery, AbstractEvent theEvent) {
+    public void setController(TestEditorController theController, AbstractEvent theEvent) {
         myController = theController;
-        myBattery = theBattery;
+        myBattery = theController.getTest().getBattery();
         myEvent = (ISpecificMessageEvent) theEvent;
 
         myMessageComboBox.setModel(new MessageComboBoxModel(myBattery, myEvent));
+        myMessageComboBox.setRenderer(new MessageComboboxRenderer());
     }
 
 }

@@ -47,7 +47,7 @@ public class Hl7V2MessageImpl extends AbstractMessage<Message> {
         try {
             setSourceMessage(theConfig.getText());
         } catch (PropertyVetoException ex) {
-            throw new ConfigurationException(ex);
+            throw new ConfigurationException(ex.getMessage(), ex);
         }
 	}
 

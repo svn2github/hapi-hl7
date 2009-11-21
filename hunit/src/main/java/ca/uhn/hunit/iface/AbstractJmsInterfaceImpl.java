@@ -252,11 +252,10 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
             myMessageListenerContainer.setBeanName(getId());
             myMessageListenerContainer.setAutoStartup(true);
             myMessageListenerContainer.setAcceptMessagesWhileStopping(false);
-            myMessageListenerContainer.setClientId("hUnit");
+            myMessageListenerContainer.setClientId("hUnit-" + getId());
             myMessageListenerContainer.setConcurrentConsumers(1);
             myMessageListenerContainer.setConnectionFactory(connectionFactory);
             myMessageListenerContainer.setPubSubDomain(myPubSubDomain);
-            myMessageListenerContainer.setDurableSubscriptionName("hUnit");
             myMessageListenerContainer.setDestinationName(myQueueName);
             myMessageListenerContainer.setMessageListener(new MyMessageListener(theCtx));
             myMessageListenerContainer.afterPropertiesSet();
@@ -313,6 +312,9 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
         return message;
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public void stop(ExecutionContext theCtx) throws InterfaceWontStopException {
         if (!myStarted) {
@@ -325,10 +327,11 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
         theCtx.getLog().get(this).info("Stopping interface");
 
         if (myMessageListenerContainer != null) {
-            myMessageListenerContainer.destroy();
+            myMessageListenerContainer.shutdown();
         }
 
         myStarted = false;
+        myStopped = true;
         firePropertyChange(INTERFACE_STARTED_PROPERTY, true, false);
     }
 

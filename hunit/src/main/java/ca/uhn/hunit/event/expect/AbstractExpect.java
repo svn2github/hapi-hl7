@@ -66,4 +66,12 @@ public abstract class AbstractExpect extends AbstractEvent {
         return theConfig;
     }
 
+    public void setReceiveTimeout(long theLongValue) {
+        myReceiveTimeout = theLongValue;
+    }
+
+    public void setWaitForCompletion(boolean theWaitForCompletion) {
+        myWaitForCompletion = theWaitForCompletion;
+    }
+
 }

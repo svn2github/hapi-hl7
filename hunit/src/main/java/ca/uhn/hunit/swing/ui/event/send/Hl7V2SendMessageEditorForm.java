@@ -102,14 +102,13 @@ public class Hl7V2SendMessageEditorForm extends AbstractEventEditorForm<Hl7V2Sen
      * {@inheritDoc }
      */
     @Override
-    public void setController(TestEditorController theController, TestBatteryImpl theBattery, Hl7V2SendMessageImpl theEvent) {
-        myBattery = theBattery;
+    public void setController(TestEditorController theController, Hl7V2SendMessageImpl theEvent) {
         myEvent = theEvent;
         myController = theController;
 
-        myBaseEventEditorForm.setController(theController, theBattery, theEvent);
-        myBaseSpecificMessageEditorForm.setController(theController, theBattery, theEvent);
-        myEventTypeForm.setController(theController, theBattery, theEvent);
+        myBaseEventEditorForm.setController(theController, theEvent);
+        myBaseSpecificMessageEditorForm.setController(theController, theEvent);
+        myEventTypeForm.setController(theController, theEvent);
     }
 
 }

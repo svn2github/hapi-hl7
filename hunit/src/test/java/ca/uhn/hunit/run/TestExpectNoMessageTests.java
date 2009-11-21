@@ -13,20 +13,27 @@ import org.junit.Test;
 
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
+import ca.uhn.hunit.iface.StaticActiveMQConnectionFactory;
 import ca.uhn.hunit.test.TestBatteryImpl;
+import org.junit.After;
+import org.springframework.core.io.ClassPathResource;
 
 /**
  * TODO: add!
  * 
  * @author <a href="mailto:james.agnew@uhn.on.ca">James Agnew</a>
- * @version $Revision: 1.3 $ updated on $Date: 2009-10-19 13:37:27 $ by $Author: jamesagnew $
+ * @version $Revision: 1.4 $ updated on $Date: 2009-11-21 18:29:30 $ by $Author: jamesagnew $
  */
 public class TestExpectNoMessageTests
 {
-    
+    @After
+    public void cleanup() {
+        StaticActiveMQConnectionFactory.reset();
+    }
+
     @Test
     public void testFailingTest() throws URISyntaxException, InterfaceWontStartException, ConfigurationException, JAXBException {
-        File defFile = new File(Thread.currentThread().getContextClassLoader().getResource("unit_test_expect_no.xml").toURI());
+        ClassPathResource defFile = new ClassPathResource("unit_test_expect_no.xml");
         TestBatteryImpl battery = new TestBatteryImpl(defFile);
         ExecutionContext ctx = new ExecutionContext(battery);
         ctx.execute("ExpectFailure");
@@ -37,12 +44,18 @@ public class TestExpectNoMessageTests
     
     @Test
     public void testPassingTest() throws URISyntaxException, InterfaceWontStartException, ConfigurationException, JAXBException {
-        File defFile = new File(Thread.currentThread().getContextClassLoader().getResource("unit_test_expect_no.xml").toURI());
+        ClassPathResource defFile = new ClassPathResource("unit_test_expect_no.xml");
         TestBatteryImpl battery = new TestBatteryImpl(defFile);
         ExecutionContext ctx = new ExecutionContext(battery);
         ctx.execute("ExpectSuccess");
         
         Assert.assertTrue(ctx.getTestSuccesses().contains(battery.getTestByName("ExpectSuccess")));
+    }
+
+    public static void main(String[] args) throws InterfaceWontStartException, ConfigurationException, URISyntaxException, JAXBException {
+        TestExpectNoMessageTests t = new TestExpectNoMessageTests();
+        t.testFailingTest();
+        t.testPassingTest();
     }
 
 }

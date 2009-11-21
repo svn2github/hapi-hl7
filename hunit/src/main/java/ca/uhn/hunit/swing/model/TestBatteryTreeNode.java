@@ -45,6 +45,13 @@ public class TestBatteryTreeNode extends DefaultMutableTreeNode {
         myBattery = theBattery;
 	}
 
+    /**
+     * Returns the battery associated with this node
+     */
+    public TestBatteryImpl getBattery() {
+        return myBattery;
+    }
+
 
     public void setModel(MyTreeModel theModel) {
 		add(new TestBatteryTestsTreeNode(myBattery, theModel));

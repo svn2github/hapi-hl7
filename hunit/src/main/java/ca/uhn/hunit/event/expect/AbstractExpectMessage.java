@@ -27,6 +27,7 @@ import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceWontReceiveException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.l10n.Strings;
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.xsd.Event;
@@ -37,24 +38,24 @@ import java.beans.PropertyVetoException;
 public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extends AbstractExpect implements ISpecificMessageEvent {
 
     public static final String MESSAGE_ID_PROPERTY = "AEM_MESSAGE_ID_PROPERTY";
-    private T myMessageProvider;
-
-    @Override
-    public T getMessage() {
-        return myMessageProvider;
-    }
+    private T myMessage;
 
 	public AbstractExpectMessage(TestImpl theTest, ExpectMessage theConfig) throws ConfigurationException {
 		super(theTest, theConfig);
         try {
             setMessageId(theConfig.getMessageId());
         } catch (PropertyVetoException ex) {
-            throw new ConfigurationException();
+            throw new ConfigurationException(ex.getMessage());
         }
 	}
 
 	@Override
 	public void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException {
+        if (myMessage == null) {
+            String message = Strings.getMessage("execution.failure.ca.uhn.hunit.ex.ConfigurationException.no_message_selected", getTest().getName());
+            throw new ConfigurationException(message);
+        }
+
 
 		TestMessage<?> message = getInterface().receiveMessage(getTest(), theCtx, getReceiveTimeout());
 		if (!getInterface().isStarted()) {
@@ -62,8 +63,7 @@ public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extend
 		}
 		
         if (message == null) {
-            // FIXME: correct number below
-            throw new InterfaceWontReceiveException(getInterface(), "Didn't receive a message after " + 9999 + "ms");
+            throw new InterfaceWontReceiveException(getInterface(), "Didn't receive a message after " + getReceiveTimeout() + "ms");
         }
 
 		receiveMessage(theCtx, message);
@@ -72,15 +72,28 @@ public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extend
 
 	public abstract void receiveMessage(ExecutionContext theCtx, TestMessage<?> theMessage) throws TestFailureException;
 
-    public String getMessageId() {
-        return myMessageProvider.getId();
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public T getMessage() {
+        return myMessage;
     }
 
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
     public void setMessageId(String theMessageId) throws PropertyVetoException {
-        String oldValue = myMessageProvider != null ? myMessageProvider.getId() : null;
+        String oldValue = myMessage != null ? myMessage.getId() : null;
         fireVetoableChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
         try {
-            myMessageProvider = (T)getBattery().getMessage(theMessageId);
+            if (theMessageId == null) {
+                myMessage = null;
+            } else {
+                myMessage = (T)getBattery().getMessage(theMessageId);
+            }
         } catch (ConfigurationException ex) {
             throw new PropertyVetoException("Unknown message ID", null);
         }
@@ -89,7 +102,7 @@ public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extend
 
     public Event exportConfig(ExpectMessage theConfig) {
         super.exportConfig(theConfig);
-        theConfig.setMessageId(myMessageProvider.getId());
+        theConfig.setMessageId(myMessage != null ? myMessage.getId() : null);
         return theConfig;
     }
 

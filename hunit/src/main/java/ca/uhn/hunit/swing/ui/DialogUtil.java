@@ -44,4 +44,9 @@ public class DialogUtil {
         return (choice == JOptionPane.OK_OPTION);
     }
 
+    public static boolean showYesNoDialog(Component theParent, String message) {
+        int choice = JOptionPane.showConfirmDialog(theParent, message, "hUnit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        return (choice == JOptionPane.YES_OPTION);
+    }
+
 }

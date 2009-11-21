@@ -30,6 +30,7 @@ import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.AbstractModelClass;
 import ca.uhn.hunit.xsd.Event;
 import java.beans.PropertyVetoException;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * An event is a single action taken within a test. A single test therefore is
@@ -44,7 +45,11 @@ public abstract class AbstractEvent extends AbstractModelClass {
 
 	public AbstractEvent(TestImpl theTest, Event theConfig) throws ConfigurationException {
         String interfaceId = theConfig.getInterfaceId();
-        myInterface = theTest.getBattery().getInterface(interfaceId);
+
+        if (!StringUtils.isBlank(interfaceId)) {
+            myInterface = theTest.getBattery().getInterface(interfaceId);
+        }
+
 		myTest = theTest;
 	}
 	
@@ -55,6 +60,13 @@ public abstract class AbstractEvent extends AbstractModelClass {
 	public abstract void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException;
 
     public abstract InterfaceInteractionEnum getInteractionType();
+
+    /**
+     * @return Returns true if this event is configured and ready for use.
+     */
+    public boolean isConfigured() {
+        return myInterface != null;
+    }
 
     /**
      * Subclasses should override this and pass their config to the super implementation

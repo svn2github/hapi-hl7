@@ -86,7 +86,7 @@ public class EventEditorDefaultPane extends AbstractEventEditorForm<AbstractEven
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void setController(TestEditorController theController, TestBatteryImpl theBattery, AbstractEvent theEvent) {
+    public void setController(TestEditorController theController, AbstractEvent theEvent) {
         // ignore
     }
 

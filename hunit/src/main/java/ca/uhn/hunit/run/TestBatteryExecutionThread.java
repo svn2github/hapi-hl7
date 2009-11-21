@@ -119,12 +119,7 @@ public class TestBatteryExecutionThread extends Thread {
 
 		}
 
-		try {
-			myInterface.stop(myCtx);
-		} catch (InterfaceWontStopException e) {
-			myFailed = e;
-			myCtx.getLog().get(myInterface).error("Can't stop interface: " + e.describeReason());
-		}
+        stopInterface();
 
 		myReady = false;
 
@@ -165,6 +160,7 @@ public class TestBatteryExecutionThread extends Thread {
 
 	public void finish() {
 		myStopped = true;
+        stopInterface();
 	}
 
 	public void cancelCurrentEvents() {
@@ -172,5 +168,16 @@ public class TestBatteryExecutionThread extends Thread {
 			myEvents.clear();
 		}
 	}
+
+    private synchronized void stopInterface() {
+        try {
+            if (myInterface.isStarted()) {
+                myInterface.stop(myCtx);
+            }
+		} catch (InterfaceWontStopException e) {
+			myFailed = e;
+			myCtx.getLog().get(myInterface).error("Can't stop interface: " + e.describeReason());
+		}
+    }
 
 }

@@ -30,6 +30,7 @@ import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.l10n.Strings;
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.xsd.Event;
@@ -41,38 +42,36 @@ public abstract class AbstractSendMessage<V, T extends AbstractMessage<V>> exten
 
     private T myMessage;
 
-	public AbstractSendMessage(TestImpl theTest, SendMessage theConfig) throws ConfigurationException {
-		super(theTest, theConfig);
+    public AbstractSendMessage(TestImpl theTest, SendMessage theConfig) throws ConfigurationException {
+        super(theTest, theConfig);
 
         String messageId = theConfig.getMessageId();
-        myMessage = (T)theTest.getBattery().getMessage(messageId);
-	}
-
-	@Override
-	public void execute(ExecutionContext theCtx) throws TestFailureException {
-        
-        try {
-            
-            TestMessage<V> message = myMessage.getTestMessage();
-
-            message = massageMessage(message);
-            AbstractInterface iface = getBattery().getInterface(getInterfaceId());
-            iface.sendMessage(getTest(), theCtx, message);
-
-        } catch (ConfigurationException ex) {
-
-            throw new UnexpectedTestFailureException(ex);
-            
+        if (messageId != null) {
+            myMessage = (T) theTest.getBattery().getMessage(messageId);
         }
-		
-	}
+    }
 
-	/**
+    @Override
+    public void execute(ExecutionContext theCtx) throws TestFailureException {
+
+        if (myMessage == null) {
+            String message = Strings.getMessage("execution.failure.ca.uhn.hunit.ex.ConfigurationException.no_message_selected", getTest().getName());
+            throw new ConfigurationException(message);
+        }
+
+        TestMessage<V> message = myMessage.getTestMessage();
+
+        message = massageMessage(message);
+        AbstractInterface iface = getBattery().getInterface(getInterfaceId());
+        iface.sendMessage(getTest(), theCtx, message);
+
+    }
+
+    /**
      * Subclasses should override this method to perform any message massaging
      * they need to do. It is ok to just return the object passed in.
      */
-	public abstract TestMessage<V> massageMessage(TestMessage<V> theInput) throws TestFailureException;
-
+    public abstract TestMessage<V> massageMessage(TestMessage<V> theInput) throws TestFailureException;
 
     /**
      * {@inheritDoc }
@@ -82,26 +81,23 @@ public abstract class AbstractSendMessage<V, T extends AbstractMessage<V>> exten
         return InterfaceInteractionEnum.SEND;
     }
 
-
     public AbstractMessage<?> getMessage() {
         return myMessage;
     }
 
-
     public void setMessageId(String theMessageId) throws PropertyVetoException {
         T newMessage;
         try {
-            newMessage = (T)getBattery().getMessage(theMessageId);
+            newMessage = theMessageId != null ? (T) getBattery().getMessage(theMessageId) : null;
         } catch (ConfigurationException ex) {
             throw new PropertyVetoException(ex.getMessage(), null);
         }
 
-        String oldValue = myMessage.getId();
+        String oldValue = myMessage != null ? myMessage.getId() : null;
         fireVetoableChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
         this.myMessage = newMessage;
         firePropertyChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
     }
-
 
     public SendMessage exportConfig(SendMessage theConfig) {
         super.exportConfig(theConfig);
@@ -109,17 +105,14 @@ public abstract class AbstractSendMessage<V, T extends AbstractMessage<V>> exten
         return theConfig;
     }
 
-
     /**
      * Overriding to provide a specific type requirement
      */
     @Override
     public abstract SendMessage exportConfigToXml();
 
-
     /**
      * Overriding to provide a specific type requirement
      */
     public abstract SendMessageAny exportConfigToXmlAndEncapsulate();
-
 }

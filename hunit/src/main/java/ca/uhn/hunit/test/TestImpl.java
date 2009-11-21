@@ -22,6 +22,7 @@
 package ca.uhn.hunit.test;
 
 
+import ca.uhn.hunit.event.AbstractEvent;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.l10n.Strings;
 import ca.uhn.hunit.util.AbstractModelClass;
@@ -35,16 +36,26 @@ public class TestImpl extends AbstractModelClass {
 
 	private String myName;
 	private TestBatteryImpl myBattery;
-    private final TestEventsModel myEventsModel;
+    private final TestEventsModel myEventsModel = new TestEventsModel(this);
 	
+    /**
+     * Constructor
+     */
 	public TestImpl(TestBatteryImpl theBattery, Test theConfig) throws ConfigurationException {
 		myName = theConfig.getName();
 		myBattery = theBattery;
 
-        myEventsModel = new TestEventsModel(this);
         myEventsModel.initFromXml(theConfig);
         
 	}
+
+    /**
+     * Constructor
+     */
+    public TestImpl(TestBatteryImpl theBattery, String theName) {
+        myName = theName;
+        myBattery = theBattery;
+    }
 	
 	
     public TestBatteryImpl getBattery() {
@@ -89,7 +100,6 @@ public class TestImpl extends AbstractModelClass {
         return retVal;
     }
 
-    
 
 	
 }

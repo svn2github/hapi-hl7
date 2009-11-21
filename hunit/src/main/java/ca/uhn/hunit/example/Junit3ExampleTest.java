@@ -26,6 +26,10 @@ import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import java.io.File;
 import junit.framework.TestCase;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -45,7 +49,7 @@ public class Junit3ExampleTest extends TestCase {
          * using a Spring Framework utility class to load a File from the classpath,
          * but any other way of getting a file reference works too.
          */
-        File file = ResourceUtils.getFile("classpath:ca/uhn/hunit/junit/unit_tests_many_passing.xml");
+        Resource file = new ClassPathResource("/ca/uhn/hunit/junit/unit_tests_many_passing.xml");
         TestBatteryImpl battery = new TestBatteryImpl(file);
 
         myExecutionContext = new ExecutionContext(battery);

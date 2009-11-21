@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+The base tag for hUnit is a battery. A Battery defines one or more tests. 
+-->
+<hu:battery xmlns:hu="http://hl7api.sourceforge.net/hunit/hunit_tests.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://hl7api.sourceforge.net/hunit/hunit_tests.xsd http://hl7api.sourceforge.net/hunit/hunit_tests.xsd">
+
+    <!--
+    First, the battery is given a name 
+    -->	
+	<hu:name>TestBattery</hu:name>
+	
+	<!-- 
+	Then, any interfaces needed by the test are defined
+	-->
+	<hu:interfaces>
+		
+		<!--
+		This test has two interfaces, both of which are TCP MLLP interfaces for
+		HL7 v2. One is a server socket which will receive messages with an ID of
+		"test_in_interface". One is a client interface which will send messages
+		with an ID of "test_out_interface".
+		-->
+		<hu:interface>
+			<hu:mllpHl7V2Interface id="ReceiveInterface" autostart="false">
+				<hu:ip>localhost</hu:ip>
+				<hu:port>10200</hu:port>
+				<hu:mode>server</hu:mode>
+				<hu:clear>false</hu:clear>
+			</hu:mllpHl7V2Interface>
+		</hu:interface>
+		<hu:interface>
+			<hu:mllpHl7V2Interface id="SendInterface" autostart="false">
+				<hu:ip>localhost</hu:ip>
+				<hu:port>10201</hu:port>
+				<hu:mode>client</hu:mode>
+			</hu:mllpHl7V2Interface>
+		</hu:interface>
+		
+	</hu:interfaces>
+	
+	<!--
+	Next, we define some tests
+	-->
+	<hu:tests>
+	
+        <!-- 
+        This test sends a message to the interface "test_out_interface". The message
+        is defined below. It has the ID "SendMessage".
+        
+        The test then expects to receive a message on the interface "test_in_interface".
+        The expected message should match exactly the contents of the message defined
+        below with the ID "NormalReceiveMessage".
+        -->
+		<hu:test>
+			<hu:name>Test 1</hu:name>
+			<hu:send_message>
+				<hu:hl7v2 interface_id="SendInterface" message_id="SendMessage" />
+			</hu:send_message>
+			<hu:expect_message>
+                <hu:hl7v2_specific interface_id="ReceiveInterface" message_id="ReceiveMessage"/>
+			</hu:expect_message>
+		</hu:test>
+		
+	</hu:tests>
+	
+	<!-- 
+	Finally, we define the messages used
+	-->
+	<hu:messages>
+		<hu:hl7v2 id="SendMessage">
+			<hu:text><![CDATA[
+MSH|^~\&|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
+PID|||7005728^^^TML^MR||LEIGHTON^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR
+PV1|1||OLIS||||OLIST^BLAKE^DONALD^THOR^^^^^921379^^^^OLIST
+ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379
+OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R
+OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
+           ]]></hu:text>
+		</hu:hl7v2>
+		<hu:hl7v2 id="ReceiveMessage">
+			<hu:text><![CDATA[
+MSH|^~\&|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
+PID|||7005728^^^TML^MR||TEST^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR
+PV1|1||OLIS||||OLIST^BLAKE^DONALD^THOR^^^^^921379^^^^OLIST
+ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379
+OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R
+OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
+           ]]></hu:text>
+		</hu:hl7v2>
+	</hu:messages>
+</hu:battery>

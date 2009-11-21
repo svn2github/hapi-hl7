@@ -44,7 +44,6 @@ import java.beans.PropertyVetoException;
  */
 public class BaseEventEditorForm extends AbstractEventEditorForm<AbstractEvent> {
     private static final long serialVersionUID = 1L;
-    private TestBatteryImpl myBattery;
     private AbstractEvent myEvent;
     private TestEditorController myController;
 
@@ -117,12 +116,11 @@ public class BaseEventEditorForm extends AbstractEventEditorForm<AbstractEvent> 
      * {@inheritDoc }
      */
     @Override
-    public void setController(TestEditorController theController, TestBatteryImpl theBattery, AbstractEvent theEvent) {
+    public void setController(TestEditorController theController, AbstractEvent theEvent) {
         myController = theController;
-        myBattery = theBattery;
         myEvent = theEvent;
 
-        myInterfaceCombobox.setModel(new InterfaceComboBoxModel(myBattery, myEvent));
+        myInterfaceCombobox.setModel(new InterfaceComboBoxModel(myController.getTest().getBattery(), myEvent));
     }
 
 

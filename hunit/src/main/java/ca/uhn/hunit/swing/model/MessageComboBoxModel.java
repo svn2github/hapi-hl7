@@ -40,6 +40,8 @@ public class MessageComboBoxModel extends DefaultComboBoxModel {
 
     private final TestBatteryImpl myBattery;
 
+    public static final String NONE_SELECTED = new Object() + "NONE_SELECTED";
+
     public MessageComboBoxModel(TestBatteryImpl theBattery, ISpecificMessageEvent theEvent) {
         if (theBattery == null) {
             theBattery = new TestBatteryImpl();
@@ -47,18 +49,23 @@ public class MessageComboBoxModel extends DefaultComboBoxModel {
         myBattery = theBattery;
 
         if (theEvent != null) {
-            setSelectedItem(theEvent.getMessage().getId());
+            setSelectedItem(theEvent.getMessage());
+        } else {
+            setSelectedItem(NONE_SELECTED);
         }
     }
 
     @Override
     public Object getElementAt(int index) {
-        return myBattery.getMessages().get(index).getId();
+        if (index == 0){
+            return NONE_SELECTED;
+        }
+        return myBattery.getMessages().get(index - 1);
     }
 
     @Override
     public int getSize() {
-        return myBattery.getMessages().size();
+        return myBattery.getMessages().size() + 1;
     }
 
 

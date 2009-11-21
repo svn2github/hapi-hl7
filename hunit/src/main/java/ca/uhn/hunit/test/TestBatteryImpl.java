@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -61,12 +63,16 @@ import java.io.FileWriter;
 import java.io.StringWriter;
 import java.util.HashSet;
 import javax.xml.bind.Marshaller;
+import javax.xml.transform.Source;
 import org.apache.commons.logging.Log;
+import org.springframework.core.io.Resource;
 
 public class TestBatteryImpl extends AbstractModelClass {
 
     public static final String PROP_INTERFACES = "PROP_INTERFACES";
+    public static final String PROP_FILE = "PROP_FILE";
     public static final String PROP_MESSAGES = "PROP_MESSAGES";
+
     private Map<String, AbstractInterface> myId2Interface = new HashMap<String, AbstractInterface>();
     private Map<String, AbstractMessage<?>> myId2Message = new HashMap<String, AbstractMessage<?>>();
     private String myName;
@@ -77,29 +83,32 @@ public class TestBatteryImpl extends AbstractModelClass {
     private final ILogProvider myLogProvider;
     private final Log myLog;
 
-    public TestBatteryImpl(File theDefFile, ILogProvider theLogProvider) throws ConfigurationException, JAXBException {
+    public TestBatteryImpl(Resource theDefFile, ILogProvider theLogProvider) throws ConfigurationException, JAXBException {
         load(theDefFile);
 
         myLogProvider = theLogProvider;
         myLog = myLogProvider.getSystem(TestBatteryImpl.class);
-        myFile = theDefFile;
+
+        try {
+            myFile = theDefFile.getFile();
+        } catch (IOException ex) {
+            // nothing
+        }
+
     }
 
     /**
      * Constructor which uses commons logging log
      */
-    public TestBatteryImpl(File theDefFile) throws ConfigurationException, JAXBException {
+    public TestBatteryImpl(Resource theDefFile) throws ConfigurationException, JAXBException {
         this(theDefFile, new CommonsLoggingLog());
+        
+        try {
+            myFile = theDefFile.getFile();
+        } catch (IOException ex) {
+            // nothing
+        }
 
-        myFile = theDefFile;
-    }
-
-    private static TestBattery unmarshal(File theDefFile) throws JAXBException {
-        JAXBContext jaxbContext = JAXBContext.newInstance("ca.uhn.hunit.xsd");
-        Unmarshaller u = jaxbContext.createUnmarshaller();
-        JAXBElement<TestBattery> root = u.unmarshal(new StreamSource(theDefFile), TestBattery.class);
-        TestBattery battery = root.getValue();
-        return battery;
     }
 
     public TestBatteryImpl(ILogProvider theLogProvider) {
@@ -142,6 +151,14 @@ public class TestBatteryImpl extends AbstractModelClass {
             throw new ConfigurationException("Unknown message ID[" + theId + "] - Valid values are: " + myId2Message.keySet());
         }
         return myId2Message.get(theId);
+    }
+
+    private static TestBattery unmarshal(final Source source) throws JAXBException {
+        JAXBContext jaxbContext = JAXBContext.newInstance("ca.uhn.hunit.xsd");
+        Unmarshaller u = jaxbContext.createUnmarshaller();
+        JAXBElement<TestBattery> root = u.unmarshal(source, TestBattery.class);
+        TestBattery battery = root.getValue();
+        return battery;
     }
 
     private void initTests(TestBattery theConfig) throws ConfigurationException {
@@ -289,8 +306,10 @@ public class TestBatteryImpl extends AbstractModelClass {
     /**
      * Sets the config file associated with this battery, if any
      */
-    public void setFile(File myFile) {
-        this.myFile = myFile;
+    public void setFile(File theFile) {
+        File oldValue = this.myFile;
+        this.myFile = theFile;
+        firePropertyChange(PROP_FILE, oldValue, myFile);
     }
 
     /**
@@ -328,8 +347,19 @@ public class TestBatteryImpl extends AbstractModelClass {
         writer.close();
     }
 
-    public void load(File inputFile) throws JAXBException, ConfigurationException {
-        TestBattery config = unmarshal(inputFile);
+    public void load(Resource inputFile) throws JAXBException, ConfigurationException {
+        Source source;
+        try {
+            source = new StreamSource(inputFile.getInputStream());
+        } catch (IOException ex) {
+            try {
+                source = new StreamSource(inputFile.getFile());
+            } catch (IOException ex1) {
+                throw new ConfigurationException(ex1.getMessage());
+            }
+        }
+        
+        TestBattery config = unmarshal(source);
 
         myName = config.getName();
         initInterfaces(config);
@@ -337,5 +367,29 @@ public class TestBatteryImpl extends AbstractModelClass {
 
         // Init tests last since they will depend on other things to be ready
         initTests(config);
+    }
+
+    /**
+     * Adds a new test with no events
+     */
+    public void addEmptyTest() {
+        List<String> currentTestNames = myTestModel.getTestNames();
+        String newName = IdUtil.nextId(currentTestNames);
+        TestImpl test = new TestImpl(this, newName);
+        myTestModel.addTest(test);
+    }
+
+    /**
+     * @param theName Sets the name for this battery
+     */
+    public void setName(String theName) {
+        myName = theName;
+    }
+
+    /**
+     * Returns true if this battery has no data
+     */
+    public boolean isEmpty() {
+        return myId2Interface.isEmpty() && myId2Message.isEmpty() && (myTestModel.getRowCount() == 0);
     }
 }

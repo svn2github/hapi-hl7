@@ -12,15 +12,16 @@ import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.example.MllpHl7v2MessageSwapper;
 import ca.uhn.hunit.run.ExecutionContext;
+import org.springframework.core.io.ClassPathResource;
 
 
 public class Hl7V2Test {
 
 	@Test
 	public void testSuccessfulExpectSpecific() throws URISyntaxException, InterfaceWontStartException, ConfigurationException, JAXBException {
-		new MllpHl7v2MessageSwapper(false, "LEIGHTON", "TEST").start();
+		new MllpHl7v2MessageSwapper(true, "LEIGHTON", "TEST").start();
 		
-		File defFile = new File(Thread.currentThread().getContextClassLoader().getResource("unit_tests_hl7.xml").toURI());
+		ClassPathResource defFile = new ClassPathResource("unit_tests_hl7.xml");
 		TestBatteryImpl battery = new TestBatteryImpl(defFile);
 		ExecutionContext ctx = new ExecutionContext(battery);
 		ctx.execute("ExpectSpecific Test");
@@ -31,9 +32,9 @@ public class Hl7V2Test {
 
 	@Test
 	public void testFailureExpectSpecific() throws URISyntaxException, InterfaceWontStartException, ConfigurationException, JAXBException {
-		new MllpHl7v2MessageSwapper(false, "LEIGHTON", "TEST2").start();
+		new MllpHl7v2MessageSwapper(true, "LEIGHTON", "TEST2").start();
 		
-		File defFile = new File(Thread.currentThread().getContextClassLoader().getResource("unit_tests_hl7.xml").toURI());
+		ClassPathResource defFile = new ClassPathResource("unit_tests_hl7.xml");
 		TestBatteryImpl battery = new TestBatteryImpl(defFile);
 		ExecutionContext ctx = new ExecutionContext(battery);
 		ctx.execute("ExpectSpecific Test");
@@ -48,7 +49,7 @@ public class Hl7V2Test {
 	public void testMultipleTests() throws URISyntaxException, InterfaceWontStartException, ConfigurationException, JAXBException {
 		new MllpHl7v2MessageSwapper(true, "LEIGHTON", "TEST", 2).start();
 		
-		File defFile = new File(Thread.currentThread().getContextClassLoader().getResource("unit_tests_hl7.xml").toURI());
+		ClassPathResource defFile = new ClassPathResource("unit_tests_hl7.xml");
 		TestBatteryImpl battery = new TestBatteryImpl(defFile);
 		ExecutionContext ctx = new ExecutionContext(battery);
 		ctx.execute("ExpectSpecific Test", "ExpectSecond Test");

@@ -25,7 +25,7 @@
           <Group type="102" alignment="0" attributes="0">
               <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="myJmsInterfaceForm" min="-2" pref="182" max="-2" attributes="0"/>
+              <Component id="myJmsInterfaceForm" pref="277" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>

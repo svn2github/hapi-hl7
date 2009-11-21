@@ -8,6 +8,14 @@ package ca.uhn.hunit.event;
 import ca.uhn.hunit.event.expect.ExpectNoMessageImpl;
 import ca.uhn.hunit.event.expect.Hl7V2ExpectSpecificMessageImpl;
 import ca.uhn.hunit.ex.ConfigurationException;
+import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
+import ca.uhn.hunit.swing.ui.event.AbstractEventEditorForm;
+import ca.uhn.hunit.swing.ui.event.expect.ExpectNoMessageEditorForm;
+import ca.uhn.hunit.swing.ui.event.expect.Hl7V2ExpectSpecificMessageEditorForm;
+import ca.uhn.hunit.swing.ui.event.expect.XmlExpectSpecificMessageEditorForm;
+import ca.uhn.hunit.swing.ui.event.send.Hl7V2SendMessageEditorForm;
+import ca.uhn.hunit.swing.ui.event.send.XmlSendMessageEditorForm;
+import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.ClassNameComparator;
 import ca.uhn.hunit.xsd.Event;
@@ -41,18 +49,33 @@ public class EventFactory {
 
     private final List<Class<? extends AbstractEvent>> myEventClasses;
     private final Map<Class<? extends AbstractEvent>, Class<? extends Event>> myEventClasses2ConfigTypes;
+    private final Map<Class<? extends AbstractEvent>, Class<? extends AbstractEventEditorForm<?>>> myEventClasses2EditorForm;
+    private final Class<? extends AbstractEvent> myDefaultEventClass;
+    private final Event myDefaultEventConfig;
 
     public EventFactory() {
         myEventClasses2ConfigTypes = new HashMap<Class<? extends AbstractEvent>, Class<? extends Event>>();
+        myEventClasses2EditorForm = new HashMap<Class<? extends AbstractEvent>, Class<? extends AbstractEventEditorForm<?>>>();
 
         myEventClasses2ConfigTypes.put(ExpectNoMessageImpl.class, ExpectNoMessage.class);
+        myEventClasses2EditorForm.put(ExpectNoMessageImpl.class, ExpectNoMessageEditorForm.class);
         
-        myEventClasses2ConfigTypes.put(ca.uhn.hunit.event.expect.Hl7V2ExpectRulesImpl.class, Hl7V2ExpectRules.class);
+//        myEventClasses2ConfigTypes.put(ca.uhn.hunit.event.expect.Hl7V2ExpectRulesImpl.class, Hl7V2ExpectRules.class);
+
         myEventClasses2ConfigTypes.put(ca.uhn.hunit.event.expect.Hl7V2ExpectSpecificMessageImpl.class, Hl7V2ExpectSpecificMessage.class);
+        myEventClasses2EditorForm.put(ca.uhn.hunit.event.expect.Hl7V2ExpectSpecificMessageImpl.class, Hl7V2ExpectSpecificMessageEditorForm.class);
+
         myEventClasses2ConfigTypes.put(ca.uhn.hunit.event.expect.XmlExpectSpecificMessageImpl.class, XMLExpectSpecificMessage.class);
+        myEventClasses2EditorForm.put(ca.uhn.hunit.event.expect.XmlExpectSpecificMessageImpl.class, XmlExpectSpecificMessageEditorForm.class);
 
         myEventClasses2ConfigTypes.put(ca.uhn.hunit.event.send.Hl7V2SendMessageImpl.class, Hl7V2SendMessage.class);
+        myEventClasses2EditorForm.put(ca.uhn.hunit.event.send.Hl7V2SendMessageImpl.class, Hl7V2SendMessageEditorForm.class);
+
         myEventClasses2ConfigTypes.put(ca.uhn.hunit.event.send.XmlSendMessageImpl.class, XMLSendMessage.class);
+        myEventClasses2EditorForm.put(ca.uhn.hunit.event.send.XmlSendMessageImpl.class, XmlSendMessageEditorForm.class);
+
+        myDefaultEventClass = ExpectNoMessageImpl.class;
+        myDefaultEventConfig = new ExpectNoMessage();
 
         myEventClasses = new ArrayList<Class<? extends AbstractEvent>>(myEventClasses2ConfigTypes.keySet());
         Collections.sort(myEventClasses, new ClassNameComparator());
@@ -74,7 +97,7 @@ public class EventFactory {
      * @param theInitialConfig
      * @return
      */
-    public AbstractEvent create(Class<? extends AbstractEvent> theClass, TestImpl theTest, Event theInitialConfig) throws ConfigurationException {
+    public AbstractEvent createEvent(Class<? extends AbstractEvent> theClass, TestImpl theTest, Event theInitialConfig) throws ConfigurationException {
 
         Class<? extends Event> configType = myEventClasses2ConfigTypes.get(theClass);
         try {
@@ -85,17 +108,17 @@ public class EventFactory {
             return event;
 
         } catch (InstantiationException ex) {
-            throw new ConfigurationException(ex);
+            throw new ConfigurationException(ex.getMessage(), ex);
         } catch (IllegalAccessException ex) {
-            throw new ConfigurationException(ex);
+            throw new ConfigurationException(ex.getMessage(), ex);
         } catch (IllegalArgumentException ex) {
-            throw new ConfigurationException(ex);
+            throw new ConfigurationException(ex.getMessage(), ex);
         } catch (InvocationTargetException ex) {
-            throw new ConfigurationException(ex);
+            throw new ConfigurationException(ex.getMessage(), ex);
         } catch (NoSuchMethodException ex) {
-            throw new ConfigurationException(ex);
+            throw new ConfigurationException(ex.getMessage(), ex);
         } catch (SecurityException ex) {
-            throw new ConfigurationException(ex);
+            throw new ConfigurationException(ex.getMessage(), ex);
         }
 
     }
@@ -110,5 +133,50 @@ public class EventFactory {
         JAXB.marshal(theInitialConfig, stringWriter);
 
         return JAXB.unmarshal(new StringReader(stringWriter.toString()), theDesiredClass);
+    }
+
+    /**
+     * Creates the appropriate editor form for the given event type
+     * 
+     * @throws InstantiationException If the form can't be created for any reason
+     */
+    public <T extends AbstractEvent, V extends AbstractEventEditorForm<T>> V createEditorForm(TestEditorController theController, T event) throws ConfigurationException {
+        
+        Class<V> formClass = (Class<V>) myEventClasses2EditorForm.get(event.getClass());
+        if (formClass == null) {
+            throw new ConfigurationException("No editor for " + event.getClass());
+        }
+        
+        try {
+            
+            Constructor<V> constructor = formClass.getConstructor();
+            V instance = constructor.newInstance();
+            instance.setController(theController, event);
+            return instance;
+
+        } catch (InstantiationException ex) {
+            throw new ConfigurationException(ex.getMessage(), ex);
+        } catch (IllegalAccessException ex) {
+            throw new ConfigurationException(ex.getMessage(), ex);
+        } catch (IllegalArgumentException ex) {
+            throw new ConfigurationException(ex.getMessage(), ex);
+        } catch (InvocationTargetException ex) {
+            throw new ConfigurationException(ex.getMessage(), ex);
+        } catch (NoSuchMethodException ex) {
+            throw new ConfigurationException(ex.getMessage(), ex);
+        } catch (SecurityException ex) {
+            throw new ConfigurationException(ex.getMessage(), ex);
+        }
+
+    }
+
+    /**
+     * Creates a new default event, typically in response to a user clicking an
+     * "add event" button. The user could then modify the type of event to
+     * suit their purposes.
+     */
+    public AbstractEvent createDefaultEvent(TestImpl theTest) throws ConfigurationException {
+        // TODO: create blank event type for use here
+        return createEvent(myDefaultEventClass, theTest, myDefaultEventConfig);
     }
 }

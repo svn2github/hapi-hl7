@@ -23,10 +23,11 @@ The base tag for hUnit is a battery. A Battery defines one or more tests.
 		with an ID of "test_out_interface".
 		-->
 		<hu:interface>
-			<hu:mllpHl7V2Interface id="test_in_interface" autostart="true">
+			<hu:mllpHl7V2Interface id="test_in_interface" autostart="false">
 				<hu:ip>localhost</hu:ip>
 				<hu:port>10200</hu:port>
 				<hu:mode>server</hu:mode>
+				<hu:clear>false</hu:clear>
 			</hu:mllpHl7V2Interface>
 		</hu:interface>
 		<hu:interface>

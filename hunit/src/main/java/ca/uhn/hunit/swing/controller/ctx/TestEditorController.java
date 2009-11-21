@@ -29,9 +29,12 @@ package ca.uhn.hunit.swing.controller.ctx;
 import ca.uhn.hunit.event.AbstractEvent;
 import ca.uhn.hunit.event.EventFactory;
 import ca.uhn.hunit.ex.ConfigurationException;
+import ca.uhn.hunit.swing.ui.DialogUtil;
 import ca.uhn.hunit.swing.ui.tests.TestEditorForm;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.log.ILogProvider;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -60,9 +63,24 @@ public class TestEditorController extends AbstractContextController<TestEditorFo
     }
 
     public void changeEventType(AbstractEvent theEvent, Class<? extends AbstractEvent> theNewClass) throws ConfigurationException {
-        AbstractEvent newEvent = EventFactory.INSTANCE.create(theNewClass, myTest, theEvent.exportConfigToXml());
+        AbstractEvent newEvent = EventFactory.INSTANCE.createEvent(theNewClass, myTest, theEvent.exportConfigToXml());
         int selectedIndex = myTest.getEventsModel().replaceEvent(theEvent, newEvent);
         myTestEditorForm.setSelectedEventIndex(selectedIndex);
+    }
+
+    /**
+     * Add a new blank event
+     */
+    public void addEvent() {
+        AbstractEvent event;
+        try {
+            event = EventFactory.INSTANCE.createDefaultEvent(myTest);
+        } catch (ConfigurationException ex) {
+            getLog().getSystem(getClass()).error(ex.describeReason(), ex);
+            DialogUtil.showErrorMessage(getView(), ex.getMessage());
+            return;
+        }
+        myTest.getEventsModel().addEvent(event);
     }
 
 }

@@ -75,5 +75,9 @@ public class StaticActiveMQConnectionFactory implements ConnectionFactory
     public Connection createConnection(String theArg0, String theArg1) throws JMSException {
         return createConnection();
     }
-    
+
+    public static void reset() {
+        ourConnectionFactory = new ActiveMQConnectionFactory("vm://localhost?broker.persistent=false");
+    }
+
 }

@@ -13,7 +13,7 @@
 	   TBA
     </description>
 
-    <version>0.2</version>
+    <version>0.3</version>
 
     <mailingLists>
         <mailingList>
@@ -47,6 +47,8 @@
             <comments><![CDATA[
                hUnit is dual licensed under both the Mozilla Public License and the GNU General Public License.
                What this means is that you may choose to use hUnit under the terms of either license.
+
+			   hUnit also contains software which is licensed under the Apache Software License.
             ]]>
             </comments>
         </license>
@@ -58,6 +60,10 @@
             <name>GNU General Public License</name>
             <url>http://www.gnu.org/licenses/gpl.txt</url>
         </license>
+		<license>
+			<name>Apache Software License</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
     </licenses>
 	
 	
@@ -76,7 +82,7 @@
         <repository>
             <id>java.net</id>
             <name>java.net Maven Repository</name>
-            <url>https://maven-repository.dev.java.net/nonav/repository</url>
+            <url>http://download.java.net/maven/1/</url>
             <layout>legacy</layout>
         </repository>
         <repository>
@@ -105,7 +111,7 @@
         <pluginRepository>
             <id>java.net</id>
             <name>java.net Maven Repository</name>
-            <url>https://maven-repository.dev.java.net/nonav/repository</url>
+            <url>http://download.java.net/maven/1/</url>
             <layout>legacy</layout>
         </pluginRepository>
     </pluginRepositories>
@@ -280,40 +286,6 @@
                     <maxmem>1024m</maxmem>
                 </configuration>
             </plugin>
-            <!--<plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id> 
-                        <phase>package</phase> 
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
-                            <archive>
-                                <manifest>
-                                    <mainClass>ca.uhn.hunit.run.TestRunner</mainClass>
-                                </manifest>
-                            </archive>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>make-dist</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>${project.basedir}/src/main/assembly/dist.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>-->
             <plugin>
                 <groupId>com.sun.tools.xjc.maven2</groupId>
                 <artifactId>maven-jaxb-plugin</artifactId>
@@ -434,5 +406,49 @@ pageTracker._trackPageview();
             </plugin>
         </plugins>
     </reporting>
+
+	<profiles>
+		<profile>
+			<id>DIST</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>make-assembly</id>
+								<phase>package</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
+								<configuration>
+									<descriptorRefs>
+										<descriptorRef>jar-with-dependencies</descriptorRef>
+									</descriptorRefs>
+									<archive>
+										<manifest>
+											<mainClass>ca.uhn.hunit.run.TestRunner</mainClass>
+										</manifest>
+									</archive>
+								</configuration>
+							</execution>
+							<execution>
+								<id>make-dist</id>
+								<phase>package</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
+								<configuration>
+									<descriptors>
+										<descriptor>${project.basedir}/src/main/assembly/dist.xml</descriptor>
+									</descriptors>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>

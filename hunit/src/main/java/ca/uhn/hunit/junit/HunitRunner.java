@@ -41,6 +41,10 @@ import org.junit.runner.Runner;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.InitializationError;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -63,13 +67,14 @@ public class HunitRunner extends Runner {
 
         HunitBattery batteryAnnotation = myTestClass.getAnnotation(HunitBattery.class);
         try {
-            File file = ResourceUtils.getFile(batteryAnnotation.file());
+            Resource file = new DefaultResourceLoader().getResource(batteryAnnotation.file());
+            if (!file.exists()) {
+                throw new InitializationError("File doesn't exist: " + file.getDescription());
+            }
             myBattery = new TestBatteryImpl(file);
         } catch (ConfigurationException ex) {
             throw new InitializationError(Collections.singletonList((Throwable)ex));
         } catch (JAXBException ex) {
-            throw new InitializationError(Collections.singletonList((Throwable)ex));
-        } catch (FileNotFoundException ex) {
             throw new InitializationError(Collections.singletonList((Throwable)ex));
         }
 

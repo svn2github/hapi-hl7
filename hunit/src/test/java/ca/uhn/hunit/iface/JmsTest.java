@@ -16,19 +16,26 @@ import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.example.MllpHl7v2MessageSwapper;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.test.TestBatteryImpl;
+import org.junit.After;
+import org.springframework.core.io.ClassPathResource;
 
 /**
  * 
  * 
  * @author <a href="mailto:jamesagnew@users.sourceforge.net">James Agnew</a>
- * @version $Revision: 1.3 $ updated on $Date: 2009-11-01 22:31:04 $ by $Author: jamesagnew $
+ * @version $Revision: 1.4 $ updated on $Date: 2009-11-21 18:29:30 $ by $Author: jamesagnew $
  */
 public class JmsTest
 {
+    @After
+    public void cleanup() {
+        StaticActiveMQConnectionFactory.reset();
+    }
+
     
     @Test
     public void testPassingTest() throws URISyntaxException, InterfaceWontStartException, ConfigurationException, JAXBException {
-        File defFile = new File(Thread.currentThread().getContextClassLoader().getResource("unit_tests_jms.xml").toURI());
+        ClassPathResource defFile = new ClassPathResource("unit_tests_jms.xml");
         TestBatteryImpl battery = new TestBatteryImpl(defFile);
         ExecutionContext ctx = new ExecutionContext(battery);
         ctx.execute("ExpectSameMessage");
@@ -38,7 +45,7 @@ public class JmsTest
 
     @Test
     public void testFailingTest() throws URISyntaxException, InterfaceWontStartException, ConfigurationException, JAXBException {
-        File defFile = new File(Thread.currentThread().getContextClassLoader().getResource("unit_tests_jms.xml").toURI());
+        ClassPathResource defFile = new ClassPathResource("unit_tests_jms.xml");
         TestBatteryImpl battery = new TestBatteryImpl(defFile);
         ExecutionContext ctx = new ExecutionContext(battery);
         ctx.execute("ExpectDifferentMessage");

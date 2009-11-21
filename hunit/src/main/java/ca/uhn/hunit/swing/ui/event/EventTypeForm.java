@@ -14,14 +14,9 @@ import ca.uhn.hunit.event.AbstractEvent;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.l10n.Strings;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
-import ca.uhn.hunit.swing.ui.tests.EventListTableCellRenderer;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -92,7 +87,7 @@ public class EventTypeForm extends AbstractEventEditorForm<AbstractEvent> {
      * {@inheritDoc }
      */
     @Override
-    public void setController(TestEditorController theController, TestBatteryImpl theBattery, AbstractEvent theEvent) {
+    public void setController(TestEditorController theController, AbstractEvent theEvent) {
         myController = theController;
         myEvent = theEvent;
 

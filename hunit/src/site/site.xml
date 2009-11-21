@@ -75,6 +75,7 @@ pageTracker._trackPageview();
 			<item name="Introduction" href="index.html"/>
             <item name="Cookbook" href="cookbook.html"/>
             <item name="Download" href="http://sourceforge.net/projects/hl7api/files/hunit/"/>
+            <item name="Screenshots" href="screenshots.html"/>
 		</menu>
 	
         <menu name="Contributing to hUnit">

@@ -26,6 +26,8 @@ import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.cli.CommandLine;
@@ -40,8 +42,13 @@ import org.springframework.util.ResourceUtils;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.ex.TestFailureException;
+import ca.uhn.hunit.swing.controller.SwingRunnerController;
+import ca.uhn.hunit.swing.ui.DialogUtil;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 public class TestRunner {
 
@@ -58,7 +65,7 @@ public class TestRunner {
 		Options options = new Options();
 
 		OptionGroup fileOptionGroup = new OptionGroup();
-		fileOptionGroup.setRequired(true);
+		fileOptionGroup.setRequired(false);
 		Option option = new Option("f", "file", true, "The path to the file to load the test battery from");
 		option.setValueSeparator('=');
 		fileOptionGroup.addOption(option);
@@ -66,25 +73,36 @@ public class TestRunner {
 		option.setValueSeparator('=');
 		fileOptionGroup.addOption(option);
 		options.addOptionGroup(fileOptionGroup);
+        
+        OptionGroup uiOptionGroup = new OptionGroup();
+        option = new Option("g", "gui", false, "Start hUnit in GUI mode (default)");
+        uiOptionGroup.addOption(option);
+        option = new Option("x", "text", false, "Start hUnit in Text mode");
 
 		option = new Option("t", "tests", true, "A comma separated list of tests to execute (default is all)");
 		option.setValueSeparator('=');
 		option.setRequired(false);
 		options.addOption(option);
 		
-		File defFile;
+		Resource defFile = null;
 		CommandLine parser;
+        boolean textMode = false;
 		try {
 			parser = new PosixParser().parse(options, theArgs);
 
 			if (parser.hasOption("f")) {
-				defFile = new File(parser.getOptionValue("f"));
-			} else {
-				defFile = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + parser.getOptionValue("c"));
+				defFile = new FileSystemResource(parser.getOptionValue("f"));
+			} else if (parser.hasOption("c")) {
+				defFile = new ClassPathResource(parser.getOptionValue("c"));
 			}
+
+            if (parser.hasOption("x")) {
+                textMode = true;
+            }
+
 		} catch (Exception e) {
 			HelpFormatter hf = new HelpFormatter();
-			hf.printHelp("java -jar hunit-[version]-jar-with-dependencies.jar {-c FILE|-f FILE} [options]", options);
+			hf.printHelp("java -jar hunit-[version]-jar-with-dependencies.jar [-c FILE|-f FILE] [options]", options);
 			return;
 		}
 
@@ -92,10 +110,18 @@ public class TestRunner {
 		if (parser.hasOption("t")) {
 			testsToExecute = parser.getOptionValue("t").split(",");
 		}
-		
-		TestBatteryImpl batteryImpl = new TestBatteryImpl(defFile);
+
+        if (textMode) {
+            executeInTextMode(defFile, testsToExecute);
+        } else {
+            executeInGuiMode(defFile, testsToExecute);
+        }
+	}
+
+    private static void executeInTextMode(Resource theDefFile, String[] theTestsToExecute) throws ConfigurationException, JAXBException {
+        TestBatteryImpl batteryImpl = new TestBatteryImpl(theDefFile);
 		ExecutionContext ctx = new ExecutionContext(batteryImpl);
-		ctx.execute(testsToExecute);
+		ctx.execute(theTestsToExecute);
 
 		ctx.getLog().get(batteryImpl).info("----------------------------------------------------");
 		ctx.getLog().get(batteryImpl).info("The following tests passed:");
@@ -110,6 +136,21 @@ public class TestRunner {
 				ctx.getLog().get(batteryImpl).info( "The following test failed: " + next.getKey().getName() + " - Reason: " + next.getValue().describeReason());
 			}
 		}
-	}
+
+    }
+
+    private static void executeInGuiMode(Resource defFile, String[] testsToExecute) {
+        SwingRunnerController controller;
+        if (defFile == null) {
+            controller = new SwingRunnerController();
+        } else {
+            try {
+                controller = new SwingRunnerController(defFile);
+            } catch (Exception ex) {
+                DialogUtil.showErrorMessage(null, ex.getMessage());
+            }
+        }
+
+    }
 
 }

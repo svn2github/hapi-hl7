@@ -32,12 +32,9 @@
 
 package ca.uhn.hunit.swing.ui.event.expect;
 
-import ca.uhn.hunit.swing.ui.event.send.*;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.event.expect.Hl7V2ExpectSpecificMessageImpl;
-import ca.uhn.hunit.event.send.Hl7V2SendMessageImpl;
 import ca.uhn.hunit.swing.ui.event.AbstractEventEditorForm;
-import ca.uhn.hunit.test.TestBatteryImpl;
 
 /**
  *
@@ -46,13 +43,11 @@ import ca.uhn.hunit.test.TestBatteryImpl;
 public class Hl7V2ExpectSpecificMessageEditorForm extends AbstractEventEditorForm<Hl7V2ExpectSpecificMessageImpl> {
     private static final long serialVersionUID = 1L;
     
-    private TestBatteryImpl myBattery;
     private Hl7V2ExpectSpecificMessageImpl myEvent;
     private TestEditorController myController;
 
     /** Creates new form Hl7V2ExpectSpecificMessageEditorForm */
     public Hl7V2ExpectSpecificMessageEditorForm() {
-        myBattery = new TestBatteryImpl();
         myEvent = null;
 
         initComponents();
@@ -70,17 +65,16 @@ public class Hl7V2ExpectSpecificMessageEditorForm extends AbstractEventEditorFor
         myEventTypeForm = new ca.uhn.hunit.swing.ui.event.EventTypeForm();
         myBaseEventEditorForm = new ca.uhn.hunit.swing.ui.event.BaseEventEditorForm();
         myBaseSpecificMessageEditorForm = new ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm();
+        myBaseExpectMessageEditorForm = new ca.uhn.hunit.swing.ui.event.expect.BaseExpectMessageEditorForm();
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(myEventTypeForm, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(myBaseEventEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
-                    .addComponent(myBaseSpecificMessageEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE))
-                .addContainerGap())
+            .addComponent(myEventTypeForm, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
+            .addComponent(myBaseExpectMessageEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
+            .addComponent(myBaseSpecificMessageEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
+            .addComponent(myBaseEventEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -90,13 +84,15 @@ public class Hl7V2ExpectSpecificMessageEditorForm extends AbstractEventEditorFor
                 .addComponent(myBaseEventEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(myBaseSpecificMessageEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(myBaseExpectMessageEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private ca.uhn.hunit.swing.ui.event.BaseEventEditorForm myBaseEventEditorForm;
+    private ca.uhn.hunit.swing.ui.event.expect.BaseExpectMessageEditorForm myBaseExpectMessageEditorForm;
     private ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm myBaseSpecificMessageEditorForm;
     private ca.uhn.hunit.swing.ui.event.EventTypeForm myEventTypeForm;
     // End of variables declaration//GEN-END:variables
@@ -106,14 +102,14 @@ public class Hl7V2ExpectSpecificMessageEditorForm extends AbstractEventEditorFor
      * {@inheritDoc }
      */
     @Override
-    public void setController(TestEditorController theController, TestBatteryImpl theBattery, Hl7V2ExpectSpecificMessageImpl theEvent) {
-        myBattery = theBattery;
+    public void setController(TestEditorController theController, Hl7V2ExpectSpecificMessageImpl theEvent) {
         myEvent = theEvent;
         myController = theController;
 
-        myBaseEventEditorForm.setController(theController, theBattery, theEvent);
-        myBaseSpecificMessageEditorForm.setController(theController, theBattery, theEvent);
-        myEventTypeForm.setController(theController, theBattery, theEvent);
+        myBaseEventEditorForm.setController(theController, theEvent);
+        myBaseSpecificMessageEditorForm.setController(theController, theEvent);
+        myEventTypeForm.setController(theController, theEvent);
+        myBaseExpectMessageEditorForm.setController(theController, theEvent);
     }
 
 }

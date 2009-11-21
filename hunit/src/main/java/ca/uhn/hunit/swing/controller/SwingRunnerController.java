@@ -35,6 +35,7 @@ import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.msg.XmlMessageImpl;
 import ca.uhn.hunit.swing.controller.ctx.AbstractContextController;
+import ca.uhn.hunit.swing.controller.ctx.BatteryEditorContextController;
 import ca.uhn.hunit.swing.controller.ctx.BatteryExecutionContextController;
 import ca.uhn.hunit.swing.controller.ctx.Hl7V2MessageEditorController;
 import ca.uhn.hunit.swing.controller.ctx.JmsInterfaceContextController;
@@ -53,8 +54,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.bind.JAXBException;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 /**
  *
@@ -67,17 +72,31 @@ public class SwingRunnerController {
     private AbstractContextController<?> myCtxController;
     private final LogCapturingLog myLog;
 
-    public SwingRunnerController() throws Exception {
+    public SwingRunnerController(Resource theDefinitionFile) throws Exception {
+        setLookAndFeel();
 
-        File defFile = new File("src/test/resources/unit_tests_jms.xml");
-        if (!defFile.exists()) {
+        if (!theDefinitionFile.exists()) {
             throw new IOException();
         }
-        myBattery = new TestBatteryImpl(defFile);
-
         myLog = new LogCapturingLog();
+        myBattery = new TestBatteryImpl(theDefinitionFile, myLog);
+
         myView = new SwingRunner(this, myBattery);
         myView.setVisible(true);
+
+        selectBattery(myBattery);
+    }
+
+    public SwingRunnerController() {
+        setLookAndFeel();
+
+        myLog = new LogCapturingLog();
+        myBattery = new TestBatteryImpl(myLog);
+
+        myView = new SwingRunner(this, myBattery);
+        myView.setVisible(true);
+
+        selectBattery(myBattery);
     }
 
     /**
@@ -95,13 +114,15 @@ public class SwingRunnerController {
 
             public void run() {
                 try {
-                    new SwingRunnerController();
+                    FileSystemResource defFile = new FileSystemResource("src/test/resources/unit_tests_jms.xml");
+                    new SwingRunnerController(defFile);
                 } catch (Exception ex) {
                     Logger.getLogger(SwingRunnerController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
     }
+
 
     public void execute() {
         BatteryExecutionContextController ctxController = new BatteryExecutionContextController(myBattery);
@@ -147,6 +168,17 @@ public class SwingRunnerController {
         navigateTo(ctxController);
     }
 
+    private boolean confirmLoseUnsaved() {
+        if (myBattery != null && !myBattery.isEmpty()) {
+            if (DialogUtil.showYesNoDialog(myView, Strings.getMessage("command.new.prompt_to_save"))) {
+                if (!save()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     private JFileChooser createFileChooser() {
         JFileChooser chooser = new JFileChooser(".");
         chooser.addChoosableFileFilter(new FileNameExtensionFilter("hUnit Battery", "hunit.xml", "xml"));
@@ -175,24 +207,31 @@ public class SwingRunnerController {
         return myLog;
     }
 
-    public void save() {
+    public boolean save() {
+        if (myBattery.getFile() == null) {
+            return saveAs();
+        }
+
         try {
             myBattery.save();
             String message = Strings.getMessage("command.save.success");
             myLog.getSystem(getClass()).info(message);
+            return true;
         } catch (IOException ex) {
             String message = Strings.getMessage("error.problem_during_save", ex.getMessage());
             myLog.getSystem(getClass()).error(message, ex);
             DialogUtil.showErrorMessage(myView, message);
+            return false;
         } catch (JAXBException ex) {
             String message = Strings.getMessage("error.problem_during_save", ex.getMessage());
             myLog.getSystem(getClass()).error(message, ex);
             DialogUtil.showErrorMessage(myView, message);
+            return false;
         }
 
     }
 
-    public void saveAs() {
+    public boolean saveAs() {
         JFileChooser chooser = createFileChooser();
 
         int value = chooser.showSaveDialog(myView);
@@ -206,7 +245,7 @@ public class SwingRunnerController {
             if (selectedFile.exists()) {
                 String message = Strings.getMessage("command.save.confirm_overwrite", selectedFile.getName());
                 if (!DialogUtil.showOkCancelDialog(myView, message)) {
-                    return;
+                    return false;
                 }
             }
 
@@ -215,16 +254,21 @@ public class SwingRunnerController {
                 myBattery.save();
                 String message = Strings.getMessage("command.save.success");
                 myLog.getSystem(getClass()).info(message);
+                return true;
             } catch (IOException ex) {
                 String message = Strings.getMessage("error.problem_during_save", ex.getMessage());
                 myLog.getSystem(getClass()).error(message, ex);
                 DialogUtil.showErrorMessage(myView, message);
+                return false;
             } catch (JAXBException ex) {
                 String message = Strings.getMessage("error.problem_during_save", ex.getMessage());
                 myLog.getSystem(getClass()).error(message, ex);
                 DialogUtil.showErrorMessage(myView, message);
+                return false;
             }
 
+        } else {
+            return false;
         }
     }
 
@@ -233,7 +277,7 @@ public class SwingRunnerController {
 
         int value = chooser.showOpenDialog(myView);
         if (value == JFileChooser.APPROVE_OPTION) {
-            File inputFile = chooser.getSelectedFile();
+            FileSystemResource inputFile = new FileSystemResource(chooser.getSelectedFile());
             try {
                 TestBatteryImpl newBattery = new TestBatteryImpl(inputFile, myLog);
                 myBattery = newBattery;
@@ -250,5 +294,58 @@ public class SwingRunnerController {
                 DialogUtil.showErrorMessage(myView, message);
             }
         }
+    }
+
+    /**
+     * Adds a new test with no events
+     */
+    public void addTestEmpty() {
+        myBattery.addEmptyTest();
+    }
+
+    public void selectBattery(TestBatteryImpl battery) {
+        BatteryEditorContextController controller = new BatteryEditorContextController(myBattery, myLog);
+        navigateTo(controller);
+    }
+
+    public void newFile() {
+        if (!confirmLoseUnsaved()) {
+            return;
+        }
+
+        myBattery = new TestBatteryImpl(myLog);
+        myView.setBattery(myBattery);
+        selectBattery(myBattery);
+    }
+
+    private void setLookAndFeel() {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(SwingRunnerController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(SwingRunnerController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(SwingRunnerController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(SwingRunnerController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void newTemplateHl7InAndOut() {
+        if (!confirmLoseUnsaved()) {
+            return;
+        }
+
+        myBattery = new TestBatteryImpl(myLog);
+        try {
+            myBattery.load(new ClassPathResource("/ca/uhn/hunit/templates/hl7_in_and_out.xml"));
+        } catch (Exception ex) {
+            myLog.getSystem(SwingRunnerController.class).error(ex.getMessage(), ex);
+            DialogUtil.showErrorMessage(myView, ex.getMessage());
+        }
+
+        myView.setBattery(myBattery);
+        selectBattery(myBattery);
     }
 }

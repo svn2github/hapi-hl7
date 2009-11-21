@@ -40,6 +40,7 @@ import ca.uhn.hunit.swing.model.InterfaceTreeNode;
 import ca.uhn.hunit.swing.model.InterfacesTreeRenderer;
 import ca.uhn.hunit.swing.model.MessageTreeNode;
 import ca.uhn.hunit.swing.model.MyTreeModel;
+import ca.uhn.hunit.swing.model.TestBatteryTreeNode;
 import ca.uhn.hunit.swing.model.TestTreeNode;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
@@ -95,6 +96,7 @@ public class SwingRunner extends javax.swing.JFrame {
         myAddMessageHl7V2 = new javax.swing.JMenuItem();
         myAddMessageXml = new javax.swing.JMenuItem();
         jToolBar1 = new javax.swing.JToolBar();
+        myFileNewButton = new javax.swing.JButton();
         myButtonOpen = new javax.swing.JButton();
         myButtonSave = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JToolBar.Separator();
@@ -109,6 +111,9 @@ public class SwingRunner extends javax.swing.JFrame {
         myTestContextPanel = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         myFileMenu = new javax.swing.JMenu();
+        jMenu1 = new javax.swing.JMenu();
+        myNewMenuItem = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
         myOpenMenuItem = new javax.swing.JMenuItem();
         mySaveMenuItem = new javax.swing.JMenuItem();
         mySaveAsMenuItem = new javax.swing.JMenuItem();
@@ -117,6 +122,11 @@ public class SwingRunner extends javax.swing.JFrame {
         myAddTestMenu.setText(bundle.getString("batterylist.buttons.add.test")); // NOI18N
 
         myAddTestEmptyMenuItem.setText(bundle.getString("batterylist.buttons.add.test.empty")); // NOI18N
+        myAddTestEmptyMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myAddTestEmptyMenuItemActionPerformed(evt);
+            }
+        });
         myAddTestMenu.add(myAddTestEmptyMenuItem);
 
         myAddPopupMenu.add(myAddTestMenu);
@@ -157,8 +167,21 @@ public class SwingRunner extends javax.swing.JFrame {
         myAddPopupMenu.add(myAddMessageMenu);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("hUnit");
 
         jToolBar1.setRollover(true);
+
+        myFileNewButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ca/uhn/hunit/ui/resources/images/filenew.png"))); // NOI18N
+        myFileNewButton.setText(bundle.getString("toolbar.new")); // NOI18N
+        myFileNewButton.setFocusable(false);
+        myFileNewButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        myFileNewButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        myFileNewButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myFileNewButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(myFileNewButton);
 
         myButtonOpen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ca/uhn/hunit/ui/resources/images/open.png"))); // NOI18N
         myButtonOpen.setText(bundle.getString("toolbar.open")); // NOI18N
@@ -253,6 +276,27 @@ public class SwingRunner extends javax.swing.JFrame {
         myFileMenu.setMnemonic('F');
         myFileMenu.setText("File");
 
+        jMenu1.setText(bundle.getString("menu.file.new")); // NOI18N
+
+        myNewMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ca/uhn/hunit/ui/resources/images/filenew.png"))); // NOI18N
+        myNewMenuItem.setText(bundle.getString("menu.file.new.blank")); // NOI18N
+        myNewMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fileNewClicked(evt);
+            }
+        });
+        jMenu1.add(myNewMenuItem);
+
+        jMenuItem1.setText(bundle.getString("menu.file.new.hl7_v2_in_and_out")); // NOI18N
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newTemplateHl7InAndOut(evt);
+            }
+        });
+        jMenu1.add(jMenuItem1);
+
+        myFileMenu.add(jMenu1);
+
         myOpenMenuItem.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ca/uhn/hunit/ui/resources/images/open.png"))); // NOI18N
         myOpenMenuItem.setMnemonic('o');
         myOpenMenuItem.setText(bundle.getString("toolbar.open")); // NOI18N
@@ -322,6 +366,9 @@ public class SwingRunner extends javax.swing.JFrame {
         } else if (selectedModelObject instanceof TestTreeNode) {
             TestImpl test = ((TestTreeNode) selectedModelObject).getTest();
             myController.selectTest(test);
+        } else if (selectedModelObject instanceof TestBatteryTreeNode) {
+            TestBatteryImpl battery = ((TestBatteryTreeNode) selectedModelObject).getBattery();
+            myController.selectBattery(battery);
         } else {
             System.out.println(selectedModelObject);
         }
@@ -368,8 +415,26 @@ public class SwingRunner extends javax.swing.JFrame {
         myController.open();
     }//GEN-LAST:event_myOpenMenuItemActionPerformed
 
+    private void myAddTestEmptyMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myAddTestEmptyMenuItemActionPerformed
+        myController.addTestEmpty();
+    }//GEN-LAST:event_myAddTestEmptyMenuItemActionPerformed
+
+    private void fileNewClicked(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileNewClicked
+        myController.newFile();
+    }//GEN-LAST:event_fileNewClicked
+
+    private void myFileNewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myFileNewButtonActionPerformed
+        myController.newFile();
+    }//GEN-LAST:event_myFileNewButtonActionPerformed
+
+    private void newTemplateHl7InAndOut(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newTemplateHl7InAndOut
+        myController.newTemplateHl7InAndOut();
+    }//GEN-LAST:event_newTemplateHl7InAndOut
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToolBar.Separator jSeparator1;
@@ -390,6 +455,8 @@ public class SwingRunner extends javax.swing.JFrame {
     private javax.swing.JButton myButtonSave;
     private javax.swing.JButton myExecuteButton;
     private javax.swing.JMenu myFileMenu;
+    private javax.swing.JButton myFileNewButton;
+    private javax.swing.JMenuItem myNewMenuItem;
     private javax.swing.JMenuItem myOpenMenuItem;
     private javax.swing.JSplitPane myOuterSplitPane;
     private javax.swing.JMenuItem mySaveAsMenuItem;

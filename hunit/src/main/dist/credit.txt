@@ -1,0 +1,17 @@
+hUnit is only possible thanks to the many great free and open-sourced software
+projects that it leverages.
+
+This includes:
+
+   - Apache Commons-Lang and Commons-Logging, licenced under the Apache Software
+     license.
+     http://commons.apache.org
+
+   - The Spring Framework, licenced under the Apache Software License.
+     http://www.springsource.org/
+
+   - ActiveMQ, licenced under the Apache Software License.
+     http://activemq.apache.org/
+
+   - The Crystal SVG Icon Set, licensed under the LGPL.
+     http://www.everaldo.com/crystal/

@@ -32,15 +32,15 @@
 package ca.uhn.hunit.swing.ui.tests;
 
 import ca.uhn.hunit.event.AbstractEvent;
-import ca.uhn.hunit.event.expect.Hl7V2ExpectSpecificMessageImpl;
-import ca.uhn.hunit.event.send.Hl7V2SendMessageImpl;
+import ca.uhn.hunit.event.EventFactory;
+import ca.uhn.hunit.ex.ConfigurationException;
+import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.l10n.Colours;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.swing.ui.AbstractContextForm;
+import ca.uhn.hunit.swing.ui.DialogUtil;
 import ca.uhn.hunit.swing.ui.event.AbstractEventEditorForm;
 import ca.uhn.hunit.swing.ui.event.EventEditorDefaultPane;
-import ca.uhn.hunit.swing.ui.event.expect.Hl7V2ExpectSpecificMessageEditorForm;
-import ca.uhn.hunit.swing.ui.event.send.Hl7V2SendMessageEditorForm;
 import ca.uhn.hunit.test.TestEventsModel;
 import java.beans.PropertyVetoException;
 import javax.swing.event.DocumentEvent;
@@ -158,6 +158,11 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
         myAddEventButton.setFocusable(false);
         myAddEventButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         myAddEventButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        myAddEventButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myAddEventButtonActionPerformed(evt);
+            }
+        });
         jToolBar2.add(myAddEventButton);
 
         myUpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ca/uhn/hunit/ui/resources/images/move_task_up.png"))); // NOI18N
@@ -258,6 +263,10 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
         myEventsTable.getSelectionModel().setSelectionInterval(newIndex, newIndex);
     }//GEN-LAST:event_myDownButtonActionPerformed
 
+    private void myAddEventButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myAddEventButtonActionPerformed
+        myController.addEvent();
+    }//GEN-LAST:event_myAddEventButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -291,6 +300,7 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
         myEventsTable.getSelectionModel().removeListSelectionListener(this);
     }
 
+    @Override
     public void valueChanged(ListSelectionEvent e) {
         updateEditorPane();
 
@@ -318,12 +328,11 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
         if (selectedRow != -1) {
 
             AbstractEvent event = myController.getTest().getEventsModel().getEvent(selectedRow);
-            if (event instanceof Hl7V2ExpectSpecificMessageImpl) {
-                editorForm = new Hl7V2ExpectSpecificMessageEditorForm();
-                editorForm.setController(myController, myController.getTest().getBattery(), (Hl7V2ExpectSpecificMessageImpl) event);
-            } else if (event instanceof Hl7V2SendMessageImpl) {
-                editorForm = new Hl7V2SendMessageEditorForm();
-                editorForm.setController(myController, myController.getTest().getBattery(), (Hl7V2SendMessageImpl) event);
+            try {
+                editorForm = EventFactory.INSTANCE.createEditorForm(myController, event);
+            } catch (ConfigurationException ex) {
+                myController.getLog().getSystem(getClass()).error("Error creating editor form ", ex);
+                DialogUtil.showErrorMessage(this, ex.getMessage());
             }
 
             myUpButton.setEnabled(true);

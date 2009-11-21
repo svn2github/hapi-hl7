@@ -5,6 +5,7 @@ http://hl7api.sourceforge.net/hunit
 
 Thanks for downloading hUnit!
 
-Usage:
+Usage (Note- Replace VERSION with the version number of this distribution):
   java -jar hunit-VERSION-jar-with-dependencies.jar [ARGS]
-Note: Replace VERSION with the version number of this distribution.
+
+hUnit probably requires Java 6.0 or newer.

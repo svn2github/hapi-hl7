@@ -95,6 +95,14 @@ public class BatteryTestModel extends AbstractTableModel {
         return myTestNames2Tests.get(theName);
     }
 
+    /**
+     * Adds a new test to the model
+     */
+    void addTest(TestImpl test) {
+        myTests.add(test);
+        fireTableRowsInserted(myTests.size() - 1, myTests.size() - 1);
+    }
+
 
 
 }
