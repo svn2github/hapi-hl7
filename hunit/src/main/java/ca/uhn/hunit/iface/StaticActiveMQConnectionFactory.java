@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -19,29 +19,33 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
+
 /*
  * Created on Aug 17, 2009
  */
 package ca.uhn.hunit.iface;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
+
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
-
-import org.apache.activemq.ActiveMQConnectionFactory;
 
 /**
  * ConnectionFactory which always returns a shared static instance of an ActiveMQ
  * connection factory. This is not intended to be a production class, just
  * for unit test and demonstration purposes.
  */
-public class StaticActiveMQConnectionFactory implements ConnectionFactory
-{
+public class StaticActiveMQConnectionFactory implements ConnectionFactory {
+    //~ Static fields/initializers -------------------------------------------------------------------------------------
+
     private static ActiveMQConnectionFactory ourConnectionFactory;
 
     static {
         ourConnectionFactory = new ActiveMQConnectionFactory("vm://localhost?broker.persistent=false");
     }
+
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
     /**
      * Constructor
@@ -60,6 +64,8 @@ public class StaticActiveMQConnectionFactory implements ConnectionFactory
         // nothing
     }
 
+    //~ Methods --------------------------------------------------------------------------------------------------------
+
     /**
      * {@inheritDoc}
      */
@@ -72,12 +78,12 @@ public class StaticActiveMQConnectionFactory implements ConnectionFactory
      * {@inheritDoc}
      */
     @Override
-    public Connection createConnection(String theArg0, String theArg1) throws JMSException {
+    public Connection createConnection(String theArg0, String theArg1)
+                                throws JMSException {
         return createConnection();
     }
 
     public static void reset() {
         ourConnectionFactory = new ActiveMQConnectionFactory("vm://localhost?broker.persistent=false");
     }
-
 }

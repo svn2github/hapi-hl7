@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -21,51 +21,54 @@
  */
 package ca.uhn.hunit.event.expect;
 
-import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.ex.UnexpectedMessageException;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.run.ExecutionContext;
+import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.ExpectNoMessage;
 
 /**
  * TODO: add!
- * 
+ *
  * @author <a href="mailto:james.agnew@uhn.on.ca">James Agnew</a>
- * @version $Revision: 1.4 $ updated on $Date: 2009-11-11 04:19:29 $ by $Author: jamesagnew $
+ * @version $Revision: 1.5 $ updated on $Date: 2009-11-29 21:55:18 $ by $Author: jamesagnew $
  */
-public class ExpectNoMessageImpl extends AbstractExpect
-{
+public class ExpectNoMessageImpl extends AbstractExpect {
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
     /**
      * @param theBattery
      * @param theTest
      * @param theConfig
-     * @throws ConfigurationException 
+     * @throws ConfigurationException
      */
-    public ExpectNoMessageImpl(TestImpl theTest, ExpectNoMessage theConfig) throws ConfigurationException {
+    public ExpectNoMessageImpl(TestImpl theTest, ExpectNoMessage theConfig)
+                        throws ConfigurationException {
         super(theTest, theConfig);
     }
 
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException {
-        
-        TestMessage<?> message = getInterface().receiveMessage(getTest(), theCtx, getReceiveTimeout());
+        TestMessage<?> message = getInterface().receiveMessage(getTest(),
+                                                               theCtx,
+                                                               getReceiveTimeout());
+
         if (message != null) {
             throw new UnexpectedMessageException(getTest(), message, "Unexpected message received");
         }
-        
     }
-
 
     public Event exportConfig(ExpectNoMessage theConfig) {
         super.exportConfig(theConfig);
+
         return theConfig;
     }
 
@@ -78,5 +81,4 @@ public class ExpectNoMessageImpl extends AbstractExpect
     public Object exportConfigToXmlAndEncapsulate() {
         return exportConfigToXml();
     }
-
 }

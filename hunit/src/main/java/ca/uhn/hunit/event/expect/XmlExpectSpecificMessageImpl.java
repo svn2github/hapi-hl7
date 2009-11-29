@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -19,21 +19,22 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ca.uhn.hunit.event.expect;
 
 import ca.uhn.hunit.compare.xml.XmlMessageCompare;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.ex.TestFailureException;
-import ca.uhn.hunit.xsd.XMLExpectSpecificMessage;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.ExpectMessageAny;
+import ca.uhn.hunit.xsd.XMLExpectSpecificMessage;
+
 import org.w3c.dom.Document;
 
 /**
@@ -41,27 +42,22 @@ import org.w3c.dom.Document;
  * @author James
  */
 public class XmlExpectSpecificMessageImpl extends AbstractXmlExpectMessage {
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
-    public XmlExpectSpecificMessageImpl(TestImpl theTest, XMLExpectSpecificMessage theConfig) throws ConfigurationException {
+    public XmlExpectSpecificMessageImpl(TestImpl theTest, XMLExpectSpecificMessage theConfig)
+                                 throws ConfigurationException {
         super(theTest, theConfig);
     }
 
-    @Override
-    protected void validateMessage(TestMessage<Document> parsedMessage) throws TestFailureException {
-        TestMessage<Document> expect = getMessage().getTestMessage();
-        XmlMessageCompare compare = new XmlMessageCompare();
-        compare.compare(expect, parsedMessage);
-
-        if (compare.isSame() == false) {
-            throw new IncorrectMessageReceivedException(getTest(), null, expect, parsedMessage, "Inforrect message received", compare);
-        }
-    }
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
     public XMLExpectSpecificMessage exportConfig(XMLExpectSpecificMessage theConfig) {
         if (theConfig == null) {
             theConfig = new XMLExpectSpecificMessage();
         }
+
         super.exportConfig(theConfig);
+
         return theConfig;
     }
 
@@ -71,6 +67,7 @@ public class XmlExpectSpecificMessageImpl extends AbstractXmlExpectMessage {
     @Override
     public XMLExpectSpecificMessage exportConfigToXml() {
         XMLExpectSpecificMessage retVal = exportConfig(new XMLExpectSpecificMessage());
+
         return retVal;
     }
 
@@ -81,9 +78,9 @@ public class XmlExpectSpecificMessageImpl extends AbstractXmlExpectMessage {
     public ExpectMessageAny exportConfigToXmlAndEncapsulate() {
         ExpectMessageAny retVal = new ExpectMessageAny();
         retVal.setXmlSpecific(exportConfigToXml());
+
         return retVal;
     }
-
 
     /**
      * {@inheritDoc }
@@ -93,4 +90,20 @@ public class XmlExpectSpecificMessageImpl extends AbstractXmlExpectMessage {
         return Document.class;
     }
 
+    @Override
+    protected void validateMessage(TestMessage<Document> parsedMessage)
+                            throws TestFailureException {
+        TestMessage<Document> expect = getMessage().getTestMessage();
+        XmlMessageCompare compare = new XmlMessageCompare();
+        compare.compare(expect, parsedMessage);
+
+        if (compare.isSame() == false) {
+            throw new IncorrectMessageReceivedException(getTest(),
+                                                        null,
+                                                        expect,
+                                                        parsedMessage,
+                                                        "Inforrect message received",
+                                                        compare);
+        }
+    }
 }

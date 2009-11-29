@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -24,27 +24,30 @@ package ca.uhn.hunit.ex;
 import ca.uhn.hunit.iface.AbstractInterface;
 
 public abstract class InterfaceException extends TestFailureException {
+    //~ Instance fields ------------------------------------------------------------------------------------------------
 
+    private AbstractInterface myInterface;
 
-	private AbstractInterface myInterface;
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public AbstractInterface getInterface() {
-		return myInterface;
-	}
+    public InterfaceException(AbstractInterface theInterface, Throwable theCause) {
+        super(theCause);
+        myInterface = theInterface;
+    }
 
-	public InterfaceException(AbstractInterface theInterface, Throwable theCause) {
-		super(theCause);
-		myInterface = theInterface;
-	}
+    public InterfaceException(AbstractInterface theInterface, String theString) {
+        super(theString);
+        myInterface = theInterface;
+    }
 
-	public InterfaceException(AbstractInterface theInterface, String theString) {
-		super(theString);
-		myInterface = theInterface;
-	}
-	
-	public InterfaceException(AbstractInterface theInterface, String theString, Throwable theCause) {
-		super(theString, theCause);
-		myInterface = theInterface;
-	}
-	
+    public InterfaceException(AbstractInterface theInterface, String theString, Throwable theCause) {
+        super(theString, theCause);
+        myInterface = theInterface;
+    }
+
+    //~ Methods --------------------------------------------------------------------------------------------------------
+
+    public AbstractInterface getInterface() {
+        return myInterface;
+    }
 }

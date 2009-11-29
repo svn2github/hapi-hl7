@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -24,31 +24,41 @@ package ca.uhn.hunit.compare.xml;
 import ca.uhn.hunit.compare.ICompare;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
-import java.io.IOException;
+
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
+
 import org.w3c.dom.Document;
+
 import org.xml.sax.SAXException;
+
+import java.io.IOException;
 
 /**
  * Implementation of ICompare which compares XML documents
  */
 public class XmlMessageCompare implements ICompare<Document> {
+    //~ Instance fields ------------------------------------------------------------------------------------------------
 
     private DetailedDiff myDiff;
+
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
     public XmlMessageCompare() {
         XMLUnit.setIgnoreWhitespace(true);
     }
 
+    //~ Methods --------------------------------------------------------------------------------------------------------
+
     /**
      * {@inheritDoc }
      */
-    public void compare(TestMessage<Document> theExpectMessage, TestMessage<Document> theActualMessage) throws UnexpectedTestFailureException {
-
+    public void compare(TestMessage<Document> theExpectMessage, TestMessage<Document> theActualMessage)
+                 throws UnexpectedTestFailureException {
         try {
-            Diff diff = new Diff(theExpectMessage.getRawMessage(), theActualMessage.getRawMessage());
+            Diff diff = new Diff(theExpectMessage.getRawMessage(),
+                                 theActualMessage.getRawMessage());
             myDiff = new DetailedDiff(diff);
         } catch (SAXException ex) {
             throw new UnexpectedTestFailureException("Failure generating message diff", ex);
@@ -60,20 +70,17 @@ public class XmlMessageCompare implements ICompare<Document> {
     /**
      * {@inheritDoc }
      */
-    public boolean isSame() {
-        return myDiff.similar();
+    public String describeDifference() {
+        StringBuffer buffer = new StringBuffer();
+        myDiff.appendMessage(buffer);
+
+        return buffer.toString();
     }
 
     /**
      * {@inheritDoc }
      */
-    public String describeDifference() {
-        StringBuffer buffer = new StringBuffer();
-        myDiff.appendMessage(buffer);
-        return buffer.toString();
+    public boolean isSame() {
+        return myDiff.similar();
     }
-
-
-
-
 }

@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -19,36 +19,49 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ca.uhn.hunit.msg;
 
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.xsd.XmlMessageDefinition;
+
+import org.w3c.dom.Document;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.io.StringReader;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * XML Message implementation
  */
 public class XmlMessageImpl extends AbstractMessage<Document> {
+    //~ Instance fields ------------------------------------------------------------------------------------------------
 
-    private String myText;
     private Document myDocument;
+    private String myText;
 
-    public XmlMessageImpl(XmlMessageDefinition theDefinition) throws ConfigurationException {
+    //~ Constructors ---------------------------------------------------------------------------------------------------
+
+    public XmlMessageImpl(String theId) {
+        super(theId);
+    }
+
+    public XmlMessageImpl(XmlMessageDefinition theDefinition)
+                   throws ConfigurationException {
         super(theDefinition);
+
         try {
             final String text = theDefinition.getText();
             setSourceMessage(text);
@@ -57,8 +70,35 @@ public class XmlMessageImpl extends AbstractMessage<Document> {
         }
     }
 
-    public XmlMessageImpl(String theId) {
-        super(theId);
+    //~ Methods --------------------------------------------------------------------------------------------------------
+
+    /**
+     * Subclasses should make use of this method to export AbstractInterface properties into
+     * the return value for {@link #exportConfigToXml()}
+     */
+    protected XmlMessageDefinition exportConfig(XmlMessageDefinition theConfig) {
+        super.exportConfig(theConfig);
+        theConfig.setText(myText);
+
+        return theConfig;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public XmlMessageDefinition exportConfigToXml() {
+        return exportConfig(new XmlMessageDefinition());
+    }
+
+    @Override
+    public Class<Document> getMessageClass() {
+        return Document.class;
+    }
+
+    @Override
+    public String getSourceMessage() {
+        return myText;
     }
 
     @Override
@@ -70,8 +110,10 @@ public class XmlMessageImpl extends AbstractMessage<Document> {
     public void setSourceMessage(final String text) throws PropertyVetoException {
         try {
             myText = text.trim();
+
             DocumentBuilderFactory parserFactory = DocumentBuilderFactory.newInstance();
             parserFactory.setValidating(false);
+
             DocumentBuilder parser = parserFactory.newDocumentBuilder();
             StringReader inputStream = new StringReader(myText);
             myDocument = parser.parse(new InputSource(inputStream));
@@ -83,35 +125,4 @@ public class XmlMessageImpl extends AbstractMessage<Document> {
             throw new PropertyVetoException("Failed to parse XML message: " + ex.getMessage(), null);
         }
     }
-
-    @Override
-    public String getSourceMessage() {
-        return myText;
-    }
-
-    @Override
-    public Class<Document> getMessageClass() {
-        return Document.class;
-    }
-
-    /**
-     * Subclasses should make use of this method to export AbstractInterface properties into
-     * the return value for {@link #exportConfigToXml()}
-     */
-    protected XmlMessageDefinition exportConfig(XmlMessageDefinition theConfig) {
-        super.exportConfig(theConfig);
-        theConfig.setText(myText);
-        return theConfig;
-    }
-
-
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public XmlMessageDefinition exportConfigToXml() {
-        return exportConfig(new XmlMessageDefinition());
-    }
-
-
 }

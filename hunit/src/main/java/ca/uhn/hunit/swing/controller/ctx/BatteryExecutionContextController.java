@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -19,6 +19,7 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -34,8 +35,10 @@ import ca.uhn.hunit.swing.ui.run.TestExecutionForm;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.log.LogCapturingLog;
+
 import java.util.Map.Entry;
 import java.util.Set;
+
 import javax.swing.SwingUtilities;
 
 /**
@@ -43,22 +46,26 @@ import javax.swing.SwingUtilities;
  * @author James
  */
 public class BatteryExecutionContextController extends AbstractContextController<TestExecutionForm> {
+    //~ Instance fields ------------------------------------------------------------------------------------------------
 
-    private TestExecutionForm myView;
-    private final TestBatteryImpl myBattery;
     private final ExecutionContext myExecutionContext;
     private final ExecutionTestsTableModel myExecutionModel;
     private final LogTableModel myLogTableModel;
+    private final TestBatteryImpl myBattery;
+    private TestExecutionForm myView;
     private final Thread myExecutionThread;
+
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
     public BatteryExecutionContextController(TestBatteryImpl theBattery) {
         super(new LogCapturingLog());
+
         LogCapturingLog log = (LogCapturingLog) getLog();
 
         myBattery = theBattery;
         myExecutionContext = new ExecutionContext(theBattery);
         myExecutionContext.addListener(new MyExecutionListener());
-        
+
         myExecutionContext.setLog(log);
 
         myExecutionModel = new ExecutionTestsTableModel(myExecutionContext);
@@ -69,6 +76,19 @@ public class BatteryExecutionContextController extends AbstractContextController
 
         myExecutionThread = new Thread(myExecutionContext);
         myExecutionThread.start();
+    }
+
+    //~ Methods --------------------------------------------------------------------------------------------------------
+
+    private void batteryFinished() {
+        SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    for (Entry<TestImpl, TestFailureException> next : myExecutionContext.getTestFailures().entrySet()) {
+                        myView.addTestFailure(next.getKey(),
+                                              next.getValue());
+                    }
+                }
+            });
     }
 
     public ExecutionTestsTableModel getExecutionTableModel() {
@@ -84,23 +104,9 @@ public class BatteryExecutionContextController extends AbstractContextController
         return myView;
     }
 
-    private void batteryFinished() {
-        SwingUtilities.invokeLater(new Runnable() {
-
-            public void run() {
-                for (Entry<TestImpl, TestFailureException> next : myExecutionContext.getTestFailures().entrySet()) {
-                    myView.addTestFailure(next.getKey(), next.getValue());
-                }
-            }
-        });
-    }
+    //~ Inner Classes --------------------------------------------------------------------------------------------------
 
     private class MyExecutionListener implements IExecutionListener {
-
-        public void batteryStarted(TestBatteryImpl theBattery) {
-            // nothing
-        }
-
         public void batteryFailed(TestBatteryImpl theBattery) {
             batteryFinished();
         }
@@ -109,7 +115,7 @@ public class BatteryExecutionContextController extends AbstractContextController
             batteryFinished();
         }
 
-        public void testStarted(TestImpl theTest) {
+        public void batteryStarted(TestBatteryImpl theBattery) {
             // nothing
         }
 
@@ -118,6 +124,10 @@ public class BatteryExecutionContextController extends AbstractContextController
         }
 
         public void testPassed(TestImpl theTest) {
+            // nothing
+        }
+
+        public void testStarted(TestImpl theTest) {
             // nothing
         }
     }

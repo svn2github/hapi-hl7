@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -21,22 +21,29 @@
  */
 package ca.uhn.hunit.swing.model;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
-import java.util.List;
-import javax.swing.event.TableModelEvent;
-import javax.swing.tree.DefaultMutableTreeNode;
-
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
-import javax.swing.event.TableModelListener;
 
-public class TestBatteryTestsTreeNode extends DefaultMutableTreeNode implements TableModelListener, PropertyChangeListener {
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.List;
+
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+
+public class TestBatteryTestsTreeNode extends DefaultMutableTreeNode implements TableModelListener,
+                                                                                PropertyChangeListener {
+    //~ Static fields/initializers -------------------------------------------------------------------------------------
 
     private static final long serialVersionUID = -4977729790093086397L;
-    private final TestBatteryImpl myBattery;
+
+    //~ Instance fields ------------------------------------------------------------------------------------------------
+
     private final MyTreeModel myModel;
+    private final TestBatteryImpl myBattery;
+
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
     public TestBatteryTestsTreeNode(TestBatteryImpl theBattery, MyTreeModel theModel) {
         myBattery = theBattery;
@@ -47,31 +54,7 @@ public class TestBatteryTestsTreeNode extends DefaultMutableTreeNode implements 
         updateChildren();
     }
 
-    private void updateChildren() {
-        int index = 0;
-        final List<TestImpl> tests = myBattery.getTests();
-        for (TestImpl next : tests) {
-
-            next.removePropertyChangeListener(TestImpl.NAME_PROPERTY, this);
-            next.addPropertyChangeListener(TestImpl.NAME_PROPERTY, this);
-
-            if (getChildCount() <= index) {
-                TestTreeNode newChild = new TestTreeNode(next);
-                add(newChild);
-            } else {
-                TestTreeNode nextNode = (TestTreeNode) getChildAt(index);
-                if (!nextNode.getUserObject().equals(next)) {
-                    TestTreeNode newChild = new TestTreeNode(next);
-                    insert(newChild, index);
-                }
-            }
-            index++;
-        }
-
-        while (getChildCount() > tests.size()) {
-            remove(getChildCount() - 1);
-        }
-    }
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
     public void propertyChange(PropertyChangeEvent theEvt) {
         updateChildren();
@@ -81,5 +64,33 @@ public class TestBatteryTestsTreeNode extends DefaultMutableTreeNode implements 
     public void tableChanged(TableModelEvent e) {
         updateChildren();
         myModel.reload(this);
+    }
+
+    private void updateChildren() {
+        int index = 0;
+        final List<TestImpl> tests = myBattery.getTests();
+
+        for (TestImpl next : tests) {
+            next.removePropertyChangeListener(TestImpl.NAME_PROPERTY, this);
+            next.addPropertyChangeListener(TestImpl.NAME_PROPERTY, this);
+
+            if (getChildCount() <= index) {
+                TestTreeNode newChild = new TestTreeNode(next);
+                add(newChild);
+            } else {
+                TestTreeNode nextNode = (TestTreeNode) getChildAt(index);
+
+                if (! nextNode.getUserObject().equals(next)) {
+                    TestTreeNode newChild = new TestTreeNode(next);
+                    insert(newChild, index);
+                }
+            }
+
+            index++;
+        }
+
+        while (getChildCount() > tests.size()) {
+            remove(getChildCount() - 1);
+        }
     }
 }

@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -19,11 +19,11 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ca.uhn.hunit.event.send;
 
 import ca.uhn.hunit.ex.ConfigurationException;
@@ -33,6 +33,7 @@ import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.SendMessageAny;
 import ca.uhn.hunit.xsd.XMLSendMessage;
+
 import org.w3c.dom.Document;
 
 /**
@@ -40,35 +41,29 @@ import org.w3c.dom.Document;
  * @author James
  */
 public class XmlSendMessageImpl extends AbstractSendMessage<Document, XmlMessageImpl> {
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
-    public XmlSendMessageImpl(TestImpl theTest, XMLSendMessage theConfig) throws ConfigurationException {
+    public XmlSendMessageImpl(TestImpl theTest, XMLSendMessage theConfig)
+                       throws ConfigurationException {
         super(theTest, theConfig);
     }
 
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public TestMessage<Document> massageMessage(TestMessage<Document> theInput) {
-        return theInput;
-    }
-
-    public Class<Document> getMessageClass() {
-        return Document.class;
-    }
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
     public XMLSendMessage exportConfig(XMLSendMessage theConfig) {
         if (theConfig == null) {
             theConfig = new XMLSendMessage();
         }
+
         super.exportConfig(theConfig);
+
         return theConfig;
     }
-
 
     @Override
     public XMLSendMessage exportConfigToXml() {
         XMLSendMessage retVal = exportConfig(new XMLSendMessage());
+
         return retVal;
     }
 
@@ -79,7 +74,19 @@ public class XmlSendMessageImpl extends AbstractSendMessage<Document, XmlMessage
     public SendMessageAny exportConfigToXmlAndEncapsulate() {
         SendMessageAny sendMessage = new SendMessageAny();
         sendMessage.setXml(exportConfigToXml());
+
         return sendMessage;
     }
 
+    public Class<Document> getMessageClass() {
+        return Document.class;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public TestMessage<Document> massageMessage(TestMessage<Document> theInput) {
+        return theInput;
+    }
 }

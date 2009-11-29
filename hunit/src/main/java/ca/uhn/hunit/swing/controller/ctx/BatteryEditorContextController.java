@@ -13,9 +13,12 @@ import ca.uhn.hunit.util.log.ILogProvider;
  * @author James
  */
 public class BatteryEditorContextController extends AbstractContextController<BatteryEditorForm> {
+    //~ Instance fields ------------------------------------------------------------------------------------------------
 
-    private final TestBatteryImpl myBattery;
     private final BatteryEditorForm myView;
+    private final TestBatteryImpl myBattery;
+
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
     public BatteryEditorContextController(TestBatteryImpl theBattery, ILogProvider theLog) {
         super(theLog);
@@ -24,6 +27,8 @@ public class BatteryEditorContextController extends AbstractContextController<Ba
         myView = new BatteryEditorForm();
         myView.setController(this);
     }
+
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
     /**
      * Returns the battery model for this controller

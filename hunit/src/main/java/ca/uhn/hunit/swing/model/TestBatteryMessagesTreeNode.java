@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -21,54 +21,62 @@
  */
 package ca.uhn.hunit.swing.model;
 
+import ca.uhn.hunit.msg.AbstractMessage;
+import ca.uhn.hunit.test.TestBatteryImpl;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import ca.uhn.hunit.msg.AbstractMessage;
-import ca.uhn.hunit.test.TestBatteryImpl;
-
 public class TestBatteryMessagesTreeNode extends DefaultMutableTreeNode implements PropertyChangeListener {
+    //~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final long serialVersionUID = -4977729790093086397L;
-	
-    private final TestBatteryImpl myBattery;
+    private static final long serialVersionUID = -4977729790093086397L;
+
+    //~ Instance fields ------------------------------------------------------------------------------------------------
+
     private final MyTreeModel myModel;
-	
-	
-	public TestBatteryMessagesTreeNode(TestBatteryImpl theBattery, MyTreeModel theModel) {
+    private final TestBatteryImpl myBattery;
+
+    //~ Constructors ---------------------------------------------------------------------------------------------------
+
+    public TestBatteryMessagesTreeNode(TestBatteryImpl theBattery, MyTreeModel theModel) {
         myBattery = theBattery;
         myModel = theModel;
-		theBattery.addPropertyChangeListener(TestBatteryImpl.PROP_MESSAGES, this);
-		updateChildren();
-	}
+        theBattery.addPropertyChangeListener(TestBatteryImpl.PROP_MESSAGES, this);
+        updateChildren();
+    }
 
-	private void updateChildren() {
-		int index = 0;
-		for (AbstractMessage<?> next : myBattery.getMessages()) {
-			if (getChildCount() <= index) {
-				MessageTreeNode newChild = new MessageTreeNode(next);
-				add(newChild);
-			} else {
-				MessageTreeNode nextNode = (MessageTreeNode) getChildAt(index);
-				if (!nextNode.getUserObject().equals(next)) {
-					MessageTreeNode newChild = new MessageTreeNode(next);
-					insert(newChild, index);
-				}
-			}
-			index++;
-		}
-		
-		while (getChildCount() > myBattery.getMessages().size()) {
-			remove(getChildCount() - 1);
-		}
-	}
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
-	public void propertyChange(PropertyChangeEvent theEvt) {
-		updateChildren();
+    public void propertyChange(PropertyChangeEvent theEvt) {
+        updateChildren();
 
         myModel.nodeStructureChanged(this);
-	}
+    }
 
+    private void updateChildren() {
+        int index = 0;
+
+        for (AbstractMessage<?> next : myBattery.getMessages()) {
+            if (getChildCount() <= index) {
+                MessageTreeNode newChild = new MessageTreeNode(next);
+                add(newChild);
+            } else {
+                MessageTreeNode nextNode = (MessageTreeNode) getChildAt(index);
+
+                if (! nextNode.getUserObject().equals(next)) {
+                    MessageTreeNode newChild = new MessageTreeNode(next);
+                    insert(newChild, index);
+                }
+            }
+
+            index++;
+        }
+
+        while (getChildCount() > myBattery.getMessages().size()) {
+            remove(getChildCount() - 1);
+        }
+    }
 }

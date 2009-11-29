@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -22,22 +22,6 @@
 package ca.uhn.hunit.iface;
 
 import ca.uhn.hunit.event.InterfaceInteractionEnum;
-import java.beans.PropertyVetoException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-
-import org.springframework.jms.JmsException;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
-
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceWontReceiveException;
 import ca.uhn.hunit.ex.InterfaceWontSendException;
@@ -49,37 +33,69 @@ import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.TypedValueListTableModel;
-import ca.uhn.hunit.xsd.JavaArgument;
 import ca.uhn.hunit.xsd.AbstractJmsInterface;
 import ca.uhn.hunit.xsd.Interface;
+import ca.uhn.hunit.xsd.JavaArgument;
 import ca.uhn.hunit.xsd.NamedJavaArgument;
-import java.util.Collections;
-import java.util.LinkedList;
-import javax.jms.MessageListener;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
+
 import org.apache.commons.lang.StringUtils;
 
-public abstract class AbstractJmsInterfaceImpl<T extends Object> extends AbstractInterface {
-    public static final String CONNECTION_FACTORY_CLASS_PROPERTY = AbstractJmsInterfaceImpl.class + "CONNECTION_FACTORY_CLASS_PROPERTY";
+import org.springframework.jms.JmsException;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
-    private boolean myStarted;
-    private boolean myStopped;
-    private String myQueueName;
+import java.beans.PropertyVetoException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+
+public abstract class AbstractJmsInterfaceImpl<T extends Object> extends AbstractInterface {
+    //~ Static fields/initializers -------------------------------------------------------------------------------------
+
+    public static final String CONNECTION_FACTORY_CLASS_PROPERTY =
+        AbstractJmsInterfaceImpl.class + "CONNECTION_FACTORY_CLASS_PROPERTY";
+
+    //~ Instance fields ------------------------------------------------------------------------------------------------
+
     private Class<?> myConnectionFactoryClass;
-    private String myUsername;
-    private String myPassword;
     private Constructor<?> myConstructor;
+    private DefaultMessageListenerContainer myMessageListenerContainer;
     private JmsTemplate myJmsTemplate;
-    private boolean myPubSubDomain;
+    private final List<Message> myReceivedMessages = Collections.synchronizedList(new LinkedList<Message>());
+    private String myPassword;
+    private String myQueueName;
+    private String myUsername;
     private final TypedValueListTableModel myConstructorArgsTableModel = new TypedValueListTableModel(false);
     private final TypedValueListTableModel myMessagePropertyTableModel = new TypedValueListTableModel(true);
-    private final List<Message> myReceivedMessages = Collections.synchronizedList(new LinkedList<Message>());
-    private DefaultMessageListenerContainer myMessageListenerContainer;
+    private boolean myPubSubDomain;
+    private boolean myStarted;
+    private boolean myStopped;
 
-    public AbstractJmsInterfaceImpl(TestBatteryImpl theBattery, AbstractJmsInterface theConfig) throws ConfigurationException {
+    //~ Constructors ---------------------------------------------------------------------------------------------------
+
+    public AbstractJmsInterfaceImpl(TestBatteryImpl theBattery, String theId) {
+        super(theBattery, theId);
+
+        init();
+    }
+
+    public AbstractJmsInterfaceImpl(TestBatteryImpl theBattery, AbstractJmsInterface theConfig)
+                             throws ConfigurationException {
         super(theBattery, theConfig);
 
         myQueueName = theConfig.getQueueName();
+
         if (myQueueName == null) {
             myQueueName = theConfig.getTopicName();
             myPubSubDomain = true;
@@ -94,6 +110,7 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
         }
 
         myConstructorArgsTableModel.importValuesFromXml(theConfig.getConnectionFactoryConstructorArg());
+
         try {
             myConstructor = myConnectionFactoryClass.getConstructor(myConstructorArgsTableModel.getArgTypeArray());
         } catch (SecurityException e) {
@@ -112,20 +129,47 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
         init();
     }
 
-    public AbstractJmsInterfaceImpl(TestBatteryImpl theBattery, String theId) {
-        super(theBattery, theId);
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
-        init();
+    private String doReceiveMessage() throws JMSException {
+        String message = null;
+
+//        javax.jms.Message jmsMessage = myJmsTemplate.receive(myQueueName);
+        if (myReceivedMessages.size() == 0) {
+            return null;
+        }
+
+        Message jmsMessage = myReceivedMessages.remove(0);
+
+        if (jmsMessage != null) {
+            TextMessage jmsTextMessage = (TextMessage) jmsMessage;
+            message = jmsTextMessage.getText();
+        }
+
+        return message;
     }
 
-    private void init() {
-        myUsername = StringUtils.defaultString(myUsername);
-        myPassword = StringUtils.defaultString(myPassword);
+    /**
+     * {@inheritDoc }
+     */
+    protected Interface exportConfig(AbstractJmsInterface retVal) {
+        super.exportConfig(retVal);
+
+        myConstructorArgsTableModel.exportValuesToXml(retVal.getConnectionFactoryConstructorArg());
+        myMessagePropertyTableModel.exportValuesToXml(retVal.getMessageProperty());
+
+        retVal.setConnectionFactory(myConnectionFactoryClass.getName());
+        retVal.setPassword(myPassword);
+        retVal.setQueueName(myPubSubDomain ? null : myQueueName);
+        retVal.setTopicName(myPubSubDomain ? myQueueName : null);
+        retVal.setUserName(myUsername);
+
+        return retVal;
     }
 
     public static void extractArgsFromXml(List<Class<?>> theArgTypeList, List<String> theNames, List<Object> theArgs,
-            List<JavaArgument> theArgDefinitions) throws ConfigurationException {
-
+                                          List<JavaArgument> theArgDefinitions)
+                                   throws ConfigurationException {
         for (JavaArgument next : theArgDefinitions) {
             if ("java.lang.String".equals(next.getType())) {
                 theArgTypeList.add(String.class);
@@ -146,9 +190,11 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
         }
     }
 
-    public static void extractNamedArgsFromXml(List<Class<?>> theArgTypeList, List<String> theNames, List<Object> theArgs,
-            List<NamedJavaArgument> theArgDefinitions) throws ConfigurationException {
+    public static void extractNamedArgsFromXml(List<Class<?>> theArgTypeList, List<String> theNames,
+                                               List<Object> theArgs, List<NamedJavaArgument> theArgDefinitions)
+                                        throws ConfigurationException {
         List<JavaArgument> argDefs = new ArrayList<JavaArgument>();
+
         for (NamedJavaArgument next : theArgDefinitions) {
             argDefs.add(next);
         }
@@ -156,69 +202,155 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
         extractArgsFromXml(theArgTypeList, theNames, theArgs, argDefs);
     }
 
+    public Class<?> getConnectionFactoryClass() {
+        return myConnectionFactoryClass;
+    }
+
+    public TypedValueListTableModel getConstructorArgsTableModel() {
+        return myConstructorArgsTableModel;
+    }
+
+    public TypedValueListTableModel getMessagePropertyTableModel() {
+        return myMessagePropertyTableModel;
+    }
+
+    public String getPassword() {
+        return myPassword;
+    }
+
+    public String getQueueName() {
+        return myQueueName;
+    }
+
+    public String getUsername() {
+        return myUsername;
+    }
+
+    private void init() {
+        myUsername = StringUtils.defaultString(myUsername);
+        myPassword = StringUtils.defaultString(myPassword);
+    }
+
+    public boolean isPubSubDomain() {
+        return myPubSubDomain;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
     @Override
-    public TestMessage<?> receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException {
+    public boolean isStarted() {
+        return myStarted;
+    }
+
+    @Override
+    public TestMessage<?> receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout)
+                                  throws TestFailureException {
         start(theCtx);
 
         theCtx.getLog().get(this).info("Waiting to receive message");
 
         String message = null;
+
         try {
             long endTime = System.currentTimeMillis() + theTimeout;
-            while (!myStopped && message == null && System.currentTimeMillis() < endTime) {
+
+            while (! myStopped && (message == null) && (System.currentTimeMillis() < endTime)) {
                 try {
                     message = doReceiveMessage();
                 } catch (JmsException e) {
-                    throw new InterfaceWontReceiveException(this, e.getMessage(), e);
+                    throw new InterfaceWontReceiveException(this,
+                                                            e.getMessage(), e);
                 } catch (JMSException e) {
-                    throw new InterfaceWontReceiveException(this, e.getMessage(), e);
+                    throw new InterfaceWontReceiveException(this,
+                                                            e.getMessage(), e);
                 }
             }
-            if (myStopped || message == null) {
+
+            if (myStopped || (message == null)) {
                 return null;
             }
 
             theCtx.getLog().get(this).info("Received message (" + message.length() + " bytes)");
 
             return new TestMessage<Object>(message, null);
-
         } catch (JmsException e) {
-            throw new InterfaceWontReceiveException(this, e.getMessage(), e);
+            throw new InterfaceWontReceiveException(this,
+                                                    e.getMessage(), e);
         }
-
     }
 
     @Override
-    public void sendMessage(TestImpl theTest, ExecutionContext theCtx, final TestMessage<?> theMessage) throws TestFailureException {
+    public void sendMessage(TestImpl theTest, ExecutionContext theCtx, final TestMessage<?> theMessage)
+                     throws TestFailureException {
         start(theCtx);
 
         theCtx.getLog().get(this).info("Sending message (" + theMessage.getRawMessage().length() + " bytes)");
 
         try {
-            MessageCreator mc = new MessageCreator() {
+            MessageCreator mc =
+                new MessageCreator() {
+                    @Override
+                    public javax.jms.Message createMessage(Session theSession)
+                                                    throws JMSException {
+                        TextMessage textMessage = theSession.createTextMessage(theMessage.getRawMessage());
 
-                @Override
-                public javax.jms.Message createMessage(Session theSession) throws JMSException {
-                    TextMessage textMessage = theSession.createTextMessage(theMessage.getRawMessage());
-
-                    for (int i = 0; i < myMessagePropertyTableModel.getRowCount(); i++) {
-                        if (java.lang.String.class.equals(myMessagePropertyTableModel.getArgType(i))) {
-                            textMessage.setStringProperty(myMessagePropertyTableModel.getName(i), (String) myMessagePropertyTableModel.getArg(i));
-                        } else if (java.lang.Integer.class.equals(myMessagePropertyTableModel.getArgType(i))) {
-                            textMessage.setIntProperty(myMessagePropertyTableModel.getName(i), (Integer) myMessagePropertyTableModel.getArg(i));
-                        } else if (int.class.equals(myMessagePropertyTableModel.getArgType(i))) {
-                            textMessage.setIntProperty(myMessagePropertyTableModel.getName(i), (Integer) myMessagePropertyTableModel.getArg(i));
+                        for (int i = 0; i < myMessagePropertyTableModel.getRowCount(); i++) {
+                            if (java.lang.String.class.equals(myMessagePropertyTableModel.getArgType(i))) {
+                                textMessage.setStringProperty(myMessagePropertyTableModel.getName(i),
+                                                              (String) myMessagePropertyTableModel.getArg(i));
+                            } else if (java.lang.Integer.class.equals(myMessagePropertyTableModel.getArgType(i))) {
+                                textMessage.setIntProperty(myMessagePropertyTableModel.getName(i),
+                                                           (Integer) myMessagePropertyTableModel.getArg(i));
+                            } else if (int.class.equals(myMessagePropertyTableModel.getArgType(i))) {
+                                textMessage.setIntProperty(myMessagePropertyTableModel.getName(i),
+                                                           (Integer) myMessagePropertyTableModel.getArg(i));
+                            }
                         }
+
+                        return textMessage;
                     }
-                    return textMessage;
-                }
-            };
+                };
+
             myJmsTemplate.send(myQueueName, mc);
             theCtx.getLog().get(this).info("Sent message");
         } catch (JmsException e) {
-            throw new InterfaceWontSendException(this, e.getMessage(), e);
+            throw new InterfaceWontSendException(this,
+                                                 e.getMessage(), e);
+        }
+    }
+
+    public void setConnectionFactoryClass(Class<?> theConnectionFactoryClass)
+                                   throws PropertyVetoException {
+        Class<?> oldValue = theConnectionFactoryClass;
+
+        if (! theConnectionFactoryClass.isAssignableFrom(ConnectionFactory.class)) {
+            throw new PropertyVetoException("Must extend " + ConnectionFactory.class, null);
         }
 
+        fireVetoableChange(CONNECTION_FACTORY_CLASS_PROPERTY, oldValue, theConnectionFactoryClass);
+        this.myConnectionFactoryClass = theConnectionFactoryClass;
+        firePropertyChange(CONNECTION_FACTORY_CLASS_PROPERTY, oldValue, theConnectionFactoryClass);
+    }
+
+    public void setPassword(String myPassword) {
+        this.myPassword = myPassword;
+    }
+
+    public void setPubSubDomain(boolean myPubSubDomain) {
+        this.myPubSubDomain = myPubSubDomain;
+    }
+
+    public void setQueueName(String myQueueName) throws PropertyVetoException {
+        if (StringUtils.isBlank(myQueueName)) {
+            throw new PropertyVetoException(Strings.getInstance().getString("interface.queue.empty"), null);
+        }
+
+        this.myQueueName = myQueueName;
+    }
+
+    public void setUsername(String myUsername) {
+        this.myUsername = myUsername;
     }
 
     @Override
@@ -228,16 +360,21 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
         }
 
         ConnectionFactory connectionFactory;
+
         try {
             connectionFactory = (ConnectionFactory) myConstructor.newInstance(myConstructorArgsTableModel.getArgArray());
         } catch (IllegalArgumentException e1) {
-            throw new InterfaceWontStartException(this, e1.getMessage());
+            throw new InterfaceWontStartException(this,
+                                                  e1.getMessage());
         } catch (InstantiationException e1) {
-            throw new InterfaceWontStartException(this, e1.getMessage());
+            throw new InterfaceWontStartException(this,
+                                                  e1.getMessage());
         } catch (IllegalAccessException e1) {
-            throw new InterfaceWontStartException(this, e1.getMessage());
+            throw new InterfaceWontStartException(this,
+                                                  e1.getMessage());
         } catch (InvocationTargetException e1) {
-            throw new InterfaceWontStartException(this, e1.getMessage());
+            throw new InterfaceWontStartException(this,
+                                                  e1.getMessage());
         }
 
         connectionFactory = new JmsConnectionFactory(connectionFactory, myUsername, myPassword);
@@ -246,6 +383,7 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
         myJmsTemplate.setPubSubDomain(myPubSubDomain);
 
         final TestBatteryImpl battery = theCtx.getBattery();
+
         if (battery.getInterfaceInteractionTypes(getId()).contains(InterfaceInteractionEnum.RECEIVE)) {
             theCtx.getLog().get(this).info("Interface will be used to receive messages, starting listener");
             myMessageListenerContainer = new DefaultMessageListenerContainer();
@@ -264,30 +402,36 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
         if (isClear()) {
             long readUntil = System.currentTimeMillis() + getClearMillis();
             int cleared = 0;
+
             while (System.currentTimeMillis() < readUntil) {
                 try {
                     String message = doReceiveMessage();
 
-                    if (message == null || message.length() == 0) {
+                    if ((message == null) || (message.length() == 0)) {
                         try {
                             Thread.sleep(250);
                         } catch (InterruptedException e) {
                             // nothing
                         }
+
                         continue;
                     }
+
                     cleared++;
                     theCtx.getLog().get(this).info("Cleared message");
+
                     try {
                         Thread.sleep(250);
                     } catch (InterruptedException e) {
                         // nothing
                     }
+
                     readUntil = System.currentTimeMillis() + getClearMillis();
                 } catch (JMSException e) {
                     theCtx.getLog().get(this).warn("Error while clearing queue: " + e.getMessage());
                 }
             }
+
             theCtx.getLog().get(this).info("Cleared " + cleared + " messages from interface before starting");
         }
 
@@ -296,30 +440,15 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
         firePropertyChange(INTERFACE_STARTED_PROPERTY, false, true);
     }
 
-    private String doReceiveMessage() throws JMSException {
-        String message = null;
-
-//        javax.jms.Message jmsMessage = myJmsTemplate.receive(myQueueName);
-        if (myReceivedMessages.size() == 0) {
-            return null;
-        }
-        Message jmsMessage = myReceivedMessages.remove(0);
-
-        if (jmsMessage != null) {
-            TextMessage jmsTextMessage = (TextMessage) jmsMessage;
-            message = jmsTextMessage.getText();
-        }
-        return message;
-    }
-
     /**
      * {@inheritDoc }
      */
     @Override
     public void stop(ExecutionContext theCtx) throws InterfaceWontStopException {
-        if (!myStarted) {
+        if (! myStarted) {
             return;
         }
+
         if (myStopped) {
             return;
         }
@@ -335,92 +464,9 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
         firePropertyChange(INTERFACE_STARTED_PROPERTY, true, false);
     }
 
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public boolean isStarted() {
-        return myStarted;
-    }
-
-    /**
-     * {@inheritDoc }
-     */
-    protected Interface exportConfig(AbstractJmsInterface retVal) {
-        super.exportConfig(retVal);
-        
-        myConstructorArgsTableModel.exportValuesToXml(retVal.getConnectionFactoryConstructorArg());
-        myMessagePropertyTableModel.exportValuesToXml(retVal.getMessageProperty());
-
-        retVal.setConnectionFactory(myConnectionFactoryClass.getName());
-        retVal.setPassword(myPassword);
-        retVal.setQueueName(myPubSubDomain ? null : myQueueName);
-        retVal.setTopicName(myPubSubDomain ? myQueueName : null);
-        retVal.setUserName(myUsername);
-        
-        return retVal;
-    }
-
-    public TypedValueListTableModel getConstructorArgsTableModel() {
-        return myConstructorArgsTableModel;
-    }
-
-    public TypedValueListTableModel getMessagePropertyTableModel() {
-        return myMessagePropertyTableModel;
-    }
-
-    public Class<?> getConnectionFactoryClass() {
-        return myConnectionFactoryClass;
-    }
-
-    public void setConnectionFactoryClass(Class<?> theConnectionFactoryClass) throws PropertyVetoException {
-        Class<?> oldValue = theConnectionFactoryClass;
-        if (!theConnectionFactoryClass.isAssignableFrom(ConnectionFactory.class)) {
-            throw new PropertyVetoException("Must extend " + ConnectionFactory.class, null);
-        }
-
-        fireVetoableChange(CONNECTION_FACTORY_CLASS_PROPERTY, oldValue, theConnectionFactoryClass);
-        this.myConnectionFactoryClass = theConnectionFactoryClass;
-        firePropertyChange(CONNECTION_FACTORY_CLASS_PROPERTY, oldValue, theConnectionFactoryClass);
-    }
-
-    public String getPassword() {
-        return myPassword;
-    }
-
-    public void setPassword(String myPassword) {
-        this.myPassword = myPassword;
-    }
-
-    public boolean isPubSubDomain() {
-        return myPubSubDomain;
-    }
-
-    public void setPubSubDomain(boolean myPubSubDomain) {
-        this.myPubSubDomain = myPubSubDomain;
-    }
-
-    public String getQueueName() {
-        return myQueueName;
-    }
-
-    public void setQueueName(String myQueueName) throws PropertyVetoException {
-        if (StringUtils.isBlank(myQueueName)) {
-            throw new PropertyVetoException(Strings.getInstance().getString("interface.queue.empty"), null);
-        }
-        this.myQueueName = myQueueName;
-    }
-
-    public String getUsername() {
-        return myUsername;
-    }
-
-    public void setUsername(String myUsername) {
-        this.myUsername = myUsername;
-    }
+    //~ Inner Classes --------------------------------------------------------------------------------------------------
 
     private class MyMessageListener implements MessageListener {
-
         private final ExecutionContext myCtx;
 
         public MyMessageListener(ExecutionContext theCtx) {

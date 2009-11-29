@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -19,38 +19,51 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ca.uhn.hunit.swing.model;
 
-import java.beans.PropertyChangeEvent;
-import javax.swing.tree.DefaultMutableTreeNode;
-
 import ca.uhn.hunit.iface.AbstractInterface;
+
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  *
  * @author James
  */
 public class InterfaceTreeNode extends DefaultMutableTreeNode implements PropertyChangeListener {
+    //~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final long serialVersionUID = 1949757870372912053L;
-    private final MyTreeModel myModel;
+    private static final long serialVersionUID = 1949757870372912053L;
+
+    //~ Instance fields ------------------------------------------------------------------------------------------------
+
     private final AbstractInterface myInterface;
+    private final MyTreeModel myModel;
 
-	public InterfaceTreeNode(AbstractInterface theInterface, MyTreeModel theModel) {
-		super(theInterface, false);
+    //~ Constructors ---------------------------------------------------------------------------------------------------
+
+    public InterfaceTreeNode(AbstractInterface theInterface, MyTreeModel theModel) {
+        super(theInterface, false);
 
         myModel = theModel;
         myInterface = theInterface;
 
         myInterface.addPropertyChangeListener(AbstractInterface.INTERFACE_ID_PROPERTY, this);
         myInterface.addPropertyChangeListener(AbstractInterface.INTERFACE_STARTED_PROPERTY, this);
-	}
+    }
+
+    //~ Methods --------------------------------------------------------------------------------------------------------
+
+    public AbstractInterface getInterface() {
+        return myInterface;
+    }
 
     /**
      * {@inheritDoc }
@@ -58,9 +71,4 @@ public class InterfaceTreeNode extends DefaultMutableTreeNode implements Propert
     public void propertyChange(PropertyChangeEvent evt) {
         myModel.nodeChanged(this);
     }
-
-    public AbstractInterface getInterface() {
-        return myInterface;
-    }
-
 }

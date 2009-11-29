@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -27,57 +27,52 @@ import ca.uhn.hl7v2.parser.DefaultXMLParser;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
 import ca.uhn.hl7v2.validation.impl.ValidationContextImpl;
+
 import ca.uhn.hunit.event.ISpecificMessageEvent;
-import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.msg.Hl7V2MessageImpl;
+import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.Hl7V2SendMessage;
 import ca.uhn.hunit.xsd.SendMessageAny;
 
-public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message, Hl7V2MessageImpl> implements ISpecificMessageEvent {
-    private String myEncoding;
-    private Parser myParser;
+public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message, Hl7V2MessageImpl>
+    implements ISpecificMessageEvent {
+    //~ Instance fields ------------------------------------------------------------------------------------------------
 
-	public Hl7V2SendMessageImpl(TestImpl theTest, Hl7V2SendMessage theConfig) throws ConfigurationException {
-		super(theTest, theConfig);
+    private Parser myParser;
+    private String myEncoding;
+
+    //~ Constructors ---------------------------------------------------------------------------------------------------
+
+    public Hl7V2SendMessageImpl(TestImpl theTest, Hl7V2SendMessage theConfig)
+                         throws ConfigurationException {
+        super(theTest, theConfig);
 
         myEncoding = theConfig.getEncoding();
-		if ("XML".equals(myEncoding)) {
-			myParser = new DefaultXMLParser();
-		} else {
-			myParser = new PipeParser();
+
+        if ("XML".equals(myEncoding)) {
+            myParser = new DefaultXMLParser();
+        } else {
+            myParser = new PipeParser();
             myEncoding = "ER7";
-		}
-		myParser.setValidationContext(new ValidationContextImpl());
-
-	}
-
-	@Override
-	public TestMessage<Message> massageMessage(TestMessage<Message> theInput) throws UnexpectedTestFailureException {
-        try {
-            final Message parsedMessage = theInput.getParsedMessage();
-            TestMessage<Message> retVal = new TestMessage<Message>(myParser.encode(parsedMessage), parsedMessage);
-            return retVal;
-        } catch (HL7Exception ex) {
-            throw new UnexpectedTestFailureException("Unable to encode message", ex);
         }
-	}
 
-
-    public Class<Message> getMessageClass() {
-        return Message.class;
+        myParser.setValidationContext(new ValidationContextImpl());
     }
 
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
     public Hl7V2SendMessage exportConfig(Hl7V2SendMessage theConfig) {
         if (theConfig == null) {
             theConfig = new Hl7V2SendMessage();
         }
+
         super.exportConfig(theConfig);
         theConfig.setEncoding(myEncoding);
+
         return theConfig;
     }
 
@@ -87,9 +82,9 @@ public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message, Hl7V2Mess
     @Override
     public Hl7V2SendMessage exportConfigToXml() {
         Hl7V2SendMessage retVal = exportConfig(new Hl7V2SendMessage());
+
         return retVal;
     }
-
 
     /**
      * Overriding to provide a specific type requirement
@@ -98,7 +93,25 @@ public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message, Hl7V2Mess
     public SendMessageAny exportConfigToXmlAndEncapsulate() {
         SendMessageAny sendMessage = new SendMessageAny();
         sendMessage.setHl7V2(exportConfigToXml());
+
         return sendMessage;
     }
 
+    public Class<Message> getMessageClass() {
+        return Message.class;
+    }
+
+    @Override
+    public TestMessage<Message> massageMessage(TestMessage<Message> theInput)
+                                        throws UnexpectedTestFailureException {
+        try {
+            final Message parsedMessage = theInput.getParsedMessage();
+            TestMessage<Message> retVal = new TestMessage<Message>(myParser.encode(parsedMessage),
+                                                                   parsedMessage);
+
+            return retVal;
+        } catch (HL7Exception ex) {
+            throw new UnexpectedTestFailureException("Unable to encode message", ex);
+        }
+    }
 }

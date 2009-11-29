@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -19,7 +19,6 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
-
 package ca.uhn.hunit.compare;
 
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
@@ -30,26 +29,25 @@ import ca.uhn.hunit.iface.TestMessage;
  * are able to handle) and return a structured comparison.
  */
 public interface ICompare<T> {
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
     /**
      * Triggers the comparison. This method is expected to be called once,
      * before any other method
-     * 
+     *
      * @param theExpected The expected message
      * @param theActual The actual message
      */
-    void compare(TestMessage<T> theExpectMessage, TestMessage<T> theActualMessage) throws UnexpectedTestFailureException;
-
-    
-    /**
-     * Returns true if the messages are the same
-     */
-    boolean isSame();
-
+    void compare(TestMessage<T> theExpectMessage, TestMessage<T> theActualMessage)
+          throws UnexpectedTestFailureException;
 
     /**
      * @return Returns a string describing the difference
      */
     String describeDifference();
 
+    /**
+     * Returns true if the messages are the same
+     */
+    boolean isSame();
 }

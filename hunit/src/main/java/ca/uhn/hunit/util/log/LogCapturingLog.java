@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -19,6 +19,7 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -28,6 +29,7 @@ package ca.uhn.hunit.util.log;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,9 +38,12 @@ import java.util.List;
  * @author James
  */
 public class LogCapturingLog implements ILogProvider {
+    //~ Static fields/initializers -------------------------------------------------------------------------------------
 
 //    private final Map<Object, ILog> ourLogs = Collections.synchronizedMap(new HashMap<Object, ILog>());
     private static final CommonsLoggingLog ourWrappedLog = new CommonsLoggingLog();
+
+    //~ Instance fields ------------------------------------------------------------------------------------------------
 
 //    private ILog getLog(Object theObject) {
 //        ILog retVal = ourLogs.get(theObject);
@@ -48,8 +53,9 @@ public class LogCapturingLog implements ILogProvider {
 //        }
 //        return retVal;
 //    }
-
     private List<ILogListener> myListeners = new ArrayList<ILogListener>();
+
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
     public ILog get(AbstractInterface theInterface) {
         return new MyLog(theInterface);
@@ -63,18 +69,19 @@ public class LogCapturingLog implements ILogProvider {
         return new MyLog(theTest);
     }
 
-    public void registerListener(ILogListener theLogListener) {
-        myListeners.add(theLogListener);
-    }
-
     public ILog getSystem(Class<?> theClass) {
         return new MyLog(theClass);
     }
 
-    private class MyLog implements ILog {
+    public void registerListener(ILogListener theLogListener) {
+        myListeners.add(theLogListener);
+    }
 
-        private final Object mySourceObject;
+    //~ Inner Classes --------------------------------------------------------------------------------------------------
+
+    private class MyLog implements ILog {
         private final ILog myWrappedLog;
+        private final Object mySourceObject;
 
         private MyLog(AbstractInterface theInterface) {
             myWrappedLog = ourWrappedLog.get(theInterface);
@@ -94,6 +101,82 @@ public class LogCapturingLog implements ILogProvider {
         private MyLog(Class<?> theClass) {
             myWrappedLog = ourWrappedLog.getSystem(theClass);
             mySourceObject = theClass;
+        }
+
+        private void broadcast(LogEvent event) {
+            for (ILogListener nextLogListener : myListeners) {
+                try {
+                    nextLogListener.logEvent(event);
+                } catch (Exception e) {
+                    myWrappedLog.error("Failed to broadcast log event: ", e);
+                }
+            }
+        }
+
+        public void debug(Object message) {
+            LogEvent event = new LogEvent(mySourceObject, LogLevel.DEBUG, message, null);
+            broadcast(event);
+            myWrappedLog.trace(message);
+        }
+
+        public void debug(Object message, Throwable t) {
+            LogEvent event = new LogEvent(mySourceObject, LogLevel.DEBUG, message, t);
+            broadcast(event);
+            myWrappedLog.trace(message);
+        }
+
+        public void error(Object message) {
+            LogEvent event = new LogEvent(mySourceObject, LogLevel.ERROR, message, null);
+            broadcast(event);
+            myWrappedLog.trace(message);
+        }
+
+        public void error(Object message, Throwable t) {
+            LogEvent event = new LogEvent(mySourceObject, LogLevel.ERROR, message, t);
+            broadcast(event);
+            myWrappedLog.trace(message);
+        }
+
+        public void error(Object message, Throwable t, EventCodeEnum theEventCode) {
+            LogEvent event = new LogEvent(mySourceObject, LogLevel.ERROR, message, t, theEventCode);
+            broadcast(event);
+            myWrappedLog.trace(message);
+        }
+
+        public void error(Object message, EventCodeEnum theEventCode) {
+            LogEvent event = new LogEvent(mySourceObject, LogLevel.ERROR, message, null, theEventCode);
+            broadcast(event);
+            myWrappedLog.trace(message);
+        }
+
+        public void fatal(Object message) {
+            LogEvent event = new LogEvent(mySourceObject, LogLevel.FATAL, message, null);
+            broadcast(event);
+            myWrappedLog.trace(message);
+        }
+
+        public void fatal(Object message, Throwable t) {
+            LogEvent event = new LogEvent(mySourceObject, LogLevel.FATAL, message, null);
+            broadcast(event);
+            myWrappedLog.trace(message);
+        }
+
+        public void info(Object message) {
+            LogEvent event = new LogEvent(mySourceObject, LogLevel.INFO, message, null);
+            broadcast(event);
+            myWrappedLog.trace(message);
+        }
+
+        public void info(Object message, Throwable t) {
+            LogEvent event = new LogEvent(mySourceObject, LogLevel.INFO, message, t);
+            broadcast(event);
+            myWrappedLog.trace(message);
+        }
+
+        public void info(Object message, EventCodeEnum theEventCode) {
+            LogEvent event = new LogEvent(mySourceObject, LogLevel.INFO, message, null, theEventCode);
+            broadcast(event);
+            myWrappedLog.trace(message);
         }
 
         public boolean isDebugEnabled() {
@@ -132,30 +215,6 @@ public class LogCapturingLog implements ILogProvider {
             myWrappedLog.trace(message);
         }
 
-        public void debug(Object message) {
-            LogEvent event = new LogEvent(mySourceObject, LogLevel.DEBUG, message, null);
-            broadcast(event);
-            myWrappedLog.trace(message);
-        }
-
-        public void debug(Object message, Throwable t) {
-            LogEvent event = new LogEvent(mySourceObject, LogLevel.DEBUG, message, t);
-            broadcast(event);
-            myWrappedLog.trace(message);
-        }
-
-        public void info(Object message) {
-            LogEvent event = new LogEvent(mySourceObject, LogLevel.INFO, message, null);
-            broadcast(event);
-            myWrappedLog.trace(message);
-        }
-
-        public void info(Object message, Throwable t) {
-            LogEvent event = new LogEvent(mySourceObject, LogLevel.INFO, message, t);
-            broadcast(event);
-            myWrappedLog.trace(message);
-        }
-
         public void warn(Object message) {
             LogEvent event = new LogEvent(mySourceObject, LogLevel.WARN, message, null);
             broadcast(event);
@@ -167,58 +226,5 @@ public class LogCapturingLog implements ILogProvider {
             broadcast(event);
             myWrappedLog.trace(message);
         }
-
-        public void error(Object message) {
-            LogEvent event = new LogEvent(mySourceObject, LogLevel.ERROR, message, null);
-            broadcast(event);
-            myWrappedLog.trace(message);
-        }
-
-        public void error(Object message, Throwable t) {
-            LogEvent event = new LogEvent(mySourceObject, LogLevel.ERROR, message, t);
-            broadcast(event);
-            myWrappedLog.trace(message);
-        }
-
-        public void fatal(Object message) {
-            LogEvent event = new LogEvent(mySourceObject, LogLevel.FATAL, message, null);
-            broadcast(event);
-            myWrappedLog.trace(message);
-        }
-
-        public void fatal(Object message, Throwable t) {
-            LogEvent event = new LogEvent(mySourceObject, LogLevel.FATAL, message, null);
-            broadcast(event);
-            myWrappedLog.trace(message);
-        }
-
-        private void broadcast(LogEvent event) {
-            for (ILogListener nextLogListener : myListeners) {
-                try {
-                    nextLogListener.logEvent(event);
-                } catch (Exception e) {
-                    myWrappedLog.error("Failed to broadcast log event: ", e);
-                }
-            }
-        }
-
-        public void info(Object message, EventCodeEnum theEventCode) {
-            LogEvent event = new LogEvent(mySourceObject, LogLevel.INFO, message, null, theEventCode);
-            broadcast(event);
-            myWrappedLog.trace(message);
-        }
-
-        public void error(Object message, Throwable t, EventCodeEnum theEventCode) {
-            LogEvent event = new LogEvent(mySourceObject, LogLevel.ERROR, message, t, theEventCode);
-            broadcast(event);
-            myWrappedLog.trace(message);
-        }
-
-        public void error(Object message, EventCodeEnum theEventCode) {
-            LogEvent event = new LogEvent(mySourceObject, LogLevel.ERROR, message, null, theEventCode);
-            broadcast(event);
-            myWrappedLog.trace(message);
-        }
-
     }
 }

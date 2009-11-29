@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -21,60 +21,71 @@
  */
 package ca.uhn.hunit.compare.hl7v2;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Group;
 import ca.uhn.hl7v2.model.Segment;
 import ca.uhn.hl7v2.model.Structure;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class ExtraGroup extends StructureComparison {
+    //~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private Group myGroup;
-	private boolean myMessage1;
+    private Group myGroup;
+    private boolean myMessage1;
 
-	public ExtraGroup(Group theGroup, boolean theMessage1) {
-		myGroup = theGroup;
-		myMessage1 = theMessage1;
-	}
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public Group getGroup() {
-		return myGroup;
-	}
+    public ExtraGroup(Group theGroup, boolean theMessage1) {
+        myGroup = theGroup;
+        myMessage1 = theMessage1;
+    }
 
-	public boolean isMessage1() {
-		return myMessage1;
-	}
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
-	@Override
-	public List<SegmentComparison> flattenMessage() {
-		return flatten(myGroup);
-	}
+    private List<SegmentComparison> flatten(Structure theStructure) {
+        if (theStructure instanceof Segment) {
+            if (myMessage1) {
+                return Collections.singletonList((SegmentComparison) new SegmentComparison(
+                                                                                           theStructure.getName(),
+                                                                                           (Segment) theStructure,
+                                                                                           null));
+            } else {
+                return Collections.singletonList((SegmentComparison) new SegmentComparison(
+                                                                                           theStructure.getName(),
+                                                                                           null,
+                                                                                           (Segment) theStructure));
+            }
+        }
 
-	private List<SegmentComparison> flatten(Structure theStructure) {
-		if (theStructure instanceof Segment) {
-			if (myMessage1) {
-				return Collections.singletonList((SegmentComparison)new SegmentComparison(theStructure.getName(), (Segment) theStructure, null));
-			} else {
-				return Collections.singletonList((SegmentComparison)new SegmentComparison(theStructure.getName(), null, (Segment) theStructure));
-			}
-		}
-		
-		ArrayList<SegmentComparison> retVal = new ArrayList<SegmentComparison>();
-		Group group = (Group)theStructure;
-		for (String nextName : group.getNames()) {
-			try {
-				for (Structure nextRep : group.getAll(nextName)) {
-					retVal.addAll(flatten(nextRep));
-				}
-			} catch (HL7Exception e) {
-				throw new Error(e);
-			}
-		}
-		
-		return retVal;
-	}
+        ArrayList<SegmentComparison> retVal = new ArrayList<SegmentComparison>();
+        Group group = (Group) theStructure;
 
+        for (String nextName : group.getNames()) {
+            try {
+                for (Structure nextRep : group.getAll(nextName)) {
+                    retVal.addAll(flatten(nextRep));
+                }
+            } catch (HL7Exception e) {
+                throw new Error(e);
+            }
+        }
+
+        return retVal;
+    }
+
+    @Override
+    public List<SegmentComparison> flattenMessage() {
+        return flatten(myGroup);
+    }
+
+    public Group getGroup() {
+        return myGroup;
+    }
+
+    public boolean isMessage1() {
+        return myMessage1;
+    }
 }

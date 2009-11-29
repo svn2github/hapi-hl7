@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -19,6 +19,7 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
+
 /*
  * Created on Jul 30, 2009
  */
@@ -30,17 +31,18 @@ import javax.jms.JMSException;
 
 /**
  * Wraps a JMS connection factory to provide usernames and passwords
- * 
+ *
  * @author <a href="mailto:james.agnew@uhn.on.ca">James Agnew</a>
- * @version $Revision: 1.2 $ updated on $Date: 2009-08-19 01:55:33 $ by $Author: jamesagnew $
+ * @version $Revision: 1.3 $ updated on $Date: 2009-11-29 21:55:18 $ by $Author: jamesagnew $
  */
-public class JmsConnectionFactory implements ConnectionFactory
-{
+public class JmsConnectionFactory implements ConnectionFactory {
+    //~ Instance fields ------------------------------------------------------------------------------------------------
 
     private ConnectionFactory myConnectionFactory;
-    private String myUsername;
     private String myPassword;
+    private String myUsername;
 
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
     /**
      * @param theConnectionFactory
@@ -53,6 +55,7 @@ public class JmsConnectionFactory implements ConnectionFactory
         myPassword = thePassword;
     }
 
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
     /**
      * {@inheritDoc}
@@ -65,12 +68,11 @@ public class JmsConnectionFactory implements ConnectionFactory
         }
     }
 
-
     /**
      * {@inheritDoc}
      */
-    public Connection createConnection(String theArg0, String theArg1) throws JMSException {
+    public Connection createConnection(String theArg0, String theArg1)
+                                throws JMSException {
         return myConnectionFactory.createConnection(theArg0, theArg1);
     }
-
 }

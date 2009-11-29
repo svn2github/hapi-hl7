@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -24,26 +24,32 @@ package ca.uhn.hunit.example;
 import ca.uhn.hunit.junit.*;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.test.TestBatteryImpl;
-import java.io.File;
+
 import junit.framework.TestCase;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+
 import org.springframework.util.ResourceUtils;
+
+import java.io.File;
 
 /**
  * This class gives an example of how to create a JUnit 3 test
  */
 public class Junit3ExampleTest extends TestCase {
+    //~ Instance fields ------------------------------------------------------------------------------------------------
 
     private ExecutionContext myExecutionContext;
+
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
     /**
      * In the setup method, prepare the test
      */
     public void setUp() throws Exception {
-
         /*
          * In the setup method, load the XML test file you are using. Here we are
          * using a Spring Framework utility class to load a File from the classpath,
@@ -56,7 +62,6 @@ public class Junit3ExampleTest extends TestCase {
 
         // This listener generates JUnit 3 assert failures if a test fails
         myExecutionContext.addListener(new Junit3FailureListener());
-
     }
 
     /**

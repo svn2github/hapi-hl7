@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -22,7 +22,6 @@
 package ca.uhn.hunit.event.expect;
 
 import ca.uhn.hunit.event.ISpecificMessageEvent;
-import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceWontReceiveException;
 import ca.uhn.hunit.ex.TestFailureException;
@@ -30,79 +29,67 @@ import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.l10n.Strings;
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.run.ExecutionContext;
+import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.ExpectMessage;
 import ca.uhn.hunit.xsd.ExpectMessageAny;
+
 import java.beans.PropertyVetoException;
 
-public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extends AbstractExpect implements ISpecificMessageEvent {
+public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extends AbstractExpect
+    implements ISpecificMessageEvent {
+    //~ Static fields/initializers -------------------------------------------------------------------------------------
 
     public static final String MESSAGE_ID_PROPERTY = "AEM_MESSAGE_ID_PROPERTY";
+
+    //~ Instance fields ------------------------------------------------------------------------------------------------
+
     private T myMessage;
 
-	public AbstractExpectMessage(TestImpl theTest, ExpectMessage theConfig) throws ConfigurationException {
-		super(theTest, theConfig);
+    //~ Constructors ---------------------------------------------------------------------------------------------------
+
+    public AbstractExpectMessage(TestImpl theTest, ExpectMessage theConfig)
+                          throws ConfigurationException {
+        super(theTest, theConfig);
+
         try {
             setMessageId(theConfig.getMessageId());
         } catch (PropertyVetoException ex) {
             throw new ConfigurationException(ex.getMessage());
         }
-	}
+    }
 
-	@Override
-	public void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException {
+    //~ Methods --------------------------------------------------------------------------------------------------------
+
+    @Override
+    public void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException {
         if (myMessage == null) {
-            String message = Strings.getMessage("execution.failure.ca.uhn.hunit.ex.ConfigurationException.no_message_selected", getTest().getName());
+            String message =
+                Strings.getMessage("execution.failure.ca.uhn.hunit.ex.ConfigurationException.no_message_selected",
+                                   getTest().getName());
             throw new ConfigurationException(message);
         }
 
+        TestMessage<?> message = getInterface().receiveMessage(getTest(),
+                                                               theCtx,
+                                                               getReceiveTimeout());
 
-		TestMessage<?> message = getInterface().receiveMessage(getTest(), theCtx, getReceiveTimeout());
-		if (!getInterface().isStarted()) {
-		    return;
-		}
-		
+        if (! getInterface().isStarted()) {
+            return;
+        }
+
         if (message == null) {
-            throw new InterfaceWontReceiveException(getInterface(), "Didn't receive a message after " + getReceiveTimeout() + "ms");
+            throw new InterfaceWontReceiveException(getInterface(),
+                                                    "Didn't receive a message after " + getReceiveTimeout() + "ms");
         }
 
-		receiveMessage(theCtx, message);
-
-	}
-
-	public abstract void receiveMessage(ExecutionContext theCtx, TestMessage<?> theMessage) throws TestFailureException;
-
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public T getMessage() {
-        return myMessage;
-    }
-
-
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public void setMessageId(String theMessageId) throws PropertyVetoException {
-        String oldValue = myMessage != null ? myMessage.getId() : null;
-        fireVetoableChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
-        try {
-            if (theMessageId == null) {
-                myMessage = null;
-            } else {
-                myMessage = (T)getBattery().getMessage(theMessageId);
-            }
-        } catch (ConfigurationException ex) {
-            throw new PropertyVetoException("Unknown message ID", null);
-        }
-        firePropertyChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
+        receiveMessage(theCtx, message);
     }
 
     public Event exportConfig(ExpectMessage theConfig) {
         super.exportConfig(theConfig);
-        theConfig.setMessageId(myMessage != null ? myMessage.getId() : null);
+        theConfig.setMessageId((myMessage != null) ? myMessage.getId() : null);
+
         return theConfig;
     }
 
@@ -112,4 +99,35 @@ public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extend
     @Override
     public abstract ExpectMessageAny exportConfigToXmlAndEncapsulate();
 
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public T getMessage() {
+        return myMessage;
+    }
+
+    public abstract void receiveMessage(ExecutionContext theCtx, TestMessage<?> theMessage)
+                                 throws TestFailureException;
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public void setMessageId(String theMessageId) throws PropertyVetoException {
+        String oldValue = (myMessage != null) ? myMessage.getId() : null;
+        fireVetoableChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
+
+        try {
+            if (theMessageId == null) {
+                myMessage = null;
+            } else {
+                myMessage = (T) getBattery().getMessage(theMessageId);
+            }
+        } catch (ConfigurationException ex) {
+            throw new PropertyVetoException("Unknown message ID", null);
+        }
+
+        firePropertyChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
+    }
 }

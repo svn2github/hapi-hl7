@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -19,6 +19,7 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -42,6 +43,7 @@ import ca.uhn.hunit.xsd.ExpectMessageAny;
 import ca.uhn.hunit.xsd.ExpectNoMessage;
 import ca.uhn.hunit.xsd.SendMessageAny;
 import ca.uhn.hunit.xsd.Test;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -51,6 +53,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -58,17 +61,83 @@ import javax.swing.table.AbstractTableModel;
  * @author James
  */
 public class TestEventsModel extends AbstractTableModel implements PropertyChangeListener {
+    //~ Static fields/initializers -------------------------------------------------------------------------------------
 
     private static final long serialVersionUID = 1L;
+
+    //~ Instance fields ------------------------------------------------------------------------------------------------
+
     private final List<AbstractEvent> myEvents = new ArrayList<AbstractEvent>();
     private final List<String> myInterfaces = new ArrayList<String>();
     private final Map<String, AbstractEvent[]> myInterfaceId2Events = new HashMap<String, AbstractEvent[]>();
-    private final Map<String, Set<InterfaceInteractionEnum>> myInterfaceId2InterfaceInteractionEnums = new HashMap<String, Set<InterfaceInteractionEnum>>();
+    private final Map<String, Set<InterfaceInteractionEnum>> myInterfaceId2InterfaceInteractionEnums =
+        new HashMap<String, Set<InterfaceInteractionEnum>>();
     private final TestImpl myTest;
     private AbstractEvent[] myUnconfiguredEvents;
 
+    //~ Constructors ---------------------------------------------------------------------------------------------------
+
     public TestEventsModel(TestImpl theTest) {
         myTest = theTest;
+    }
+
+    //~ Methods --------------------------------------------------------------------------------------------------------
+
+    public void addEvent(AbstractEvent event) {
+        myEvents.add(event);
+        sortInterfaces();
+    }
+
+    /**
+     * Populates theConfig with the events in this model
+     */
+    public void exportConfig(Test theConfig) {
+        for (AbstractEvent next : myEvents) {
+            theConfig.getSendMessageOrExpectMessageOrExpectNoMessage().add(next.exportConfigToXmlAndEncapsulate());
+        }
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public int getColumnCount() {
+        int retVal = myInterfaces.size();
+
+        if (myUnconfiguredEvents != null) {
+            retVal++;
+        }
+
+        return retVal;
+    }
+
+    @Override
+    public String getColumnName(int column) {
+        if (myUnconfiguredEvents != null) {
+            if (column == 0) {
+                return Strings.getMessage("eventlist.unconfigured");
+            } else {
+                column--;
+            }
+        }
+
+        return myInterfaces.get(column);
+    }
+
+    public AbstractEvent getEvent(int selectedRow) {
+        return myEvents.get(selectedRow);
+    }
+
+    public List<AbstractEvent> getEventsByInterfaceId(String theInterfaceId) {
+        return Arrays.asList(myInterfaceId2Events.get(theInterfaceId));
+    }
+
+    public List<String> getInterfaceIds() {
+        return myInterfaces;
+    }
+
+    public Map<String, Set<InterfaceInteractionEnum>> getInterfaceInteractionTypes() {
+        return myInterfaceId2InterfaceInteractionEnums;
     }
 
     /**
@@ -83,18 +152,6 @@ public class TestEventsModel extends AbstractTableModel implements PropertyChang
      * {@inheritDoc }
      */
     @Override
-    public int getColumnCount() {
-        int retVal = myInterfaces.size();
-        if (myUnconfiguredEvents != null) {
-            retVal++;
-        }
-        return retVal;
-    }
-
-    /**
-     * {@inheritDoc }
-     */
-    @Override
     public AbstractEvent getValueAt(int rowIndex, int columnIndex) {
         if (myUnconfiguredEvents != null) {
             if (columnIndex == 0) {
@@ -103,33 +160,13 @@ public class TestEventsModel extends AbstractTableModel implements PropertyChang
                 columnIndex--;
             }
         }
+
         String column = myInterfaces.get(columnIndex);
+
         return myInterfaceId2Events.get(column)[rowIndex];
     }
 
-    @Override
-    public String getColumnName(int column) {
-        if (myUnconfiguredEvents != null) {
-            if (column == 0) {
-                return Strings.getMessage("eventlist.unconfigured");
-            } else {
-                column--;
-            }
-        }
-        return myInterfaces.get(column);
-    }
-
-    /**
-     * Populates theConfig with the events in this model
-     */
-    public void exportConfig(Test theConfig) {
-        for (AbstractEvent next : myEvents) {
-            theConfig.getSendMessageOrExpectMessageOrExpectNoMessage().add(next.exportConfigToXmlAndEncapsulate());
-        }
-    }
-
     public void initFromXml(Test theConfig) throws ConfigurationException {
-
         myEvents.clear();
 
         for (Object next : theConfig.getSendMessageOrExpectMessageOrExpectNoMessage()) {
@@ -137,23 +174,32 @@ public class TestEventsModel extends AbstractTableModel implements PropertyChang
 
             if (next instanceof SendMessageAny) {
                 SendMessageAny nextSm = (SendMessageAny) next;
+
                 if (nextSm.getXml() != null) {
-                    event = (new XmlSendMessageImpl(myTest, nextSm.getXml()));
+                    event = (new XmlSendMessageImpl(myTest,
+                                                    nextSm.getXml()));
                 } else if (nextSm.getHl7V2() != null) {
-                    event = (new Hl7V2SendMessageImpl(myTest, nextSm.getHl7V2()));
+                    event = (new Hl7V2SendMessageImpl(myTest,
+                                                      nextSm.getHl7V2()));
                 } else {
                     throw new ConfigurationException("Unknown event type: " + next.getClass());
                 }
             } else if (next instanceof ExpectMessageAny) {
                 ExpectMessageAny nextEm = (ExpectMessageAny) next;
+
                 if (nextEm.getHl7V2Specific() != null) {
-                    event = (new Hl7V2ExpectSpecificMessageImpl(myTest, nextEm.getHl7V2Specific()));
+                    event = (new Hl7V2ExpectSpecificMessageImpl(myTest,
+                                                                nextEm.getHl7V2Specific()));
                 } else if (nextEm.getHl7V2Rules() != null) {
-                    event = (new Hl7V2ExpectRulesImpl(myTest, nextEm.getHl7V2Rules()));
+                    event = (new Hl7V2ExpectRulesImpl(myTest,
+                                                      nextEm.getHl7V2Rules()));
                 } else if (nextEm.getHl7V2Ack() != null) {
-                    event = (new Hl7V2ExpectRulesImpl(myTest, nextEm.getHl7V2Ack()));
+                    event = (new Hl7V2ExpectRulesImpl(myTest,
+                                                      nextEm.getHl7V2Ack()));
                 } else if (nextEm.getXmlSpecific() != null) {
-                    event = new XmlExpectSpecificMessageImpl(myTest, nextEm.getXmlSpecific());
+                    event =
+                        new XmlExpectSpecificMessageImpl(myTest,
+                                                         nextEm.getXmlSpecific());
                 } else {
                     throw new ConfigurationException("Unknown event type: " + next.getClass());
                 }
@@ -172,96 +218,6 @@ public class TestEventsModel extends AbstractTableModel implements PropertyChang
         }
 
         sortInterfaces();
-
-    }
-
-    public List<AbstractEvent> getEventsByInterfaceId(String theInterfaceId) {
-        return Arrays.asList(myInterfaceId2Events.get(theInterfaceId));
-    }
-
-    public List<String> getInterfaceIds() {
-        return myInterfaces;
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (AbstractEvent.INTERFACE_ID_PROPERTY.equals(evt.getPropertyName())) {
-            sortInterfaces();
-        }
-    }
-
-    private void sortInterfaces() {
-
-        // Sort events by interface
-        myInterfaces.clear();
-        myInterfaceId2Events.clear();
-        myInterfaceId2InterfaceInteractionEnums.clear();
-        myUnconfiguredEvents = null;
-        
-        int index = 0;
-        for (AbstractEvent nextEvent : myEvents) {
-
-            if (!nextEvent.isConfigured()) {
-
-                if (myUnconfiguredEvents == null) {
-                    myUnconfiguredEvents = new AbstractEvent[myEvents.size()];
-                }
-                myUnconfiguredEvents[index] = nextEvent;
-
-            } else {
-
-                String interfaceId = nextEvent.getInterfaceId();
-                if (!myInterfaces.contains(interfaceId)) {
-                    myInterfaces.add(interfaceId);
-                }
-                if (!myInterfaceId2Events.containsKey(interfaceId)) {
-                    myInterfaceId2Events.put(interfaceId, new AbstractEvent[myEvents.size()]);
-                }
-                if (!myInterfaceId2InterfaceInteractionEnums.containsKey(interfaceId)) {
-                    myInterfaceId2InterfaceInteractionEnums.put(interfaceId, new HashSet<InterfaceInteractionEnum>());
-                }
-                AbstractEvent[] array = myInterfaceId2Events.get(interfaceId);
-                array[index] = nextEvent;
-                myInterfaceId2InterfaceInteractionEnums.get(interfaceId).add(nextEvent.getInteractionType());
-
-            }
-
-            index++;
-        }
-
-        // Figure out which interfaces are actually being used
-        myInterfaces.clear();
-        for (String nextId : myTest.getBattery().getInterfaceIds()) {
-            if (myInterfaceId2Events.containsKey(nextId)) {
-                myInterfaces.add(nextId);
-            }
-        }
-
-        super.fireTableStructureChanged();
-    }
-
-    public AbstractEvent getEvent(int selectedRow) {
-        return myEvents.get(selectedRow);
-    }
-
-    public Map<String, Set<InterfaceInteractionEnum>> getInterfaceInteractionTypes() {
-        return myInterfaceId2InterfaceInteractionEnums;
-    }
-
-    /**
-     * Moves the item up in the list
-     */
-    public int moveUp(AbstractEvent selectedEvent) {
-        int oldIndex = myEvents.indexOf(selectedEvent);
-        if (oldIndex > 0) {
-            AbstractEvent replacing = myEvents.get(oldIndex - 1);
-            myEvents.set(oldIndex - 1, selectedEvent);
-            myEvents.set(oldIndex, replacing);
-            sortInterfaces();
-            return oldIndex - 1;
-        }
-
-        return oldIndex;
     }
 
     /**
@@ -269,6 +225,7 @@ public class TestEventsModel extends AbstractTableModel implements PropertyChang
      */
     public int moveDown(AbstractEvent selectedEvent) {
         int oldIndex = myEvents.indexOf(selectedEvent);
+
         if (oldIndex < (myEvents.size() - 1)) {
             AbstractEvent replacing = myEvents.get(oldIndex + 1);
             myEvents.set(oldIndex + 1, selectedEvent);
@@ -279,6 +236,31 @@ public class TestEventsModel extends AbstractTableModel implements PropertyChang
         }
 
         return oldIndex;
+    }
+
+    /**
+     * Moves the item up in the list
+     */
+    public int moveUp(AbstractEvent selectedEvent) {
+        int oldIndex = myEvents.indexOf(selectedEvent);
+
+        if (oldIndex > 0) {
+            AbstractEvent replacing = myEvents.get(oldIndex - 1);
+            myEvents.set(oldIndex - 1, selectedEvent);
+            myEvents.set(oldIndex, replacing);
+            sortInterfaces();
+
+            return oldIndex - 1;
+        }
+
+        return oldIndex;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (AbstractEvent.INTERFACE_ID_PROPERTY.equals(evt.getPropertyName())) {
+            sortInterfaces();
+        }
     }
 
     /**
@@ -294,8 +276,56 @@ public class TestEventsModel extends AbstractTableModel implements PropertyChang
         return index;
     }
 
-    public void addEvent(AbstractEvent event) {
-        myEvents.add(event);
-        sortInterfaces();
+    private void sortInterfaces() {
+        // Sort events by interface
+        myInterfaces.clear();
+        myInterfaceId2Events.clear();
+        myInterfaceId2InterfaceInteractionEnums.clear();
+        myUnconfiguredEvents = null;
+
+        int index = 0;
+
+        for (AbstractEvent nextEvent : myEvents) {
+            if (! nextEvent.isConfigured()) {
+                if (myUnconfiguredEvents == null) {
+                    myUnconfiguredEvents = new AbstractEvent[myEvents.size()];
+                }
+
+                myUnconfiguredEvents[index] = nextEvent;
+            } else {
+                String interfaceId = nextEvent.getInterfaceId();
+
+                if (! myInterfaces.contains(interfaceId)) {
+                    myInterfaces.add(interfaceId);
+                }
+
+                if (! myInterfaceId2Events.containsKey(interfaceId)) {
+                    myInterfaceId2Events.put(interfaceId,
+                                             new AbstractEvent[myEvents.size()]);
+                }
+
+                if (! myInterfaceId2InterfaceInteractionEnums.containsKey(interfaceId)) {
+                    myInterfaceId2InterfaceInteractionEnums.put(interfaceId,
+                                                                new HashSet<InterfaceInteractionEnum>());
+                }
+
+                AbstractEvent[] array = myInterfaceId2Events.get(interfaceId);
+                array[index] = nextEvent;
+                myInterfaceId2InterfaceInteractionEnums.get(interfaceId).add(nextEvent.getInteractionType());
+            }
+
+            index++;
+        }
+
+        // Figure out which interfaces are actually being used
+        myInterfaces.clear();
+
+        for (String nextId : myTest.getBattery().getInterfaceIds()) {
+            if (myInterfaceId2Events.containsKey(nextId)) {
+                myInterfaces.add(nextId);
+            }
+        }
+
+        super.fireTableStructureChanged();
     }
 }

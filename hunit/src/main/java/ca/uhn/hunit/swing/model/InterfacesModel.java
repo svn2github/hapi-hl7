@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -21,39 +21,42 @@
  */
 package ca.uhn.hunit.swing.model;
 
+import ca.uhn.hunit.iface.AbstractInterface;
+import ca.uhn.hunit.test.TestBatteryImpl;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
-import ca.uhn.hunit.iface.AbstractInterface;
-import ca.uhn.hunit.test.TestBatteryImpl;
-
 public class InterfacesModel implements PropertyChangeListener {
+    //~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private TestBatteryImpl myBattery;
-	private List<AbstractInterface> myInterfaces;
+    private List<AbstractInterface> myInterfaces;
+    private TestBatteryImpl myBattery;
 
-	public TestBatteryImpl getBattery() {
-		return myBattery;
-	}
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public List<AbstractInterface> getInterfaces() {
-		return myInterfaces;
-	}
+    public InterfacesModel(TestBatteryImpl theBattery) {
+        myBattery = theBattery;
+        updateInterfaces();
+    }
 
-	public InterfacesModel(TestBatteryImpl theBattery) {
-		myBattery = theBattery;
-		updateInterfaces();
-	}
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
-	private void updateInterfaces() {
-		List<AbstractInterface> oldValue = myBattery.getInterfaces();
-		myInterfaces = oldValue;
-		
-	}
+    public TestBatteryImpl getBattery() {
+        return myBattery;
+    }
 
-	public void propertyChange(PropertyChangeEvent theEvt) {
-		updateInterfaces();
-	}
-	
+    public List<AbstractInterface> getInterfaces() {
+        return myInterfaces;
+    }
+
+    public void propertyChange(PropertyChangeEvent theEvt) {
+        updateInterfaces();
+    }
+
+    private void updateInterfaces() {
+        List<AbstractInterface> oldValue = myBattery.getInterfaces();
+        myInterfaces = oldValue;
+    }
 }

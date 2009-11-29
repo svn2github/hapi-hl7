@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -21,66 +21,73 @@
  */
 package ca.uhn.hunit.compare.hl7v2;
 
+import ca.uhn.hl7v2.model.Segment;
+
 import java.util.Collections;
 import java.util.List;
 
-import ca.uhn.hl7v2.model.Segment;
-
 public class SegmentComparison extends StructureComparison {
+    //~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private List<FieldComparison> myFieldComparisons;
-	private Segment myExpectSegment;
-	private Segment myActualSegment;
-	private Boolean mySame;
-	private String myName;
+    private Boolean mySame;
+    private List<FieldComparison> myFieldComparisons;
+    private Segment myActualSegment;
+    private Segment myExpectSegment;
+    private String myName;
 
-	public SegmentComparison(String theName, List<FieldComparison> theFieldComparisons) {
-		myFieldComparisons = theFieldComparisons;
-		myName = theName;
-	}
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public SegmentComparison(String theName, Segment theExpectSegment, Segment theActualSegment) {
-		myExpectSegment = theExpectSegment;
-		myActualSegment = theActualSegment;
-		myName = theName;
-	}
+    public SegmentComparison(String theName, List<FieldComparison> theFieldComparisons) {
+        myFieldComparisons = theFieldComparisons;
+        myName = theName;
+    }
 
-	public Segment getExpectSegment() {
-		return myExpectSegment;
-	}
+    public SegmentComparison(String theName, Segment theExpectSegment, Segment theActualSegment) {
+        myExpectSegment = theExpectSegment;
+        myActualSegment = theActualSegment;
+        myName = theName;
+    }
 
-	public Segment getActualSegment() {
-		return myActualSegment;
-	}
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
-	public List<FieldComparison> getFieldComparisons() {
-		return myFieldComparisons;
-	}
+    @Override
+    public List<SegmentComparison> flattenMessage() {
+        return Collections.singletonList(this);
+    }
 
-	@Override
-	public List<SegmentComparison> flattenMessage() {
-		return Collections.singletonList(this);
-	}
+    public Segment getActualSegment() {
+        return myActualSegment;
+    }
 
-	public boolean isSame() {
-		if (mySame == null) {
-			if (myFieldComparisons != null) {
-				mySame = true;
-				for (FieldComparison next : myFieldComparisons) {
-					if (!next.isSame()) {
-						mySame = false;
-						break;
-					}
-				}
-			} else {
-				mySame = false;
-			}
-		}
-		return mySame;
-	}
+    public Segment getExpectSegment() {
+        return myExpectSegment;
+    }
 
-	public String getName() {
-		return myName;
-	}
+    public List<FieldComparison> getFieldComparisons() {
+        return myFieldComparisons;
+    }
 
+    public String getName() {
+        return myName;
+    }
+
+    public boolean isSame() {
+        if (mySame == null) {
+            if (myFieldComparisons != null) {
+                mySame = true;
+
+                for (FieldComparison next : myFieldComparisons) {
+                    if (! next.isSame()) {
+                        mySame = false;
+
+                        break;
+                    }
+                }
+            } else {
+                mySame = false;
+            }
+        }
+
+        return mySame;
+    }
 }

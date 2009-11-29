@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -19,36 +19,42 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ca.uhn.hunit.swing.ui.tests;
 
 import ca.uhn.hunit.event.AbstractEvent;
 import ca.uhn.hunit.l10n.Strings;
+
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  * CellRenderer for event list
  */
-public class EventListTableCellRenderer extends DefaultTableCellRenderer {
+public class EventListTableCellRenderer extends DefaultTableCellRenderer{
+    //~ Static fields/initializers -------------------------------------------------------------------------------------
 
     private static final long serialVersionUID = 1L;
 
+    //~ Methods --------------------------------------------------------------------------------------------------------
+
     @Override
-    protected void setValue(Object value) {
+    protected void setValue( Object value ){
         AbstractEvent event = (AbstractEvent) value;
-        if (event == null) {
-            setText("");
-        } else {
-            String text = Strings.getInstance().getString(event.getResourceBundleSummaryKey());
-            if (text == null) {
-                text = event.getClass().getName();
+
+        if ( event == null ){
+            setText( "" );
+        } else{
+            String text = Strings.getInstance(  ).getString( event.getResourceBundleSummaryKey(  ) );
+
+            if ( text == null ){
+                text = event.getClass(  ).getName(  );
             }
-            setText(text);
+
+            setText( text );
         }
     }
-
 }

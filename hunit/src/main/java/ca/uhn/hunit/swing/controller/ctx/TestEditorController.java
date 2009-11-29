@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -19,11 +19,11 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ca.uhn.hunit.swing.controller.ctx;
 
 import ca.uhn.hunit.event.AbstractEvent;
@@ -33,6 +33,7 @@ import ca.uhn.hunit.swing.ui.DialogUtil;
 import ca.uhn.hunit.swing.ui.tests.TestEditorForm;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.log.ILogProvider;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,8 +42,12 @@ import java.util.logging.Logger;
  * @author James
  */
 public class TestEditorController extends AbstractContextController<TestEditorForm> {
-    private final TestImpl myTest;
+    //~ Instance fields ------------------------------------------------------------------------------------------------
+
     private final TestEditorForm myTestEditorForm;
+    private final TestImpl myTest;
+
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
     public TestEditorController(ILogProvider theLog, TestImpl theTest) {
         super(theLog);
@@ -53,34 +58,43 @@ public class TestEditorController extends AbstractContextController<TestEditorFo
         myTestEditorForm.setController(this);
     }
 
-    @Override
-    public TestEditorForm getView() {
-        return myTestEditorForm;
-    }
-
-    public TestImpl getTest() {
-        return myTest;
-    }
-
-    public void changeEventType(AbstractEvent theEvent, Class<? extends AbstractEvent> theNewClass) throws ConfigurationException {
-        AbstractEvent newEvent = EventFactory.INSTANCE.createEvent(theNewClass, myTest, theEvent.exportConfigToXml());
-        int selectedIndex = myTest.getEventsModel().replaceEvent(theEvent, newEvent);
-        myTestEditorForm.setSelectedEventIndex(selectedIndex);
-    }
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
     /**
      * Add a new blank event
      */
     public void addEvent() {
         AbstractEvent event;
+
         try {
             event = EventFactory.INSTANCE.createDefaultEvent(myTest);
         } catch (ConfigurationException ex) {
-            getLog().getSystem(getClass()).error(ex.describeReason(), ex);
-            DialogUtil.showErrorMessage(getView(), ex.getMessage());
+            getLog().getSystem(getClass()).error(ex.describeReason(),
+                                                 ex);
+            DialogUtil.showErrorMessage(getView(),
+                                        ex.getMessage());
+
             return;
         }
+
         myTest.getEventsModel().addEvent(event);
     }
 
+    public void changeEventType(AbstractEvent theEvent, Class<?extends AbstractEvent> theNewClass)
+                         throws ConfigurationException {
+        AbstractEvent newEvent = EventFactory.INSTANCE.createEvent(theNewClass,
+                                                                   myTest,
+                                                                   theEvent.exportConfigToXml());
+        int selectedIndex = myTest.getEventsModel().replaceEvent(theEvent, newEvent);
+        myTestEditorForm.setSelectedEventIndex(selectedIndex);
+    }
+
+    public TestImpl getTest() {
+        return myTest;
+    }
+
+    @Override
+    public TestEditorForm getView() {
+        return myTestEditorForm;
+    }
 }

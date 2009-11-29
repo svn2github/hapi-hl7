@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -19,6 +19,7 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -31,7 +32,9 @@ import ca.uhn.hunit.run.ExecutionStatusEnum;
 import ca.uhn.hunit.run.IExecutionListener;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
+
 import java.util.ArrayList;
+
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
@@ -40,18 +43,26 @@ import javax.swing.table.AbstractTableModel;
  * @author James
  */
 public class ExecutionTestsTableModel extends AbstractTableModel implements IExecutionListener {
+    //~ Static fields/initializers -------------------------------------------------------------------------------------
 
     /** Column index */
     public static final int COLUMN_BATTERY = 0;
+
     /** Column index */
     public static final int COLUMN_STATUS = 2;
+
     /** Column index */
     public static final int COLUMN_TEST = 1;
     private static final long serialVersionUID = 1L;
-    private final ExecutionContext myCtx;
+
+    //~ Instance fields ------------------------------------------------------------------------------------------------
+
     private final ArrayList<TestBatteryImpl> myBatteryColumn;
-    private final ArrayList<TestImpl> myTestsColumn;
     private final ArrayList<ExecutionStatusEnum> myStatusColumn;
+    private final ArrayList<TestImpl> myTestsColumn;
+    private final ExecutionContext myCtx;
+
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
     public ExecutionTestsTableModel(ExecutionContext theCtx) {
         myCtx = theCtx;
@@ -72,11 +83,18 @@ public class ExecutionTestsTableModel extends AbstractTableModel implements IExe
         }
     }
 
-    /**
-     * {@inheritDoc }
-     */
-    public int getRowCount() {
-        return myCtx.getTestsToExecute().size() + COLUMN_TEST;
+    //~ Methods --------------------------------------------------------------------------------------------------------
+
+    public void batteryFailed(TestBatteryImpl theBattery) {
+        update(theBattery);
+    }
+
+    public void batteryPassed(TestBatteryImpl theBattery) {
+        update(theBattery);
+    }
+
+    public void batteryStarted(TestBatteryImpl theBattery) {
+        update(theBattery);
     }
 
     /**
@@ -94,13 +112,23 @@ public class ExecutionTestsTableModel extends AbstractTableModel implements IExe
         switch (column) {
             case COLUMN_BATTERY:
                 return "Battery";
+
             case COLUMN_TEST:
                 return "Test";
+
             case COLUMN_STATUS:
                 return "Status";
+
             default:
                 throw new IllegalArgumentException("" + column);
         }
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    public int getRowCount() {
+        return myCtx.getTestsToExecute().size() + COLUMN_TEST;
     }
 
     /**
@@ -110,17 +138,16 @@ public class ExecutionTestsTableModel extends AbstractTableModel implements IExe
         switch (columnIndex) {
             case COLUMN_BATTERY:
                 return myBatteryColumn.get(rowIndex);
+
             case COLUMN_TEST:
                 return myTestsColumn.get(rowIndex);
+
             case COLUMN_STATUS:
                 return myStatusColumn.get(rowIndex);
+
             default:
                 throw new IllegalArgumentException("" + columnIndex);
         }
-    }
-
-    public void testStarted(TestImpl theTest) {
-        update(theTest);
     }
 
     public void testFailed(TestImpl theTest, TestFailureException theException) {
@@ -131,37 +158,29 @@ public class ExecutionTestsTableModel extends AbstractTableModel implements IExe
         update(theTest);
     }
 
-    public void batteryStarted(TestBatteryImpl theBattery) {
-        update(theBattery);
-    }
-
-    public void batteryFailed(TestBatteryImpl theBattery) {
-        update(theBattery);
-    }
-
-    public void batteryPassed(TestBatteryImpl theBattery) {
-        update(theBattery);
+    public void testStarted(TestImpl theTest) {
+        update(theTest);
     }
 
     private void update(final TestImpl theTest) {
         SwingUtilities.invokeLater(new Runnable() {
-
-            public void run() {
-                int index = myTestsColumn.indexOf(theTest);
-                myStatusColumn.set(index, myCtx.getTestExecutionStatus(theTest));
-                fireTableCellUpdated(index, COLUMN_STATUS);
-            }
-        });
+                public void run() {
+                    int index = myTestsColumn.indexOf(theTest);
+                    myStatusColumn.set(index,
+                                       myCtx.getTestExecutionStatus(theTest));
+                    fireTableCellUpdated(index, COLUMN_STATUS);
+                }
+            });
     }
 
     private void update(final TestBatteryImpl theBattery) {
         SwingUtilities.invokeLater(new Runnable() {
-
-            public void run() {
-                int index = myBatteryColumn.indexOf(theBattery);
-                myStatusColumn.set(index, myCtx.getBatteryStatus());
-                fireTableCellUpdated(index, COLUMN_STATUS);
-            }
-        });
+                public void run() {
+                    int index = myBatteryColumn.indexOf(theBattery);
+                    myStatusColumn.set(index,
+                                       myCtx.getBatteryStatus());
+                    fireTableCellUpdated(index, COLUMN_STATUS);
+                }
+            });
     }
 }

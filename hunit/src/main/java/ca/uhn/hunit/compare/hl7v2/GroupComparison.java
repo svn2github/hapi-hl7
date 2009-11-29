@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -21,102 +21,121 @@
  */
 package ca.uhn.hunit.compare.hl7v2;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Group;
 import ca.uhn.hl7v2.model.Segment;
 import ca.uhn.hl7v2.model.Structure;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GroupComparison extends StructureComparison {
+    //~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private List<StructureComparison> myGroupComparisons;
-	private ArrayList<SegmentComparison> myFlattened;
-	private Boolean mySame;
+    private ArrayList<SegmentComparison> myFlattened;
+    private Boolean mySame;
+    private List<StructureComparison> myGroupComparisons;
 
-	public GroupComparison(List<StructureComparison> theStructureComparison) {
-		myGroupComparisons = theStructureComparison;
-	}
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public GroupComparison(Group theExpected, Group theActual) {
-		assert theExpected != null || theActual != null;
-		assert theExpected == null || theActual == null;
+    public GroupComparison(List<StructureComparison> theStructureComparison) {
+        myGroupComparisons = theStructureComparison;
+    }
 
-		myGroupComparisons = new ArrayList<StructureComparison>();
-		if (theExpected != null) {
-			addStructures(theExpected, true);
-		}
-		if (theActual != null) {
-			addStructures(theActual, false);
-		}
-	}
+    public GroupComparison(Group theExpected, Group theActual) {
+        assert (theExpected != null) || (theActual != null);
+        assert (theExpected == null) || (theActual == null);
 
-	private void addStructures(Group theGroup, boolean theIsGroupExpected) throws Error {
-		for (String nextName : theGroup.getNames()) {
-			Structure[] allReps;
-			try {
-				allReps = theGroup.getAll(nextName);
-			} catch (HL7Exception e) {
-				throw new Error("Unknown name: " + nextName, e);
-			}
+        myGroupComparisons = new ArrayList<StructureComparison>();
 
-			for (Structure nextStructure : allReps) {
-				if (nextStructure instanceof Group) {
-					if (theIsGroupExpected) {
-						myGroupComparisons.add(new GroupComparison((Group) nextStructure, null));
-					} else {
-						myGroupComparisons.add(new GroupComparison(null, (Group) nextStructure));
-					}
-				} else {
-					if (theIsGroupExpected) {
-						myGroupComparisons.add(new SegmentComparison(nextStructure.getName(), (Segment) nextStructure, null));
-					} else {
-						myGroupComparisons.add(new SegmentComparison(nextStructure.getName(), null, (Segment) nextStructure));
-					}
-				}
-			}
-		}
-	}
+        if (theExpected != null) {
+            addStructures(theExpected, true);
+        }
 
-	public List<StructureComparison> getGroupComparisons() {
-		return myGroupComparisons;
-	}
+        if (theActual != null) {
+            addStructures(theActual, false);
+        }
+    }
 
-	@Override
-	public List<SegmentComparison> flattenMessage() {
-		if (myFlattened == null) {
-			myFlattened = new ArrayList<SegmentComparison>();
-			for (StructureComparison structureComparison : myGroupComparisons) {
-				myFlattened.addAll(structureComparison.flattenMessage());
-			}
-		}
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
-		return myFlattened;
-	}
+    private void addStructures(Group theGroup, boolean theIsGroupExpected)
+                        throws Error {
+        for (String nextName : theGroup.getNames()) {
+            Structure[] allReps;
 
-	public boolean isSame() {
-		if (mySame == null) {
-			mySame = true;
-			for (SegmentComparison next : flattenMessage()) {
-				if (next.getActualSegment() != null) {
-					mySame = false;
-					break;
-				} else if (next.getExpectSegment() != null) {
-					mySame = false;
-					break;
-				} else {
-					for (FieldComparison nextField : next.getFieldComparisons()) {
-						if (!nextField.isSame()) {
-							mySame = false;
-							break;
-						}
-					}
-				}
+            try {
+                allReps = theGroup.getAll(nextName);
+            } catch (HL7Exception e) {
+                throw new Error("Unknown name: " + nextName, e);
+            }
 
-			}
-		}
-		return mySame;
-	}
+            for (Structure nextStructure : allReps) {
+                if (nextStructure instanceof Group) {
+                    if (theIsGroupExpected) {
+                        myGroupComparisons.add(new GroupComparison((Group) nextStructure, null));
+                    } else {
+                        myGroupComparisons.add(new GroupComparison(null, (Group) nextStructure));
+                    }
+                } else {
+                    if (theIsGroupExpected) {
+                        myGroupComparisons.add(new SegmentComparison(
+                                                                     nextStructure.getName(),
+                                                                     (Segment) nextStructure,
+                                                                     null));
+                    } else {
+                        myGroupComparisons.add(new SegmentComparison(
+                                                                     nextStructure.getName(),
+                                                                     null,
+                                                                     (Segment) nextStructure));
+                    }
+                }
+            }
+        }
+    }
 
+    @Override
+    public List<SegmentComparison> flattenMessage() {
+        if (myFlattened == null) {
+            myFlattened = new ArrayList<SegmentComparison>();
+
+            for (StructureComparison structureComparison : myGroupComparisons) {
+                myFlattened.addAll(structureComparison.flattenMessage());
+            }
+        }
+
+        return myFlattened;
+    }
+
+    public List<StructureComparison> getGroupComparisons() {
+        return myGroupComparisons;
+    }
+
+    public boolean isSame() {
+        if (mySame == null) {
+            mySame = true;
+
+            for (SegmentComparison next : flattenMessage()) {
+                if (next.getActualSegment() != null) {
+                    mySame = false;
+
+                    break;
+                } else if (next.getExpectSegment() != null) {
+                    mySame = false;
+
+                    break;
+                } else {
+                    for (FieldComparison nextField : next.getFieldComparisons()) {
+                        if (! nextField.isSame()) {
+                            mySame = false;
+
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return mySame;
+    }
 }

@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -19,76 +19,84 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
 package ca.uhn.hunit.swing.ui;
 
+import org.springframework.util.ResourceUtils;
+
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.swing.ImageIcon;
-import org.springframework.util.ResourceUtils;
 
 /**
  *
  * @author James
  */
-public class ImageFactory {
+public class ImageFactory{
+    //~ Static fields/initializers -------------------------------------------------------------------------------------
 
-    private static Map<String, ImageIcon> ourIcons = new HashMap<String, ImageIcon>();
+    private static Map<String, ImageIcon> ourIcons = new HashMap<String, ImageIcon>(  );
 
-    private static ImageIcon getImageIcon(String theLocation) {
-        ImageIcon retVal = ourIcons.get(theLocation);
-        if (retVal == null) {
-            try {
-                retVal = new ImageIcon(ResourceUtils.getURL("classpath:" + theLocation));
-                ourIcons.put(theLocation, retVal);
-            } catch (FileNotFoundException ex) {
-                throw new Error(ex);
+    //~ Methods --------------------------------------------------------------------------------------------------------
+
+    public static ImageIcon getButtonExecute(  ){
+        return getImageIcon( "ca/uhn/hunit/ui/resources/images/button_execute.png" );
+    }
+
+    private static ImageIcon getImageIcon( String theLocation ){
+        ImageIcon retVal = ourIcons.get( theLocation );
+
+        if ( retVal == null ){
+            try{
+                retVal = new ImageIcon( ResourceUtils.getURL( "classpath:" + theLocation ) );
+                ourIcons.put( theLocation, retVal );
+            } catch ( FileNotFoundException ex ){
+                throw new Error( ex );
             }
         }
+
         return retVal;
     }
 
-    public static ImageIcon getMessageHl7() {
-        return getImageIcon("ca/uhn/hunit/ui/resources/images/message_hl7.png");
+    public static ImageIcon getInterfaceOff(  ){
+        return getImageIcon( "ca/uhn/hunit/ui/resources/images/interface_off.png" );
     }
 
-    public static ImageIcon getTest() {
-        return getImageIcon("ca/uhn/hunit/ui/resources/images/test.png");
+    public static ImageIcon getInterfaceOn(  ){
+        return getImageIcon( "ca/uhn/hunit/ui/resources/images/interface_on.png" );
     }
 
-    public static ImageIcon getMessageXml() {
-        return getImageIcon("ca/uhn/hunit/ui/resources/images/message_xml.png");
+    public static ImageIcon getMessageHl7(  ){
+        return getImageIcon( "ca/uhn/hunit/ui/resources/images/message_hl7.png" );
     }
 
-    public static ImageIcon getTabLog() {
-        return getImageIcon("ca/uhn/hunit/ui/resources/images/tab_log.png");
+    public static ImageIcon getMessageXml(  ){
+        return getImageIcon( "ca/uhn/hunit/ui/resources/images/message_xml.png" );
     }
 
-    public static ImageIcon getButtonExecute() {
-        return getImageIcon("ca/uhn/hunit/ui/resources/images/button_execute.png");
+    public static ImageIcon getTabLog(  ){
+        return getImageIcon( "ca/uhn/hunit/ui/resources/images/tab_log.png" );
     }
 
-    public static ImageIcon getInterfaceOn() {
-        return getImageIcon("ca/uhn/hunit/ui/resources/images/interface_on.png");
+    public static ImageIcon getTest(  ){
+        return getImageIcon( "ca/uhn/hunit/ui/resources/images/test.png" );
     }
 
-    public static ImageIcon getInterfaceOff() {
-        return getImageIcon("ca/uhn/hunit/ui/resources/images/interface_off.png");
+    public static ImageIcon getTestFailed(  ){
+        return getImageIcon( "ca/uhn/hunit/ui/resources/images/test_failed.png" );
     }
 
-    public static ImageIcon getTestRunning() {
-        return getImageIcon("ca/uhn/hunit/ui/resources/images/test_running.png");
+    public static ImageIcon getTestPassed(  ){
+        return getImageIcon( "ca/uhn/hunit/ui/resources/images/test_passed.png" );
     }
 
-    public static ImageIcon getTestFailed() {
-        return getImageIcon("ca/uhn/hunit/ui/resources/images/test_failed.png");
-    }
-
-    public static ImageIcon getTestPassed() {
-        return getImageIcon("ca/uhn/hunit/ui/resources/images/test_passed.png");
+    public static ImageIcon getTestRunning(  ){
+        return getImageIcon( "ca/uhn/hunit/ui/resources/images/test_running.png" );
     }
 }

@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -32,44 +32,43 @@ import ca.uhn.hunit.util.StringUtil;
  * Test Failure exception for the case where a message was received, but
  * it was incorrect in some way
  */
-public class IncorrectMessageReceivedException extends TestFailureException
-{
+public class IncorrectMessageReceivedException extends TestFailureException {
+    //~ Static fields/initializers -------------------------------------------------------------------------------------
 
     private static final long serialVersionUID = -7116214031563429174L;
 
-    private TestImpl myTest;
-    private TestMessage<?> myMessageReceived;
-    private String myProblem;
-    private TestMessage<?> myMessageExpected;
+    //~ Instance fields ------------------------------------------------------------------------------------------------
+
     private ICompare<?> myMessageCompare;
+    private String myProblem;
+    private TestImpl myTest;
+    private TestMessage<?> myMessageExpected;
+    private TestMessage<?> myMessageReceived;
 
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
-    public IncorrectMessageReceivedException(TestImpl theExpect, TestMessage<?> theMessageReceived,
-            String theProblem) {
+    public IncorrectMessageReceivedException(TestImpl theExpect, TestMessage<?> theMessageReceived, String theProblem) {
         this(theExpect, null, null, theMessageReceived, theProblem);
     }
 
-
     public IncorrectMessageReceivedException(TestImpl theExpect, TestMessage<?> theMessageExpected,
-            TestMessage<?> theMessageReceived, String theProblem) {
+                                             TestMessage<?> theMessageReceived, String theProblem) {
         this(theExpect, null, theMessageExpected, theMessageReceived, theProblem);
     }
 
-
-    public IncorrectMessageReceivedException(TestImpl theExpect, Throwable theCause,
-            TestMessage<?> theMessageReceived, String theProblem) {
+    public IncorrectMessageReceivedException(TestImpl theExpect, Throwable theCause, TestMessage<?> theMessageReceived,
+                                             String theProblem) {
         this(theExpect, theCause, null, theMessageReceived, theProblem);
     }
 
-
-    public IncorrectMessageReceivedException(TestImpl theExpect, Throwable theCause,
-            TestMessage<?> theMessageExpected, TestMessage<?> theMessageReceived, String theProblem) {
+    public IncorrectMessageReceivedException(TestImpl theExpect, Throwable theCause, TestMessage<?> theMessageExpected,
+                                             TestMessage<?> theMessageReceived, String theProblem) {
         this(theExpect, theCause, theMessageExpected, theMessageReceived, theProblem, null);
     }
 
-
     public IncorrectMessageReceivedException(TestImpl theTest, Throwable theCause, TestMessage<?> theExpectMessage,
-            TestMessage<?> theActualMessage, String theProblem, ICompare<?> theMessageCompare) {
+                                             TestMessage<?> theActualMessage, String theProblem,
+                                             ICompare<?> theMessageCompare) {
         super(Strings.getMessage("execution.failure.title.ca.uhn.hunit.ex.IncorrectMessageReceivedException"), theCause);
         myTest = theTest;
         myMessageExpected = theExpectMessage;
@@ -78,37 +77,21 @@ public class IncorrectMessageReceivedException extends TestFailureException
         myMessageCompare = theMessageCompare;
     }
 
-
-    public TestImpl getTest() {
-        return myTest;
-    }
-
-
-    public TestMessage<?> getMessageReceived() {
-        return myMessageReceived;
-    }
-
-
-    public String getProblem() {
-        return myProblem;
-    }
-
-
-    public TestMessage<?> getMessageExpected() {
-        return myMessageExpected;
-    }
-
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
     @Override
     public String describeReason() {
         StringBuilder retVal = new StringBuilder();
         retVal.append(myProblem).append("\r\n");
         retVal.append("Received: \r\n").append(Hl7V2MessageCompare.formatMsg(myMessageReceived)).append("\r\n");
+
         if (myMessageExpected != null) {
             retVal.append("Expected: \r\n").append(Hl7V2MessageCompare.formatMsg(myMessageExpected)).append("\r\n");
         }
+
         if (myMessageCompare != null) {
             retVal.append("Difference: \r\n");
+
             String describeDifference = myMessageCompare.describeDifference();
             describeDifference = StringUtil.prependEachLine(describeDifference, "  ");
             retVal.append(describeDifference);
@@ -117,6 +100,19 @@ public class IncorrectMessageReceivedException extends TestFailureException
         return retVal.toString();
     }
 
+    public TestMessage<?> getMessageExpected() {
+        return myMessageExpected;
+    }
 
+    public TestMessage<?> getMessageReceived() {
+        return myMessageReceived;
+    }
 
+    public String getProblem() {
+        return myProblem;
+    }
+
+    public TestImpl getTest() {
+        return myTest;
+    }
 }

@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -21,28 +21,32 @@
  */
 package ca.uhn.hunit.test;
 
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.util.Terser;
+
 import ca.uhn.hunit.event.expect.AbstractExpectMessage;
+import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
+import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.xsd.TerserMessageRule;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.util.Terser;
-import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
-import ca.uhn.hunit.iface.TestMessage;
-import ca.uhn.hunit.xsd.TerserMessageRule;
-
 public class TerserRuleImpl {
+    //~ Instance fields ------------------------------------------------------------------------------------------------
 
-    private String myPath;
-    private List<Pattern> myPatterns = new ArrayList<Pattern>();
-    private Set<String> myValues = new HashSet<String>();
-    private List<Pattern> myNotPatterns = new ArrayList<Pattern>();
-    private Set<String> myNotValues = new HashSet<String>();
     private AbstractExpectMessage myExpect;
+    private List<Pattern> myNotPatterns = new ArrayList<Pattern>();
+    private List<Pattern> myPatterns = new ArrayList<Pattern>();
+    private Set<String> myNotValues = new HashSet<String>();
+    private Set<String> myValues = new HashSet<String>();
+    private String myPath;
+
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
     public TerserRuleImpl(AbstractExpectMessage theExpect, TerserMessageRule theConfig) {
         this(theExpect);
@@ -64,38 +68,35 @@ public class TerserRuleImpl {
         myExpect = theExpect;
     }
 
-    public void validate(TestMessage theMessage) throws IncorrectMessageReceivedException {
-        String value;
-        try {
-            value = new Terser((Message) theMessage.getParsedMessage()).get(myPath);
-        } catch (HL7Exception e) {
-            throw new IncorrectMessageReceivedException(myExpect.getTest(), (TestMessage) null, theMessage, e.getMessage());
-        }
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
-        if (!myValues.isEmpty()) {
-            if (!myValues.contains(value)) {
-                throw new IncorrectMessageReceivedException(myExpect.getTest(), (TestMessage) null, theMessage, "Incorrect value for SPEC[" + myPath + "]. Expected[" + myValues + "] but found[" + value + "]");
-            }
-        }
+    public TerserMessageRule exportConfig() {
+        TerserMessageRule retVal = new TerserMessageRule();
 
-        if (!myNotValues.isEmpty()) {
-            if (myNotValues.contains(value)) {
-                throw new IncorrectMessageReceivedException(myExpect.getTest(), (TestMessage) null, theMessage, "Incorrect value for SPEC[" + myPath + "]. Should not contain[" + myNotValues + "] but found[" + value + "]");
-            }
+        for (Pattern next : myNotPatterns) {
+            retVal.getNotPattern().add(next.pattern());
         }
 
         for (Pattern next : myPatterns) {
-            if (!next.matcher(value).matches()) {
-                throw new IncorrectMessageReceivedException(myExpect.getTest(), (TestMessage) null, theMessage, "Incorrect value for SPEC[" + myPath + "]. Expected Pattern[" + next.pattern() + "] but found[" + value + "]");
-            }
+            retVal.getPattern().add(next.pattern());
         }
 
-        for (Pattern next : myNotPatterns) {
-            if (next.matcher(value).matches()) {
-                throw new IncorrectMessageReceivedException(myExpect.getTest(), (TestMessage) null, theMessage, "Incorrect value for SPEC[" + myPath + "]. Expected Not Pattern[" + myValues + "] but found[" + value + "]");
-            }
+        retVal.getNotValue().addAll(myNotValues);
+        retVal.getValue().addAll(myValues);
+
+        return retVal;
+    }
+
+    public static TerserRuleImpl getNotValuesInstance(AbstractExpectMessage theExpect, String thePath,
+                                                      String... theValues) {
+        TerserRuleImpl retVal = new TerserRuleImpl(theExpect);
+        retVal.myPath = thePath;
+
+        for (String string : theValues) {
+            retVal.myNotValues.add(string);
         }
 
+        return retVal;
     }
 
     public static TerserRuleImpl getValuesInstance(AbstractExpectMessage theExpect, String thePath, String... theValues) {
@@ -109,27 +110,59 @@ public class TerserRuleImpl {
         return retVal;
     }
 
-    public static TerserRuleImpl getNotValuesInstance(AbstractExpectMessage theExpect, String thePath, String... theValues) {
-        TerserRuleImpl retVal = new TerserRuleImpl(theExpect);
-        retVal.myPath = thePath;
+    public void validate(TestMessage theMessage) throws IncorrectMessageReceivedException {
+        String value;
 
-        for (String string : theValues) {
-            retVal.myNotValues.add(string);
+        try {
+            value = new Terser((Message) theMessage.getParsedMessage()).get(myPath);
+        } catch (HL7Exception e) {
+            throw new IncorrectMessageReceivedException(myExpect.getTest(),
+                                                        (TestMessage) null,
+                                                        theMessage,
+                                                        e.getMessage());
         }
 
-        return retVal;
-    }
-
-    public TerserMessageRule exportConfig() {
-        TerserMessageRule retVal = new TerserMessageRule();
-        for (Pattern next : myNotPatterns) {
-            retVal.getNotPattern().add(next.pattern());
+        if (! myValues.isEmpty()) {
+            if (! myValues.contains(value)) {
+                throw new IncorrectMessageReceivedException(myExpect.getTest(),
+                                                            (TestMessage) null,
+                                                            theMessage,
+                                                            "Incorrect value for SPEC[" + myPath + "]. Expected[" +
+                                                            myValues + "] but found[" + value + "]");
+            }
         }
+
+        if (! myNotValues.isEmpty()) {
+            if (myNotValues.contains(value)) {
+                throw new IncorrectMessageReceivedException(myExpect.getTest(),
+                                                            (TestMessage) null,
+                                                            theMessage,
+                                                            "Incorrect value for SPEC[" + myPath +
+                                                            "]. Should not contain[" + myNotValues + "] but found[" +
+                                                            value + "]");
+            }
+        }
+
         for (Pattern next : myPatterns) {
-            retVal.getPattern().add(next.pattern());
+            if (! next.matcher(value).matches()) {
+                throw new IncorrectMessageReceivedException(myExpect.getTest(),
+                                                            (TestMessage) null,
+                                                            theMessage,
+                                                            "Incorrect value for SPEC[" + myPath +
+                                                            "]. Expected Pattern[" + next.pattern() + "] but found[" +
+                                                            value + "]");
+            }
         }
-        retVal.getNotValue().addAll(myNotValues);
-        retVal.getValue().addAll(myValues);
-        return retVal;
+
+        for (Pattern next : myNotPatterns) {
+            if (next.matcher(value).matches()) {
+                throw new IncorrectMessageReceivedException(myExpect.getTest(),
+                                                            (TestMessage) null,
+                                                            theMessage,
+                                                            "Incorrect value for SPEC[" + myPath +
+                                                            "]. Expected Not Pattern[" + myValues + "] but found[" +
+                                                            value + "]");
+            }
+        }
     }
 }

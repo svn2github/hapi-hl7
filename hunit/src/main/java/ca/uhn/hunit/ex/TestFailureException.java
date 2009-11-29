@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -22,24 +22,28 @@
 package ca.uhn.hunit.ex;
 
 public abstract class TestFailureException extends Exception {
+    //~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final long serialVersionUID = 2609790450076964563L;
+    private static final long serialVersionUID = 2609790450076964563L;
 
-	public TestFailureException() {
-	}
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public TestFailureException(String theMessage) {
-		super(theMessage);
-	}
+    public TestFailureException() {
+    }
 
-	public TestFailureException(Throwable theCause) {
-		super(theCause);
-	}
+    public TestFailureException(String theMessage) {
+        super(theMessage);
+    }
 
-	public TestFailureException(String theMessage, Throwable theCause) {
-		super(theMessage, theCause);
-	}
+    public TestFailureException(Throwable theCause) {
+        super(theCause);
+    }
 
-	public abstract String describeReason();
+    public TestFailureException(String theMessage, Throwable theCause) {
+        super(theMessage, theCause);
+    }
 
+    //~ Methods --------------------------------------------------------------------------------------------------------
+
+    public abstract String describeReason();
 }

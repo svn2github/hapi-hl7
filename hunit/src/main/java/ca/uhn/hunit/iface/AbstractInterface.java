@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -31,18 +31,26 @@ import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.AbstractModelClass;
 import ca.uhn.hunit.xsd.AnyInterface;
 import ca.uhn.hunit.xsd.Interface;
-import java.beans.PropertyVetoException;
+
 import org.apache.commons.lang.StringUtils;
 
+import java.beans.PropertyVetoException;
+
 public abstract class AbstractInterface extends AbstractModelClass implements Comparable<AbstractInterface> {
+    //~ Static fields/initializers -------------------------------------------------------------------------------------
 
     public static final String INTERFACE_STARTED_PROPERTY = "INTERFACE_STARTED_PROPERTY";
     public static final String INTERFACE_ID_PROPERTY = "INTERFACE_ID_PROPERTY";
-    private String myId;
+
+    //~ Instance fields ------------------------------------------------------------------------------------------------
+
     private Boolean myAutostart;
-    private Integer myClearMillis;
     private Boolean myClear;
+    private Integer myClearMillis;
+    private String myId;
     private final TestBatteryImpl myBattery;
+
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
     public AbstractInterface(TestBatteryImpl theBattery, Interface theConfig) {
         myBattery = theBattery;
@@ -61,19 +69,11 @@ public abstract class AbstractInterface extends AbstractModelClass implements Co
         init();
     }
 
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
-    private void init() {
-        if (myAutostart == null) {
-            myAutostart = true;
-        }
-        if (myClearMillis == null) {
-            myClearMillis = 100;
-        }
-        if (myClear == null) {
-            myClear = true;
-        }
+    public int compareTo(AbstractInterface theO) {
+        return myId.compareTo(theO.myId);
     }
-
 
     /**
      * Subclasses should make use of this method to export AbstractInterface properties into
@@ -84,46 +84,60 @@ public abstract class AbstractInterface extends AbstractModelClass implements Co
         theConfig.setId(myId);
         theConfig.setClearMillis(myClearMillis);
         theConfig.setClear(myClear);
+
         return theConfig;
     }
 
     /**
-     * Starts the interface
-     * @param theCtx The current exection context
-     * @throws InterfaceWontStartException If the interface won't start
+     * Declare a concrete type for subclass implementations of this method
      */
-    public abstract void start(ExecutionContext theCtx) throws InterfaceWontStartException;
+    @Override
+    public abstract AnyInterface exportConfigToXml();
 
-    public abstract void stop(ExecutionContext theCtx) throws InterfaceWontStopException;
+    public int getClearMillis() {
+        return myClearMillis;
+    }
 
-    public abstract TestMessage<?> receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout) throws TestFailureException;
+    public String getId() {
+        return myId;
+    }
 
-    public abstract void sendMessage(TestImpl theTest, ExecutionContext theCtx, TestMessage<?> theMessage) throws TestFailureException;
+    private void init() {
+        if (myAutostart == null) {
+            myAutostart = true;
+        }
 
-    public abstract boolean isStarted();
+        if (myClearMillis == null) {
+            myClearMillis = 100;
+        }
+
+        if (myClear == null) {
+            myClear = true;
+        }
+    }
 
     public boolean isAutostart() {
         return myAutostart;
-    }
-
-    public void setAutostart(boolean theAutostart) {
-        myAutostart = theAutostart;
-    }
-
-    public int compareTo(AbstractInterface theO) {
-        return myId.compareTo(theO.myId);
     }
 
     public boolean isClear() {
         return myClear;
     }
 
-    public void setClear(boolean theClear) {
-        myClear = theClear;
+    public abstract boolean isStarted();
+
+    public abstract TestMessage<?> receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout)
+                                           throws TestFailureException;
+
+    public abstract void sendMessage(TestImpl theTest, ExecutionContext theCtx, TestMessage<?> theMessage)
+                              throws TestFailureException;
+
+    public void setAutostart(boolean theAutostart) {
+        myAutostart = theAutostart;
     }
 
-    public int getClearMillis() {
-        return myClearMillis;
+    public void setClear(boolean theClear) {
+        myClear = theClear;
     }
 
     public void setClearMillis(int theClearMillis) {
@@ -134,9 +148,11 @@ public abstract class AbstractInterface extends AbstractModelClass implements Co
         if (StringUtils.equals(theId, myId)) {
             return;
         }
+
         if (StringUtils.isEmpty(theId)) {
             throw new PropertyVetoException(Strings.getInstance().getString("interface.id.empty"), null);
         }
+
         if (myBattery.getInterfaceIds().contains(theId)) {
             throw new PropertyVetoException(Strings.getInstance().getString("interface.id.duplicate"), null);
         }
@@ -146,14 +162,14 @@ public abstract class AbstractInterface extends AbstractModelClass implements Co
         myId = theId;
     }
 
-    public String getId() {
-        return myId;
-    }
-
     /**
-     * Declare a concrete type for subclass implementations of this method
+     * Starts the interface
+     * @param theCtx The current exection context
+     * @throws InterfaceWontStartException If the interface won't start
      */
-    @Override
-    public abstract AnyInterface exportConfigToXml();
+    public abstract void start(ExecutionContext theCtx)
+                        throws InterfaceWontStartException;
 
+    public abstract void stop(ExecutionContext theCtx)
+                       throws InterfaceWontStopException;
 }

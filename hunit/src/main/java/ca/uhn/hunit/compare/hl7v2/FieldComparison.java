@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -21,57 +21,64 @@
  */
 package ca.uhn.hunit.compare.hl7v2;
 
-import java.util.List;
-
 import ca.uhn.hl7v2.model.Type;
 
+import java.util.List;
+
 public class FieldComparison {
+    //~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private List<Type> mySameFields;
-	private List<Type> myDiffFields1;
-	private List<Type> myDiffFields2;
-	private Boolean mySame;
-	private String myFieldName;
+    private Boolean mySame;
+    private List<Type> myDiffFields1;
+    private List<Type> myDiffFields2;
+    private List<Type> mySameFields;
+    private String myFieldName;
 
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public FieldComparison(String theFieldName, List<Type> theSameFields, List<Type> theDiffFields1, List<Type> theDiffFields2) {
-		myFieldName = theFieldName;
-		mySameFields = theSameFields;
-		myDiffFields1 = theDiffFields1;
-		myDiffFields2 = theDiffFields2;
-	}
+    public FieldComparison(String theFieldName, List<Type> theSameFields, List<Type> theDiffFields1,
+                           List<Type> theDiffFields2) {
+        myFieldName = theFieldName;
+        mySameFields = theSameFields;
+        myDiffFields1 = theDiffFields1;
+        myDiffFields2 = theDiffFields2;
+    }
 
-	public String getFieldName() {
-		return myFieldName;
-	}
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
-	public List<Type> getSameFields() {
-		return mySameFields;
-	}
+    public List<Type> getDiffFieldsActual() {
+        return myDiffFields2;
+    }
 
-	public List<Type> getDiffFieldsExpected() {
-		return myDiffFields1;
-	}
+    public List<Type> getDiffFieldsExpected() {
+        return myDiffFields1;
+    }
 
-	public List<Type> getDiffFieldsActual() {
-		return myDiffFields2;
-	}
+    private int getFieldCount() {
+        return mySameFields.size();
+    }
 
-	public boolean isSame() {
-		if (mySame == null) {
-			mySame = true;
-			for (int i = 0; i < getFieldCount(); i++) {
-				if (myDiffFields1.get(i) != null) {
-					mySame = false;
-					break;
-				}
-			}
-		}
-		return mySame;
-	}
+    public String getFieldName() {
+        return myFieldName;
+    }
 
-	private int getFieldCount() {
-		return mySameFields.size();
-	}
+    public List<Type> getSameFields() {
+        return mySameFields;
+    }
 
+    public boolean isSame() {
+        if (mySame == null) {
+            mySame = true;
+
+            for (int i = 0; i < getFieldCount(); i++) {
+                if (myDiffFields1.get(i) != null) {
+                    mySame = false;
+
+                    break;
+                }
+            }
+        }
+
+        return mySame;
+    }
 }

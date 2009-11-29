@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -19,21 +19,25 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ca.uhn.hunit.util;
+
 
 /**
  * String utilities
  */
 public class StringUtil {
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
     private StringUtil() {
         // nothing
     }
+
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
     /**
      * Adds <code>theIndent</code> at the start of each line of the string <code>theInput</code>
@@ -41,10 +45,11 @@ public class StringUtil {
     public static String prependEachLine(String theInput, String theIndent) {
         StringBuilder retVal = new StringBuilder();
         String[] lines = theInput.split("\\r\\n");
+
         for (String string : lines) {
             retVal.append(theIndent).append(string).append("\r\n");
         }
+
         return retVal.toString();
     }
-
 }

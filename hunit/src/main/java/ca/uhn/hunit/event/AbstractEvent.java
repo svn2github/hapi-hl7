@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -29,44 +29,42 @@ import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.AbstractModelClass;
 import ca.uhn.hunit.xsd.Event;
-import java.beans.PropertyVetoException;
+
 import org.apache.commons.lang.StringUtils;
+
+import java.beans.PropertyVetoException;
 
 /**
  * An event is a single action taken within a test. A single test therefore is
  * a series of events executed in parallel
  */
 public abstract class AbstractEvent extends AbstractModelClass {
+    //~ Static fields/initializers -------------------------------------------------------------------------------------
 
     public static final String INTERFACE_ID_PROPERTY = "INTERFACE_ID_PROPERTY";
 
-	private AbstractInterface myInterface;
-	private TestImpl myTest;
+    //~ Instance fields ------------------------------------------------------------------------------------------------
 
-	public AbstractEvent(TestImpl theTest, Event theConfig) throws ConfigurationException {
+    private AbstractInterface myInterface;
+    private TestImpl myTest;
+
+    //~ Constructors ---------------------------------------------------------------------------------------------------
+
+    public AbstractEvent(TestImpl theTest, Event theConfig)
+                  throws ConfigurationException {
         String interfaceId = theConfig.getInterfaceId();
 
-        if (!StringUtils.isBlank(interfaceId)) {
+        if (! StringUtils.isBlank(interfaceId)) {
             myInterface = theTest.getBattery().getInterface(interfaceId);
         }
 
-		myTest = theTest;
-	}
-	
-	public TestImpl getTest() {
-		return myTest;
-	}
-
-	public abstract void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException;
-
-    public abstract InterfaceInteractionEnum getInteractionType();
-
-    /**
-     * @return Returns true if this event is configured and ready for use.
-     */
-    public boolean isConfigured() {
-        return myInterface != null;
+        myTest = theTest;
     }
+
+    //~ Methods --------------------------------------------------------------------------------------------------------
+
+    public abstract void execute(ExecutionContext theCtx)
+                          throws TestFailureException, ConfigurationException;
 
     /**
      * Subclasses should override this and pass their config to the super implementation
@@ -74,40 +72,8 @@ public abstract class AbstractEvent extends AbstractModelClass {
      */
     public Event exportConfig(Event theConfigToPopulate) {
         theConfigToPopulate.setInterfaceId(myInterface.getId());
+
         return theConfigToPopulate;
-    }
-
-	public TestBatteryImpl getBattery() {
-		return myTest.getBattery();
-	}
-
-	public String getInterfaceId() {
-		return myInterface.getId();
-	}
-
-	public AbstractInterface getInterface() throws ConfigurationException {
-		return myInterface;
-	}
-
-    /**
-     * Returns the ResourceBundle key to be used to retrieve the description of this event
-     */
-    public String getResourceBundleSummaryKey() {
-        return "event.summary." + getClass().getName();
-    }
-
-    public void setInterfaceId(String theInterfaceId) throws PropertyVetoException {
-        AbstractInterface newInterface;
-        try {
-            newInterface = getBattery().getInterface(theInterfaceId);
-        } catch (ConfigurationException ex) {
-            throw new PropertyVetoException(ex.getMessage(), null);
-        }
-
-        String oldValue = myInterface.getId();
-        fireVetoableChange(INTERFACE_ID_PROPERTY, oldValue, theInterfaceId);
-        this.myInterface = newInterface;
-        firePropertyChange(INTERFACE_ID_PROPERTY, oldValue, theInterfaceId);
     }
 
     /**
@@ -121,5 +87,50 @@ public abstract class AbstractEvent extends AbstractModelClass {
      */
     public abstract Object exportConfigToXmlAndEncapsulate();
 
+    public TestBatteryImpl getBattery() {
+        return myTest.getBattery();
+    }
 
+    public abstract InterfaceInteractionEnum getInteractionType();
+
+    public AbstractInterface getInterface() throws ConfigurationException {
+        return myInterface;
+    }
+
+    public String getInterfaceId() {
+        return myInterface.getId();
+    }
+
+    /**
+     * Returns the ResourceBundle key to be used to retrieve the description of this event
+     */
+    public String getResourceBundleSummaryKey() {
+        return "event.summary." + getClass().getName();
+    }
+
+    public TestImpl getTest() {
+        return myTest;
+    }
+
+    /**
+     * @return Returns true if this event is configured and ready for use.
+     */
+    public boolean isConfigured() {
+        return myInterface != null;
+    }
+
+    public void setInterfaceId(String theInterfaceId) throws PropertyVetoException {
+        AbstractInterface newInterface;
+
+        try {
+            newInterface = getBattery().getInterface(theInterfaceId);
+        } catch (ConfigurationException ex) {
+            throw new PropertyVetoException(ex.getMessage(), null);
+        }
+
+        String oldValue = myInterface.getId();
+        fireVetoableChange(INTERFACE_ID_PROPERTY, oldValue, theInterfaceId);
+        this.myInterface = newInterface;
+        firePropertyChange(INTERFACE_ID_PROPERTY, oldValue, theInterfaceId);
+    }
 }

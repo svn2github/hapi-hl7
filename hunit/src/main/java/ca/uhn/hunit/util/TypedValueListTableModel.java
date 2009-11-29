@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -19,6 +19,7 @@
  * If you do not delete the provisions above, a recipient may use your version of
  * this file under either the MPL or the GPL.
  */
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -28,8 +29,10 @@ package ca.uhn.hunit.util;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.xsd.JavaArgument;
 import ca.uhn.hunit.xsd.NamedJavaArgument;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -37,47 +40,30 @@ import javax.swing.table.AbstractTableModel;
  * @author James
  */
 public class TypedValueListTableModel extends AbstractTableModel {
+    //~ Static fields/initializers -------------------------------------------------------------------------------------
 
     private static final long serialVersionUID = 1L;
-    private final boolean myNamed;
-    private final ArrayList<String> myNames = new ArrayList<String>();
-    private final ArrayList<Object> myArgs = new ArrayList<Object>();
+
+    //~ Instance fields ------------------------------------------------------------------------------------------------
+
     private final ArrayList<Class<?>> myArgTypes = new ArrayList<Class<?>>();
+    private final ArrayList<Object> myArgs = new ArrayList<Object>();
+    private final ArrayList<String> myNames = new ArrayList<String>();
     private final String[] myNamedColumnNames = {"Name", "Value", "Type"};
+    private final boolean myNamed;
+
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
     public TypedValueListTableModel(boolean theNamed) {
         myNamed = theNamed;
     }
 
-    /**
-     * Imports the values for this list from an XML config
-     */
-    public void importValuesFromXml(List<? extends JavaArgument> theArgDefinitions) throws ConfigurationException {
-        for (JavaArgument next : theArgDefinitions) {
-            if ("java.lang.String".equals(next.getType())) {
-                myArgTypes.add(String.class);
-                myArgs.add(next.getValue());
-            } else if ("java.lang.Integer".equals(next.getType())) {
-                myArgTypes.add(Integer.class);
-                myArgs.add(Integer.parseInt(next.getValue()));
-            } else if ("int".equals(next.getType())) {
-                myArgTypes.add(int.class);
-                myArgs.add(Integer.parseInt(next.getValue()));
-            } else {
-                throw new ConfigurationException("Unknown arg type: " + next.getType());
-            }
-
-            if (myNamed) {
-                myNames.add(((NamedJavaArgument) next).getName());
-            }
-        }
-
-    }
+    //~ Methods --------------------------------------------------------------------------------------------------------
 
     /**
      * Imports the values for this list from an XML config
      */
-    public void exportValuesToXml(List<? extends JavaArgument> theArgDefinitions) {
+    public void exportValuesToXml(List<?extends JavaArgument> theArgDefinitions) {
         for (int i = 0; i < myArgTypes.size(); i++) {
             Class<?> nextArgType = myArgTypes.get(i);
             Object nextArg = myArgs.get(i);
@@ -97,19 +83,23 @@ public class TypedValueListTableModel extends AbstractTableModel {
             if (myNamed) {
                 ((NamedJavaArgument) nextJavaArg).setName(myNames.get(i));
             }
-
         }
-
     }
 
-    @Override
-    public String getColumnName(
-            int column) {
-        if (!myNamed) {
-            column++;
-        }
+    public Object getArg(int theIndex) {
+        return myArgs.get(theIndex);
+    }
 
-        return myNamedColumnNames[column];
+    public Object[] getArgArray() {
+        return myArgs.toArray(new Object[myArgs.size()]);
+    }
+
+    public Class<?> getArgType(int theIndex) {
+        return myArgTypes.get(theIndex);
+    }
+
+    public Class<?>[] getArgTypeArray() {
+        return myArgTypes.toArray(new Class<?>[myArgTypes.size()]);
     }
 
     @Override
@@ -117,49 +107,66 @@ public class TypedValueListTableModel extends AbstractTableModel {
         return myNamed ? 3 : 2;
     }
 
+    @Override
+    public String getColumnName(int column) {
+        if (! myNamed) {
+            column++;
+        }
+
+        return myNamedColumnNames[column];
+    }
+
+    public String getName(int theIndex) {
+        return myNames.get(theIndex);
+    }
+
     public int getRowCount() {
         return myArgTypes.size();
     }
 
-    public Object getValueAt(
-            int rowIndex, int columnIndex) {
-        if (!myNamed) {
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        if (! myNamed) {
             columnIndex++;
         }
 
         switch (columnIndex) {
             case 0:
                 return myNames.get(rowIndex);
+
             case 1:
                 return myArgs.get(rowIndex);
+
             case 2:
                 return myArgTypes.get(rowIndex);
+
             default:
                 throw new IllegalStateException("Col " + columnIndex);
         }
-
     }
 
-    public Object getArg(
-            int theIndex) {
-        return myArgs.get(theIndex);
-    }
+    /**
+     * Imports the values for this list from an XML config
+     */
+    public void importValuesFromXml(List<?extends JavaArgument> theArgDefinitions)
+                             throws ConfigurationException {
+        for (JavaArgument next : theArgDefinitions) {
+            if ("java.lang.String".equals(next.getType())) {
+                myArgTypes.add(String.class);
+                myArgs.add(next.getValue());
+            } else if ("java.lang.Integer".equals(next.getType())) {
+                myArgTypes.add(Integer.class);
+                myArgs.add(Integer.parseInt(next.getValue()));
+            } else if ("int".equals(next.getType())) {
+                myArgTypes.add(int.class);
+                myArgs.add(Integer.parseInt(next.getValue()));
+            } else {
+                throw new ConfigurationException("Unknown arg type: " + next.getType());
+            }
 
-    public Class<?> getArgType(int theIndex) {
-        return myArgTypes.get(theIndex);
-    }
-
-    public String getName(
-            int theIndex) {
-        return myNames.get(theIndex);
-    }
-
-    public Class<?>[] getArgTypeArray() {
-        return myArgTypes.toArray(new Class<?>[myArgTypes.size()]);
-    }
-
-    public Object[] getArgArray() {
-        return myArgs.toArray(new Object[myArgs.size()]);
+            if (myNamed) {
+                myNames.add(((NamedJavaArgument) next).getName());
+            }
+        }
     }
 
     /**
@@ -172,15 +179,14 @@ public class TypedValueListTableModel extends AbstractTableModel {
         }
 
         for (int i = 0; i < theTypes.size(); i++) {
-
             if (i >= myArgTypes.size()) {
                 myArgTypes.add(theTypes.get(i));
                 myArgs.add(null);
-            } else if (!myArgTypes.get(i).equals(theTypes.get(i))) {
-                myArgTypes.set(i, theTypes.get(i));
+            } else if (! myArgTypes.get(i).equals(theTypes.get(i))) {
+                myArgTypes.set(i,
+                               theTypes.get(i));
                 myArgs.set(i, null);
             }
-
         }
 
         while (myArgTypes.size() > theTypes.size()) {

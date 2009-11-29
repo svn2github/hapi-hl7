@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -23,34 +23,40 @@ package ca.uhn.hunit.event.expect;
 
 import ca.uhn.hunit.event.AbstractEvent;
 import ca.uhn.hunit.event.InterfaceInteractionEnum;
-import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.ex.ConfigurationException;
+import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.ExpectEvent;
 
 public abstract class AbstractExpect extends AbstractEvent {
+    //~ Instance fields ------------------------------------------------------------------------------------------------
 
-    private long myReceiveTimeout;
     private boolean myWaitForCompletion;
+    private long myReceiveTimeout;
 
-	public AbstractExpect(TestImpl theTest, ExpectEvent theConfig) throws ConfigurationException {
-		super(theTest, theConfig);
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
-		Long receiveTimeout = theConfig.getReceiveTimeoutMillis();
-		myReceiveTimeout = receiveTimeout != null ? receiveTimeout : 120000L;
-		
-		Boolean isWaitForCompletion = theConfig.isWaitForCompletion();
-		myWaitForCompletion = isWaitForCompletion != null ? isWaitForCompletion : true;
-	}
+    public AbstractExpect(TestImpl theTest, ExpectEvent theConfig)
+                   throws ConfigurationException {
+        super(theTest, theConfig);
 
-	public boolean isWaitForCompletion() {
-	    return myWaitForCompletion;
-	}
-	
-	public long getReceiveTimeout() {
-	    return myReceiveTimeout;
-	}
-	
+        Long receiveTimeout = theConfig.getReceiveTimeoutMillis();
+        myReceiveTimeout = (receiveTimeout != null) ? receiveTimeout : 120000L;
+
+        Boolean isWaitForCompletion = theConfig.isWaitForCompletion();
+        myWaitForCompletion = (isWaitForCompletion != null) ? isWaitForCompletion : true;
+    }
+
+    //~ Methods --------------------------------------------------------------------------------------------------------
+
+    public Event exportConfig(ExpectEvent theConfig) {
+        super.exportConfig(theConfig);
+        theConfig.setReceiveTimeoutMillis(myReceiveTimeout);
+        theConfig.setWaitForCompletion(myWaitForCompletion);
+
+        return theConfig;
+    }
+
     /**
      * {@inheritDoc }
      */
@@ -59,11 +65,12 @@ public abstract class AbstractExpect extends AbstractEvent {
         return InterfaceInteractionEnum.RECEIVE;
     }
 
-    public Event exportConfig(ExpectEvent theConfig) {
-        super.exportConfig(theConfig);
-        theConfig.setReceiveTimeoutMillis(myReceiveTimeout);
-        theConfig.setWaitForCompletion(myWaitForCompletion);
-        return theConfig;
+    public long getReceiveTimeout() {
+        return myReceiveTimeout;
+    }
+
+    public boolean isWaitForCompletion() {
+        return myWaitForCompletion;
     }
 
     public void setReceiveTimeout(long theLongValue) {
@@ -73,5 +80,4 @@ public abstract class AbstractExpect extends AbstractEvent {
     public void setWaitForCompletion(boolean theWaitForCompletion) {
         myWaitForCompletion = theWaitForCompletion;
     }
-
 }

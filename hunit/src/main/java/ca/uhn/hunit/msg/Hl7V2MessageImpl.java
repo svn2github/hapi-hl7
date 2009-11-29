@@ -2,7 +2,7 @@
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for the
  * specific language governing rights and limitations under the License.
@@ -26,42 +26,85 @@ import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
 import ca.uhn.hl7v2.parser.PipeParser;
 import ca.uhn.hl7v2.validation.impl.ValidationContextImpl;
+
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.xsd.Hl7V2MessageDefinition;
+
 import java.beans.PropertyVetoException;
 
 public class Hl7V2MessageImpl extends AbstractMessage<Message> {
+    //~ Static fields/initializers -------------------------------------------------------------------------------------
+
     private static final long serialVersionUID = 1L;
 
-	private String myText;
-	private Message myParsedMessage;
+    //~ Instance fields ------------------------------------------------------------------------------------------------
+
+    private Message myParsedMessage;
     private String mySourceMessage;
+    private String myText;
 
-	public Hl7V2MessageImpl(String theId) {
-		super(theId);
-	}
+    //~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public Hl7V2MessageImpl(Hl7V2MessageDefinition theConfig) throws ConfigurationException {
-		super(theConfig);
+    public Hl7V2MessageImpl(String theId) {
+        super(theId);
+    }
+
+    public Hl7V2MessageImpl(Hl7V2MessageDefinition theConfig)
+                     throws ConfigurationException {
+        super(theConfig);
+
         try {
             setSourceMessage(theConfig.getText());
         } catch (PropertyVetoException ex) {
             throw new ConfigurationException(ex.getMessage(), ex);
         }
-	}
+    }
 
-	@Override
-	public TestMessage<Message> getTestMessage() {
-		return new TestMessage<Message>(myText, myParsedMessage);
-	}
+    //~ Methods --------------------------------------------------------------------------------------------------------
+
+    /**
+     * Subclasses should make use of this method to export AbstractInterface properties into
+     * the return value for {@link #exportConfigToXml()}
+     */
+    protected Hl7V2MessageDefinition exportConfig(Hl7V2MessageDefinition theConfig) {
+        super.exportConfig(theConfig);
+        theConfig.setText(mySourceMessage);
+
+        return theConfig;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public Hl7V2MessageDefinition exportConfigToXml() {
+        return exportConfig(new Hl7V2MessageDefinition());
+    }
+
+    @Override
+    public Class<Message> getMessageClass() {
+        return Message.class;
+    }
+
+    @Override
+    public String getSourceMessage() {
+        return mySourceMessage;
+    }
+
+    @Override
+    public TestMessage<Message> getTestMessage() {
+        return new TestMessage<Message>(myText, myParsedMessage);
+    }
 
     @Override
     public void setSourceMessage(String theMessage) throws PropertyVetoException {
         mySourceMessage = theMessage.trim();
         myText = mySourceMessage.replaceAll("(\\r|\\n)+", "\r");
+
         PipeParser parser = new PipeParser();
         parser.setValidationContext(new ValidationContextImpl());
+
         try {
             // Parse and re-encode to strip out any inconsistancies in the message (extra blank fields at the end of segments, etc)
             myParsedMessage = parser.parse(myText);
@@ -74,36 +117,4 @@ public class Hl7V2MessageImpl extends AbstractMessage<Message> {
 
         mySourceMessage = myText.replaceAll("\\r", "\r\n");
     }
-
-    @Override
-    public String getSourceMessage() {
-        return mySourceMessage;
-    }
-
-    @Override
-    public Class<Message> getMessageClass() {
-        return Message.class;
-    }
-
-
-    /**
-     * Subclasses should make use of this method to export AbstractInterface properties into
-     * the return value for {@link #exportConfigToXml()}
-     */
-    protected Hl7V2MessageDefinition exportConfig(Hl7V2MessageDefinition theConfig) {
-        super.exportConfig(theConfig);
-        theConfig.setText(mySourceMessage);
-        return theConfig;
-    }
-
-
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public Hl7V2MessageDefinition exportConfigToXml() {
-        return exportConfig(new Hl7V2MessageDefinition());
-    }
-
-	
 }
