@@ -101,7 +101,7 @@ public class BaseEventEditorForm extends AbstractEventEditorForm<AbstractEvent> 
             final String newInterfaceId = (String) myInterfaceCombobox.getModel().getSelectedItem();
             myEvent.setInterfaceId(newInterfaceId);
         } catch (PropertyVetoException ex) {
-            myInterfaceCombobox.setSelectedItem(myEvent.getInterfaceId());
+            myInterfaceCombobox.setSelectedItem(myEvent.getInterface().getId());
         }
     }//GEN-LAST:event_myInterfaceComboboxActionPerformed
 

@@ -93,12 +93,11 @@ public abstract class AbstractEvent extends AbstractModelClass {
 
     public abstract InterfaceInteractionEnum getInteractionType();
 
-    public AbstractInterface getInterface() throws ConfigurationException {
+    /**
+     * Returns the interface associated with this event
+     */
+    public AbstractInterface getInterface() {
         return myInterface;
-    }
-
-    public String getInterfaceId() {
-        return myInterface.getId();
     }
 
     /**

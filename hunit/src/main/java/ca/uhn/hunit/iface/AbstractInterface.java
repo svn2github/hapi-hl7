@@ -172,4 +172,35 @@ public abstract class AbstractInterface extends AbstractModelClass implements Co
 
     public abstract void stop(ExecutionContext theCtx)
                        throws InterfaceWontStopException;
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AbstractInterface other = (AbstractInterface) obj;
+        if ((this.myId == null) ? (other.myId != null) : !this.myId.equals(other.myId)) {
+            return false;
+        }
+        return true;
+    }
+
+    
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 41 * hash + (this.myId != null ? this.myId.hashCode() : 0);
+        return hash;
+    }
+
+
 }

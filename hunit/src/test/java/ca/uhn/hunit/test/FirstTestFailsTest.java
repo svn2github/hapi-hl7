@@ -23,7 +23,7 @@ import javax.xml.bind.JAXBException;
  *
  *
  * @author <a href="mailto:james.agnew@uhn.on.ca">James Agnew</a>
- * @version $Revision: 1.3 $ updated on $Date: 2009-11-29 21:55:18 $ by $Author: jamesagnew $
+ * @version $Revision: 1.4 $ updated on $Date: 2009-12-16 17:20:48 $ by $Author: jamesagnew $
  */
 public class FirstTestFailsTest {
     //~ Methods --------------------------------------------------------------------------------------------------------
@@ -50,4 +50,10 @@ public class FirstTestFailsTest {
         Assert.assertFalse(ctx.getTestSuccesses().contains(battery.getTestByName("ExpectDifferentMessage")));
         Assert.assertFalse(ctx.getTestFailures().containsKey(battery.getTestByName("ExpectSameMessage")));
     }
+
+
+    public static void main(String[] args) throws URISyntaxException, InterfaceWontStartException, ConfigurationException, JAXBException {
+        new FirstTestFailsTest().testPassingIt();
+    }
+
 }

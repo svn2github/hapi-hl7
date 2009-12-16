@@ -40,15 +40,14 @@ import ca.uhn.hunit.xsd.SendMessageAny;
 import java.beans.PropertyVetoException;
 
 public abstract class AbstractSendMessage<V, T extends AbstractMessage<V>> extends AbstractEvent
-    implements ISpecificMessageEvent {
+        implements ISpecificMessageEvent {
     //~ Instance fields ------------------------------------------------------------------------------------------------
 
     private T myMessage;
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
-
     public AbstractSendMessage(TestImpl theTest, SendMessage theConfig)
-                        throws ConfigurationException {
+            throws ConfigurationException {
         super(theTest, theConfig);
 
         String messageId = theConfig.getMessageId();
@@ -59,13 +58,12 @@ public abstract class AbstractSendMessage<V, T extends AbstractMessage<V>> exten
     }
 
     //~ Methods --------------------------------------------------------------------------------------------------------
-
     @Override
     public void execute(ExecutionContext theCtx) throws TestFailureException {
         if (myMessage == null) {
             String message =
-                Strings.getMessage("execution.failure.ca.uhn.hunit.ex.ConfigurationException.no_message_selected",
-                                   getTest().getName());
+                    Strings.getMessage("execution.failure.ca.uhn.hunit.ex.ConfigurationException.no_message_selected",
+                    getTest().getName());
             throw new ConfigurationException(message);
         }
 
@@ -73,10 +71,7 @@ public abstract class AbstractSendMessage<V, T extends AbstractMessage<V>> exten
 
         message = massageMessage(message);
 
-        AbstractInterface iface = getBattery().getInterface(getInterfaceId());
-        iface.sendMessage(getTest(),
-                          theCtx,
-                          message);
+        getInterface().sendMessage(getTest(), theCtx, message);
     }
 
     public SendMessage exportConfig(SendMessage theConfig) {
@@ -114,7 +109,7 @@ public abstract class AbstractSendMessage<V, T extends AbstractMessage<V>> exten
      * they need to do. It is ok to just return the object passed in.
      */
     public abstract TestMessage<V> massageMessage(TestMessage<V> theInput)
-                                           throws TestFailureException;
+            throws TestFailureException;
 
     public void setMessageId(String theMessageId) throws PropertyVetoException {
         T newMessage;

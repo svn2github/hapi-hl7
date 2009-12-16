@@ -195,6 +195,7 @@ public class SwingRunnerController {
             return;
         }
 
+        disposeExistingBattery();
         myBattery = new TestBatteryImpl(myLog);
         myView.setBattery(myBattery);
         selectBattery(myBattery);
@@ -205,6 +206,7 @@ public class SwingRunnerController {
             return;
         }
 
+        disposeExistingBattery();
         myBattery = new TestBatteryImpl(myLog);
 
         try {
@@ -230,6 +232,7 @@ public class SwingRunnerController {
 
             try {
                 TestBatteryImpl newBattery = new TestBatteryImpl(inputFile, myLog);
+        disposeExistingBattery();
                 myBattery = newBattery;
                 myView.setBattery(myBattery);
 
@@ -384,6 +387,15 @@ public class SwingRunnerController {
             Logger.getLogger(SwingRunnerController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnsupportedLookAndFeelException ex) {
             Logger.getLogger(SwingRunnerController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Cleans up any resources held by the current battery, if any
+     */
+    private void disposeExistingBattery() {
+        if (myBattery != null) {
+            myBattery.dispose();
         }
     }
 }

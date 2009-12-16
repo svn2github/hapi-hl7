@@ -32,6 +32,8 @@ import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.Segment;
 import ca.uhn.hl7v2.parser.PipeParser;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
@@ -57,6 +59,7 @@ public final class MllpHl7v2MessageSwapper extends Thread {
     private boolean myAlwaysCreateNewOutboundConnection;
     private boolean myPrintOutput;
     private int myIterations;
+    private boolean myStopped;
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
@@ -192,6 +195,9 @@ public final class MllpHl7v2MessageSwapper extends Thread {
 
             serverSocket.close();
             socket.close();
+
+            myStopped = true;
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -203,4 +209,15 @@ public final class MllpHl7v2MessageSwapper extends Thread {
     public void setAlwaysCreateNewOutboundConnection(boolean theAlwaysCreateNewOutboundConnection) {
         myAlwaysCreateNewOutboundConnection = theAlwaysCreateNewOutboundConnection;
     }
+
+    public void waitForStopped() {
+        while (!myStopped) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ex) {
+                // nothing
+            }
+        }
+    }
+
 }

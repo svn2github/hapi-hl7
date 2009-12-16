@@ -15,7 +15,7 @@
 		<appender-ref ref="stdout" />
 	</logger>
 	<root>
-        <priority value="ERROR"></priority>
+        <priority value="INFO"></priority>
         <appender-ref ref="stdout"/>
     </root>
 </log4j:configuration>

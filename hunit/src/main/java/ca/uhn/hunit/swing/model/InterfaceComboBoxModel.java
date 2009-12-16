@@ -55,7 +55,7 @@ public class InterfaceComboBoxModel extends DefaultComboBoxModel {
         myBattery = theBattery;
 
         if (theEvent != null) {
-            setSelectedItem(theEvent.getInterfaceId());
+            setSelectedItem(theEvent.getInterface().getId());
         }
     }
 

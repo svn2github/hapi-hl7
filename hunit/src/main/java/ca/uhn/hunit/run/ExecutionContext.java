@@ -22,7 +22,6 @@
 package ca.uhn.hunit.run;
 
 import ca.uhn.hunit.event.AbstractEvent;
-import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.test.TestBatteryImpl;
@@ -35,27 +34,29 @@ import ca.uhn.hunit.util.log.ILogProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class ExecutionContext implements Runnable {
+public class ExecutionContext implements IExecutionContext, Runnable {
+
     //~ Instance fields ------------------------------------------------------------------------------------------------
-
+    private IExecutionContext myParent;
     private ExecutionStatusEnum myBatteryStatus = ExecutionStatusEnum.NOT_YET_STARTED;
     private ILogProvider myLog = new CommonsLoggingLog();
     private List<IExecutionListener> myListeners = new ArrayList<IExecutionListener>();
     private List<String> myTestNamesToExecute;
     private List<TestImpl> myTestSuccesses = new ArrayList<TestImpl>();
-    private Map<TestImpl, ExecutionStatusEnum> myTestExecutionStatuses =
-        Collections.synchronizedMap(new HashMap<TestImpl, ExecutionStatusEnum>());
+    private Map<TestImpl, ExecutionStatusEnum> myTestExecutionStatuses = new ConcurrentHashMap<TestImpl, ExecutionStatusEnum>();
     private Map<TestImpl, TestFailureException> myTestFailures = new HashMap<TestImpl, TestFailureException>();
     private TestBatteryImpl myBattery;
+    private Map<AbstractInterface, TestBatteryExecutionThread> myInterface2ExecutionThread = new HashMap<AbstractInterface, TestBatteryExecutionThread>();
+    private boolean myStopped;
+    private HashMap<AbstractInterface, TestBatteryExecutionThread> myInterface2thread;
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
-
     /**
      * Constructor
      */
@@ -64,8 +65,16 @@ public class ExecutionContext implements Runnable {
         myTestNamesToExecute = myBattery.getTestNames();
     }
 
-    //~ Methods --------------------------------------------------------------------------------------------------------
+    /**
+     * Constructor
+     */
+    public ExecutionContext(IExecutionContext theParent, TestBatteryImpl theBattery) {
+        myParent = theParent;
+        myBattery = theBattery;
+        myTestNamesToExecute = myBattery.getTestNames();
+    }
 
+    //~ Methods --------------------------------------------------------------------------------------------------------
     public void addFailure(TestImpl theTest, TestFailureException theException) {
         myLog.get(theTest).error("Failure: " + theException.getMessage(), EventCodeEnum.TEST_FAILED);
         myTestFailures.put(theTest, theException);
@@ -156,7 +165,9 @@ public class ExecutionContext implements Runnable {
     /**
      * Begins execution
      */
+    @Override
     public void run() {
+        myStopped = false;
         myLog.get(myBattery).info("About to execute battery");
 
         myBatteryStatus = ExecutionStatusEnum.RUNNING;
@@ -170,32 +181,30 @@ public class ExecutionContext implements Runnable {
          * busywaits
          */
         List<TestImpl> tests = getTestsToExecute();
-        Map<String, TestBatteryExecutionThread> interface2thread = new HashMap<String, TestBatteryExecutionThread>();
+        myInterface2thread = new HashMap<AbstractInterface, TestBatteryExecutionThread>();
 
         for (TestImpl nextTest : tests) {
             myTestFailures.remove(nextTest);
             myTestSuccesses.remove(nextTest);
             myTestExecutionStatuses.put(nextTest, ExecutionStatusEnum.NOT_YET_STARTED);
 
-            for (String nextInterfaceId : nextTest.getEventsModel().getInterfaceIds()) {
-                if (interface2thread.containsKey(nextInterfaceId)) {
+            for (AbstractInterface nextInterface : nextTest.getEventsModel().getInterfaces()) {
+                if (myInterface2thread.containsKey(nextInterface)) {
                     continue;
                 }
 
-                AbstractInterface nextInterface;
-
-                try {
-                    nextInterface = myBattery.getInterface(nextInterfaceId);
-                } catch (ConfigurationException e) {
-                    final String message =
-                        "Unknown interface ID[" + nextInterfaceId +
-                        "]. This should have already been caught, this is a bug";
-                    myLog.getSystem(getClass()).error(message, e);
-                    throw new Error(message);
+                // First, check if a parent context has a thread we can use
+                TestBatteryExecutionThread thread = null;
+                if (myParent != null) {
+                    thread = myParent.getInterfaceExecutionThread(nextInterface);
                 }
 
-                TestBatteryExecutionThread thread = new TestBatteryExecutionThread(this, nextInterface);
-                interface2thread.put(nextInterfaceId, thread);
+                // If not, we'll create one
+                if (thread == null) {
+                    thread = new TestBatteryExecutionThread(this, nextInterface);
+                }
+
+                myInterface2thread.put(nextInterface, thread);
                 thread.start();
             }
         }
@@ -206,8 +215,8 @@ public class ExecutionContext implements Runnable {
         do {
             stillWaiting = false;
 
-            for (TestBatteryExecutionThread next : interface2thread.values()) {
-                if (! next.isReady()) {
+            for (TestBatteryExecutionThread next : myInterface2thread.values()) {
+                if (!next.isReady()) {
                     stillWaiting = true;
 
                     try {
@@ -217,7 +226,11 @@ public class ExecutionContext implements Runnable {
                     }
                 }
             }
-        } while (stillWaiting);
+        } while (stillWaiting && !myStopped);
+
+        if (myStopped) {
+            return;
+        }
 
         getLog().get(myBattery).info("All interfaces are ready to proceed");
 
@@ -238,11 +251,11 @@ public class ExecutionContext implements Runnable {
             final TestEventsModel eventsModel = nextTest.getEventsModel();
 
             for (int eventIndex = 0; eventIndex < eventsModel.getRowCount(); eventIndex++) {
-                for (String nextInterfaceId : eventsModel.getInterfaceIds()) {
-                    AbstractEvent nextEvent = eventsModel.getEventsByInterfaceId(nextInterfaceId).get(eventIndex);
+                for (AbstractInterface nextInterface : eventsModel.getInterfaces()) {
+                    AbstractEvent nextEvent = eventsModel.getEventsByInterface(nextInterface).get(eventIndex);
 
                     if (nextEvent != null) {
-                        interface2thread.get(nextInterfaceId).addEvent(nextEvent);
+                        myInterface2thread.get(nextInterface).addEvent(nextEvent);
                     }
                 }
             }
@@ -253,7 +266,7 @@ public class ExecutionContext implements Runnable {
             do {
                 eventsPending = false;
 
-                for (Entry<String, TestBatteryExecutionThread> next : interface2thread.entrySet()) {
+                for (Entry<AbstractInterface, TestBatteryExecutionThread> next : myInterface2thread.entrySet()) {
                     TestBatteryExecutionThread nextThread = next.getValue();
 
                     if (nextThread.hasEventsPending()) {
@@ -270,25 +283,30 @@ public class ExecutionContext implements Runnable {
                         // nothing
                     }
                 }
-            } while ((eventsPending == true) && ! myTestFailures.containsKey(nextTest));
+            } while (!myStopped && (eventsPending == true) && !myTestFailures.containsKey(nextTest));
 
             // If we got out of the loop because of an error, cancel the other threads
-            for (Map.Entry<String, TestBatteryExecutionThread> nextEntry : interface2thread.entrySet()) {
+            for (Map.Entry<AbstractInterface, TestBatteryExecutionThread> nextEntry : myInterface2thread.entrySet()) {
                 nextEntry.getValue().cancelCurrentEvents();
             }
 
             // If we didn't fail, we succeeded :)
-            if (! myTestFailures.containsKey(nextTest)) {
+            if (!myTestFailures.containsKey(nextTest)) {
                 addSuccess(nextTest);
             }
 
             if (testLog.isDebugEnabled()) {
                 testLog.debug("Finished test");
             }
+
+            if (myStopped) {
+                return;
+            }
+
         }
 
         // Wait until all threads are closed up
-        for (TestBatteryExecutionThread next : interface2thread.values()) {
+        for (TestBatteryExecutionThread next : myInterface2thread.values()) {
             if (next.isReady()) {
                 try {
                     Thread.sleep(250);
@@ -312,8 +330,19 @@ public class ExecutionContext implements Runnable {
             }
         }
 
-        for (TestBatteryExecutionThread next : interface2thread.values()) {
-            next.finish();
+        for (Map.Entry<AbstractInterface, TestBatteryExecutionThread> next : myInterface2thread.entrySet()) {
+
+            // If any of our current execution threads are also held
+            // by a parent execution context, we'll assume we don't need
+            // to clean them up
+            if (myParent != null) {
+                TestBatteryExecutionThread thread = myParent.getInterfaceExecutionThread(next.getKey());
+                if (thread == next.getValue()) {
+                    continue;
+                }
+            }
+
+            next.getValue().finish();
         }
 
         myLog.get(myBattery).info("Finished executing battery");
@@ -338,5 +367,21 @@ public class ExecutionContext implements Runnable {
         }
 
         myTestNamesToExecute = theTestNamesToExecute;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public TestBatteryExecutionThread getInterfaceExecutionThread(AbstractInterface theInterface) {
+        return myInterface2ExecutionThread.get(theInterface);
+    }
+
+    @Override
+    public void stop() {
+        for (TestBatteryExecutionThread next : myInterface2thread.values()) {
+            next.finish();
+        }
+        myStopped = true;
     }
 }

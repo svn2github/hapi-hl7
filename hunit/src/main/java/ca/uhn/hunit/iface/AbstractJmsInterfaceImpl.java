@@ -38,6 +38,8 @@ import ca.uhn.hunit.xsd.Interface;
 import ca.uhn.hunit.xsd.JavaArgument;
 import ca.uhn.hunit.xsd.NamedJavaArgument;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.jms.JmsException;
@@ -53,6 +55,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -72,7 +77,7 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
     private Constructor<?> myConstructor;
     private DefaultMessageListenerContainer myMessageListenerContainer;
     private JmsTemplate myJmsTemplate;
-    private final List<Message> myReceivedMessages = Collections.synchronizedList(new LinkedList<Message>());
+    private final BlockingQueue<Message> myReceivedMessages = new LinkedBlockingQueue<Message>();
     private String myPassword;
     private String myQueueName;
     private String myUsername;
@@ -131,7 +136,7 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
 
     //~ Methods --------------------------------------------------------------------------------------------------------
 
-    private String doReceiveMessage() throws JMSException {
+    private String doReceiveMessage(long theMaxMillisToWait) throws JMSException {
         String message = null;
 
 //        javax.jms.Message jmsMessage = myJmsTemplate.receive(myQueueName);
@@ -139,7 +144,12 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
             return null;
         }
 
-        Message jmsMessage = myReceivedMessages.remove(0);
+        Message jmsMessage;
+        try {
+            jmsMessage = myReceivedMessages.poll(theMaxMillisToWait, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException ex) {
+            return null;
+        }
 
         if (jmsMessage != null) {
             TextMessage jmsTextMessage = (TextMessage) jmsMessage;
@@ -257,7 +267,7 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
 
             while (! myStopped && (message == null) && (System.currentTimeMillis() < endTime)) {
                 try {
-                    message = doReceiveMessage();
+                    message = doReceiveMessage(endTime - System.currentTimeMillis());
                 } catch (JmsException e) {
                     throw new InterfaceWontReceiveException(this,
                                                             e.getMessage(), e);
@@ -384,7 +394,7 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
 
         final TestBatteryImpl battery = theCtx.getBattery();
 
-        if (battery.getInterfaceInteractionTypes(getId()).contains(InterfaceInteractionEnum.RECEIVE)) {
+        if (battery.getInterfaceInteractionTypes(this).contains(InterfaceInteractionEnum.RECEIVE)) {
             theCtx.getLog().get(this).info("Interface will be used to receive messages, starting listener");
             myMessageListenerContainer = new DefaultMessageListenerContainer();
             myMessageListenerContainer.setBeanName(getId());
@@ -405,7 +415,7 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
 
             while (System.currentTimeMillis() < readUntil) {
                 try {
-                    String message = doReceiveMessage();
+                    String message = doReceiveMessage(readUntil - System.currentTimeMillis());
 
                     if ((message == null) || (message.length() == 0)) {
                         try {
