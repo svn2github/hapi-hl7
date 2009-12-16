@@ -471,9 +471,14 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
                         myClientSocket = new Socket();
                         myClientSocket.connect(new InetSocketAddress(myIp, myPort), 500);
 
+                        if (myClientConnection != null) {
+                        	myClientConnection.close();
+                        }
+                        
+                        myClientConnection = new Connection(myParser, new MinLowerLayerProtocol(), myClientSocket);
+                        
                     }
 
-                    myClientConnection = new Connection(myParser, new MinLowerLayerProtocol(), myClientSocket);
                     TestMessage<Message> messageToSend = myMessagesToSend.poll();
                     if (messageToSend != null) {
                         try {
@@ -493,9 +498,27 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
                     }
 
                 } catch (LLPException ex) {
+                	
+                	try {
+                		// Yield a little bit to prevent thrash
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// ignore
+					}
+                	
                     continue;
+                    
                 } catch (IOException ex) {
-                    continue;
+
+                	try {
+                		// Yield a little bit to prevent thrash
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// ignore
+					}
+                	
+                	continue;
+                	
                 } // try-catch
 
             } // while
