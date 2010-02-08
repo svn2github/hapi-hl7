@@ -41,8 +41,8 @@ public abstract class AbstractMessageEditorController<T extends AbstractContextF
     /**
      * Constructor
      */
-    public AbstractMessageEditorController(ILogProvider theLog) {
-        super(theLog);
+    public AbstractMessageEditorController() {
+        super();
     }
 
     //~ Methods --------------------------------------------------------------------------------------------------------

@@ -22,6 +22,9 @@
 package ca.uhn.hunit.iface;
 
 import ca.uhn.hunit.ex.ConfigurationException;
+import ca.uhn.hunit.ex.InterfaceWontStartException;
+import ca.uhn.hunit.ex.InterfaceWontStopException;
+import ca.uhn.hunit.run.IExecutionContext;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.xsd.AnyInterface;
 import ca.uhn.hunit.xsd.JmsInterface;
@@ -63,4 +66,14 @@ public class JmsInterfaceImpl extends AbstractJmsInterfaceImpl<String> {
 
         return retVal;
     }
+
+    /**
+     * Default implementation just returns the sent message back as the reply. This is
+     * probably not great behaviour, but JMS probably doesn't need a reply anyhow.
+     */
+	@Override
+	public TestMessage<String> generateDefaultReply(TestMessage<String> theTestMessage) {
+		return theTestMessage;
+	}
+
 }

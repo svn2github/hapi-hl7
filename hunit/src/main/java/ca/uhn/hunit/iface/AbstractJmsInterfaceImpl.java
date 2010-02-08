@@ -21,43 +21,12 @@
  */
 package ca.uhn.hunit.iface;
 
-import ca.uhn.hunit.event.InterfaceInteractionEnum;
-import ca.uhn.hunit.ex.ConfigurationException;
-import ca.uhn.hunit.ex.InterfaceWontReceiveException;
-import ca.uhn.hunit.ex.InterfaceWontSendException;
-import ca.uhn.hunit.ex.InterfaceWontStartException;
-import ca.uhn.hunit.ex.InterfaceWontStopException;
-import ca.uhn.hunit.ex.TestFailureException;
-import ca.uhn.hunit.l10n.Strings;
-import ca.uhn.hunit.run.ExecutionContext;
-import ca.uhn.hunit.test.TestBatteryImpl;
-import ca.uhn.hunit.test.TestImpl;
-import ca.uhn.hunit.util.TypedValueListTableModel;
-import ca.uhn.hunit.xsd.AbstractJmsInterface;
-import ca.uhn.hunit.xsd.Interface;
-import ca.uhn.hunit.xsd.JavaArgument;
-import ca.uhn.hunit.xsd.NamedJavaArgument;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.commons.lang.StringUtils;
-
-import org.springframework.jms.JmsException;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
-
 import java.beans.PropertyVetoException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -65,7 +34,29 @@ import javax.jms.MessageListener;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
-public abstract class AbstractJmsInterfaceImpl<T extends Object> extends AbstractInterface {
+import org.apache.commons.lang.StringUtils;
+import org.springframework.jms.JmsException;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
+
+import ca.uhn.hunit.event.InterfaceInteractionEnum;
+import ca.uhn.hunit.ex.ConfigurationException;
+import ca.uhn.hunit.ex.InterfaceWontSendException;
+import ca.uhn.hunit.ex.InterfaceWontStartException;
+import ca.uhn.hunit.ex.InterfaceWontStopException;
+import ca.uhn.hunit.ex.TestFailureException;
+import ca.uhn.hunit.l10n.Strings;
+import ca.uhn.hunit.run.IExecutionContext;
+import ca.uhn.hunit.test.TestBatteryImpl;
+import ca.uhn.hunit.util.TypedValueListTableModel;
+import ca.uhn.hunit.util.log.LogFactory;
+import ca.uhn.hunit.xsd.AbstractJmsInterface;
+import ca.uhn.hunit.xsd.Interface;
+import ca.uhn.hunit.xsd.JavaArgument;
+import ca.uhn.hunit.xsd.NamedJavaArgument;
+
+public abstract class AbstractJmsInterfaceImpl<T extends Object> extends AbstractInterface<T> {
     //~ Static fields/initializers -------------------------------------------------------------------------------------
 
     public static final String CONNECTION_FACTORY_CLASS_PROPERTY =
@@ -77,7 +68,6 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
     private Constructor<?> myConstructor;
     private DefaultMessageListenerContainer myMessageListenerContainer;
     private JmsTemplate myJmsTemplate;
-    private final BlockingQueue<Message> myReceivedMessages = new LinkedBlockingQueue<Message>();
     private String myPassword;
     private String myQueueName;
     private String myUsername;
@@ -86,6 +76,7 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
     private boolean myPubSubDomain;
     private boolean myStarted;
     private boolean myStopped;
+	private ConnectionFactory myConnectionFactory;
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
@@ -135,29 +126,6 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
     }
 
     //~ Methods --------------------------------------------------------------------------------------------------------
-
-    private String doReceiveMessage(long theMaxMillisToWait) throws JMSException {
-        String message = null;
-
-//        javax.jms.Message jmsMessage = myJmsTemplate.receive(myQueueName);
-        if (myReceivedMessages.size() == 0) {
-            return null;
-        }
-
-        Message jmsMessage;
-        try {
-            jmsMessage = myReceivedMessages.poll(theMaxMillisToWait, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException ex) {
-            return null;
-        }
-
-        if (jmsMessage != null) {
-            TextMessage jmsTextMessage = (TextMessage) jmsMessage;
-            message = jmsTextMessage.getText();
-        }
-
-        return message;
-    }
 
     /**
      * {@inheritDoc }
@@ -245,57 +213,10 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
         return myPubSubDomain;
     }
 
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public boolean isStarted() {
-        return myStarted;
-    }
 
     @Override
-    public TestMessage<?> receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout)
-                                  throws TestFailureException {
-        start(theCtx);
-
-        theCtx.getLog().get(this).info("Waiting to receive message");
-
-        String message = null;
-
-        try {
-            long endTime = System.currentTimeMillis() + theTimeout;
-
-            while (! myStopped && (message == null) && (System.currentTimeMillis() < endTime)) {
-                try {
-                    message = doReceiveMessage(endTime - System.currentTimeMillis());
-                } catch (JmsException e) {
-                    throw new InterfaceWontReceiveException(this,
-                                                            e.getMessage(), e);
-                } catch (JMSException e) {
-                    throw new InterfaceWontReceiveException(this,
-                                                            e.getMessage(), e);
-                }
-            }
-
-            if (myStopped || (message == null)) {
-                return null;
-            }
-
-            theCtx.getLog().get(this).info("Received message (" + message.length() + " bytes)");
-
-            return new TestMessage<Object>(message, null);
-        } catch (JmsException e) {
-            throw new InterfaceWontReceiveException(this,
-                                                    e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public void sendMessage(TestImpl theTest, ExecutionContext theCtx, final TestMessage<?> theMessage)
-                     throws TestFailureException {
-        start(theCtx);
-
-        theCtx.getLog().get(this).info("Sending message (" + theMessage.getRawMessage().length() + " bytes)");
+	protected TestMessage<T> internalSendMessage(final TestMessage<T> theMessage) throws TestFailureException {
+        LogFactory.INSTANCE.get(this).info("Sending message (" + theMessage.getRawMessage().length() + " bytes)");
 
         try {
             MessageCreator mc =
@@ -323,12 +244,16 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
                 };
 
             myJmsTemplate.send(myQueueName, mc);
-            theCtx.getLog().get(this).info("Sent message");
+            LogFactory.INSTANCE.get(this).info("Sent message");
+            
         } catch (JmsException e) {
             throw new InterfaceWontSendException(this,
                                                  e.getMessage(), e);
         }
-    }
+
+        return null;
+	}
+
 
     public void setConnectionFactoryClass(Class<?> theConnectionFactoryClass)
                                    throws PropertyVetoException {
@@ -363,16 +288,53 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
         this.myUsername = myUsername;
     }
 
-    @Override
-    public void start(ExecutionContext theCtx) throws InterfaceWontStartException {
-        if (myStarted) {
-            return;
+
+
+    //~ Inner Classes --------------------------------------------------------------------------------------------------
+
+    private class MyMessageListener implements MessageListener {
+
+        public void onMessage(Message message) {
+        	LogFactory.INSTANCE.get(AbstractJmsInterfaceImpl.this).info("Message arrived");
+
+            String messageText;
+                try {
+                    TextMessage jmsTextMessage = (TextMessage) message;
+					messageText = jmsTextMessage.getText();
+		            internalReceiveMessage(new TestMessage<T>(messageText, null));
+				} catch (JMSException e) {
+					LogFactory.INSTANCE.get(AbstractJmsInterfaceImpl.this).warn("Failure while extracting JMS message: " + e.getMessage(), e);
+				}
+            
         }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	protected void doStartReceiving() throws InterfaceWontStartException {
+    	LogFactory.INSTANCE.get(this).info("Starting JMS listener");
+        myMessageListenerContainer = new DefaultMessageListenerContainer();
+        myMessageListenerContainer.setBeanName(getId());
+        myMessageListenerContainer.setAutoStartup(true);
+        myMessageListenerContainer.setAcceptMessagesWhileStopping(false);
+        myMessageListenerContainer.setClientId("hUnit-" + getId());
+        myMessageListenerContainer.setConcurrentConsumers(1);
+        myMessageListenerContainer.setConnectionFactory(myConnectionFactory);
+        myMessageListenerContainer.setPubSubDomain(myPubSubDomain);
+        myMessageListenerContainer.setDestinationName(myQueueName);
+        myMessageListenerContainer.setMessageListener(new MyMessageListener());
+        myMessageListenerContainer.afterPropertiesSet();
+	}
 
-        ConnectionFactory connectionFactory;
-
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	protected void doStart() throws InterfaceWontStartException {
         try {
-            connectionFactory = (ConnectionFactory) myConstructor.newInstance(myConstructorArgsTableModel.getArgArray());
+            myConnectionFactory = (ConnectionFactory) myConstructor.newInstance(myConstructorArgsTableModel.getArgArray());
         } catch (IllegalArgumentException e1) {
             throw new InterfaceWontStartException(this,
                                                   e1.getMessage());
@@ -387,105 +349,44 @@ public abstract class AbstractJmsInterfaceImpl<T extends Object> extends Abstrac
                                                   e1.getMessage());
         }
 
-        connectionFactory = new JmsConnectionFactory(connectionFactory, myUsername, myPassword);
-        myJmsTemplate = new JmsTemplate(connectionFactory);
+        myConnectionFactory = new JmsConnectionFactory(myConnectionFactory, myUsername, myPassword);
+        myJmsTemplate = new JmsTemplate(myConnectionFactory);
         myJmsTemplate.setReceiveTimeout(1000);
         myJmsTemplate.setPubSubDomain(myPubSubDomain);
-
-        final TestBatteryImpl battery = theCtx.getBattery();
-
-        if (battery.getInterfaceInteractionTypes(this).contains(InterfaceInteractionEnum.RECEIVE)) {
-            theCtx.getLog().get(this).info("Interface will be used to receive messages, starting listener");
-            myMessageListenerContainer = new DefaultMessageListenerContainer();
-            myMessageListenerContainer.setBeanName(getId());
-            myMessageListenerContainer.setAutoStartup(true);
-            myMessageListenerContainer.setAcceptMessagesWhileStopping(false);
-            myMessageListenerContainer.setClientId("hUnit-" + getId());
-            myMessageListenerContainer.setConcurrentConsumers(1);
-            myMessageListenerContainer.setConnectionFactory(connectionFactory);
-            myMessageListenerContainer.setPubSubDomain(myPubSubDomain);
-            myMessageListenerContainer.setDestinationName(myQueueName);
-            myMessageListenerContainer.setMessageListener(new MyMessageListener(theCtx));
-            myMessageListenerContainer.afterPropertiesSet();
-        }
-
-        if (isClear()) {
-            long readUntil = System.currentTimeMillis() + getClearMillis();
-            int cleared = 0;
-
-            while (System.currentTimeMillis() < readUntil) {
-                try {
-                    String message = doReceiveMessage(readUntil - System.currentTimeMillis());
-
-                    if ((message == null) || (message.length() == 0)) {
-                        try {
-                            Thread.sleep(250);
-                        } catch (InterruptedException e) {
-                            // nothing
-                        }
-
-                        continue;
-                    }
-
-                    cleared++;
-                    theCtx.getLog().get(this).info("Cleared message");
-
-                    try {
-                        Thread.sleep(250);
-                    } catch (InterruptedException e) {
-                        // nothing
-                    }
-
-                    readUntil = System.currentTimeMillis() + getClearMillis();
-                } catch (JMSException e) {
-                    theCtx.getLog().get(this).warn("Error while clearing queue: " + e.getMessage());
-                }
-            }
-
-            theCtx.getLog().get(this).info("Cleared " + cleared + " messages from interface before starting");
-        }
-
-        theCtx.getLog().get(this).info("Started interface successfully");
-        myStarted = true;
-        firePropertyChange(INTERFACE_STARTED_PROPERTY, false, true);
-    }
+	}
 
     /**
-     * {@inheritDoc }
+     * {@inheritDoc}
      */
-    @Override
-    public void stop(ExecutionContext theCtx) throws InterfaceWontStopException {
-        if (! myStarted) {
-            return;
-        }
+	@Override
+	protected void doStartSending() throws InterfaceWontStartException {
+		// nothing
+	}
 
-        if (myStopped) {
-            return;
-        }
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	protected void doStop() throws InterfaceWontStopException {
+		// nothing
+	}
 
-        theCtx.getLog().get(this).info("Stopping interface");
-
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	protected void doStopReceiving() throws InterfaceWontStopException {
         if (myMessageListenerContainer != null) {
             myMessageListenerContainer.shutdown();
         }
+	}
 
-        myStarted = false;
-        myStopped = true;
-        firePropertyChange(INTERFACE_STARTED_PROPERTY, true, false);
-    }
-
-    //~ Inner Classes --------------------------------------------------------------------------------------------------
-
-    private class MyMessageListener implements MessageListener {
-        private final ExecutionContext myCtx;
-
-        public MyMessageListener(ExecutionContext theCtx) {
-            myCtx = theCtx;
-        }
-
-        public void onMessage(Message message) {
-            myCtx.getLog().get(AbstractJmsInterfaceImpl.this).info("Message arrived");
-            myReceivedMessages.add(message);
-        }
-    }
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	protected void doStopSending() throws InterfaceWontStopException {
+		// nothing
+	}
+	
 }

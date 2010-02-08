@@ -22,13 +22,16 @@
 package ca.uhn.hunit.run;
 
 import ca.uhn.hunit.event.AbstractEvent;
+import ca.uhn.hunit.event.InterfaceInteractionEnum;
 import ca.uhn.hunit.event.expect.AbstractExpect;
+import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.ex.InterfaceWontStopException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
+import ca.uhn.hunit.util.log.LogFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -114,14 +117,22 @@ public class TestBatteryExecutionThread extends Thread {
     public void run() {
         try {
             if (myInterface.isAutostart() && ! myInterface.isStarted()) {
-                myCtx.getLog().get(myInterface).info("Interface is marked as \"autostart\". Going to start it.");
-                myInterface.start(myCtx);
+            	LogFactory.INSTANCE.get(myInterface).info("Interface is marked as \"autostart\". Going to start it.");
+                
+            	boolean sending = myCtx.getBattery().getInterfaceInteractionTypes(myInterface).contains(InterfaceInteractionEnum.SEND);
+            	boolean receiving = myCtx.getBattery().getInterfaceInteractionTypes(myInterface).contains(InterfaceInteractionEnum.RECEIVE);
+
+            	if (sending && receiving) {
+            		myFailed = new ConfigurationException("Interface " + myInterface.getId() + " is configured to be used for both sending and receiving events");
+            	}
+            	
+            	myInterface.start(sending, receiving);
             }
         } catch (InterfaceWontStartException e) {
             myFailed = e;
         }
 
-        myCtx.getLog().get(myInterface).info("Ready to begin execution");
+        LogFactory.INSTANCE.get(myInterface).info("Ready to begin execution");
         myReady = true;
 
         while (! myStopped) {
@@ -162,7 +173,7 @@ public class TestBatteryExecutionThread extends Thread {
                     myEvents.clear();
                 }
             } catch (Exception e) {
-                myCtx.getLog().get(myCtx.getBattery())
+            	LogFactory.INSTANCE.get(myCtx.getBattery())
                      .error("Unexpected failure during test execution: " + e.getMessage(), e);
                 myFailed = new UnexpectedTestFailureException(e);
                 myCtx.addFailure(myCurrentEvent.getTest(),
@@ -186,11 +197,11 @@ public class TestBatteryExecutionThread extends Thread {
     private synchronized void stopInterface() {
         try {
             if (myInterface.isStarted()) {
-                myInterface.stop(myCtx);
+                myInterface.stop();
             }
         } catch (InterfaceWontStopException e) {
             myFailed = e;
-            myCtx.getLog().get(myInterface).error("Can't stop interface: " + e.describeReason());
+            LogFactory.INSTANCE.get(myInterface).error("Can't stop interface: " + e.describeReason());
         }
     }
 }

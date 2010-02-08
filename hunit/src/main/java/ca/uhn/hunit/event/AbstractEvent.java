@@ -25,6 +25,7 @@ import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.run.ExecutionContext;
+import ca.uhn.hunit.run.IExecutionContext;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.AbstractModelClass;
@@ -63,7 +64,7 @@ public abstract class AbstractEvent extends AbstractModelClass {
 
     //~ Methods --------------------------------------------------------------------------------------------------------
 
-    public abstract void execute(ExecutionContext theCtx)
+    public abstract void execute(IExecutionContext theCtx)
                           throws TestFailureException, ConfigurationException;
 
     /**

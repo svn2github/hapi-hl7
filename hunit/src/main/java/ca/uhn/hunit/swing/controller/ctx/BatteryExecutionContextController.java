@@ -34,7 +34,7 @@ import ca.uhn.hunit.swing.model.LogTableModel;
 import ca.uhn.hunit.swing.ui.run.TestExecutionForm;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
-import ca.uhn.hunit.util.log.LogCapturingLog;
+import ca.uhn.hunit.util.log.LogFactory;
 
 import java.util.Map.Entry;
 import java.util.Set;
@@ -58,18 +58,12 @@ public class BatteryExecutionContextController extends AbstractContextController
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
     public BatteryExecutionContextController(TestBatteryImpl theBattery) {
-        super(new LogCapturingLog());
-
-        LogCapturingLog log = (LogCapturingLog) getLog();
-
         myBattery = theBattery;
         myExecutionContext = new ExecutionContext(theBattery);
         myExecutionContext.addListener(new MyExecutionListener());
 
-        myExecutionContext.setLog(log);
-
         myExecutionModel = new ExecutionTestsTableModel(myExecutionContext);
-        myLogTableModel = new LogTableModel(log);
+        myLogTableModel = new LogTableModel();
 
         myView = new TestExecutionForm();
         myView.setController(this);
@@ -89,6 +83,8 @@ public class BatteryExecutionContextController extends AbstractContextController
                     }
                 }
             });
+        
+        myLogTableModel.stopFollowing();
     }
 
     public ExecutionTestsTableModel getExecutionTableModel() {

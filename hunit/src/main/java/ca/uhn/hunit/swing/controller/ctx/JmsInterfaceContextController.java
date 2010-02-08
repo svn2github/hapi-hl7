@@ -48,8 +48,8 @@ public class JmsInterfaceContextController extends AbstractInterfaceEditorContex
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
-    public JmsInterfaceContextController(ILogProvider theLog, JmsInterfaceImpl theModel) {
-        super(theLog, theModel);
+    public JmsInterfaceContextController(JmsInterfaceImpl theModel) {
+        super(theModel);
         myModel = theModel;
         myView = new JmsInterfaceEditorForm();
         myView.setController(this);

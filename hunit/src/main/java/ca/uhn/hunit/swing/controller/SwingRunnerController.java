@@ -47,7 +47,7 @@ import ca.uhn.hunit.swing.ui.DialogUtil;
 import ca.uhn.hunit.swing.ui.SwingRunner;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
-import ca.uhn.hunit.util.log.LogCapturingLog;
+import ca.uhn.hunit.util.log.LogFactory;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
@@ -73,7 +73,7 @@ public class SwingRunnerController {
     //~ Instance fields ------------------------------------------------------------------------------------------------
 
     private AbstractContextController<?> myCtxController;
-    private final LogCapturingLog myLog;
+    private final LogFactory myLog;
     private final SwingRunner myView;
     private TestBatteryImpl myBattery;
 
@@ -82,8 +82,8 @@ public class SwingRunnerController {
     public SwingRunnerController() {
         setLookAndFeel();
 
-        myLog = new LogCapturingLog();
-        myBattery = new TestBatteryImpl(myLog);
+        myLog = new LogFactory();
+        myBattery = new TestBatteryImpl();
 
         myView = new SwingRunner(this, myBattery);
         myView.setVisible(true);
@@ -99,8 +99,8 @@ public class SwingRunnerController {
             throw new IOException();
         }
 
-        myLog = new LogCapturingLog();
-        myBattery = new TestBatteryImpl(theDefinitionFile, myLog);
+        myLog = new LogFactory();
+        myBattery = new TestBatteryImpl(theDefinitionFile);
 
         myView = new SwingRunner(this, myBattery);
         myView.setVisible(true);
@@ -155,7 +155,7 @@ public class SwingRunnerController {
         navigateTo(ctxController);
     }
 
-    public LogCapturingLog getLog() {
+    public LogFactory getLog() {
         return myLog;
     }
 
@@ -196,7 +196,7 @@ public class SwingRunnerController {
         }
 
         disposeExistingBattery();
-        myBattery = new TestBatteryImpl(myLog);
+        myBattery = new TestBatteryImpl();
         myView.setBattery(myBattery);
         selectBattery(myBattery);
     }
@@ -207,7 +207,7 @@ public class SwingRunnerController {
         }
 
         disposeExistingBattery();
-        myBattery = new TestBatteryImpl(myLog);
+        myBattery = new TestBatteryImpl();
 
         try {
             myBattery.load(new ClassPathResource("/ca/uhn/hunit/templates/hl7_in_and_out.xml"));
@@ -231,7 +231,7 @@ public class SwingRunnerController {
             FileSystemResource inputFile = new FileSystemResource(chooser.getSelectedFile());
 
             try {
-                TestBatteryImpl newBattery = new TestBatteryImpl(inputFile, myLog);
+                TestBatteryImpl newBattery = new TestBatteryImpl(inputFile);
         disposeExistingBattery();
                 myBattery = newBattery;
                 myView.setBattery(myBattery);
@@ -332,7 +332,7 @@ public class SwingRunnerController {
     }
 
     public void selectBattery(TestBatteryImpl battery) {
-        BatteryEditorContextController controller = new BatteryEditorContextController(myBattery, myLog);
+        BatteryEditorContextController controller = new BatteryEditorContextController(myBattery);
         navigateTo(controller);
     }
 
@@ -343,9 +343,9 @@ public class SwingRunnerController {
         AbstractContextController<?> ctxController;
 
         if (userObject instanceof MllpHl7V2InterfaceImpl) {
-            ctxController = new MllpHl7v2InterfaceEditorContextController(myLog, (MllpHl7V2InterfaceImpl) userObject);
+            ctxController = new MllpHl7v2InterfaceEditorContextController((MllpHl7V2InterfaceImpl) userObject);
         } else if (userObject instanceof JmsInterfaceImpl) {
-            ctxController = new JmsInterfaceContextController(myLog, (JmsInterfaceImpl) userObject);
+            ctxController = new JmsInterfaceContextController((JmsInterfaceImpl) userObject);
         } else {
             System.out.println("Unknown interface: " + userObject);
 
@@ -359,9 +359,9 @@ public class SwingRunnerController {
         AbstractContextController<?> ctxController;
 
         if (theMessage instanceof Hl7V2MessageImpl) {
-            ctxController = new Hl7V2MessageEditorController(myLog, (Hl7V2MessageImpl) theMessage);
+            ctxController = new Hl7V2MessageEditorController((Hl7V2MessageImpl) theMessage);
         } else if (theMessage instanceof XmlMessageImpl) {
-            ctxController = new XmlMessageEditorController(myLog, (XmlMessageImpl) theMessage);
+            ctxController = new XmlMessageEditorController((XmlMessageImpl) theMessage);
         } else {
             System.out.println("Unknown message: " + theMessage);
 
@@ -372,7 +372,7 @@ public class SwingRunnerController {
     }
 
     public void selectTest(TestImpl test) {
-        TestEditorController ctxController = new TestEditorController(myLog, test);
+        TestEditorController ctxController = new TestEditorController(test);
         navigateTo(ctxController);
     }
 

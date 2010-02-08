@@ -51,8 +51,8 @@ public abstract class AbstractInterfaceEditorContextController<T extends Abstrac
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
-    public AbstractInterfaceEditorContextController(ILogProvider theLog, T theModel) {
-        super(theLog);
+    public AbstractInterfaceEditorContextController(T theModel) {
+        super();
         myModel = theModel;
     }
 

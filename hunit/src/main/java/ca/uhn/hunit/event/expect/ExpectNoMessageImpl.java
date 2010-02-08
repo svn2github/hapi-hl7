@@ -25,8 +25,8 @@ import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.ex.UnexpectedMessageException;
 import ca.uhn.hunit.iface.TestMessage;
-import ca.uhn.hunit.run.ExecutionContext;
-import ca.uhn.hunit.test.*;
+import ca.uhn.hunit.run.IExecutionContext;
+import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.ExpectNoMessage;
 
@@ -34,7 +34,7 @@ import ca.uhn.hunit.xsd.ExpectNoMessage;
  * TODO: add!
  *
  * @author <a href="mailto:james.agnew@uhn.on.ca">James Agnew</a>
- * @version $Revision: 1.5 $ updated on $Date: 2009-11-29 21:55:18 $ by $Author: jamesagnew $
+ * @version $Revision: 1.6 $ updated on $Date: 2010-02-08 01:09:01 $ by $Author: jamesagnew $
  */
 public class ExpectNoMessageImpl extends AbstractExpect {
     //~ Constructors ---------------------------------------------------------------------------------------------------
@@ -56,10 +56,8 @@ public class ExpectNoMessageImpl extends AbstractExpect {
      * {@inheritDoc}
      */
     @Override
-    public void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException {
-        TestMessage<?> message = getInterface().receiveMessage(getTest(),
-                                                               theCtx,
-                                                               getReceiveTimeout());
+    public void execute(IExecutionContext theCtx) throws TestFailureException, ConfigurationException {
+        TestMessage<?> message = getInterface().receiveMessage(getReceiveTimeout(), null);
 
         if (message != null) {
             throw new UnexpectedMessageException(getTest(), message, "Unexpected message received");

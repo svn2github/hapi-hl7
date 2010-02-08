@@ -5,6 +5,10 @@
 package ca.uhn.hunit.run;
 
 import ca.uhn.hunit.iface.AbstractInterface;
+import ca.uhn.hunit.test.TestBatteryImpl;
+import ca.uhn.hunit.util.log.CommonsLoggingLog;
+import ca.uhn.hunit.util.log.ILogProvider;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,13 +22,24 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class UniversalExecutionContext implements IExecutionContext {
 
-    private Map<AbstractInterface, TestBatteryExecutionThread> myInterface2ExecutionThread = new ConcurrentHashMap<AbstractInterface, TestBatteryExecutionThread>();
+    private Map<AbstractInterface<?>, TestBatteryExecutionThread> myInterface2ExecutionThread = new ConcurrentHashMap<AbstractInterface<?>, TestBatteryExecutionThread>();
+    private ILogProvider myLog = new CommonsLoggingLog();
+	private TestBatteryImpl myBattery;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param theBattery The test battery
+	 */
+    public UniversalExecutionContext(TestBatteryImpl theBattery) {
+    	myBattery = theBattery;
+    }
+    
     /**
      * {@inheritDoc }
      */
     @Override
-    public TestBatteryExecutionThread getInterfaceExecutionThread(AbstractInterface theInterface) {
+    public TestBatteryExecutionThread getInterfaceExecutionThread(AbstractInterface<?> theInterface) {
         return myInterface2ExecutionThread.get(theInterface);
     }
 
@@ -37,6 +52,11 @@ public class UniversalExecutionContext implements IExecutionContext {
             next.finish();
         }
     }
+
+	@Override
+	public TestBatteryImpl getBattery() {
+		return myBattery;
+	}
 
     
 

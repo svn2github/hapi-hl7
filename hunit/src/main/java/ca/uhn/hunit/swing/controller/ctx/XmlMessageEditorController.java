@@ -37,9 +37,7 @@ public class XmlMessageEditorController extends AbstractMessageEditorController<
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
-    public XmlMessageEditorController(ILogProvider theLog, XmlMessageImpl theMessage) {
-        super(theLog);
-
+    public XmlMessageEditorController(XmlMessageImpl theMessage) {
         myView = new XmlMessageEditorForm();
         myMessage = theMessage;
 

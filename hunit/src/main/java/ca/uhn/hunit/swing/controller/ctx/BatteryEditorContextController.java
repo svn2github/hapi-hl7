@@ -20,9 +20,7 @@ public class BatteryEditorContextController extends AbstractContextController<Ba
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
-    public BatteryEditorContextController(TestBatteryImpl theBattery, ILogProvider theLog) {
-        super(theLog);
-
+    public BatteryEditorContextController(TestBatteryImpl theBattery) {
         myBattery = theBattery;
         myView = new BatteryEditorForm();
         myView.setController(this);

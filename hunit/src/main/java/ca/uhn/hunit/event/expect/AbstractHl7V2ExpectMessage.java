@@ -22,12 +22,11 @@
 package ca.uhn.hunit.event.expect;
 
 import ca.uhn.hl7v2.model.Message;
-
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.msg.Hl7V2MessageImpl;
-import ca.uhn.hunit.run.ExecutionContext;
+import ca.uhn.hunit.run.IExecutionContext;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.HL7V2ExpectAbstract;
@@ -49,7 +48,7 @@ public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage<H
     }
 
     @Override
-    public void receiveMessage(ExecutionContext theCtx, TestMessage<?> theMessage)
+    public void receiveMessage(IExecutionContext theCtx, TestMessage<?> theMessage)
                         throws TestFailureException {
         // TODO: make sure this is sound
         TestMessage<Message> testMessage = (TestMessage<Message>) theMessage;

@@ -7,6 +7,7 @@ package ca.uhn.hunit.run;
 import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.util.log.ILogProvider;
 
 /**
  * An execution context holds all data related to the actual execution of a test
@@ -22,7 +23,7 @@ public interface IExecutionContext {
      * @param theInterface The interface
      * @return The execution thread, or null if none
      */
-    TestBatteryExecutionThread getInterfaceExecutionThread(AbstractInterface theInterface);
+    TestBatteryExecutionThread getInterfaceExecutionThread(AbstractInterface<?> theInterface);
 
 
     /**
@@ -30,4 +31,8 @@ public interface IExecutionContext {
      */
     void stop();
 
+    /**
+     * Returns the current battery
+     */
+	TestBatteryImpl getBattery();
 }

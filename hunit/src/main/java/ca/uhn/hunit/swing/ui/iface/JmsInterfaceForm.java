@@ -35,6 +35,8 @@ import ca.uhn.hunit.iface.JmsInterfaceImpl;
 import ca.uhn.hunit.l10n.Colours;
 import ca.uhn.hunit.swing.controller.ctx.JmsInterfaceContextController;
 import ca.uhn.hunit.swing.ui.AbstractContextForm;
+import ca.uhn.hunit.util.log.LogFactory;
+
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyVetoException;
@@ -50,7 +52,7 @@ import org.apache.commons.logging.Log;
 public class JmsInterfaceForm extends AbstractContextForm<JmsInterfaceContextController> {
 
     private static final long serialVersionUID = 1;
-    private Log myLog;
+    //private Log myLog;
 
     /** Creates new form JmsInterfaceForm */
     public JmsInterfaceForm() {
@@ -190,7 +192,6 @@ public class JmsInterfaceForm extends AbstractContextForm<JmsInterfaceContextCon
     @Override
     public void setController(JmsInterfaceContextController theController) {
         final JmsInterfaceImpl model = theController.getModel();
-        myLog = theController.getLog().getSystem(JmsInterfaceForm.class);
 
         myUsernameTextBox.setText(model.getUsername());
         myUsernameTextBox.getDocument().addUndoableEditListener(new UndoableEditListener() {
@@ -220,7 +221,7 @@ public class JmsInterfaceForm extends AbstractContextForm<JmsInterfaceContextCon
                     model.setQueueName(myQueueNameTextBox.getText());
                     myQueueNameTextBox.setBackground(Colours.getTextFieldOk());
                 } catch (PropertyVetoException ex) {
-                    myLog.error(ex.getMessage());
+                	LogFactory.INSTANCE.getSystem(getClass()).error(ex.getMessage());
                     myQueueNameTextBox.setBackground(Colours.getTextFieldError());
                 }
             }

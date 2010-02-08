@@ -21,6 +21,15 @@
  */
 package ca.uhn.hunit.iface;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Connection;
 import ca.uhn.hl7v2.llp.LLPException;
@@ -36,7 +45,6 @@ import ca.uhn.hl7v2.protocol.impl.ApplicationRouterImpl;
 import ca.uhn.hl7v2.protocol.impl.HL7Server;
 import ca.uhn.hl7v2.protocol.impl.NullSafeStorage;
 import ca.uhn.hl7v2.validation.impl.ValidationContextImpl;
-
 import ca.uhn.hunit.event.InterfaceInteractionEnum;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceWontSendException;
@@ -44,27 +52,18 @@ import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.ex.InterfaceWontStopException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
-import ca.uhn.hunit.run.ExecutionContext;
+import ca.uhn.hunit.run.IExecutionContext;
 import ca.uhn.hunit.test.TestBatteryImpl;
-import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.util.log.LogFactory;
 import ca.uhn.hunit.xsd.AnyInterface;
 import ca.uhn.hunit.xsd.MllpHl7V2Interface;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
-public class MllpHl7V2InterfaceImpl extends AbstractInterface {
+public class MllpHl7V2InterfaceImpl extends AbstractInterface<Message> {
     //~ Static fields/initializers -------------------------------------------------------------------------------------
 
     private static final String CLIENT = "client";
     private static final String SERVER = "server";
+    
     //~ Instance fields ------------------------------------------------------------------------------------------------
     private Boolean myAutoAck;
     private Integer myConnectionTimeout;
@@ -76,10 +75,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
     private String myEncoding;
     private String myIp;
     private boolean myClientMode;
-    private boolean myStarted;
-    private boolean myStopped;
     private int myPort;
-    private final BlockingQueue<TestMessage> myReceivedMessages = new LinkedBlockingQueue<TestMessage>();
     private HL7Server myServerConnection;
     private MyClientConnectionThread myClientThread;
 
@@ -89,9 +85,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
         myIp = theConfig.getIp();
         myPort = theConfig.getPort();
         myClientMode = theConfig.getMode().equalsIgnoreCase(CLIENT);
-        myStarted = false;
         myConnectionTimeout = theConfig.getConnectionTimeoutMillis();
-        myStopped = false;
         myEncoding = theConfig.getEncoding();
         myAutoAck = theConfig.isAutoAck();
 
@@ -177,66 +171,6 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
         return myClientMode;
     }
 
-    @Override
-    public boolean isStarted() {
-        return myStarted;
-    }
-
-    @Override
-    public TestMessage receiveMessage(TestImpl theTest, ExecutionContext theCtx, long theTimeout)
-            throws TestFailureException {
-        start(theCtx);
-
-        theCtx.getLog().get(this).info("Waiting to receive message");
-
-        TestMessage<Message> message = null;
-
-        long endTime = System.currentTimeMillis() + theTimeout;
-
-        while (!myStopped && (message == null) && (System.currentTimeMillis() < endTime)) {
-
-            try {
-                message = myReceivedMessages.poll(endTime - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
-                // ignore
-            }
-            
-        }
-
-        if (myStopped || (message == null)) {
-            return null;
-        }
-
-        theCtx.getLog().get(this).info("Received message (" + message.getRawMessage().length() + " bytes)");
-
-        return message;
-
-    }
-
-    @Override
-    public void sendMessage(TestImpl theTest, ExecutionContext theCtx, TestMessage theMessage)
-            throws TestFailureException {
-        start(theCtx);
-
-        if (theMessage.getRawMessage() == null) {
-            try {
-                theMessage.setRawMessage(myParser.encode((Message) theMessage.getParsedMessage()));
-            } catch (HL7Exception e) {
-                throw new UnexpectedTestFailureException("Can't encode message to send it: " + e.getMessage());
-            }
-        }
-
-        theCtx.getLog().get(this).info("Sending message (" + theMessage.getRawMessage().length() + " bytes)");
-
-        if (myClientMode) {
-            myClientThread.sendMessageAndWaitForDelivery(theMessage);
-        } else {
-            // TODO: handle this by sending to a processor on the HL7 server
-            throw new ConfigurationException("Sending to a server is not currently supported");
-        }
-
-    }
-
     public void setAutoAck(boolean myAutoAck) {
         this.myAutoAck = myAutoAck;
     }
@@ -261,123 +195,6 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
         this.myPort = myPort;
     }
 
-    @Override
-    public void start(ExecutionContext theCtx) throws InterfaceWontStartException {
-        if (myStarted) {
-            return;
-        }
-
-        startInterface(theCtx);
-
-        TestBatteryImpl battery = theCtx.getBattery();
-
-        if (isClear() && battery.getInterfaceInteractionTypes(this).contains(InterfaceInteractionEnum.RECEIVE)) {
-
-            long readUntil = System.currentTimeMillis() + getClearMillis();
-            int cleared = 0;
-
-            while (System.currentTimeMillis() < readUntil && !myStopped) {
-
-                TestMessage<Message> message = null;
-                try {
-                    message = myReceivedMessages.poll(readUntil, TimeUnit.MILLISECONDS);
-                } catch (InterruptedException ex) {
-                    // ignore
-                    }
-
-                if (message == null) {
-                    continue;
-                }
-
-                cleared++;
-                theCtx.getLog().get(this).info("Cleared message (" + message.getRawMessage().length() + " bytes)");
-
-                try {
-                    Thread.sleep(250);
-                } catch (InterruptedException e) {
-                    // nothing
-                    }
-
-                readUntil = System.currentTimeMillis() + getClearMillis();
-
-            }
-
-            theCtx.getLog().get(this).info("Cleared " + cleared + " messages from interface before starting");
-        }
-
-        myStarted = true;
-        firePropertyChange(INTERFACE_STARTED_PROPERTY, false, true);
-    }
-
-    private void startInterface(ExecutionContext theCtx)
-            throws InterfaceWontStartException {
-        myClientSocket = null;
-        myServerSocket = null;
-
-        Set<InterfaceInteractionEnum> interactionTypes = theCtx.getBattery().getInterfaceInteractionTypes(this);
-        // TODO: check if interaction types are appropriate
-
-        if (myClientMode) {
-
-            theCtx.getLog().get(this).info("Starting CLIENT interface to " + myIp + ":" + myPort);
-
-            myClientThread = new MyClientConnectionThread();
-            myClientThread.start();
-
-        } else {
-
-            theCtx.getLog().get(this).info("Starting SERVER interface on port " + myPort);
-
-            try {
-                myServerSocket = new ServerSocket(myPort);
-                myServerSocket.setSoTimeout(250);
-
-                myServerConnection = new HL7Server(myServerSocket, new MyApplicationRouter(), new NullSafeStorage());
-                myServerConnection.start(null);
-                
-            } catch (IOException e) {
-                throw new InterfaceWontStartException(this, e.getMessage(), e);
-            }
-
-        }
-
-        theCtx.getLog().get(this).info("Started interface successfully");
-    }
-
-    @Override
-    public void stop(ExecutionContext theCtx) throws InterfaceWontStopException {
-        if (!myStarted) {
-            return;
-        }
-
-        if (myStopped) {
-            return;
-        }
-
-        theCtx.getLog().get(this).info("Stopping interface");
-
-        try {
-            if (myServerConnection != null) {
-                myServerConnection.stop();
-            }
-            if (myServerSocket != null) {
-                myServerSocket.close();
-            }
-            if (myClientThread != null) {
-                myClientThread.stopThread();
-            }
-            if (myClientSocket != null) {
-                myClientSocket.close();
-            }
-
-        } catch (IOException e) {
-            throw new InterfaceWontStopException(this,
-                    e.getMessage(), e);
-        }
-
-        myStarted = false;
-        firePropertyChange(INTERFACE_STARTED_PROPERTY, true, false);
-    }
 
     private class MyApplicationRouter extends ApplicationRouterImpl implements ReceivingApplication {
 
@@ -392,15 +209,28 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
          */
         @Override
         public Message processMessage(Message theMessage, Map theMetadata) throws ReceivingApplicationException, HL7Exception {
-            String rawMessage = (String) theMetadata.get(RAW_MESSAGE_KEY);
-            myReceivedMessages.add(new TestMessage(rawMessage, theMessage));
-            try {
-                return theMessage.generateACK();
-            } catch (IOException ex) {
-                // Presumably this will never happen as long as the message that
-                // came in is valid.. but you never know
-                throw new ReceivingApplicationException(ex);
+        	String rawMessage = (String) theMetadata.get(RAW_MESSAGE_KEY);
+        	LogFactory.INSTANCE.get(MllpHl7V2InterfaceImpl.this).info("Received message (" + rawMessage.length() + " bytes)");
+            
+            TestMessage<Message> response = internalReceiveMessage(new TestMessage<Message>(rawMessage, theMessage));
+            Message retVal = null;
+            if (response == null) {
+            	try {
+					retVal = theMessage.generateACK();
+				} catch (IOException e) {
+	                // Presumably this will never happen as long as the message that
+	                // came in is valid.. but you never know
+	                throw new ReceivingApplicationException(e);
+				}
             }
+
+            if (response.getParsedMessage() == null) {
+            	retVal = myParser.parse(response.getRawMessage());
+            } else {
+            	retVal = response.getParsedMessage();
+            }
+            
+            return retVal;
         }
 
         /**
@@ -418,6 +248,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
         private Connection myClientConnection;
         private BlockingQueue<TestMessage<Message>> myMessagesToSend = new LinkedBlockingQueue<TestMessage<Message>>();
         private BlockingQueue<TestMessage<Message>> mySentMessages = new LinkedBlockingQueue<TestMessage<Message>>();
+        private BlockingQueue<TestMessage<Message>> myResponses = new LinkedBlockingQueue<TestMessage<Message>>();
         private TestFailureException myFailure = null;
 
         private MyClientConnectionThread() {
@@ -428,7 +259,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
          * Sends a message over the interface and waits until it has been
          * successfully delivered
          */
-        public synchronized void sendMessageAndWaitForDelivery(TestMessage<Message> theMessage) throws TestFailureException {
+        public synchronized TestMessage<Message> sendMessageAndWaitForDelivery(TestMessage<Message> theMessage) throws TestFailureException {
 
             try {
                 myMessagesToSend.put(theMessage);
@@ -440,7 +271,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
             for (;;) {
                 try {
                     if (mySentMessages.take() != null) {
-                        return;
+                        return myResponses.take();
                     }
                     if (myFailure != null) {
                         throw myFailure;
@@ -482,8 +313,9 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
                     TestMessage<Message> messageToSend = myMessagesToSend.poll();
                     if (messageToSend != null) {
                         try {
-                            myClientConnection.getInitiator().sendAndReceive(messageToSend.getParsedMessage());
+                            Message response = myClientConnection.getInitiator().sendAndReceive(messageToSend.getParsedMessage());
                             mySentMessages.put(messageToSend);
+                            myResponses.put(new TestMessage<Message>(response.encode(), response));
                         } catch (InterruptedException ex) {
                             // Should never happen
                             myFailure = new InterfaceWontSendException(MllpHl7V2InterfaceImpl.this, ex.getMessage());
@@ -539,4 +371,136 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface {
             }
         }
     }
+
+	@Override
+	protected TestMessage<Message> internalSendMessage(TestMessage<Message> theMessage) throws TestFailureException {
+        if (theMessage.getRawMessage() == null) {
+            try {
+                theMessage.setRawMessage(myParser.encode((Message) theMessage.getParsedMessage()));
+            } catch (HL7Exception e) {
+                throw new UnexpectedTestFailureException("Can't encode message to send it: " + e.getMessage());
+            }
+        }
+
+        LogFactory.INSTANCE.get(this).info("Sending message (" + theMessage.getRawMessage().length() + " bytes)");
+
+        if (myClientMode) {
+            TestMessage<Message> response = myClientThread.sendMessageAndWaitForDelivery(theMessage);
+        } else {
+            // TODO: handle this by sending to a processor on the HL7 server
+            throw new ConfigurationException("Sending to a server is not currently supported");
+        }
+        
+		return null;
+	}
+
+	@Override
+	public TestMessage<Message> generateDefaultReply(TestMessage<Message> theTestMessage) throws UnexpectedTestFailureException {
+		try {
+			return new TestMessage<Message>(null, theTestMessage.getParsedMessage().generateACK());
+		} catch (HL7Exception e) {
+			throw new UnexpectedTestFailureException(e);
+		} catch (IOException e) {
+			throw new UnexpectedTestFailureException(e);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void doStartReceiving() throws InterfaceWontStartException {
+        if (myClientMode) {
+       
+        	// TODO: client mode for receiving
+        	throw new IllegalStateException();
+        	
+        } else {
+
+            LogFactory.INSTANCE.get(this).info("Starting SERVER interface on port " + myPort);
+
+            try {
+                myServerSocket = new ServerSocket(myPort);
+                myServerSocket.setSoTimeout(250);
+
+                myServerConnection = new HL7Server(myServerSocket, new MyApplicationRouter(), new NullSafeStorage());
+                myServerConnection.start(null);
+                
+            } catch (IOException e) {
+                throw new InterfaceWontStartException(this, e.getMessage(), e);
+            }
+
+        }
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void doStart() throws InterfaceWontStartException {
+		// nothing
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void doStartSending() throws InterfaceWontStartException {
+        if (myClientMode) {
+
+            LogFactory.INSTANCE.get(this).info("Starting CLIENT interface to " + myIp + ":" + myPort);
+
+            myClientThread = new MyClientConnectionThread();
+            myClientThread.start();
+
+        } else {
+
+        	// TODO: client mode for receiving
+        	throw new IllegalStateException();
+
+        }
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void doStop() throws InterfaceWontStopException {
+        try {
+            if (myServerConnection != null) {
+                myServerConnection.stop();
+            }
+            if (myServerSocket != null) {
+                myServerSocket.close();
+            }
+            if (myClientThread != null) {
+                myClientThread.stopThread();
+            }
+            if (myClientSocket != null) {
+                myClientSocket.close();
+            }
+
+        } catch (IOException e) {
+            throw new InterfaceWontStopException(this,
+                    e.getMessage(), e);
+        }
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void doStopReceiving() throws InterfaceWontStopException {
+		// nothing
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void doStopSending() throws InterfaceWontStopException {
+		// nothing
+	}
+
+
 }

@@ -35,24 +35,16 @@ import ca.uhn.hunit.util.log.ILogProvider;
 public abstract class AbstractContextController<V extends AbstractContextForm<?>> {
     //~ Instance fields ------------------------------------------------------------------------------------------------
 
-    private ILogProvider myLog;
-
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
     /**
      * Constructor
-     *
-     * @param theLog The global log provider
      */
-    public AbstractContextController(ILogProvider theLog) {
-        myLog = theLog;
+    public AbstractContextController() {
+    	super();
     }
 
     //~ Methods --------------------------------------------------------------------------------------------------------
-
-    public ILogProvider getLog() {
-        return myLog;
-    }
 
     /**
      * Provide the view associated with this controller

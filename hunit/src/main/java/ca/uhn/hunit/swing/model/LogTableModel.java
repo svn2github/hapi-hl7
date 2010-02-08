@@ -27,7 +27,7 @@
 package ca.uhn.hunit.swing.model;
 
 import ca.uhn.hunit.util.log.ILogListener;
-import ca.uhn.hunit.util.log.LogCapturingLog;
+import ca.uhn.hunit.util.log.LogFactory;
 import ca.uhn.hunit.util.log.LogEvent;
 
 import java.util.ArrayList;
@@ -54,8 +54,8 @@ public class LogTableModel extends AbstractTableModel implements ILogListener {
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
-    public LogTableModel(LogCapturingLog theLog) {
-        theLog.registerListener(this);
+    public LogTableModel() {
+    	LogFactory.INSTANCE.registerListener(this);
     }
 
     //~ Methods --------------------------------------------------------------------------------------------------------
@@ -132,4 +132,11 @@ public class LogTableModel extends AbstractTableModel implements ILogListener {
                 }
             });
     }
+
+    /**
+     * Stop following the log
+     */
+	public void stopFollowing() {
+		LogFactory.INSTANCE.unregisterListener(this);
+	}
 }

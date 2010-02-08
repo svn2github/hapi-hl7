@@ -26,30 +26,30 @@
  */
 package ca.uhn.hunit.event.expect;
 
-import ca.uhn.hunit.ex.ConfigurationException;
-import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
-import ca.uhn.hunit.ex.TestFailureException;
-import ca.uhn.hunit.ex.UnexpectedTestFailureException;
-import ca.uhn.hunit.iface.TestMessage;
-import ca.uhn.hunit.msg.XmlMessageImpl;
-import ca.uhn.hunit.run.ExecutionContext;
-import ca.uhn.hunit.test.TestImpl;
-import ca.uhn.hunit.xsd.Event;
-import ca.uhn.hunit.xsd.XMLExpectMessage;
-
-import org.w3c.dom.Document;
-
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-
 import java.io.IOException;
 import java.io.StringReader;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+
+import ca.uhn.hunit.ex.ConfigurationException;
+import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
+import ca.uhn.hunit.ex.TestFailureException;
+import ca.uhn.hunit.ex.UnexpectedTestFailureException;
+import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.msg.XmlMessageImpl;
+import ca.uhn.hunit.run.IExecutionContext;
+import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.util.log.LogFactory;
+import ca.uhn.hunit.xsd.Event;
+import ca.uhn.hunit.xsd.XMLExpectMessage;
 
 /**
  * Abstract test event to expect an XML message
@@ -86,7 +86,7 @@ public abstract class AbstractXmlExpectMessage extends AbstractExpectMessage<Xml
     }
 
     @Override
-    public void receiveMessage(ExecutionContext theCtx, TestMessage<?> theMessage)
+    public void receiveMessage(IExecutionContext theCtx, TestMessage<?> theMessage)
                         throws TestFailureException {
         Document parsedMessage = (Document) theMessage.getParsedMessage();
 
@@ -121,9 +121,9 @@ public abstract class AbstractXmlExpectMessage extends AbstractExpectMessage<Xml
     //~ Inner Classes --------------------------------------------------------------------------------------------------
 
     private class MyErrorHandler implements ErrorHandler {
-        private final ExecutionContext myCtx;
+        private final IExecutionContext myCtx;
 
-        private MyErrorHandler(ExecutionContext theCtx) {
+        private MyErrorHandler(IExecutionContext theCtx) {
             myCtx = theCtx;
         }
 
@@ -141,7 +141,7 @@ public abstract class AbstractXmlExpectMessage extends AbstractExpectMessage<Xml
         @Override
         public void warning(SAXParseException theArg0)
                      throws SAXException {
-            myCtx.getLog().get(getTest()).warn("XML Parsing Warning: " + theArg0.getMessage());
+        	LogFactory.INSTANCE.get(getTest()).warn("XML Parsing Warning: " + theArg0.getMessage());
         }
     }
 }

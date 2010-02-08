@@ -44,8 +44,8 @@ public class MllpHl7v2InterfaceEditorContextController extends AbstractInterface
     /**
      * Constructor
      */
-    public MllpHl7v2InterfaceEditorContextController(ILogProvider theLog, MllpHl7V2InterfaceImpl theModel) {
-        super(theLog, theModel);
+    public MllpHl7v2InterfaceEditorContextController(MllpHl7V2InterfaceImpl theModel) {
+        super(theModel);
 
         myView = new MllpHl7v2InterfaceEditorForm();
         myView.setController(this);

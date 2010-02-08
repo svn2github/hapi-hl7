@@ -21,6 +21,8 @@
  */
 package ca.uhn.hunit.event.expect;
 
+import java.beans.PropertyVetoException;
+
 import ca.uhn.hunit.event.ISpecificMessageEvent;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceWontReceiveException;
@@ -29,12 +31,11 @@ import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.l10n.Strings;
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.run.ExecutionContext;
-import ca.uhn.hunit.test.*;
+import ca.uhn.hunit.run.IExecutionContext;
+import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.ExpectMessage;
 import ca.uhn.hunit.xsd.ExpectMessageAny;
-
-import java.beans.PropertyVetoException;
 
 public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extends AbstractExpect
     implements ISpecificMessageEvent {
@@ -62,17 +63,15 @@ public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extend
     //~ Methods --------------------------------------------------------------------------------------------------------
 
     @Override
-    public void execute(ExecutionContext theCtx) throws TestFailureException, ConfigurationException {
+    public void execute(IExecutionContext theCtx) throws TestFailureException, ConfigurationException {
         if (myMessage == null) {
             String message =
                 Strings.getMessage("execution.failure.ca.uhn.hunit.ex.ConfigurationException.no_message_selected",
                                    getTest().getName());
             throw new ConfigurationException(message);
         }
-
-        TestMessage<?> message = getInterface().receiveMessage(getTest(),
-                                                               theCtx,
-                                                               getReceiveTimeout());
+        
+        TestMessage<?> message = getInterface().receiveMessage(getReceiveTimeout(), null);
 
         if (! getInterface().isStarted()) {
             return;
@@ -107,7 +106,7 @@ public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extend
         return myMessage;
     }
 
-    public abstract void receiveMessage(ExecutionContext theCtx, TestMessage<?> theMessage)
+    public abstract void receiveMessage(IExecutionContext theCtx, TestMessage<?> theMessage)
                                  throws TestFailureException;
 
     /**

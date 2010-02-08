@@ -199,6 +199,7 @@ public final class MllpHl7v2MessageSwapper extends Thread {
             myStopped = true;
 
         } catch (Exception e) {
+        	myStopped = true;
             e.printStackTrace();
         }
     }

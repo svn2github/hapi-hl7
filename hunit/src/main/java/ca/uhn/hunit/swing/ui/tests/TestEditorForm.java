@@ -42,6 +42,8 @@ import ca.uhn.hunit.swing.ui.DialogUtil;
 import ca.uhn.hunit.swing.ui.event.AbstractEventEditorForm;
 import ca.uhn.hunit.swing.ui.event.EventEditorDefaultPane;
 import ca.uhn.hunit.test.TestEventsModel;
+import ca.uhn.hunit.util.log.LogFactory;
+
 import java.beans.PropertyVetoException;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -331,7 +333,7 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
             try {
                 editorForm = EventFactory.INSTANCE.createEditorForm(myController, event);
             } catch (ConfigurationException ex) {
-                myController.getLog().getSystem(getClass()).error("Error creating editor form ", ex);
+            	LogFactory.INSTANCE.getSystem(getClass()).error("Error creating editor form ", ex);
                 DialogUtil.showErrorMessage(this, ex.getMessage());
             }
 

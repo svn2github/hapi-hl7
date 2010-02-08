@@ -31,6 +31,7 @@ import ca.uhn.hunit.util.log.CommonsLoggingLog;
 import ca.uhn.hunit.util.log.EventCodeEnum;
 import ca.uhn.hunit.util.log.ILog;
 import ca.uhn.hunit.util.log.ILogProvider;
+import ca.uhn.hunit.util.log.LogFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,7 +46,6 @@ public class ExecutionContext implements IExecutionContext, Runnable {
     //~ Instance fields ------------------------------------------------------------------------------------------------
     private IExecutionContext myParent;
     private ExecutionStatusEnum myBatteryStatus = ExecutionStatusEnum.NOT_YET_STARTED;
-    private ILogProvider myLog = new CommonsLoggingLog();
     private List<IExecutionListener> myListeners = new ArrayList<IExecutionListener>();
     private List<String> myTestNamesToExecute;
     private List<TestImpl> myTestSuccesses = new ArrayList<TestImpl>();
@@ -76,7 +76,7 @@ public class ExecutionContext implements IExecutionContext, Runnable {
 
     //~ Methods --------------------------------------------------------------------------------------------------------
     public void addFailure(TestImpl theTest, TestFailureException theException) {
-        myLog.get(theTest).error("Failure: " + theException.getMessage(), EventCodeEnum.TEST_FAILED);
+    	LogFactory.INSTANCE.get(theTest).error("Failure: " + theException.getMessage(), EventCodeEnum.TEST_FAILED);
         myTestFailures.put(theTest, theException);
         myTestExecutionStatuses.put(theTest, ExecutionStatusEnum.FAILED);
 
@@ -93,7 +93,7 @@ public class ExecutionContext implements IExecutionContext, Runnable {
     }
 
     public void addSuccess(TestImpl theTest) {
-        myLog.get(theTest).info("Success!", EventCodeEnum.TEST_PASSED);
+    	LogFactory.INSTANCE.get(theTest).info("Success!", EventCodeEnum.TEST_PASSED);
         myTestSuccesses.add(theTest);
         myTestExecutionStatuses.put(theTest, ExecutionStatusEnum.PASSED);
 
@@ -132,10 +132,6 @@ public class ExecutionContext implements IExecutionContext, Runnable {
         return myBatteryStatus;
     }
 
-    public ILogProvider getLog() {
-        return myLog;
-    }
-
     public ExecutionStatusEnum getTestExecutionStatus(TestImpl theTest) {
         return myTestExecutionStatuses.get(theTest);
     }
@@ -168,7 +164,7 @@ public class ExecutionContext implements IExecutionContext, Runnable {
     @Override
     public void run() {
         myStopped = false;
-        myLog.get(myBattery).info("About to execute battery");
+        LogFactory.INSTANCE.get(myBattery).info("About to execute battery");
 
         myBatteryStatus = ExecutionStatusEnum.RUNNING;
 
@@ -232,11 +228,11 @@ public class ExecutionContext implements IExecutionContext, Runnable {
             return;
         }
 
-        getLog().get(myBattery).info("All interfaces are ready to proceed");
+        LogFactory.INSTANCE.get(myBattery).info("All interfaces are ready to proceed");
 
         // Start executing
         for (TestImpl nextTest : tests) {
-            final ILog testLog = getLog().get(nextTest);
+            final ILog testLog = LogFactory.INSTANCE.get(nextTest);
 
             if (testLog.isInfoEnabled()) {
                 testLog.info("Starting test", EventCodeEnum.TEST_STARTED);
@@ -345,11 +341,7 @@ public class ExecutionContext implements IExecutionContext, Runnable {
             next.getValue().finish();
         }
 
-        myLog.get(myBattery).info("Finished executing battery");
-    }
-
-    public void setLog(ILogProvider myLog) {
-        this.myLog = myLog;
+        LogFactory.INSTANCE.get(myBattery).info("Finished executing battery");
     }
 
     public void setTestNamesToExecute(String... theTestNamesToExecute) {

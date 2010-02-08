@@ -37,22 +37,16 @@ import java.util.List;
  *
  * @author James
  */
-public class LogCapturingLog implements ILogProvider {
+public class LogFactory {
     //~ Static fields/initializers -------------------------------------------------------------------------------------
 
-//    private final Map<Object, ILog> ourLogs = Collections.synchronizedMap(new HashMap<Object, ILog>());
+	/** Singleton instance */
+	public static final LogFactory INSTANCE = new LogFactory();
+	
     private static final CommonsLoggingLog ourWrappedLog = new CommonsLoggingLog();
 
     //~ Instance fields ------------------------------------------------------------------------------------------------
 
-//    private ILog getLog(Object theObject) {
-//        ILog retVal = ourLogs.get(theObject);
-//        if (retVal == null) {
-//            retVal = new MyLog(theObject);
-//            ourLogs.put(theObject, retVal);
-//        }
-//        return retVal;
-//    }
     private List<ILogListener> myListeners = new ArrayList<ILogListener>();
 
     //~ Methods --------------------------------------------------------------------------------------------------------
@@ -77,13 +71,17 @@ public class LogCapturingLog implements ILogProvider {
         myListeners.add(theLogListener);
     }
 
+    public void unregisterListener(ILogListener theLogListener) {
+        myListeners.remove(theLogListener);
+    }
+    
     //~ Inner Classes --------------------------------------------------------------------------------------------------
 
     private class MyLog implements ILog {
         private final ILog myWrappedLog;
         private final Object mySourceObject;
 
-        private MyLog(AbstractInterface theInterface) {
+        private MyLog(AbstractInterface<?> theInterface) {
             myWrappedLog = ourWrappedLog.get(theInterface);
             mySourceObject = theInterface;
         }

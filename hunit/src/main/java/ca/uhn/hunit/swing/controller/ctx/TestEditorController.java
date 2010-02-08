@@ -33,6 +33,7 @@ import ca.uhn.hunit.swing.ui.DialogUtil;
 import ca.uhn.hunit.swing.ui.tests.TestEditorForm;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.log.ILogProvider;
+import ca.uhn.hunit.util.log.LogFactory;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,9 +50,7 @@ public class TestEditorController extends AbstractContextController<TestEditorFo
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
-    public TestEditorController(ILogProvider theLog, TestImpl theTest) {
-        super(theLog);
-
+    public TestEditorController(TestImpl theTest) {
         myTest = theTest;
 
         myTestEditorForm = new TestEditorForm();
@@ -69,7 +68,7 @@ public class TestEditorController extends AbstractContextController<TestEditorFo
         try {
             event = EventFactory.INSTANCE.createDefaultEvent(myTest);
         } catch (ConfigurationException ex) {
-            getLog().getSystem(getClass()).error(ex.describeReason(),
+        	LogFactory.INSTANCE.getSystem(getClass()).error(ex.describeReason(),
                                                  ex);
             DialogUtil.showErrorMessage(getView(),
                                         ex.getMessage());

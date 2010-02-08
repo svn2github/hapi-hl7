@@ -37,9 +37,7 @@ public class Hl7V2MessageEditorController extends AbstractMessageEditorControlle
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
-    public Hl7V2MessageEditorController(ILogProvider theLog, Hl7V2MessageImpl theMessage) {
-        super(theLog);
-
+    public Hl7V2MessageEditorController(Hl7V2MessageImpl theMessage) {
         myView = new Hl7V2MessageEditorForm();
         myMessage = theMessage;
 

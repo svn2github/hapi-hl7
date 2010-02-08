@@ -21,23 +21,20 @@
  */
 package ca.uhn.hunit.event.send;
 
+import java.beans.PropertyVetoException;
+
 import ca.uhn.hunit.event.AbstractEvent;
 import ca.uhn.hunit.event.ISpecificMessageEvent;
 import ca.uhn.hunit.event.InterfaceInteractionEnum;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
-import ca.uhn.hunit.ex.UnexpectedTestFailureException;
-import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.l10n.Strings;
 import ca.uhn.hunit.msg.AbstractMessage;
-import ca.uhn.hunit.run.ExecutionContext;
-import ca.uhn.hunit.test.*;
-import ca.uhn.hunit.xsd.Event;
+import ca.uhn.hunit.run.IExecutionContext;
+import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.SendMessage;
 import ca.uhn.hunit.xsd.SendMessageAny;
-
-import java.beans.PropertyVetoException;
 
 public abstract class AbstractSendMessage<V, T extends AbstractMessage<V>> extends AbstractEvent
         implements ISpecificMessageEvent {
@@ -59,7 +56,7 @@ public abstract class AbstractSendMessage<V, T extends AbstractMessage<V>> exten
 
     //~ Methods --------------------------------------------------------------------------------------------------------
     @Override
-    public void execute(ExecutionContext theCtx) throws TestFailureException {
+    public void execute(IExecutionContext theCtx) throws TestFailureException {
         if (myMessage == null) {
             String message =
                     Strings.getMessage("execution.failure.ca.uhn.hunit.ex.ConfigurationException.no_message_selected",
@@ -71,7 +68,7 @@ public abstract class AbstractSendMessage<V, T extends AbstractMessage<V>> exten
 
         message = massageMessage(message);
 
-        getInterface().sendMessage(getTest(), theCtx, message);
+        getInterface().sendMessageOnly(theCtx, message);
     }
 
     public SendMessage exportConfig(SendMessage theConfig) {
