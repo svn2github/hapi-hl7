@@ -17,9 +17,16 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Component id="myEventTypeForm" alignment="0" pref="470" max="32767" attributes="0"/>
-          <Component id="myBaseExpectMessageEditorForm" alignment="0" pref="470" max="32767" attributes="0"/>
           <Component id="myBaseSpecificMessageEditorForm" alignment="0" pref="470" max="32767" attributes="0"/>
           <Component id="myBaseEventEditorForm" alignment="0" pref="470" max="32767" attributes="0"/>
+          <Group type="102" alignment="0" attributes="0">
+              <Component id="myBaseExpectMessageEditorForm" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+          <Group type="102" alignment="0" attributes="0">
+              <Component id="jLabel1" min="-2" pref="143" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -30,8 +37,11 @@
               <Component id="myBaseEventEditorForm" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="myBaseSpecificMessageEditorForm" min="-2" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="15" max="32767" attributes="0"/>
               <Component id="myBaseExpectMessageEditorForm" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -44,6 +54,12 @@
     <Component class="ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm" name="myBaseSpecificMessageEditorForm">
     </Component>
     <Component class="ca.uhn.hunit.swing.ui.event.expect.BaseExpectMessageEditorForm" name="myBaseExpectMessageEditorForm">
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel1">
+      <Properties>
+        <Property name="horizontalAlignment" type="int" value="4"/>
+        <Property name="text" type="java.lang.String" value="jLabel1"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

@@ -38,7 +38,7 @@ public interface ICompare<T> {
      * @param theExpected The expected message
      * @param theActual The actual message
      */
-    void compare(TestMessage<T> theExpectMessage, TestMessage<T> theActualMessage)
+    void compare(T theExpectMessage, T theActualMessage)
           throws UnexpectedTestFailureException;
 
     /**

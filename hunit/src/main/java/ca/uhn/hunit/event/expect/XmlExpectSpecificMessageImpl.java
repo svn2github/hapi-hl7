@@ -95,7 +95,7 @@ public class XmlExpectSpecificMessageImpl extends AbstractXmlExpectMessage {
                             throws TestFailureException {
         TestMessage<Document> expect = getMessage().getTestMessage();
         XmlMessageCompare compare = new XmlMessageCompare();
-        compare.compare(expect, parsedMessage);
+        compare.compare(expect.getParsedMessage(), parsedMessage.getParsedMessage());
 
         if (compare.isSame() == false) {
             throw new IncorrectMessageReceivedException(getTest(),

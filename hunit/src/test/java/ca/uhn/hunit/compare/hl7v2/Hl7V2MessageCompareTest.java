@@ -42,11 +42,8 @@ public class Hl7V2MessageCompareTest {
         Message message1 = parser.parse(message1string);
         Message message2 = parser.parse(message2string);
 
-        TestMessage expect = new TestMessage(message1string, message1);
-        TestMessage actual = new TestMessage(message2string, message2);
-
         Hl7V2MessageCompare hl7compare = new Hl7V2MessageCompare();
-        hl7compare.compare(expect, actual);
+        hl7compare.compare(message1, message2);
 
         GroupComparison comparison = hl7compare.getMessageComparison();
 
@@ -90,11 +87,8 @@ public class Hl7V2MessageCompareTest {
         Message message1 = parser.parse(message1string);
         Message message2 = parser.parse(message2string);
 
-        TestMessage expect = new TestMessage(message1string, message1);
-        TestMessage actual = new TestMessage(message2string, message2);
-
         Hl7V2MessageCompare hl7compare = new Hl7V2MessageCompare();
-        hl7compare.compare(expect, actual);
+        hl7compare.compare(message1, message2);
 
         GroupComparison comparison = hl7compare.getMessageComparison();
 

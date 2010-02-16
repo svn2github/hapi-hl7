@@ -78,6 +78,20 @@ The base tag for hUnit is a battery. A Battery defines one or more tests.
                 <hu:hl7v2_specific interface_id="test_in_interface" message_id="DifferentOutputMessage"/>
             </hu:expect_message>
         </hu:test>
+
+		<!--
+		This test just expects to receive a message, and then replies with a specific
+		response message
+		-->
+        <hu:test>
+            <hu:name>SpecificReply Test</hu:name>
+            <hu:expect_message>
+                <hu:hl7v2_specific interface_id="test_in_interface" message_id="InputMessage">
+					<hu:reply_message>NakOutputMessage</hu:reply_message>
+				</hu:hl7v2_specific>
+            </hu:expect_message>
+        </hu:test>
+
 	</hu:tests>
 	
 	<!-- 
@@ -112,6 +126,12 @@ PV1|1||OLIS||||OLIST^BLAKE^DONALD^THOR^^^^^921379^^^^OLIST
 ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379
 OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R
 OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
+           ]]></hu:text>
+        </hu:hl7v2>
+        <hu:hl7v2 id="NakOutputMessage">
+            <hu:text><![CDATA[
+MSH|^~\&|ULTRA|TML|OLIS|OLIS|200905011130||ACK|20169838|T|2.3
+MSA|AR|20169838
            ]]></hu:text>
         </hu:hl7v2>
 	</hu:messages>

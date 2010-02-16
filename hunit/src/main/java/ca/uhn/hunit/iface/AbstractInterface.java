@@ -397,5 +397,10 @@ public abstract class AbstractInterface<T> extends AbstractModelClass implements
 	 * Stops the interface
 	 */
 	protected abstract void doStopSending() throws InterfaceWontStopException;
-	
+
+    /**
+     * Does this interface support replying to an incoming message, or receiving a reply to
+     * an outgoing message?
+     */
+    protected abstract boolean getCapabilitySupportsReply();
 }

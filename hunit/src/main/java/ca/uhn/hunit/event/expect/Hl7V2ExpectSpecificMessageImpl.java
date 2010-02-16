@@ -75,10 +75,17 @@ public class Hl7V2ExpectSpecificMessageImpl extends AbstractHl7V2ExpectMessage i
         return retVal;
     }
 
+    /**
+     * {@inheritDoc }
+     */
+    @Override
     public Class<?> getMessageClass() {
         return Message.class;
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public void validateMessage(TestMessage<Message> theMessage)
                          throws TestFailureException {
@@ -86,7 +93,7 @@ public class Hl7V2ExpectSpecificMessageImpl extends AbstractHl7V2ExpectMessage i
         TestMessage<Message> actualMessage = theMessage;
 
         Hl7V2MessageCompare messageCompare = new Hl7V2MessageCompare();
-        messageCompare.compare(expectMessage, actualMessage);
+        messageCompare.compare(expectMessage.getParsedMessage(), actualMessage.getParsedMessage());
 
         if (! messageCompare.isSame()) {
             throw new IncorrectMessageReceivedException(getTest(),

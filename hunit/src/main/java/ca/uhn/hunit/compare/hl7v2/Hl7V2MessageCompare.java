@@ -53,8 +53,8 @@ public class Hl7V2MessageCompare implements ICompare<Message> {
     private EncodingCharacters myEncodingCharacters = new EncodingCharacters('|', null);
     private GroupComparison myComparison;
     private PipeParser myEncodingParser;
-    private TestMessage myActualMessage;
-    private TestMessage myExpectedMessage;
+    private Message myActualMessage;
+    private Message myExpectedMessage;
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
@@ -96,24 +96,14 @@ public class Hl7V2MessageCompare implements ICompare<Message> {
     /**
      * {@inheritDoc }
      */
-    public void compare(TestMessage<Message> theExpectMessage, TestMessage<Message> theActualMessage)
+    @Override
+    public void compare(Message theExpectMessage, Message theActualMessage)
                  throws UnexpectedTestFailureException {
         try {
             myExpectedMessage = theExpectMessage;
             myActualMessage = theActualMessage;
 
-            if (myExpectedMessage.getParsedMessage() == null) {
-                myExpectedMessage.setParsedMessage(myEncodingParser.parse(myExpectedMessage.getRawMessage()));
-            }
-
-            if (myActualMessage.getParsedMessage() == null) {
-                myActualMessage.setParsedMessage(myEncodingParser.parse(myActualMessage.getRawMessage()));
-            }
-
-            Message expectedParsedMessage = theExpectMessage.getParsedMessage();
-            Message actualParsedMessage = theActualMessage.getParsedMessage();
-
-            myComparison = compareGroups(expectedParsedMessage, actualParsedMessage);
+            myComparison = compareGroups(myExpectedMessage, myActualMessage);
         } catch (HL7Exception ex) {
             throw new UnexpectedTestFailureException(ex);
         }

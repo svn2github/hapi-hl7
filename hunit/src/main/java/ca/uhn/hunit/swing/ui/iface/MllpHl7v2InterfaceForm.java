@@ -29,20 +29,29 @@
  *
  * Created on 4-Oct-2009, 5:19:13 PM
  */
-
 package ca.uhn.hunit.swing.ui.iface;
 
+import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
 import ca.uhn.hunit.swing.controller.ctx.MllpHl7v2InterfaceEditorContextController;
 import ca.uhn.hunit.swing.ui.AbstractContextForm;
+import ca.uhn.hunit.swing.ui.util.UiUtil;
+import ca.uhn.hunit.swing.ui.util.UiUtil.BadValueException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  *
  * @author James
  */
 public class MllpHl7v2InterfaceForm extends AbstractContextForm<MllpHl7v2InterfaceEditorContextController> {
-    private static final long serialVersionUID = 1;
 
+    private static final long serialVersionUID = 1;
     private MllpHl7v2InterfaceEditorContextController myController;
+    private MllpHl7V2InterfaceImpl myModel;
 
     public MllpHl7v2InterfaceForm() {
         initComponents();
@@ -71,13 +80,12 @@ public class MllpHl7v2InterfaceForm extends AbstractContextForm<MllpHl7v2Interfa
         jLabel2 = new javax.swing.JLabel();
         myPortTextBox = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         myConnectionTimeoutBox = new javax.swing.JTextField();
-        myClearTimeoutTextbox = new javax.swing.JTextField();
         myModeCombobox = new javax.swing.JComboBox();
         myAutoAckCheckbox = new javax.swing.JCheckBox();
+        jLabel4 = new javax.swing.JLabel();
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel1.setText("IP/Host");
@@ -92,9 +100,6 @@ public class MllpHl7v2InterfaceForm extends AbstractContextForm<MllpHl7v2Interfa
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel3.setText("Connection Timeout");
 
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-        jLabel4.setText("Clear Timeout");
-
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel5.setText("Mode");
 
@@ -103,14 +108,14 @@ public class MllpHl7v2InterfaceForm extends AbstractContextForm<MllpHl7v2Interfa
 
         myConnectionTimeoutBox.setText("jTextField1");
 
-        myClearTimeoutTextbox.setText("jTextField1");
-
         myModeCombobox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Client", "Server" }));
         myModeCombobox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 myModeComboboxActionPerformed(evt);
             }
         });
+
+        jLabel4.setText("(ms)");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -121,29 +126,30 @@ public class MllpHl7v2InterfaceForm extends AbstractContextForm<MllpHl7v2Interfa
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(myIpTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(myAutoAckCheckbox)
-                .addGap(198, 198, 198))
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(myModeCombobox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(myClearTimeoutTextbox))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(myPortTextBox))
+                        .addComponent(myPortTextBox, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(myConnectionTimeoutBox, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(195, Short.MAX_VALUE))
+                        .addComponent(myConnectionTimeoutBox, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel4)))
+                .addGap(170, 170, 170))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(myAutoAckCheckbox)
+                        .addGap(63, 63, 63))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(myModeCombobox, 0, 265, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -158,11 +164,8 @@ public class MllpHl7v2InterfaceForm extends AbstractContextForm<MllpHl7v2Interfa
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(myConnectionTimeoutBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(myClearTimeoutTextbox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(myConnectionTimeoutBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -178,8 +181,6 @@ public class MllpHl7v2InterfaceForm extends AbstractContextForm<MllpHl7v2Interfa
     private void myModeComboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myModeComboboxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_myModeComboboxActionPerformed
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -188,7 +189,6 @@ public class MllpHl7v2InterfaceForm extends AbstractContextForm<MllpHl7v2Interfa
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JCheckBox myAutoAckCheckbox;
-    private javax.swing.JTextField myClearTimeoutTextbox;
     private javax.swing.JTextField myConnectionTimeoutBox;
     private javax.swing.JTextField myIpTextField;
     private javax.swing.JComboBox myModeCombobox;
@@ -198,7 +198,6 @@ public class MllpHl7v2InterfaceForm extends AbstractContextForm<MllpHl7v2Interfa
     public void setValues() {
         if (myController != null) {
             myAutoAckCheckbox.setSelected(myController.getModel().isAutoAck());
-            myClearTimeoutTextbox.setText(Integer.toString(myController.getModel().getClearMillis()));
             myConnectionTimeoutBox.setText(Integer.toString(myController.getModel().getConnectionTimeout()));
             myIpTextField.setText(myController.getModel().getIp());
             myPortTextBox.setText(Integer.toString(myController.getModel().getPort()));
@@ -214,7 +213,78 @@ public class MllpHl7v2InterfaceForm extends AbstractContextForm<MllpHl7v2Interfa
     @Override
     public void setController(MllpHl7v2InterfaceEditorContextController theController) {
         myController = theController;
+        myModel = theController.getModel();
         setValues();
+
+        myAutoAckCheckbox.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                myModel.setAutoAck(myAutoAckCheckbox.isSelected());
+            }
+        });
+        myIpTextField.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                changedUpdate(e);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                changedUpdate(e);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                try {
+                    myModel.setIp(UiUtil.getNonEmptyNoWhitespaceString(myIpTextField));
+                } catch (BadValueException ex) {
+                    // ignore
+                }
+            }
+        });
+        myConnectionTimeoutBox.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                changedUpdate(e);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                changedUpdate(e);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                try {
+                    myModel.setConnectionTimeout(UiUtil.getPositiveIntegerFromTextfield(myConnectionTimeoutBox));
+                } catch (BadValueException ex) {
+                    // ignore
+                }
+            }
+        });
+        myPortTextBox.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                changedUpdate(e);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                changedUpdate(e);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                try {
+                    myModel.setPort(UiUtil.getPositiveIntegerFromTextfield(myPortTextBox));
+                } catch (BadValueException ex) {
+                    // ignore
+                }
+            }
+        });
     }
 
     @Override

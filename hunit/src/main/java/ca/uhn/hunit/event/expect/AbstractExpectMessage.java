@@ -30,7 +30,6 @@ import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.l10n.Strings;
 import ca.uhn.hunit.msg.AbstractMessage;
-import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.run.IExecutionContext;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.Event;
@@ -70,8 +69,11 @@ public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extend
                                    getTest().getName());
             throw new ConfigurationException(message);
         }
+
+        final T replyMessage = getReplyMessage();
+        final TestMessage<?> testMessage = replyMessage != null ? replyMessage.getTestMessage() : null;
         
-        TestMessage<?> message = getInterface().receiveMessage(getReceiveTimeout(), null);
+        TestMessage<?> message = getInterface().receiveMessage(getReceiveTimeout(),testMessage);
 
         if (! getInterface().isStarted()) {
             return;
@@ -85,11 +87,21 @@ public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extend
         receiveMessage(theCtx, message);
     }
 
+    
     public Event exportConfig(ExpectMessage theConfig) {
         super.exportConfig(theConfig);
         theConfig.setMessageId((myMessage != null) ? myMessage.getId() : null);
 
         return theConfig;
+    }
+
+
+    /**
+     * Subclasses may override this method to provide the reply message which will be supplied
+     * when a message is received.
+     */
+    protected T getReplyMessage() {
+        return null;
     }
 
     /**

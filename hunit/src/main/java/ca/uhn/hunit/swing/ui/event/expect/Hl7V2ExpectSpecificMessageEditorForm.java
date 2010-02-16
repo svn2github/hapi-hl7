@@ -66,15 +66,24 @@ public class Hl7V2ExpectSpecificMessageEditorForm extends AbstractEventEditorFor
         myBaseEventEditorForm = new ca.uhn.hunit.swing.ui.event.BaseEventEditorForm();
         myBaseSpecificMessageEditorForm = new ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm();
         myBaseExpectMessageEditorForm = new ca.uhn.hunit.swing.ui.event.expect.BaseExpectMessageEditorForm();
+        jLabel1 = new javax.swing.JLabel();
+
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel1.setText("jLabel1");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(myEventTypeForm, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
-            .addComponent(myBaseExpectMessageEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
             .addComponent(myBaseSpecificMessageEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
             .addComponent(myBaseEventEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(myBaseExpectMessageEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -84,13 +93,17 @@ public class Hl7V2ExpectSpecificMessageEditorForm extends AbstractEventEditorFor
                 .addComponent(myBaseEventEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(myBaseSpecificMessageEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(myBaseExpectMessageEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
+                .addComponent(myBaseExpectMessageEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
     private ca.uhn.hunit.swing.ui.event.BaseEventEditorForm myBaseEventEditorForm;
     private ca.uhn.hunit.swing.ui.event.expect.BaseExpectMessageEditorForm myBaseExpectMessageEditorForm;
     private ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm myBaseSpecificMessageEditorForm;

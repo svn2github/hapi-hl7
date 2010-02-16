@@ -44,7 +44,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ExecutionContext implements IExecutionContext, Runnable {
 
     //~ Instance fields ------------------------------------------------------------------------------------------------
-    private IExecutionContext myParent;
     private ExecutionStatusEnum myBatteryStatus = ExecutionStatusEnum.NOT_YET_STARTED;
     private List<IExecutionListener> myListeners = new ArrayList<IExecutionListener>();
     private List<String> myTestNamesToExecute;
@@ -61,15 +60,6 @@ public class ExecutionContext implements IExecutionContext, Runnable {
      * Constructor
      */
     public ExecutionContext(TestBatteryImpl theBattery) {
-        myBattery = theBattery;
-        myTestNamesToExecute = myBattery.getTestNames();
-    }
-
-    /**
-     * Constructor
-     */
-    public ExecutionContext(IExecutionContext theParent, TestBatteryImpl theBattery) {
-        myParent = theParent;
         myBattery = theBattery;
         myTestNamesToExecute = myBattery.getTestNames();
     }
@@ -189,17 +179,7 @@ public class ExecutionContext implements IExecutionContext, Runnable {
                     continue;
                 }
 
-                // First, check if a parent context has a thread we can use
-                TestBatteryExecutionThread thread = null;
-                if (myParent != null) {
-                    thread = myParent.getInterfaceExecutionThread(nextInterface);
-                }
-
-                // If not, we'll create one
-                if (thread == null) {
-                    thread = new TestBatteryExecutionThread(this, nextInterface);
-                }
-
+                TestBatteryExecutionThread thread = new TestBatteryExecutionThread(this, nextInterface);
                 myInterface2thread.put(nextInterface, thread);
                 thread.start();
             }
@@ -327,17 +307,6 @@ public class ExecutionContext implements IExecutionContext, Runnable {
         }
 
         for (Map.Entry<AbstractInterface, TestBatteryExecutionThread> next : myInterface2thread.entrySet()) {
-
-            // If any of our current execution threads are also held
-            // by a parent execution context, we'll assume we don't need
-            // to clean them up
-            if (myParent != null) {
-                TestBatteryExecutionThread thread = myParent.getInterfaceExecutionThread(next.getKey());
-                if (thread == next.getValue()) {
-                    continue;
-                }
-            }
-
             next.getValue().finish();
         }
 

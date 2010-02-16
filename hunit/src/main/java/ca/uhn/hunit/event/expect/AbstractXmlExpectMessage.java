@@ -50,6 +50,7 @@ import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.util.log.LogFactory;
 import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.XMLExpectMessage;
+import org.apache.commons.logging.Log;
 
 /**
  * Abstract test event to expect an XML message
@@ -95,7 +96,7 @@ public abstract class AbstractXmlExpectMessage extends AbstractExpectMessage<Xml
 
             try {
                 DocumentBuilder parser = myParserFactory.newDocumentBuilder();
-                parser.setErrorHandler(new MyErrorHandler(theCtx));
+                parser.setErrorHandler(new MyErrorHandler(LogFactory.INSTANCE.get(getTest())));
                 parsedMessage = parser.parse(new InputSource(new StringReader(rawMessage)));
             } catch (ParserConfigurationException ex) {
                 throw new UnexpectedTestFailureException("Unable to set up XML parser", ex);
@@ -120,11 +121,11 @@ public abstract class AbstractXmlExpectMessage extends AbstractExpectMessage<Xml
 
     //~ Inner Classes --------------------------------------------------------------------------------------------------
 
-    private class MyErrorHandler implements ErrorHandler {
-        private final IExecutionContext myCtx;
+    public static class MyErrorHandler implements ErrorHandler {
+        private final Log myLog;
 
-        private MyErrorHandler(IExecutionContext theCtx) {
-            myCtx = theCtx;
+        public MyErrorHandler(Log theLog) {
+            myLog = theLog;
         }
 
         @Override
@@ -141,7 +142,7 @@ public abstract class AbstractXmlExpectMessage extends AbstractExpectMessage<Xml
         @Override
         public void warning(SAXParseException theArg0)
                      throws SAXException {
-        	LogFactory.INSTANCE.get(getTest()).warn("XML Parsing Warning: " + theArg0.getMessage());
+        	myLog.warn("XML Parsing Warning: " + theArg0.getMessage());
         }
     }
 }

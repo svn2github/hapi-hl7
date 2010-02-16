@@ -502,5 +502,12 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface<Message> {
 		// nothing
 	}
 
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    protected boolean getCapabilitySupportsReply() {
+        return true;
+    }
 
 }

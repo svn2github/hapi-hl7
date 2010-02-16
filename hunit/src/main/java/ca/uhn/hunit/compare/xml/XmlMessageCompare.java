@@ -54,15 +54,13 @@ public class XmlMessageCompare implements ICompare<Document> {
     /**
      * {@inheritDoc }
      */
-    public void compare(TestMessage<Document> theExpectMessage, TestMessage<Document> theActualMessage)
+    @Override
+    public void compare(Document theExpectMessage, Document theActualMessage)
                  throws UnexpectedTestFailureException {
         try {
-            Diff diff = new Diff(theExpectMessage.getRawMessage(),
-                                 theActualMessage.getRawMessage());
+            Diff diff = new Diff(theExpectMessage, theActualMessage);
             myDiff = new DetailedDiff(diff);
-        } catch (SAXException ex) {
-            throw new UnexpectedTestFailureException("Failure generating message diff", ex);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             throw new UnexpectedTestFailureException("Failure generating message diff", ex);
         }
     }

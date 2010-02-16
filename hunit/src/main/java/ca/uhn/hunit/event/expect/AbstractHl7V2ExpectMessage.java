@@ -30,13 +30,26 @@ import ca.uhn.hunit.run.IExecutionContext;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.HL7V2ExpectAbstract;
+import java.beans.PropertyVetoException;
 
 public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage<Hl7V2MessageImpl> {
+    public static final String REPLY_MESSAGE_ID_PROPERTY = "AHEM_REPLY_MESSAGE_ID_PROPERTY";
+
+
+    private Hl7V2MessageImpl myReplyMessage;
+
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
     public AbstractHl7V2ExpectMessage(TestImpl theTest, HL7V2ExpectAbstract theConfig)
                                throws ConfigurationException {
         super(theTest, theConfig);
+
+        try {
+            setReplyMessageId(theConfig.getReplyMessage());
+        } catch (PropertyVetoException ex) {
+            throw new ConfigurationException("Setting reply message ID for expect event failed with message: " + ex.getMessage());
+        }
+
     }
 
     //~ Methods --------------------------------------------------------------------------------------------------------
@@ -44,9 +57,27 @@ public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage<H
     protected Event exportConfig(HL7V2ExpectAbstract theConfig) {
         super.exportConfig(theConfig);
 
+        if (myReplyMessage != null) {
+            theConfig.setReplyMessage(myReplyMessage.getId());
+        }
+
         return theConfig;
     }
 
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    protected Hl7V2MessageImpl getReplyMessage() {
+        if (myReplyMessage != null) {
+            return myReplyMessage;
+        }
+        return null;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public void receiveMessage(IExecutionContext theCtx, TestMessage<?> theMessage)
                         throws TestFailureException {
@@ -58,4 +89,25 @@ public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage<H
 
     public abstract void validateMessage(TestMessage<Message> theMessage)
                                   throws TestFailureException;
+
+    /**
+     * Sets the ID for the message, if any, that will be used as a reply
+     */
+    public void setReplyMessageId(String theMessageId) throws PropertyVetoException {
+        String oldValue = (myReplyMessage != null) ? myReplyMessage.getId() : null;
+        fireVetoableChange(REPLY_MESSAGE_ID_PROPERTY, oldValue, theMessageId);
+
+        try {
+            if (theMessageId == null) {
+                myReplyMessage = null;
+            } else {
+                myReplyMessage = (Hl7V2MessageImpl) getBattery().getMessage(theMessageId);
+            }
+        } catch (ConfigurationException ex) {
+            throw new PropertyVetoException("Unknown message ID - " + theMessageId, null);
+        }
+
+        firePropertyChange(REPLY_MESSAGE_ID_PROPERTY, oldValue, theMessageId);
+    }
+
 }

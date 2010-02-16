@@ -76,4 +76,12 @@ public class JmsInterfaceImpl extends AbstractJmsInterfaceImpl<String> {
 		return theTestMessage;
 	}
 
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    protected boolean getCapabilitySupportsReply() {
+        return false;
+    }
+
 }

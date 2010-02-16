@@ -7,6 +7,8 @@ package ca.uhn.hunit.compare.xml;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
 
+import ca.uhn.hunit.util.XmlUtil;
+import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -34,36 +36,39 @@ public class XmlMessageCompareTest {
     }
 
     @Test
-    public void testCompareIdentical() throws UnexpectedTestFailureException {
+    public void testCompareIdentical() throws Exception {
         String expected = "<test><child1>content1</child1><child2>content2</child2></test>";
         String actual = "<test><child1>content1</child1><child2>content2</child2></test>";
-
-        myCompare.compare(new TestMessage<Document>(expected),
-                          new TestMessage<Document>(actual));
+        
+        Document expectedDoc = XmlUtil.parseString(expected);
+        Document actualDoc = XmlUtil.parseString(actual);
+        myCompare.compare(expectedDoc, actualDoc);
 
         Assert.assertTrue(myCompare.describeDifference(),
                           myCompare.isSame());
     }
 
     @Test
-    public void testCompareSameWithWhitespace() throws UnexpectedTestFailureException {
+    public void testCompareSameWithWhitespace() throws Exception {
         String expected = "<test><child1>content1</child1><child2>content2</child2></test>";
         String actual = "<test>\r\n  <child1>content1</child1>\r\n  <child2>content2</child2>\r\n</test>\r\n";
 
-        myCompare.compare(new TestMessage<Document>(expected),
-                          new TestMessage<Document>(actual));
+        Document expectedDoc = XmlUtil.parseString(expected);
+        Document actualDoc = XmlUtil.parseString(actual);
+        myCompare.compare(expectedDoc, actualDoc);
 
         Assert.assertTrue(myCompare.describeDifference(),
                           myCompare.isSame());
     }
 
     @Test
-    public void testDifferentSameWithWhitespace() throws UnexpectedTestFailureException {
+    public void testDifferentSameWithWhitespace() throws Exception {
         String expected = "<test><child1>content1</child1><child2>content2</child2></test>";
         String actual = "<test>\r\n  <child1>content2</child1>\r\n  <child2>content1</child2>\r\n</test>\r\n";
 
-        myCompare.compare(new TestMessage<Document>(expected),
-                          new TestMessage<Document>(actual));
+        Document expectedDoc = XmlUtil.parseString(expected);
+        Document actualDoc = XmlUtil.parseString(actual);
+        myCompare.compare(expectedDoc, actualDoc);
 
         Assert.assertFalse(myCompare.isSame());
 
