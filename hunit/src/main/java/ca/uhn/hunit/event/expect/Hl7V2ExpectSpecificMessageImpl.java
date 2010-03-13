@@ -22,86 +22,89 @@
 package ca.uhn.hunit.event.expect;
 
 import ca.uhn.hl7v2.model.Message;
-
 import ca.uhn.hunit.compare.hl7v2.Hl7V2MessageCompare;
 import ca.uhn.hunit.event.ISpecificMessageEvent;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
-import ca.uhn.hunit.test.*;
-import ca.uhn.hunit.xsd.Event;
+import ca.uhn.hunit.msg.Hl7V2MessageImpl;
+import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.ExpectMessageAny;
 import ca.uhn.hunit.xsd.Hl7V2ExpectSpecificMessage;
+import ca.uhn.hunit.xsd.Hl7V2MessageDefinition;
 
 public class Hl7V2ExpectSpecificMessageImpl extends AbstractHl7V2ExpectMessage implements ISpecificMessageEvent {
-    //~ Constructors ---------------------------------------------------------------------------------------------------
 
-    public Hl7V2ExpectSpecificMessageImpl(TestImpl theTest, Hl7V2ExpectSpecificMessage theConfig)
-                                   throws ConfigurationException {
-        super(theTest, theConfig);
-    }
+	private Hl7V2MessageImpl myMessage;
 
-    //~ Methods --------------------------------------------------------------------------------------------------------
+	// ~ Constructors
+	// ---------------------------------------------------------------------------------------------------
 
-    public Hl7V2ExpectSpecificMessage exportConfig(Hl7V2ExpectSpecificMessage theConfig) {
-        if (theConfig == null) {
-            theConfig = new Hl7V2ExpectSpecificMessage();
-        }
+	public Hl7V2ExpectSpecificMessageImpl(TestImpl theTest, Hl7V2ExpectSpecificMessage theConfig) throws ConfigurationException {
+		super(theTest, theConfig);
 
-        super.exportConfig(theConfig);
+		Hl7V2MessageDefinition configMessage = theConfig.getMessage();
+		if (myMessage != null) {
+			myMessage = new Hl7V2MessageImpl(configMessage);
+		} else {
+			myMessage = getMessage();
+		}
+	}
 
-        return theConfig;
-    }
+	// ~ Methods
+	// --------------------------------------------------------------------------------------------------------
 
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public Hl7V2ExpectSpecificMessage exportConfigToXml() {
-        Hl7V2ExpectSpecificMessage retVal = exportConfig(new Hl7V2ExpectSpecificMessage());
+	public Hl7V2ExpectSpecificMessage exportConfig(Hl7V2ExpectSpecificMessage theConfig) {
+		if (theConfig == null) {
+			theConfig = new Hl7V2ExpectSpecificMessage();
+		}
 
-        return retVal;
-    }
+		super.exportConfig(theConfig);
 
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public ExpectMessageAny exportConfigToXmlAndEncapsulate() {
-        ExpectMessageAny retVal = new ExpectMessageAny();
-        retVal.setHl7V2Specific(exportConfigToXml());
+		return theConfig;
+	}
 
-        return retVal;
-    }
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public Hl7V2ExpectSpecificMessage exportConfigToXml() {
+		Hl7V2ExpectSpecificMessage retVal = exportConfig(new Hl7V2ExpectSpecificMessage());
+		retVal.setMessage(myMessage.exportConfigToXml());
+		return retVal;
+	}
 
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public Class<?> getMessageClass() {
-        return Message.class;
-    }
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public ExpectMessageAny exportConfigToXmlAndEncapsulate() {
+		ExpectMessageAny retVal = new ExpectMessageAny();
+		retVal.setHl7V2Specific(exportConfigToXml());
 
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public void validateMessage(TestMessage<Message> theMessage)
-                         throws TestFailureException {
-        TestMessage<Message> expectMessage = getMessage().getTestMessage();
-        TestMessage<Message> actualMessage = theMessage;
+		return retVal;
+	}
 
-        Hl7V2MessageCompare messageCompare = new Hl7V2MessageCompare();
-        messageCompare.compare(expectMessage.getParsedMessage(), actualMessage.getParsedMessage());
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public Class<?> getMessageClass() {
+		return Message.class;
+	}
 
-        if (! messageCompare.isSame()) {
-            throw new IncorrectMessageReceivedException(getTest(),
-                                                        null,
-                                                        expectMessage,
-                                                        actualMessage,
-                                                        "Messages did not match",
-                                                        messageCompare);
-        }
-    }
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public void validateMessage(TestMessage<Message> theMessage) throws TestFailureException {
+
+		Hl7V2MessageCompare messageCompare = new Hl7V2MessageCompare();
+		messageCompare.compare(myMessage.getTestMessage().getParsedMessage(), theMessage.getParsedMessage());
+
+		if (!messageCompare.isSame()) {
+			throw new IncorrectMessageReceivedException(getTest(), null, myMessage.getTestMessage(), theMessage, "Messages did not match", messageCompare);
+		}
+	}
 }

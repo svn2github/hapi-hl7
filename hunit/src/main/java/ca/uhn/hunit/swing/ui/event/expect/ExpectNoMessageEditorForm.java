@@ -33,6 +33,7 @@
 package ca.uhn.hunit.swing.ui.event.expect;
 
 import ca.uhn.hunit.event.expect.ExpectNoMessageImpl;
+import ca.uhn.hunit.swing.controller.ctx.EventEditorContextController;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.event.expect.XmlExpectSpecificMessageImpl;
 import ca.uhn.hunit.swing.ui.event.AbstractEventEditorForm;
@@ -47,7 +48,7 @@ public class ExpectNoMessageEditorForm extends AbstractEventEditorForm<ExpectNoM
     
     private TestBatteryImpl myBattery;
     private ExpectNoMessageImpl myEvent;
-    private TestEditorController myController;
+    private EventEditorContextController myController;
 
     /** Creates new form XmlExpectSpecificMessageEditorForm */
     public ExpectNoMessageEditorForm() {
@@ -102,7 +103,7 @@ public class ExpectNoMessageEditorForm extends AbstractEventEditorForm<ExpectNoM
      * {@inheritDoc }
      */
     @Override
-    public void setController(TestEditorController theController, ExpectNoMessageImpl theEvent) {
+    public void setController(EventEditorContextController theController, ExpectNoMessageImpl theEvent) {
         myEvent = theEvent;
         myController = theController;
 

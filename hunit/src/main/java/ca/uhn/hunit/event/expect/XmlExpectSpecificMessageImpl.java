@@ -26,16 +26,18 @@
  */
 package ca.uhn.hunit.event.expect;
 
+import org.w3c.dom.Document;
+
 import ca.uhn.hunit.compare.xml.XmlMessageCompare;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.msg.XmlMessageImpl;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.ExpectMessageAny;
 import ca.uhn.hunit.xsd.XMLExpectSpecificMessage;
-
-import org.w3c.dom.Document;
+import ca.uhn.hunit.xsd.XmlMessageDefinition;
 
 /**
  *
@@ -44,9 +46,20 @@ import org.w3c.dom.Document;
 public class XmlExpectSpecificMessageImpl extends AbstractXmlExpectMessage {
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
-    public XmlExpectSpecificMessageImpl(TestImpl theTest, XMLExpectSpecificMessage theConfig)
+    private XmlMessageImpl myMessage;
+
+	public XmlExpectSpecificMessageImpl(TestImpl theTest, XMLExpectSpecificMessage theConfig)
                                  throws ConfigurationException {
         super(theTest, theConfig);
+        
+		XmlMessageDefinition configMessage = theConfig.getMessage();
+		if (myMessage != null) {
+			myMessage = new XmlMessageImpl(configMessage);
+		} else {
+			myMessage = getMessage();
+		}
+		
+        
     }
 
     //~ Methods --------------------------------------------------------------------------------------------------------
@@ -67,7 +80,7 @@ public class XmlExpectSpecificMessageImpl extends AbstractXmlExpectMessage {
     @Override
     public XMLExpectSpecificMessage exportConfigToXml() {
         XMLExpectSpecificMessage retVal = exportConfig(new XMLExpectSpecificMessage());
-
+        retVal.setMessage(myMessage.exportConfigToXml());
         return retVal;
     }
 
@@ -93,14 +106,13 @@ public class XmlExpectSpecificMessageImpl extends AbstractXmlExpectMessage {
     @Override
     protected void validateMessage(TestMessage<Document> parsedMessage)
                             throws TestFailureException {
-        TestMessage<Document> expect = getMessage().getTestMessage();
         XmlMessageCompare compare = new XmlMessageCompare();
-        compare.compare(expect.getParsedMessage(), parsedMessage.getParsedMessage());
+        compare.compare(myMessage.getTestMessage().getParsedMessage(), parsedMessage.getParsedMessage());
 
         if (compare.isSame() == false) {
             throw new IncorrectMessageReceivedException(getTest(),
                                                         null,
-                                                        expect,
+                                                        myMessage.getTestMessage(),
                                                         parsedMessage,
                                                         "Inforrect message received",
                                                         compare);

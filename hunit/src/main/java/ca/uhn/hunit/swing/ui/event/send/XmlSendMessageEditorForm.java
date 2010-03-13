@@ -32,6 +32,7 @@
 
 package ca.uhn.hunit.swing.ui.event.send;
 
+import ca.uhn.hunit.swing.controller.ctx.EventEditorContextController;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.event.send.XmlSendMessageImpl;
 import ca.uhn.hunit.swing.ui.event.AbstractEventEditorForm;
@@ -45,7 +46,7 @@ public class XmlSendMessageEditorForm extends AbstractEventEditorForm<XmlSendMes
     private static final long serialVersionUID = 1L;
     
     private XmlSendMessageImpl myEvent;
-    private TestEditorController myController;
+    private EventEditorContextController myController;
 
     /** Creates new form XmlExpectSpecificMessageEditorForm */
     public XmlSendMessageEditorForm() {
@@ -99,7 +100,7 @@ public class XmlSendMessageEditorForm extends AbstractEventEditorForm<XmlSendMes
      * {@inheritDoc }
      */
     @Override
-    public void setController(TestEditorController theController, XmlSendMessageImpl theEvent) {
+    public void setController(EventEditorContextController theController, XmlSendMessageImpl theEvent) {
         myEvent = theEvent;
         myController = theController;
 

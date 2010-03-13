@@ -7,6 +7,7 @@ package ca.uhn.hunit.event;
 import ca.uhn.hunit.event.expect.ExpectNoMessageImpl;
 import ca.uhn.hunit.event.expect.Hl7V2ExpectSpecificMessageImpl;
 import ca.uhn.hunit.ex.ConfigurationException;
+import ca.uhn.hunit.swing.controller.ctx.EventEditorContextController;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.swing.ui.event.AbstractEventEditorForm;
 import ca.uhn.hunit.swing.ui.event.expect.ExpectNoMessageEditorForm;
@@ -122,7 +123,7 @@ public class EventFactory {
      *
      * @throws InstantiationException If the form can't be created for any reason
      */
-    public <T extends AbstractEvent, V extends AbstractEventEditorForm<T>> V createEditorForm(TestEditorController theController,
+    public <T extends AbstractEvent, V extends AbstractEventEditorForm<T>> V createEditorForm(EventEditorContextController theController,
                                                                                               T event)
         throws ConfigurationException {
         Class<V> formClass = (Class<V>) myEventClasses2EditorForm.get(event.getClass());

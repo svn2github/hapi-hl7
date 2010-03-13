@@ -61,13 +61,14 @@ public class InterfacesTreeRenderer extends DefaultTreeCellRenderer {
             setText("Executions");
         } else if (theValue instanceof TestBatteryInterfacesTreeNode) {
             setText("Interfaces");
-        } else if (theValue instanceof TestBatteryMessagesTreeNode) {
-            setText("Messages");
+        } else if (theValue instanceof EventTreeNode) {
+        	EventTreeNode node = (EventTreeNode)theValue;
+            setText(node.getDescription());
         } else if (theValue instanceof TestBatteryTestsTreeNode) {
             setText("Tests");
         } else if (theValue instanceof InterfaceTreeNode) {
             InterfaceTreeNode node = (InterfaceTreeNode) theValue;
-            AbstractInterface ai = (AbstractInterface) node.getUserObject();
+            AbstractInterface<?> ai = (AbstractInterface<?>) node.getUserObject();
             String name = ai.getId();
             setText(name);
 
@@ -78,7 +79,7 @@ public class InterfacesTreeRenderer extends DefaultTreeCellRenderer {
             }
         } else if (theValue instanceof MessageTreeNode) {
             MessageTreeNode node = (MessageTreeNode) theValue;
-            AbstractMessage ai = (AbstractMessage) node.getUserObject();
+            AbstractMessage<?> ai = (AbstractMessage<?>) node.getUserObject();
             String name = ai.getId();
             setText(name);
 

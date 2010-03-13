@@ -35,7 +35,9 @@ import javax.swing.JPanel;
  */
 public abstract class AbstractContextForm<T extends AbstractContextController<?>> extends JPanel {
 
-    /**
+	private static final long serialVersionUID = 6519734983643817976L;
+
+	/**
      * Provides a controller to the form and allows the form to set up any required
      * listeners
      */

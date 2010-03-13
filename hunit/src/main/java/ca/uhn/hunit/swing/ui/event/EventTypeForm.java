@@ -13,6 +13,7 @@ package ca.uhn.hunit.swing.ui.event;
 import ca.uhn.hunit.event.AbstractEvent;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.l10n.Strings;
+import ca.uhn.hunit.swing.controller.ctx.EventEditorContextController;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import java.awt.event.ActionEvent;
@@ -25,7 +26,7 @@ import java.awt.event.ActionListener;
 public class EventTypeForm extends AbstractEventEditorForm<AbstractEvent> {
 
     private static final long serialVersionUID = 1L;
-    private TestEditorController myController;
+    private EventEditorContextController myController;
     private AbstractEvent myEvent;
 
     /** Creates new form EventTypeForm */
@@ -87,7 +88,7 @@ public class EventTypeForm extends AbstractEventEditorForm<AbstractEvent> {
      * {@inheritDoc }
      */
     @Override
-    public void setController(TestEditorController theController, AbstractEvent theEvent) {
+    public void setController(EventEditorContextController theController, AbstractEvent theEvent) {
         myController = theController;
         myEvent = theEvent;
 

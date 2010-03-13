@@ -61,8 +61,7 @@ public class TestBatteryTreeNode extends DefaultMutableTreeNode {
     }
 
     public void setModel(MyTreeModel theModel) {
-        add(new TestBatteryTestsTreeNode(myBattery, theModel));
         add(new TestBatteryInterfacesTreeNode(myBattery, theModel));
-        add(new TestBatteryMessagesTreeNode(myBattery, theModel));
+        add(new TestBatteryTestsTreeNode(myBattery, theModel));
     }
 }

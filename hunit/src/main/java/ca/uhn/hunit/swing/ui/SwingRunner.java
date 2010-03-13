@@ -31,11 +31,13 @@
  */
 package ca.uhn.hunit.swing.ui;
 
+import ca.uhn.hunit.event.AbstractEvent;
 import ca.uhn.hunit.iface.AbstractInterface;
 
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.swing.controller.ctx.AbstractContextController;
 import ca.uhn.hunit.swing.controller.SwingRunnerController;
+import ca.uhn.hunit.swing.model.EventTreeNode;
 import ca.uhn.hunit.swing.model.InterfaceTreeNode;
 import ca.uhn.hunit.swing.model.InterfacesTreeRenderer;
 import ca.uhn.hunit.swing.model.MessageTreeNode;
@@ -369,6 +371,10 @@ public class SwingRunner extends javax.swing.JFrame {
         } else if (selectedModelObject instanceof TestBatteryTreeNode) {
             TestBatteryImpl battery = ((TestBatteryTreeNode) selectedModelObject).getBattery();
             myController.selectBattery(battery);
+        } else if (selectedModelObject instanceof EventTreeNode) {
+            EventTreeNode eventTreeNode = (EventTreeNode) selectedModelObject;
+			AbstractEvent event = eventTreeNode.getEvent();
+            myController.selectEvent(eventTreeNode.getTest(), event);
         } else {
             System.out.println(selectedModelObject);
         }

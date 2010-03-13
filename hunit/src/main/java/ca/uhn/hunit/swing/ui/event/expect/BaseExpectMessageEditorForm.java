@@ -34,6 +34,7 @@ package ca.uhn.hunit.swing.ui.event.expect;
 import ca.uhn.hunit.swing.ui.event.*;
 import ca.uhn.hunit.event.AbstractEvent;
 import ca.uhn.hunit.event.expect.AbstractExpect;
+import ca.uhn.hunit.swing.controller.ctx.EventEditorContextController;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import javax.swing.SpinnerModel;
@@ -50,7 +51,7 @@ public class BaseExpectMessageEditorForm extends AbstractEventEditorForm<Abstrac
     private static final long serialVersionUID = 1L;
     private TestBatteryImpl myBattery;
     private AbstractExpect myEvent;
-    private TestEditorController myController;
+    private EventEditorContextController myController;
 
     /** Creates new form BaseSpecificMessageEditorForm */
     public BaseExpectMessageEditorForm() {
@@ -131,7 +132,7 @@ public class BaseExpectMessageEditorForm extends AbstractEventEditorForm<Abstrac
      * {@inheritDoc }
      */
     @Override
-    public void setController(TestEditorController theController, AbstractExpect theEvent) {
+    public void setController(EventEditorContextController theController, AbstractExpect theEvent) {
         myController = theController;
         myBattery = theController.getTest().getBattery();
         myEvent = theEvent;

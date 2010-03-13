@@ -32,6 +32,7 @@
 
 package ca.uhn.hunit.swing.ui.event.send;
 
+import ca.uhn.hunit.swing.controller.ctx.EventEditorContextController;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.event.expect.Hl7V2ExpectSpecificMessageImpl;
 import ca.uhn.hunit.event.send.Hl7V2SendMessageImpl;
@@ -47,7 +48,7 @@ public class Hl7V2SendMessageEditorForm extends AbstractEventEditorForm<Hl7V2Sen
     
     private TestBatteryImpl myBattery;
     private Hl7V2SendMessageImpl myEvent;
-    private TestEditorController myController;
+    private EventEditorContextController myController;
 
     /** Creates new form Hl7V2ExpectSpecificMessageEditorForm */
     public Hl7V2SendMessageEditorForm() {
@@ -102,7 +103,7 @@ public class Hl7V2SendMessageEditorForm extends AbstractEventEditorForm<Hl7V2Sen
      * {@inheritDoc }
      */
     @Override
-    public void setController(TestEditorController theController, Hl7V2SendMessageImpl theEvent) {
+    public void setController(EventEditorContextController theController, Hl7V2SendMessageImpl theEvent) {
         myEvent = theEvent;
         myController = theController;
 

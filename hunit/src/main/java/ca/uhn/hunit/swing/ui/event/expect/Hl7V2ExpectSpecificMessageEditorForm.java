@@ -32,6 +32,7 @@
 
 package ca.uhn.hunit.swing.ui.event.expect;
 
+import ca.uhn.hunit.swing.controller.ctx.EventEditorContextController;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.event.expect.Hl7V2ExpectSpecificMessageImpl;
 import ca.uhn.hunit.swing.ui.event.AbstractEventEditorForm;
@@ -44,7 +45,7 @@ public class Hl7V2ExpectSpecificMessageEditorForm extends AbstractEventEditorFor
     private static final long serialVersionUID = 1L;
     
     private Hl7V2ExpectSpecificMessageImpl myEvent;
-    private TestEditorController myController;
+    private EventEditorContextController myController;
 
     /** Creates new form Hl7V2ExpectSpecificMessageEditorForm */
     public Hl7V2ExpectSpecificMessageEditorForm() {
@@ -115,7 +116,7 @@ public class Hl7V2ExpectSpecificMessageEditorForm extends AbstractEventEditorFor
      * {@inheritDoc }
      */
     @Override
-    public void setController(TestEditorController theController, Hl7V2ExpectSpecificMessageImpl theEvent) {
+    public void setController(EventEditorContextController theController, Hl7V2ExpectSpecificMessageImpl theEvent) {
         myEvent = theEvent;
         myController = theController;
 

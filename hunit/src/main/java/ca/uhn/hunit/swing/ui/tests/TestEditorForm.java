@@ -31,9 +31,19 @@
  */
 package ca.uhn.hunit.swing.ui.tests;
 
+import java.beans.PropertyVetoException;
+
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
+
 import ca.uhn.hunit.event.AbstractEvent;
 import ca.uhn.hunit.event.EventFactory;
-import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.l10n.Colours;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
@@ -44,18 +54,11 @@ import ca.uhn.hunit.swing.ui.event.EventEditorDefaultPane;
 import ca.uhn.hunit.test.TestEventsModel;
 import ca.uhn.hunit.util.log.LogFactory;
 
-import java.beans.PropertyVetoException;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.plaf.basic.BasicSplitPaneUI;
-
 /**
  *
  * @author James
  */
-public class TestEditorForm extends AbstractContextForm<TestEditorController> implements ListSelectionListener {
+public class TestEditorForm extends AbstractContextForm<TestEditorController> implements ListSelectionListener, TableModelListener {
 
     private static final long serialVersionUID = 1L;
     private TestEditorController myController;
@@ -283,6 +286,7 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
     private javax.swing.JTextField myNameTextField;
     private javax.swing.JSplitPane mySplitPane;
     private javax.swing.JButton myUpButton;
+	private int myMostRecentlySelectedIndex;
     // End of variables declaration//GEN-END:variables
 
     @Override
@@ -291,7 +295,8 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
 
         myEventsTable.setModel(myController.getTest().getEventsModel());
         myEventsTable.getSelectionModel().addListSelectionListener(this);
-
+        myController.getTest().getEventsModel().addTableModelListener(this);
+        
         myNameTextField.setText(myController.getTest().getName());
 
         updateEditorPane();
@@ -305,7 +310,7 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
     @Override
     public void valueChanged(ListSelectionEvent e) {
         updateEditorPane();
-
+        myMostRecentlySelectedIndex = myEventsTable.getSelectedRow();
     }
 
     public AbstractEvent getSelectedEvent() {
@@ -330,12 +335,12 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
         if (selectedRow != -1) {
 
             AbstractEvent event = myController.getTest().getEventsModel().getEvent(selectedRow);
-            try {
-                editorForm = EventFactory.INSTANCE.createEditorForm(myController, event);
-            } catch (ConfigurationException ex) {
-            	LogFactory.INSTANCE.getSystem(getClass()).error("Error creating editor form ", ex);
-                DialogUtil.showErrorMessage(this, ex.getMessage());
-            }
+//            try {
+//                editorForm = EventFactory.INSTANCE.createEditorForm(myController, event);
+//            } catch (ConfigurationException ex) {
+//            	LogFactory.INSTANCE.getSystem(getClass()).error("Error creating editor form ", ex);
+//                DialogUtil.showErrorMessage(this, ex.getMessage());
+//            }
 
             myUpButton.setEnabled(true);
             myDownButton.setEnabled(true);
@@ -361,4 +366,17 @@ public class TestEditorForm extends AbstractContextForm<TestEditorController> im
     public void setSelectedEventIndex(int theSelectedIndex) {
         myEventsTable.getSelectionModel().setSelectionInterval(theSelectedIndex, theSelectedIndex);
     }
+
+	@Override
+	public void tableChanged(TableModelEvent theE) {
+
+		// To keep structure changes from wiping out the current selection. This is hackish, but works
+		if (myMostRecentlySelectedIndex != -1) {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					setSelectedEventIndex(myMostRecentlySelectedIndex);
+				}});
+		}
+	}
 }

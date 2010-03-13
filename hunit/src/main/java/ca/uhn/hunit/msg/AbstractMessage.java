@@ -44,32 +44,11 @@ public abstract class AbstractMessage<T> extends AbstractModelClass {
 
     //~ Methods --------------------------------------------------------------------------------------------------------
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-
-        final AbstractMessage<T> other = (AbstractMessage<T>) obj;
-
-        if ((this.myId == null) ? (other.myId != null) : (! this.myId.equals(other.myId))) {
-            return false;
-        }
-
-        return true;
-    }
-
     /**
      * Subclasses should make use of this method to export AbstractInterface properties into
      * the return value for {@link #exportConfigToXml()}
      */
     protected MessageDefinition exportConfig(MessageDefinition theConfig) {
-        theConfig.setId(myId);
-
         return theConfig;
     }
 
@@ -79,6 +58,7 @@ public abstract class AbstractMessage<T> extends AbstractModelClass {
     @Override
     public abstract MessageDefinition exportConfigToXml();
 
+    @Deprecated
     public String getId() {
         return myId;
     }
@@ -88,14 +68,6 @@ public abstract class AbstractMessage<T> extends AbstractModelClass {
     public abstract String getSourceMessage();
 
     public abstract TestMessage<T> getTestMessage();
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = (17 * hash) + ((this.myId != null) ? this.myId.hashCode() : 0);
-
-        return hash;
-    }
 
     public abstract void setSourceMessage(String theSourceMessage)
                                    throws PropertyVetoException;

@@ -33,6 +33,7 @@
 package ca.uhn.hunit.swing.ui.event;
 
 import ca.uhn.hunit.event.AbstractEvent;
+import ca.uhn.hunit.swing.controller.ctx.EventEditorContextController;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.test.TestBatteryImpl;
 
@@ -86,7 +87,7 @@ public class EventEditorDefaultPane extends AbstractEventEditorForm<AbstractEven
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void setController(TestEditorController theController, AbstractEvent theEvent) {
+    public void setController(EventEditorContextController theController, AbstractEvent theEvent) {
         // ignore
     }
 

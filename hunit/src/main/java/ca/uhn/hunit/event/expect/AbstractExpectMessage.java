@@ -90,8 +90,6 @@ public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extend
     
     public Event exportConfig(ExpectMessage theConfig) {
         super.exportConfig(theConfig);
-        theConfig.setMessageId((myMessage != null) ? myMessage.getId() : null);
-
         return theConfig;
     }
 
@@ -114,6 +112,7 @@ public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extend
      * {@inheritDoc }
      */
     @Override
+    @Deprecated
     public T getMessage() {
         return myMessage;
     }

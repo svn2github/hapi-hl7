@@ -28,11 +28,15 @@ package ca.uhn.hunit.event.send;
 
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.msg.AbstractMessage;
+import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.msg.XmlMessageImpl;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.Event;
+import ca.uhn.hunit.xsd.Hl7V2MessageDefinition;
 import ca.uhn.hunit.xsd.SendMessageAny;
 import ca.uhn.hunit.xsd.XMLSendMessage;
+import ca.uhn.hunit.xsd.XmlMessageDefinition;
 
 import org.w3c.dom.Document;
 
@@ -41,11 +45,21 @@ import org.w3c.dom.Document;
  * @author James
  */
 public class XmlSendMessageImpl extends AbstractSendMessage<Document, XmlMessageImpl> {
-    //~ Constructors ---------------------------------------------------------------------------------------------------
+    private XmlMessageImpl myMessage;
+
+	//~ Constructors ---------------------------------------------------------------------------------------------------
 
     public XmlSendMessageImpl(TestImpl theTest, XMLSendMessage theConfig)
                        throws ConfigurationException {
         super(theTest, theConfig);
+        
+		XmlMessageDefinition configMessage = theConfig.getMessage();
+		if (myMessage != null) {
+			myMessage = new XmlMessageImpl(configMessage);
+		} else {
+			myMessage = (XmlMessageImpl) getMessage();
+		}
+        
     }
 
     //~ Methods --------------------------------------------------------------------------------------------------------
@@ -89,4 +103,9 @@ public class XmlSendMessageImpl extends AbstractSendMessage<Document, XmlMessage
     public TestMessage<Document> massageMessage(TestMessage<Document> theInput) {
         return theInput;
     }
+
+	@Override
+	protected AbstractMessage<Document> provideMessage() {
+		return myMessage;
+	}
 }

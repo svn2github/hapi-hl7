@@ -26,8 +26,11 @@
  */
 package ca.uhn.hunit.swing.model;
 
+import ca.uhn.hunit.event.AbstractEvent;
 import ca.uhn.hunit.test.TestImpl;
 
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
@@ -46,12 +49,39 @@ public class TestTreeNode extends DefaultMutableTreeNode {
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
     public TestTreeNode(TestImpl theTest) {
-        super(theTest, false);
+        super(theTest, true);
 
         myTest = theTest;
+        myTest.getEventsModel().addTableModelListener(new TableModelListener() {;
+			@Override
+			public void tableChanged(TableModelEvent theE) {
+				updateChildren();
+			}
+		});
+        
+        updateChildren();
     }
 
-    //~ Methods --------------------------------------------------------------------------------------------------------
+    private void updateChildren() {
+    	int rowCount = myTest.getEventsModel().getRowCount();
+    	for (int i = 0; i < rowCount; i++) {
+    		AbstractEvent event = myTest.getEventsModel().getEvent(i);
+    		if (getChildCount() > i) {
+    			EventTreeNode childNode = (EventTreeNode) getChildAt(i);
+    			if (childNode.getEvent() != event) {
+    				insert(new EventTreeNode(myTest, event), i);
+    			}
+    		} else {
+				insert(new EventTreeNode(myTest, event), i);
+    		}
+    	}
+    	
+    	while (getChildCount() > myTest.getEventsModel().getRowCount()) {
+    		remove(getChildCount() - 1);
+    	}
+	}
+
+	//~ Methods --------------------------------------------------------------------------------------------------------
 
     public TestImpl getTest() {
         return myTest;

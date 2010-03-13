@@ -36,6 +36,7 @@ import ca.uhn.hunit.swing.model.MessageComboBoxModel;
 import ca.uhn.hunit.swing.ui.event.expect.*;
 import ca.uhn.hunit.event.ISpecificMessageEvent;
 import ca.uhn.hunit.msg.AbstractMessage;
+import ca.uhn.hunit.swing.controller.ctx.EventEditorContextController;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import java.beans.PropertyVetoException;
@@ -51,7 +52,7 @@ public class BaseSpecificMessageEditorForm extends AbstractEventEditorForm<Abstr
     private static final long serialVersionUID = 1L;
     private TestBatteryImpl myBattery;
     private ISpecificMessageEvent myEvent;
-    private TestEditorController myController;
+    private EventEditorContextController myController;
 
     /** Creates new form BaseSpecificMessageEditorForm */
     public BaseSpecificMessageEditorForm() {
@@ -120,7 +121,7 @@ public class BaseSpecificMessageEditorForm extends AbstractEventEditorForm<Abstr
      * {@inheritDoc }
      */
     @Override
-    public void setController(TestEditorController theController, AbstractEvent theEvent) {
+    public void setController(EventEditorContextController theController, AbstractEvent theEvent) {
         myController = theController;
         myBattery = theController.getTest().getBattery();
         myEvent = (ISpecificMessageEvent) theEvent;

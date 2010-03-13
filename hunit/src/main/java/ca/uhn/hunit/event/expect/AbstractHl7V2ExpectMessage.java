@@ -44,12 +44,15 @@ public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage<H
                                throws ConfigurationException {
         super(theTest, theConfig);
 
-        try {
-            setReplyMessageId(theConfig.getReplyMessage());
-        } catch (PropertyVetoException ex) {
-            throw new ConfigurationException("Setting reply message ID for expect event failed with message: " + ex.getMessage());
+        if (theConfig.getReplyMsg() != null) {
+        	myReplyMessage = new Hl7V2MessageImpl(theConfig.getReplyMsg());
+        } else {
+	        try {
+	            setReplyMessageId(theConfig.getReplyMessage());
+	        } catch (PropertyVetoException ex) {
+	            throw new ConfigurationException("Setting reply message ID for expect event failed with message: " + ex.getMessage());
+	        }
         }
-
     }
 
     //~ Methods --------------------------------------------------------------------------------------------------------
@@ -58,7 +61,7 @@ public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage<H
         super.exportConfig(theConfig);
 
         if (myReplyMessage != null) {
-            theConfig.setReplyMessage(myReplyMessage.getId());
+            theConfig.setReplyMsg(myReplyMessage.exportConfigToXml());
         }
 
         return theConfig;

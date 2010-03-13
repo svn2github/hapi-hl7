@@ -156,7 +156,7 @@
     <complexType name="SendMessage">
         <complexContent>
             <extension base="tns:Event">
-		        <attribute name="message_id" type="string" use="required"></attribute>
+		        <attribute name="message_id" type="string" use="optional"></attribute>
             </extension>
         </complexContent>
     </complexType>
@@ -165,6 +165,7 @@
         <complexContent>
             <extension base="tns:SendMessage">
 				<sequence>
+                    <element name="message" minOccurs="1" maxOccurs="1" type="tns:Hl7V2MessageDefinition"/>
                     <element name="encoding" minOccurs="0" maxOccurs="1" default="ER7">
                         <simpleType>
                             <restriction base="string">
@@ -194,7 +195,7 @@
             <extension base="tns:ExpectEvent">
             	<sequence>
             	</sequence>
-                <attribute name="message_id" type="string" use="required"/>
+                <attribute name="message_id" type="string" use="optional"/>
             </extension>
         </complexContent>
     </complexType>
@@ -221,6 +222,9 @@
 	<complexType name="XMLSendMessage">
         <complexContent>
             <extension base="tns:SendMessage">
+                <sequence>
+                    <element name="message" minOccurs="1" maxOccurs="1" type="tns:XmlMessageDefinition"/>
+                </sequence>
             </extension>
         </complexContent>
 	</complexType>
@@ -237,6 +241,8 @@
                 <sequence>
 					<element name="reply_message" type="string" minOccurs="0" maxOccurs="1">
 					</element>
+                    <element name="reply_msg" type="tns:Hl7V2MessageDefinition" minOccurs="0" maxOccurs="1">
+                    </element>
                 </sequence>                    
             </extension>
         </complexContent>
@@ -245,6 +251,9 @@
 	<complexType name="Hl7V2ExpectSpecificMessage">
         <complexContent>
             <extension base="tns:HL7V2ExpectAbstract">
+                <sequence>
+                    <element name="message" minOccurs="1" maxOccurs="1" type="tns:Hl7V2MessageDefinition"/>
+                </sequence>
             </extension>
         </complexContent>
 	</complexType>
@@ -301,6 +310,7 @@
 		<complexContent>
 			<extension base="tns:XMLExpectMessage">
 				<sequence>
+                    <element name="message" minOccurs="1" maxOccurs="1" type="tns:XmlMessageDefinition"/>
 				</sequence>
 			</extension>
 		</complexContent>

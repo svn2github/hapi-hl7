@@ -79,15 +79,6 @@ public class TestEditorController extends AbstractContextController<TestEditorFo
         myTest.getEventsModel().addEvent(event);
     }
 
-    public void changeEventType(AbstractEvent theEvent, Class<?extends AbstractEvent> theNewClass)
-                         throws ConfigurationException {
-        AbstractEvent newEvent = EventFactory.INSTANCE.createEvent(theNewClass,
-                                                                   myTest,
-                                                                   theEvent.exportConfigToXml());
-        int selectedIndex = myTest.getEventsModel().replaceEvent(theEvent, newEvent);
-        myTestEditorForm.setSelectedEventIndex(selectedIndex);
-    }
-
     public TestImpl getTest() {
         return myTest;
     }

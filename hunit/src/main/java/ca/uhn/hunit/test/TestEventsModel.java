@@ -82,6 +82,7 @@ public class TestEventsModel extends AbstractTableModel implements PropertyChang
     //~ Methods --------------------------------------------------------------------------------------------------------
     public void addEvent(AbstractEvent event) {
         myEvents.add(event);
+        event.addPropertyChangeListener(AbstractEvent.INTERFACE_ID_PROPERTY, this);
         sortInterfaces();
     }
 

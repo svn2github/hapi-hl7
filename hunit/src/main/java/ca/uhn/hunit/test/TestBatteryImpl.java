@@ -21,6 +21,28 @@
  */
 package ca.uhn.hunit.test;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
+import org.springframework.core.io.Resource;
+
 import ca.uhn.hunit.event.InterfaceInteractionEnum;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.iface.AbstractInterface;
@@ -42,30 +64,6 @@ import ca.uhn.hunit.xsd.ObjectFactory;
 import ca.uhn.hunit.xsd.TestBattery;
 import ca.uhn.hunit.xsd.XmlMessageDefinition;
 
-import org.apache.commons.logging.Log;
-
-import org.springframework.core.io.Resource;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-
 public class TestBatteryImpl extends AbstractModelClass {
     //~ Static fields/initializers -------------------------------------------------------------------------------------
 
@@ -76,18 +74,14 @@ public class TestBatteryImpl extends AbstractModelClass {
     //~ Instance fields ------------------------------------------------------------------------------------------------
     private final BatteryTestModel myTestModel = new BatteryTestModel(this);
     private File myFile;
-    private final ILogProvider myLogProvider;
-    private final List<AbstractInterface> myInterfaces = new ArrayList<AbstractInterface>();
+    private final List<AbstractInterface<?>> myInterfaces = new ArrayList<AbstractInterface<?>>();
     private final List<AbstractMessage<?>> myMessages = new ArrayList<AbstractMessage<?>>();
-    private final Log myLog;
     private Map<String, AbstractMessage<?>> myId2Message = new HashMap<String, AbstractMessage<?>>();
     private String myName;
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
     public TestBatteryImpl(ILogProvider theLogProvider) {
         myName = "Untitled";
-        myLogProvider = theLogProvider;
-        myLog = myLogProvider.getSystem(TestBatteryImpl.class);
     }
 
     public TestBatteryImpl() {
@@ -97,9 +91,6 @@ public class TestBatteryImpl extends AbstractModelClass {
     public TestBatteryImpl(Resource theDefFile, ILogProvider theLogProvider)
             throws ConfigurationException, JAXBException {
         load(theDefFile);
-
-        myLogProvider = theLogProvider;
-        myLog = myLogProvider.getSystem(TestBatteryImpl.class);
 
         try {
             myFile = theDefFile.getFile();
@@ -152,7 +143,7 @@ public class TestBatteryImpl extends AbstractModelClass {
         myTestModel.addTest(test);
     }
 
-    private void addInterface(AbstractInterface theInterface) {
+    private void addInterface(AbstractInterface<?> theInterface) {
         myInterfaces.add(theInterface);
         firePropertyChange(PROP_INTERFACES, null, theInterface);
     }
@@ -184,12 +175,8 @@ public class TestBatteryImpl extends AbstractModelClass {
             retVal.getTests().getTest().add(next.exportConfigToXml());
         }
 
-        for (AbstractInterface next : myInterfaces) {
+        for (AbstractInterface<?> next : myInterfaces) {
             retVal.getInterfaces().getInterface().add(next.exportConfigToXml());
-        }
-
-        for (AbstractMessage<?> next : myMessages) {
-            retVal.getMessages().getHl7V2OrXml().add(next.exportConfigToXml());
         }
 
         return retVal;
@@ -202,9 +189,9 @@ public class TestBatteryImpl extends AbstractModelClass {
         return myFile;
     }
 
-    public AbstractInterface getInterface(String theId)
+    public AbstractInterface<?> getInterface(String theId)
             throws ConfigurationException {
-        for (AbstractInterface next : myInterfaces) {
+        for (AbstractInterface<?> next : myInterfaces) {
             if (theId.equals(next.getId())) {
                 return next;
             }
@@ -216,14 +203,14 @@ public class TestBatteryImpl extends AbstractModelClass {
     public List<String> getInterfaceIds() {
         ArrayList<String> retVal = new ArrayList<String>();
 
-        for (AbstractInterface next : myInterfaces) {
+        for (AbstractInterface<?> next : myInterfaces) {
             retVal.add(next.getId());
         }
 
         return retVal;
     }
 
-    public Set<InterfaceInteractionEnum> getInterfaceInteractionTypes(AbstractInterface theInterfaceId) {
+    public Set<InterfaceInteractionEnum> getInterfaceInteractionTypes(AbstractInterface<?> theInterfaceId) {
         Set<InterfaceInteractionEnum> retVal = new HashSet<InterfaceInteractionEnum>();
 
         for (TestImpl nextTest : getTests()) {
@@ -235,8 +222,8 @@ public class TestBatteryImpl extends AbstractModelClass {
         return retVal;
     }
 
-    public List<AbstractInterface> getInterfaces() {
-        ArrayList<AbstractInterface> retVal = new ArrayList<AbstractInterface>(myInterfaces);
+    public List<AbstractInterface<?>> getInterfaces() {
+        ArrayList<AbstractInterface<?>> retVal = new ArrayList<AbstractInterface<?>>(myInterfaces);
         Collections.sort(retVal);
 
         return retVal;
@@ -285,7 +272,7 @@ public class TestBatteryImpl extends AbstractModelClass {
         myInterfaces.clear();
 
         for (AnyInterface next : theConfig.getInterfaces().getInterface()) {
-            AbstractInterface nextIf;
+            AbstractInterface<?> nextIf;
 
             if (next.getMllpHl7V2Interface() != null) {
                 nextIf =

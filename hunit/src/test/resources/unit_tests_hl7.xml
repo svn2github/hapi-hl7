@@ -1,138 +1,117 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-The base tag for hUnit is a battery. A Battery defines one or more tests. 
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+hUnit Test Battery File
+http://hl7api.sourceforge.net/hunit/
 -->
-<hu:battery xmlns:hu="http://hl7api.sourceforge.net/hunit/hunit_tests.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://hl7api.sourceforge.net/hunit/hunit_tests.xsd http://hl7api.sourceforge.net/hunit/hunit_tests.xsd">
 
-    <!--
-    First, the battery is given a name 
-    -->	
-	<hu:name>TestBattery</hu:name>
-	
-	<!-- 
-	Then, any interfaces needed by the test are defined
-	-->
-	<hu:interfaces>
-		
-		<!--
-		This test has two interfaces, both of which are TCP MLLP interfaces for
-		HL7 v2. One is a server socket which will receive messages with an ID of
-		"test_in_interface". One is a client interface which will send messages
-		with an ID of "test_out_interface".
-		-->
-		<hu:interface>
-			<hu:mllpHl7V2Interface id="test_in_interface" autostart="false">
-				<hu:ip>localhost</hu:ip>
-				<hu:port>10200</hu:port>
-				<hu:mode>server</hu:mode>
-				<hu:clear>false</hu:clear>
-			</hu:mllpHl7V2Interface>
-		</hu:interface>
-		<hu:interface>
-			<hu:mllpHl7V2Interface id="test_out_interface" autostart="false">
-				<hu:ip>localhost</hu:ip>
-				<hu:port>10201</hu:port>
-				<hu:mode>client</hu:mode>
-			</hu:mllpHl7V2Interface>
-		</hu:interface>
-		
-	</hu:interfaces>
-	
-	<!--
-	Next, we define some tests
-	-->
-	<hu:tests>
-	
-        <!-- 
-        This test sends a message to the interface "test_out_interface". The message
-        is defined below. It has the ID "InputMessage".
-        
-        The test then expects to receive a message on the interface "test_in_interface".
-        The expected message should match exactly the contents of the message defined
-        below with the ID "NormalOutputMessage".
-        -->
-		<hu:test>
-			<hu:name>ExpectSpecific Test</hu:name>
-			<hu:send_message>
-				<hu:hl7v2 interface_id="test_out_interface" message_id="InputMessage" />
-			</hu:send_message>
-			<hu:expect_message>
-                <hu:hl7v2_specific interface_id="test_in_interface" message_id="NormalOutputMessage"/>
-			</hu:expect_message>
-		</hu:test>
-		
-		<!-- 
-		The second test sends the same message to the same interface, but expects
-		a different message to come back. This is probably not something you would
-		normally do, since if the interface behaves consistently one test will pass
-		and the other will fail.
-		-->
-        <hu:test>
-            <hu:name>ExpectSecond Test</hu:name>
-            <hu:send_message>
-                <hu:hl7v2 interface_id="test_out_interface" message_id="InputMessage" />
-            </hu:send_message>
-            <hu:expect_message>
-                <hu:hl7v2_specific interface_id="test_in_interface" message_id="DifferentOutputMessage"/>
-            </hu:expect_message>
-        </hu:test>
-
-		<!--
-		This test just expects to receive a message, and then replies with a specific
-		response message
-		-->
-        <hu:test>
-            <hu:name>SpecificReply Test</hu:name>
-            <hu:expect_message>
-                <hu:hl7v2_specific interface_id="test_in_interface" message_id="InputMessage">
-					<hu:reply_message>NakOutputMessage</hu:reply_message>
-				</hu:hl7v2_specific>
-            </hu:expect_message>
-        </hu:test>
-
-	</hu:tests>
-	
-	<!-- 
-	Finally, we define the messages used
-	-->
-	<hu:messages>
-		<hu:hl7v2 id="InputMessage">
-			<hu:text><![CDATA[
-MSH|^~\&|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
+<battery xmlns="http://hl7api.sourceforge.net/hunit/hunit_tests.xsd">
+    <name>TestBattery</name>
+    <interfaces>
+        <interface>
+            <mllpHl7V2Interface id="test_in_interface" autostart="false">
+                <clear>false</clear>
+                <clearMillis>100</clearMillis>
+                <ip>localhost</ip>
+                <port>10200</port>
+                <connectionTimeoutMillis>10000</connectionTimeoutMillis>
+                <mode>server</mode>
+                <autoAck>true</autoAck>
+            </mllpHl7V2Interface>
+        </interface>
+        <interface>
+            <mllpHl7V2Interface id="test_out_interface" autostart="false">
+                <clear>true</clear>
+                <clearMillis>100</clearMillis>
+                <ip>localhost</ip>
+                <port>10201</port>
+                <connectionTimeoutMillis>10000</connectionTimeoutMillis>
+                <mode>client</mode>
+                <autoAck>true</autoAck>
+            </mllpHl7V2Interface>
+        </interface>
+    </interfaces>
+    <tests>
+        <test>
+            <name>ExpectSpecific Test</name>
+            <send_message>
+                <hl7v2 interface_id="test_out_interface">
+                    <message>
+                        <text>MSH|^~\&amp;|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
 PID|||7005728^^^TML^MR||LEIGHTON^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR
 PV1|1||OLIS||||OLIST^BLAKE^DONALD^THOR^^^^^921379^^^^OLIST
 ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379
 OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R
 OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
-           ]]></hu:text>
-		</hu:hl7v2>
-		<hu:hl7v2 id="NormalOutputMessage">
-			<hu:text><![CDATA[
-MSH|^~\&|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
+</text>
+                    </message>
+                    <encoding>ER7</encoding>
+                </hl7v2>
+            </send_message>
+            <expect_message>
+                <hl7v2_specific wait_for_completion="true" receive_timeout_millis="120000" interface_id="test_in_interface">
+                    <message>
+                        <text>MSH|^~\&amp;|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
 PID|||7005728^^^TML^MR||TEST^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR
 PV1|1||OLIS||||OLIST^BLAKE^DONALD^THOR^^^^^921379^^^^OLIST
 ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379
 OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R
 OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
-           ]]></hu:text>
-		</hu:hl7v2>
-        <hu:hl7v2 id="DifferentOutputMessage">
-            <hu:text><![CDATA[
-MSH|^~\&|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
+</text>
+                    </message>
+                </hl7v2_specific>
+            </expect_message>
+        </test>
+        <test>
+            <name>ExpectSecond Test</name>
+            <send_message>
+                <hl7v2 interface_id="test_out_interface">
+                    <message>
+                        <text>MSH|^~\&amp;|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
+PID|||7005728^^^TML^MR||LEIGHTON^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR
+PV1|1||OLIS||||OLIST^BLAKE^DONALD^THOR^^^^^921379^^^^OLIST
+ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379
+OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R
+OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
+</text>
+                    </message>
+                    <encoding>ER7</encoding>
+                </hl7v2>
+            </send_message>
+            <expect_message>
+                <hl7v2_specific wait_for_completion="true" receive_timeout_millis="120000" interface_id="test_in_interface">
+                    <message>
+                        <text>MSH|^~\&amp;|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
 PID|||7005728^^^TML^MR||TEST2^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR
 PV1|1||OLIS||||OLIST^BLAKE^DONALD^THOR^^^^^921379^^^^OLIST
 ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379
 OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R
 OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
-           ]]></hu:text>
-        </hu:hl7v2>
-        <hu:hl7v2 id="NakOutputMessage">
-            <hu:text><![CDATA[
-MSH|^~\&|ULTRA|TML|OLIS|OLIS|200905011130||ACK|20169838|T|2.3
+</text>
+                    </message>
+                </hl7v2_specific>
+            </expect_message>
+        </test>
+        <test>
+            <name>SpecificReply Test</name>
+            <expect_message>
+                <hl7v2_specific wait_for_completion="true" receive_timeout_millis="120000" interface_id="test_in_interface">
+                    <reply_msg>
+                        <text>MSH|^~\&amp;|ULTRA|TML|OLIS|OLIS|200905011130||ACK|20169838|T|2.3
 MSA|AR|20169838
-           ]]></hu:text>
-        </hu:hl7v2>
-	</hu:messages>
-</hu:battery>
+</text>
+                    </reply_msg>
+                    <message>
+                        <text>MSH|^~\&amp;|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3
+PID|||7005728^^^TML^MR||LEIGHTON^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR
+PV1|1||OLIS||||OLIST^BLAKE^DONALD^THOR^^^^^921379^^^^OLIST
+ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379
+OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R
+OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH
+</text>
+                    </message>
+                </hl7v2_specific>
+            </expect_message>
+        </test>
+    </tests>
+    <messages/>
+</battery>

@@ -57,24 +57,21 @@ public abstract class AbstractSendMessage<V, T extends AbstractMessage<V>> exten
     //~ Methods --------------------------------------------------------------------------------------------------------
     @Override
     public void execute(IExecutionContext theCtx) throws TestFailureException {
-        if (myMessage == null) {
-            String message =
-                    Strings.getMessage("execution.failure.ca.uhn.hunit.ex.ConfigurationException.no_message_selected",
-                    getTest().getName());
-            throw new ConfigurationException(message);
-        }
 
-        TestMessage<V> message = myMessage.getTestMessage();
+        TestMessage<V> message = provideMessage().getTestMessage();
 
         message = massageMessage(message);
 
         getInterface().sendMessageOnly(theCtx, message);
     }
 
+    /**
+     * Subclasses should implement this method to provide the message they are sending
+     */
+    protected abstract AbstractMessage<V> provideMessage();
+    
     public SendMessage exportConfig(SendMessage theConfig) {
         super.exportConfig(theConfig);
-        theConfig.setMessageId(myMessage.getId());
-
         return theConfig;
     }
 
@@ -97,6 +94,7 @@ public abstract class AbstractSendMessage<V, T extends AbstractMessage<V>> exten
         return InterfaceInteractionEnum.SEND;
     }
 
+    @Deprecated
     public AbstractMessage<?> getMessage() {
         return myMessage;
     }

@@ -32,9 +32,11 @@ import ca.uhn.hunit.event.ISpecificMessageEvent;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.test.*;
 import ca.uhn.hunit.xsd.Event;
+import ca.uhn.hunit.xsd.Hl7V2MessageDefinition;
 import ca.uhn.hunit.xsd.Hl7V2SendMessage;
 import ca.uhn.hunit.xsd.SendMessageAny;
 
@@ -44,6 +46,7 @@ public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message, Hl7V2Mess
 
     private Parser myParser;
     private String myEncoding;
+	private Hl7V2MessageImpl myMessage;
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
@@ -60,6 +63,13 @@ public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message, Hl7V2Mess
             myEncoding = "ER7";
         }
 
+		Hl7V2MessageDefinition configMessage = theConfig.getMessage();
+		if (myMessage != null) {
+			myMessage = new Hl7V2MessageImpl(configMessage);
+		} else {
+			myMessage = (Hl7V2MessageImpl) getMessage();
+		}
+        
         myParser.setValidationContext(new ValidationContextImpl());
     }
 
@@ -72,7 +82,7 @@ public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message, Hl7V2Mess
 
         super.exportConfig(theConfig);
         theConfig.setEncoding(myEncoding);
-
+        theConfig.setMessage(myMessage.exportConfigToXml());
         return theConfig;
     }
 
@@ -82,7 +92,6 @@ public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message, Hl7V2Mess
     @Override
     public Hl7V2SendMessage exportConfigToXml() {
         Hl7V2SendMessage retVal = exportConfig(new Hl7V2SendMessage());
-
         return retVal;
     }
 
@@ -114,4 +123,9 @@ public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message, Hl7V2Mess
             throw new UnexpectedTestFailureException("Unable to encode message", ex);
         }
     }
+
+	@Override
+	protected AbstractMessage<Message> provideMessage() {
+		return myMessage;
+	}
 }

@@ -32,11 +32,12 @@
 
 package ca.uhn.hunit.swing.ui.event;
 
-import ca.uhn.hunit.swing.model.InterfaceComboBoxModel;
-import ca.uhn.hunit.event.AbstractEvent;
-import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
-import ca.uhn.hunit.test.TestBatteryImpl;
 import java.beans.PropertyVetoException;
+
+import ca.uhn.hunit.event.AbstractEvent;
+import ca.uhn.hunit.swing.controller.ctx.EventEditorContextController;
+import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
+import ca.uhn.hunit.swing.model.InterfaceComboBoxModel;
 
 /**
  *
@@ -45,7 +46,7 @@ import java.beans.PropertyVetoException;
 public class BaseEventEditorForm extends AbstractEventEditorForm<AbstractEvent> {
     private static final long serialVersionUID = 1L;
     private AbstractEvent myEvent;
-    private TestEditorController myController;
+    private EventEditorContextController myController;
 
     /** Creates new form InterfaceBasedEventEditorForm */
     public BaseEventEditorForm() {
@@ -116,7 +117,7 @@ public class BaseEventEditorForm extends AbstractEventEditorForm<AbstractEvent> 
      * {@inheritDoc }
      */
     @Override
-    public void setController(TestEditorController theController, AbstractEvent theEvent) {
+    public void setController(EventEditorContextController theController, AbstractEvent theEvent) {
         myController = theController;
         myEvent = theEvent;
 
