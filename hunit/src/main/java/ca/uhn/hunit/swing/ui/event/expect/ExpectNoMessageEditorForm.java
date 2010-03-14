@@ -43,7 +43,7 @@ import ca.uhn.hunit.test.TestBatteryImpl;
  *
  * @author James
  */
-public class ExpectNoMessageEditorForm extends AbstractEventEditorForm<ExpectNoMessageImpl> {
+public class ExpectNoMessageEditorForm extends AbstractEventEditorForm {
     private static final long serialVersionUID = 1L;
     
     private TestBatteryImpl myBattery;
@@ -67,7 +67,6 @@ public class ExpectNoMessageEditorForm extends AbstractEventEditorForm<ExpectNoM
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        myEventTypeForm = new ca.uhn.hunit.swing.ui.event.EventTypeForm();
         myBaseEventEditorForm = new ca.uhn.hunit.swing.ui.event.BaseEventEditorForm();
         myBaseExpectMessageEditorForm = new ca.uhn.hunit.swing.ui.event.expect.BaseExpectMessageEditorForm();
 
@@ -75,19 +74,15 @@ public class ExpectNoMessageEditorForm extends AbstractEventEditorForm<ExpectNoM
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(myEventTypeForm, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
-            .addComponent(myBaseEventEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
-            .addComponent(myBaseExpectMessageEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
+            .addComponent(myBaseEventEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(myBaseExpectMessageEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(myEventTypeForm, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(myBaseEventEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(myBaseExpectMessageEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(myBaseExpectMessageEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -95,7 +90,6 @@ public class ExpectNoMessageEditorForm extends AbstractEventEditorForm<ExpectNoM
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private ca.uhn.hunit.swing.ui.event.BaseEventEditorForm myBaseEventEditorForm;
     private ca.uhn.hunit.swing.ui.event.expect.BaseExpectMessageEditorForm myBaseExpectMessageEditorForm;
-    private ca.uhn.hunit.swing.ui.event.EventTypeForm myEventTypeForm;
     // End of variables declaration//GEN-END:variables
 
 
@@ -103,13 +97,16 @@ public class ExpectNoMessageEditorForm extends AbstractEventEditorForm<ExpectNoM
      * {@inheritDoc }
      */
     @Override
-    public void setController(EventEditorContextController theController, ExpectNoMessageImpl theEvent) {
-        myEvent = theEvent;
+    public void setController(EventEditorContextController theController) {
+        myEvent = (ExpectNoMessageImpl) theController.getEvent();
         myController = theController;
 
-        myBaseEventEditorForm.setController(theController, theEvent);
-        myEventTypeForm.setController(theController, theEvent);
-        myBaseEventEditorForm.setController(theController, theEvent);
+        myBaseEventEditorForm.setController(theController);
+    }
+
+    @Override
+    public void tearDown() {
+        myBaseEventEditorForm.tearDown();
     }
 
 }

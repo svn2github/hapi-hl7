@@ -42,7 +42,7 @@ import ca.uhn.hunit.test.TestBatteryImpl;
  *
  * @author James
  */
-public class XmlExpectSpecificMessageEditorForm extends AbstractEventEditorForm<XmlExpectSpecificMessageImpl> {
+public class XmlExpectSpecificMessageEditorForm extends AbstractEventEditorForm {
     private static final long serialVersionUID = 1L;
     
     private TestBatteryImpl myBattery;
@@ -66,31 +66,22 @@ public class XmlExpectSpecificMessageEditorForm extends AbstractEventEditorForm<
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        myEventTypeForm = new ca.uhn.hunit.swing.ui.event.EventTypeForm();
         myBaseEventEditorForm = new ca.uhn.hunit.swing.ui.event.BaseEventEditorForm();
-        myBaseSpecificMessageEditorForm = new ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm();
         myBaseExpectMessageEditorForm = new ca.uhn.hunit.swing.ui.event.expect.BaseExpectMessageEditorForm();
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(myEventTypeForm, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
-            .addComponent(myBaseExpectMessageEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
-            .addComponent(myBaseSpecificMessageEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
-            .addComponent(myBaseEventEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
+            .addComponent(myBaseEventEditorForm, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(myBaseExpectMessageEditorForm, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(myEventTypeForm, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(myBaseEventEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(myBaseSpecificMessageEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(myBaseExpectMessageEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(myBaseExpectMessageEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -98,8 +89,6 @@ public class XmlExpectSpecificMessageEditorForm extends AbstractEventEditorForm<
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private ca.uhn.hunit.swing.ui.event.BaseEventEditorForm myBaseEventEditorForm;
     private ca.uhn.hunit.swing.ui.event.expect.BaseExpectMessageEditorForm myBaseExpectMessageEditorForm;
-    private ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm myBaseSpecificMessageEditorForm;
-    private ca.uhn.hunit.swing.ui.event.EventTypeForm myEventTypeForm;
     // End of variables declaration//GEN-END:variables
 
 
@@ -107,14 +96,22 @@ public class XmlExpectSpecificMessageEditorForm extends AbstractEventEditorForm<
      * {@inheritDoc }
      */
     @Override
-    public void setController(EventEditorContextController theController, XmlExpectSpecificMessageImpl theEvent) {
-        myEvent = theEvent;
+    public void setController(EventEditorContextController theController) {
+        myEvent = (XmlExpectSpecificMessageImpl) theController.getEvent();
         myController = theController;
 
-        myBaseEventEditorForm.setController(theController, theEvent);
-        myBaseSpecificMessageEditorForm.setController(theController, theEvent);
-        myEventTypeForm.setController(theController, theEvent);
-        myBaseEventEditorForm.setController(theController, theEvent);
+        myBaseEventEditorForm.setController(theController);
+        myBaseExpectMessageEditorForm.setController(theController);
+    }
+
+    
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public void tearDown() {
+        myBaseEventEditorForm.tearDown();
+        myBaseExpectMessageEditorForm.tearDown();
     }
 
 }

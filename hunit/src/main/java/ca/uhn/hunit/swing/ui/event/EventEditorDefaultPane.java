@@ -41,7 +41,7 @@ import ca.uhn.hunit.test.TestBatteryImpl;
  *
  * @author James
  */
-public class EventEditorDefaultPane extends AbstractEventEditorForm<AbstractEvent> {
+public class EventEditorDefaultPane extends AbstractEventEditorForm {
     private static final long serialVersionUID = 1L;
 
     /** Creates new form EventEditorDefaultPane */
@@ -87,7 +87,12 @@ public class EventEditorDefaultPane extends AbstractEventEditorForm<AbstractEven
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void setController(EventEditorContextController theController, AbstractEvent theEvent) {
+    public void setController(EventEditorContextController theController) {
+        // ignore
+    }
+
+    @Override
+    public void tearDown() {
         // ignore
     }
 

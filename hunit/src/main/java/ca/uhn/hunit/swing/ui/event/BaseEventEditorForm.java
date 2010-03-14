@@ -36,14 +36,13 @@ import java.beans.PropertyVetoException;
 
 import ca.uhn.hunit.event.AbstractEvent;
 import ca.uhn.hunit.swing.controller.ctx.EventEditorContextController;
-import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.swing.model.InterfaceComboBoxModel;
 
 /**
  *
  * @author James
  */
-public class BaseEventEditorForm extends AbstractEventEditorForm<AbstractEvent> {
+public class BaseEventEditorForm extends AbstractEventEditorForm {
     private static final long serialVersionUID = 1L;
     private AbstractEvent myEvent;
     private EventEditorContextController myController;
@@ -117,11 +116,20 @@ public class BaseEventEditorForm extends AbstractEventEditorForm<AbstractEvent> 
      * {@inheritDoc }
      */
     @Override
-    public void setController(EventEditorContextController theController, AbstractEvent theEvent) {
+    public void setController(EventEditorContextController theController) {
         myController = theController;
-        myEvent = theEvent;
+        myEvent = theController.getEvent();
 
         myInterfaceCombobox.setModel(new InterfaceComboBoxModel(myController.getTest().getBattery(), myEvent));
+    }
+
+    
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public void tearDown() {
+        // nothing
     }
 
 

@@ -23,7 +23,6 @@ package ca.uhn.hunit.event.expect;
 
 import java.beans.PropertyVetoException;
 
-import ca.uhn.hunit.event.ISpecificMessageEvent;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceWontReceiveException;
 import ca.uhn.hunit.ex.TestFailureException;
@@ -36,10 +35,10 @@ import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.ExpectMessage;
 import ca.uhn.hunit.xsd.ExpectMessageAny;
 
-public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extends AbstractExpect
-    implements ISpecificMessageEvent {
+public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extends AbstractExpect {
     //~ Static fields/initializers -------------------------------------------------------------------------------------
 
+    @Deprecated
     public static final String MESSAGE_ID_PROPERTY = "AEM_MESSAGE_ID_PROPERTY";
 
     //~ Instance fields ------------------------------------------------------------------------------------------------
@@ -63,13 +62,6 @@ public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extend
 
     @Override
     public void execute(IExecutionContext theCtx) throws TestFailureException, ConfigurationException {
-        if (myMessage == null) {
-            String message =
-                Strings.getMessage("execution.failure.ca.uhn.hunit.ex.ConfigurationException.no_message_selected",
-                                   getTest().getName());
-            throw new ConfigurationException(message);
-        }
-
         final T replyMessage = getReplyMessage();
         final TestMessage<?> testMessage = replyMessage != null ? replyMessage.getTestMessage() : null;
         
@@ -111,9 +103,8 @@ public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extend
     /**
      * {@inheritDoc }
      */
-    @Override
     @Deprecated
-    public T getMessage() {
+    public T provideLinkedMessage() {
         return myMessage;
     }
 
@@ -123,7 +114,7 @@ public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extend
     /**
      * {@inheritDoc }
      */
-    @Override
+    @Deprecated
     public void setMessageId(String theMessageId) throws PropertyVetoException {
         String oldValue = (myMessage != null) ? myMessage.getId() : null;
         fireVetoableChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);

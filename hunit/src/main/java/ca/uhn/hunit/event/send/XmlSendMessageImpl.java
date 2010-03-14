@@ -28,16 +28,15 @@ package ca.uhn.hunit.event.send;
 
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.l10n.Strings;
 import ca.uhn.hunit.msg.AbstractMessage;
-import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.msg.XmlMessageImpl;
 import ca.uhn.hunit.test.TestImpl;
-import ca.uhn.hunit.xsd.Event;
-import ca.uhn.hunit.xsd.Hl7V2MessageDefinition;
 import ca.uhn.hunit.xsd.SendMessageAny;
 import ca.uhn.hunit.xsd.XMLSendMessage;
 import ca.uhn.hunit.xsd.XmlMessageDefinition;
 
+import java.util.LinkedHashMap;
 import org.w3c.dom.Document;
 
 /**
@@ -54,7 +53,7 @@ public class XmlSendMessageImpl extends AbstractSendMessage<Document, XmlMessage
         super(theTest, theConfig);
         
 		XmlMessageDefinition configMessage = theConfig.getMessage();
-		if (myMessage != null) {
+		if (configMessage != null) {
 			myMessage = new XmlMessageImpl(configMessage);
 		} else {
 			myMessage = (XmlMessageImpl) getMessage();
@@ -105,7 +104,20 @@ public class XmlSendMessageImpl extends AbstractSendMessage<Document, XmlMessage
     }
 
 	@Override
-	protected AbstractMessage<Document> provideMessage() {
+	protected XmlMessageImpl provideMessage() {
 		return myMessage;
 	}
+
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public LinkedHashMap<String, AbstractMessage<?>> getAllMessages() {
+        LinkedHashMap<String, AbstractMessage<?>> retVal = new LinkedHashMap<String, AbstractMessage<?>>();
+        retVal.put(Strings.getMessage("eventeditor.message"), provideMessage());
+        return retVal;
+    }
+
+
 }

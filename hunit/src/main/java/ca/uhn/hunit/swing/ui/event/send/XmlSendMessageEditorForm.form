@@ -16,30 +16,23 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="myEventTypeForm" alignment="0" pref="456" max="32767" attributes="0"/>
-          <Component id="myBaseEventEditorForm" alignment="0" pref="456" max="32767" attributes="0"/>
-          <Component id="myBaseSpecificMessageEditorForm" alignment="0" pref="456" max="32767" attributes="0"/>
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="myBaseEventEditorForm" pref="446" max="32767" attributes="0"/>
+          </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="myEventTypeForm" min="-2" pref="65" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
               <Component id="myBaseEventEditorForm" min="-2" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="myBaseSpecificMessageEditorForm" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="ca.uhn.hunit.swing.ui.event.EventTypeForm" name="myEventTypeForm">
-    </Component>
     <Component class="ca.uhn.hunit.swing.ui.event.BaseEventEditorForm" name="myBaseEventEditorForm">
-    </Component>
-    <Component class="ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm" name="myBaseSpecificMessageEditorForm">
     </Component>
   </SubComponents>
 </Form>

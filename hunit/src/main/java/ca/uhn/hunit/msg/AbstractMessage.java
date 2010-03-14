@@ -42,6 +42,13 @@ public abstract class AbstractMessage<T> extends AbstractModelClass {
         myId = theId;
     }
 
+    /**
+     * Constructor
+     */
+    public AbstractMessage() {
+        super();
+    }
+
     //~ Methods --------------------------------------------------------------------------------------------------------
 
     /**

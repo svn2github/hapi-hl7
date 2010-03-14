@@ -26,6 +26,7 @@
 
 package ca.uhn.hunit.swing.ui;
 
+import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.swing.controller.ctx.AbstractContextController;
 import javax.swing.JPanel;
 
@@ -41,7 +42,7 @@ public abstract class AbstractContextForm<T extends AbstractContextController<?>
      * Provides a controller to the form and allows the form to set up any required
      * listeners
      */
-    public abstract void setController(T theController);
+    public abstract void setController(T theController) throws ConfigurationException;
 
     /**
      * Called prior to this form being removed from view and disposed

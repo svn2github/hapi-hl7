@@ -24,7 +24,6 @@ package ca.uhn.hunit.event.send;
 import java.beans.PropertyVetoException;
 
 import ca.uhn.hunit.event.AbstractEvent;
-import ca.uhn.hunit.event.ISpecificMessageEvent;
 import ca.uhn.hunit.event.InterfaceInteractionEnum;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
@@ -36,8 +35,7 @@ import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.SendMessage;
 import ca.uhn.hunit.xsd.SendMessageAny;
 
-public abstract class AbstractSendMessage<V, T extends AbstractMessage<V>> extends AbstractEvent
-        implements ISpecificMessageEvent {
+public abstract class AbstractSendMessage<V, T extends AbstractMessage<V>> extends AbstractEvent {
     //~ Instance fields ------------------------------------------------------------------------------------------------
 
     private T myMessage;
@@ -106,18 +104,19 @@ public abstract class AbstractSendMessage<V, T extends AbstractMessage<V>> exten
     public abstract TestMessage<V> massageMessage(TestMessage<V> theInput)
             throws TestFailureException;
 
-    public void setMessageId(String theMessageId) throws PropertyVetoException {
-        T newMessage;
 
-        try {
-            newMessage = (theMessageId != null) ? (T) getBattery().getMessage(theMessageId) : null;
-        } catch (ConfigurationException ex) {
-            throw new PropertyVetoException(ex.getMessage(), null);
-        }
-
-        String oldValue = (myMessage != null) ? myMessage.getId() : null;
-        fireVetoableChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
-        this.myMessage = newMessage;
-        firePropertyChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
-    }
+//    public void setMessageId(String theMessageId) throws PropertyVetoException {
+//        T newMessage;
+//
+//        try {
+//            newMessage = (theMessageId != null) ? (T) getBattery().getMessage(theMessageId) : null;
+//        } catch (ConfigurationException ex) {
+//            throw new PropertyVetoException(ex.getMessage(), null);
+//        }
+//
+//        String oldValue = (myMessage != null) ? myMessage.getId() : null;
+//        fireVetoableChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
+//        this.myMessage = newMessage;
+//        firePropertyChange(MESSAGE_ID_PROPERTY, oldValue, theMessageId);
+//    }
 }

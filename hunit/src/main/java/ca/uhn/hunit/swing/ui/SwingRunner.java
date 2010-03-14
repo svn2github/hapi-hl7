@@ -74,7 +74,7 @@ public class SwingRunner extends javax.swing.JFrame {
         setBattery(theBatteryImpl);
 
         myTestTree.setCellRenderer(new InterfacesTreeRenderer());
-        
+
         ((BasicSplitPaneUI) myOuterSplitPane.getUI()).getDivider().setBorder(null);
 
     }

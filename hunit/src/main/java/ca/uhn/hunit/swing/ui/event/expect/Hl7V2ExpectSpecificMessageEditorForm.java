@@ -35,13 +35,14 @@ package ca.uhn.hunit.swing.ui.event.expect;
 import ca.uhn.hunit.swing.controller.ctx.EventEditorContextController;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.event.expect.Hl7V2ExpectSpecificMessageImpl;
+import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.swing.ui.event.AbstractEventEditorForm;
 
 /**
  *
  * @author James
  */
-public class Hl7V2ExpectSpecificMessageEditorForm extends AbstractEventEditorForm<Hl7V2ExpectSpecificMessageImpl> {
+public class Hl7V2ExpectSpecificMessageEditorForm extends AbstractEventEditorForm {
     private static final long serialVersionUID = 1L;
     
     private Hl7V2ExpectSpecificMessageImpl myEvent;
@@ -63,52 +64,77 @@ public class Hl7V2ExpectSpecificMessageEditorForm extends AbstractEventEditorFor
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        myEventTypeForm = new ca.uhn.hunit.swing.ui.event.EventTypeForm();
+        myReplyMessageButtonGroup = new javax.swing.ButtonGroup();
         myBaseEventEditorForm = new ca.uhn.hunit.swing.ui.event.BaseEventEditorForm();
-        myBaseSpecificMessageEditorForm = new ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm();
         myBaseExpectMessageEditorForm = new ca.uhn.hunit.swing.ui.event.expect.BaseExpectMessageEditorForm();
         jLabel1 = new javax.swing.JLabel();
+        myAckRadioButton = new javax.swing.JRadioButton();
+        myCustomRadioButton = new javax.swing.JRadioButton();
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel1.setText("jLabel1");
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("ca/uhn/hunit/l10n/UiStrings"); // NOI18N
+        jLabel1.setText(bundle.getString("eventeditor.reply_message")); // NOI18N
+
+        myReplyMessageButtonGroup.add(myAckRadioButton);
+        myAckRadioButton.setText(bundle.getString("eventeditor.reply_message.hl7.ack")); // NOI18N
+        myAckRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myAckRadioButtonActionPerformed(evt);
+            }
+        });
+
+        myReplyMessageButtonGroup.add(myCustomRadioButton);
+        myCustomRadioButton.setText(bundle.getString("eventeditor.reply_message.custom")); // NOI18N
+        myCustomRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myCustomRadioButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(myEventTypeForm, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
-            .addComponent(myBaseSpecificMessageEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
-            .addComponent(myBaseEventEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(myBaseExpectMessageEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(myBaseEventEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(myBaseExpectMessageEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(myAckRadioButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(myCustomRadioButton)
+                .addGap(171, 171, 171))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(myEventTypeForm, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(myBaseEventEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(myBaseSpecificMessageEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
                 .addComponent(myBaseExpectMessageEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(myAckRadioButton)
+                    .addComponent(myCustomRadioButton)))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void myAckRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myAckRadioButtonActionPerformed
+        updateReplyType();
+    }//GEN-LAST:event_myAckRadioButtonActionPerformed
+
+    private void myCustomRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myCustomRadioButtonActionPerformed
+        updateReplyType();
+    }//GEN-LAST:event_myCustomRadioButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JRadioButton myAckRadioButton;
     private ca.uhn.hunit.swing.ui.event.BaseEventEditorForm myBaseEventEditorForm;
     private ca.uhn.hunit.swing.ui.event.expect.BaseExpectMessageEditorForm myBaseExpectMessageEditorForm;
-    private ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm myBaseSpecificMessageEditorForm;
-    private ca.uhn.hunit.swing.ui.event.EventTypeForm myEventTypeForm;
+    private javax.swing.JRadioButton myCustomRadioButton;
+    private javax.swing.ButtonGroup myReplyMessageButtonGroup;
     // End of variables declaration//GEN-END:variables
 
 
@@ -116,14 +142,32 @@ public class Hl7V2ExpectSpecificMessageEditorForm extends AbstractEventEditorFor
      * {@inheritDoc }
      */
     @Override
-    public void setController(EventEditorContextController theController, Hl7V2ExpectSpecificMessageImpl theEvent) {
-        myEvent = theEvent;
+    public void setController(EventEditorContextController theController) {
+        myEvent = (Hl7V2ExpectSpecificMessageImpl) theController.getEvent();
         myController = theController;
 
-        myBaseEventEditorForm.setController(theController, theEvent);
-        myBaseSpecificMessageEditorForm.setController(theController, theEvent);
-        myEventTypeForm.setController(theController, theEvent);
-        myBaseExpectMessageEditorForm.setController(theController, theEvent);
+        myBaseEventEditorForm.setController(theController);
+        myBaseExpectMessageEditorForm.setController(theController);
+
+        if (myEvent.getReplyMessage() != null) {
+            myCustomRadioButton.setSelected(true);
+        } else {
+            myAckRadioButton.setSelected(true);
+        }
+    }
+
+    private void updateReplyType() {
+        if (myAckRadioButton.isSelected()) {
+            myEvent.setReplyMessage(null);
+        } else if (myEvent.getReplyMessage() == null) {
+            myEvent.setReplyMessage(new Hl7V2MessageImpl());
+        }
+    }
+
+    @Override
+    public void tearDown() {
+        myBaseEventEditorForm.tearDown();
+        myBaseExpectMessageEditorForm.tearDown();
     }
 
 }

@@ -42,7 +42,6 @@
                   <Component id="jLabel2" min="-2" max="-2" attributes="1"/>
                   <Component id="myWaitForCompletionCheckbox" min="-2" max="-2" attributes="1"/>
               </Group>
-              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>

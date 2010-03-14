@@ -33,11 +33,14 @@ import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.l10n.Strings;
+import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.msg.XmlMessageImpl;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.ExpectMessageAny;
 import ca.uhn.hunit.xsd.XMLExpectSpecificMessage;
 import ca.uhn.hunit.xsd.XmlMessageDefinition;
+import java.util.LinkedHashMap;
 
 /**
  *
@@ -53,10 +56,10 @@ public class XmlExpectSpecificMessageImpl extends AbstractXmlExpectMessage {
         super(theTest, theConfig);
         
 		XmlMessageDefinition configMessage = theConfig.getMessage();
-		if (myMessage != null) {
+		if (configMessage != null) {
 			myMessage = new XmlMessageImpl(configMessage);
 		} else {
-			myMessage = getMessage();
+			myMessage = super.provideLinkedMessage();
 		}
 		
         
@@ -95,14 +98,6 @@ public class XmlExpectSpecificMessageImpl extends AbstractXmlExpectMessage {
         return retVal;
     }
 
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public Class<?> getMessageClass() {
-        return Document.class;
-    }
-
     @Override
     protected void validateMessage(TestMessage<Document> parsedMessage)
                             throws TestFailureException {
@@ -118,4 +113,26 @@ public class XmlExpectSpecificMessageImpl extends AbstractXmlExpectMessage {
                                                         compare);
         }
     }
+
+    /**
+     * Provides the message to be expected by this event
+     */
+    public XmlMessageImpl getMessage() {
+        return myMessage;
+    }
+
+
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public LinkedHashMap<String, AbstractMessage<?>> getAllMessages() {
+        LinkedHashMap<String, AbstractMessage<?>> retVal = new LinkedHashMap<String, AbstractMessage<?>>();
+        retVal.put(Strings.getMessage("eventeditor.message"), getMessage());
+        return retVal;
+    }
+
+
+
 }

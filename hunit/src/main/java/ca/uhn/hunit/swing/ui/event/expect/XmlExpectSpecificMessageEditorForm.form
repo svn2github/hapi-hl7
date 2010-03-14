@@ -16,33 +16,22 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="myEventTypeForm" alignment="0" pref="470" max="32767" attributes="0"/>
-          <Component id="myBaseExpectMessageEditorForm" alignment="0" pref="470" max="32767" attributes="0"/>
-          <Component id="myBaseSpecificMessageEditorForm" alignment="0" pref="470" max="32767" attributes="0"/>
-          <Component id="myBaseEventEditorForm" alignment="0" pref="470" max="32767" attributes="0"/>
+          <Component id="myBaseEventEditorForm" alignment="1" max="32767" attributes="0"/>
+          <Component id="myBaseExpectMessageEditorForm" alignment="1" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="myEventTypeForm" min="-2" pref="65" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="myBaseEventEditorForm" min="-2" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="myBaseSpecificMessageEditorForm" min="-2" max="-2" attributes="0"/>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="myBaseExpectMessageEditorForm" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="ca.uhn.hunit.swing.ui.event.EventTypeForm" name="myEventTypeForm">
-    </Component>
     <Component class="ca.uhn.hunit.swing.ui.event.BaseEventEditorForm" name="myBaseEventEditorForm">
-    </Component>
-    <Component class="ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm" name="myBaseSpecificMessageEditorForm">
     </Component>
     <Component class="ca.uhn.hunit.swing.ui.event.expect.BaseExpectMessageEditorForm" name="myBaseExpectMessageEditorForm">
     </Component>

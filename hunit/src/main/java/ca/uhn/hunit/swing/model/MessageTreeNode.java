@@ -41,14 +41,22 @@ public class MessageTreeNode extends DefaultMutableTreeNode {
 
     //~ Instance fields ------------------------------------------------------------------------------------------------
 
-    private AbstractMessage<?> myMessage;
+    private final AbstractMessage<?> myMessage;
+    private final String myName;
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
-    public MessageTreeNode(AbstractMessage<?> theMessage) {
+    public MessageTreeNode(String theName, AbstractMessage<?> theMessage) {
         super(theMessage, false);
-
+        myName = theName;
         myMessage = theMessage;
+    }
+
+    /**
+     * Returns the name associated with this message (as defined by the event that contains it)
+     */
+    public String getName() {
+        return myName;
     }
 
     //~ Methods --------------------------------------------------------------------------------------------------------

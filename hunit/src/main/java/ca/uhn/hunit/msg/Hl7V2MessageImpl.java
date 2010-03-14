@@ -61,6 +61,13 @@ public class Hl7V2MessageImpl extends AbstractMessage<Message> {
         }
     }
 
+    /**
+     * Constructor
+     */
+    public Hl7V2MessageImpl() {
+        // nothing
+    }
+
     //~ Methods --------------------------------------------------------------------------------------------------------
 
     /**

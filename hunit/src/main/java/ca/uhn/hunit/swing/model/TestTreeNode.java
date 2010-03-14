@@ -45,11 +45,14 @@ public class TestTreeNode extends DefaultMutableTreeNode {
     //~ Instance fields ------------------------------------------------------------------------------------------------
 
     private final TestImpl myTest;
+    private final MyTreeModel myModel;
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
-    public TestTreeNode(TestImpl theTest) {
+    public TestTreeNode(MyTreeModel theModel, TestImpl theTest) {
         super(theTest, true);
+
+        myModel = theModel;
 
         myTest = theTest;
         myTest.getEventsModel().addTableModelListener(new TableModelListener() {;
@@ -69,16 +72,18 @@ public class TestTreeNode extends DefaultMutableTreeNode {
     		if (getChildCount() > i) {
     			EventTreeNode childNode = (EventTreeNode) getChildAt(i);
     			if (childNode.getEvent() != event) {
-    				insert(new EventTreeNode(myTest, event), i);
+    				insert(new EventTreeNode(myModel, myTest, event), i);
     			}
     		} else {
-				insert(new EventTreeNode(myTest, event), i);
+				insert(new EventTreeNode(myModel, myTest, event), i);
     		}
     	}
     	
     	while (getChildCount() > myTest.getEventsModel().getRowCount()) {
     		remove(getChildCount() - 1);
     	}
+        
+        myModel.nodeStructureChanged(this);
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------

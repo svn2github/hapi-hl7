@@ -42,7 +42,7 @@ import ca.uhn.hunit.test.TestBatteryImpl;
  *
  * @author James
  */
-public class XmlSendMessageEditorForm extends AbstractEventEditorForm<XmlSendMessageImpl> {
+public class XmlSendMessageEditorForm extends AbstractEventEditorForm {
     private static final long serialVersionUID = 1L;
     
     private XmlSendMessageImpl myEvent;
@@ -64,26 +64,20 @@ public class XmlSendMessageEditorForm extends AbstractEventEditorForm<XmlSendMes
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        myEventTypeForm = new ca.uhn.hunit.swing.ui.event.EventTypeForm();
         myBaseEventEditorForm = new ca.uhn.hunit.swing.ui.event.BaseEventEditorForm();
-        myBaseSpecificMessageEditorForm = new ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm();
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(myEventTypeForm, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
-            .addComponent(myBaseEventEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
-            .addComponent(myBaseSpecificMessageEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(myBaseEventEditorForm, javax.swing.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(myEventTypeForm, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(myBaseEventEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(myBaseSpecificMessageEditorForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -91,8 +85,6 @@ public class XmlSendMessageEditorForm extends AbstractEventEditorForm<XmlSendMes
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private ca.uhn.hunit.swing.ui.event.BaseEventEditorForm myBaseEventEditorForm;
-    private ca.uhn.hunit.swing.ui.event.BaseSpecificMessageEditorForm myBaseSpecificMessageEditorForm;
-    private ca.uhn.hunit.swing.ui.event.EventTypeForm myEventTypeForm;
     // End of variables declaration//GEN-END:variables
 
 
@@ -100,13 +92,16 @@ public class XmlSendMessageEditorForm extends AbstractEventEditorForm<XmlSendMes
      * {@inheritDoc }
      */
     @Override
-    public void setController(EventEditorContextController theController, XmlSendMessageImpl theEvent) {
-        myEvent = theEvent;
+    public void setController(EventEditorContextController theController) {
+        myEvent = (XmlSendMessageImpl) theController.getEvent();
         myController = theController;
 
-        myBaseEventEditorForm.setController(theController, theEvent);
-        myBaseSpecificMessageEditorForm.setController(theController, theEvent);
-        myEventTypeForm.setController(theController, theEvent);
+        myBaseEventEditorForm.setController(theController);
+    }
+
+    @Override
+    public void tearDown() {
+        myBaseEventEditorForm.tearDown();
     }
 
 }

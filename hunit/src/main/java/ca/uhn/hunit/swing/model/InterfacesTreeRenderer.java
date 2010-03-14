@@ -80,7 +80,7 @@ public class InterfacesTreeRenderer extends DefaultTreeCellRenderer {
         } else if (theValue instanceof MessageTreeNode) {
             MessageTreeNode node = (MessageTreeNode) theValue;
             AbstractMessage<?> ai = (AbstractMessage<?>) node.getUserObject();
-            String name = ai.getId();
+            String name = node.getName();
             setText(name);
 
             if (ai instanceof Hl7V2MessageImpl) {

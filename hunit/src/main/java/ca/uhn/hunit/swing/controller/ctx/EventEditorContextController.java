@@ -3,15 +3,14 @@ package ca.uhn.hunit.swing.controller.ctx;
 import ca.uhn.hunit.event.AbstractEvent;
 import ca.uhn.hunit.event.EventFactory;
 import ca.uhn.hunit.ex.ConfigurationException;
-import ca.uhn.hunit.swing.ui.event.AbstractEventEditorForm;
-import ca.uhn.hunit.swing.ui.event.BaseEventEditorForm;
+import ca.uhn.hunit.swing.ui.event.EventEditorFormWrapper;
 import ca.uhn.hunit.test.TestImpl;
 
-public class EventEditorContextController extends AbstractContextController<AbstractEventEditorForm<?>> {
+public class EventEditorContextController extends AbstractContextController<EventEditorFormWrapper> {
 
 	private AbstractEvent myEvent;
 	private TestImpl myTest;
-	private AbstractEventEditorForm<AbstractEvent> myView;
+	private EventEditorFormWrapper myView;
 
 	/**
 	 * Constructor
@@ -19,14 +18,13 @@ public class EventEditorContextController extends AbstractContextController<Abst
 	 * @param theEvent
 	 *            The event being edited
 	 */
-	public EventEditorContextController(TestImpl theTest, AbstractEvent theEvent) {
+	public EventEditorContextController(TestImpl theTest, AbstractEvent theEvent) throws ConfigurationException {
 		myEvent = theEvent;
 		myTest = theTest;
-		try {
-			myView = EventFactory.INSTANCE.createEditorForm(this, theEvent);
-		} catch (ConfigurationException e) {
-			throw new Error(e);
-		}
+		
+        myView = new EventEditorFormWrapper();
+        myView.setController(this);
+
 	}
 
 	public void changeEventType(AbstractEvent theEvent, Class<? extends AbstractEvent> theNewClass) throws ConfigurationException {
@@ -34,11 +32,18 @@ public class EventEditorContextController extends AbstractContextController<Abst
 		myTest.getEventsModel().replaceEvent(theEvent, newEvent);
 	}
 
+    /**
+     * @return Returns the event associated with this controller
+     */
+    public AbstractEvent getEvent() {
+        return myEvent;
+    }
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public AbstractEventEditorForm<?> getView() {
+	public EventEditorFormWrapper getView() {
 		return myView;
 	}
 

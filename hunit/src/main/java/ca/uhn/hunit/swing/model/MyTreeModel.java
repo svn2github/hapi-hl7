@@ -50,6 +50,7 @@ public class MyTreeModel extends DefaultTreeModel {
 
         myRoot = (TestBatteryTreeNode) this.getRoot();
         myRoot.setModel(this);
+
     }
 
     //~ Methods --------------------------------------------------------------------------------------------------------

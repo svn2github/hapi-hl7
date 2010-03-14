@@ -116,14 +116,6 @@ public class Hl7V2ExpectRulesImpl extends AbstractHl7V2ExpectMessage {
         return retVal;
     }
 
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public Class<?> getMessageClass() {
-        return Message.class;
-    }
-
     @Override
     public void validateMessage(TestMessage<Message> theMessage)
                          throws IncorrectMessageReceivedException {
@@ -131,4 +123,6 @@ public class Hl7V2ExpectRulesImpl extends AbstractHl7V2ExpectMessage {
             next.validate(theMessage);
         }
     }
+
+
 }

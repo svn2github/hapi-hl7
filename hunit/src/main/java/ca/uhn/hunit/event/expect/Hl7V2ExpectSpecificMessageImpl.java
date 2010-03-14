@@ -23,18 +23,20 @@ package ca.uhn.hunit.event.expect;
 
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hunit.compare.hl7v2.Hl7V2MessageCompare;
-import ca.uhn.hunit.event.ISpecificMessageEvent;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.l10n.Strings;
+import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.ExpectMessageAny;
 import ca.uhn.hunit.xsd.Hl7V2ExpectSpecificMessage;
 import ca.uhn.hunit.xsd.Hl7V2MessageDefinition;
+import java.util.LinkedHashMap;
 
-public class Hl7V2ExpectSpecificMessageImpl extends AbstractHl7V2ExpectMessage implements ISpecificMessageEvent {
+public class Hl7V2ExpectSpecificMessageImpl extends AbstractHl7V2ExpectMessage {
 
 	private Hl7V2MessageImpl myMessage;
 
@@ -45,11 +47,15 @@ public class Hl7V2ExpectSpecificMessageImpl extends AbstractHl7V2ExpectMessage i
 		super(theTest, theConfig);
 
 		Hl7V2MessageDefinition configMessage = theConfig.getMessage();
-		if (myMessage != null) {
+		if (configMessage != null) {
 			myMessage = new Hl7V2MessageImpl(configMessage);
 		} else {
-			myMessage = getMessage();
+			myMessage = super.provideLinkedMessage();
 		}
+
+        if (myMessage == null) {
+            throw new ConfigurationException("Event has no message attached");
+        }
 	}
 
 	// ~ Methods
@@ -90,14 +96,6 @@ public class Hl7V2ExpectSpecificMessageImpl extends AbstractHl7V2ExpectMessage i
 	 * {@inheritDoc }
 	 */
 	@Override
-	public Class<?> getMessageClass() {
-		return Message.class;
-	}
-
-	/**
-	 * {@inheritDoc }
-	 */
-	@Override
 	public void validateMessage(TestMessage<Message> theMessage) throws TestFailureException {
 
 		Hl7V2MessageCompare messageCompare = new Hl7V2MessageCompare();
@@ -107,4 +105,24 @@ public class Hl7V2ExpectSpecificMessageImpl extends AbstractHl7V2ExpectMessage i
 			throw new IncorrectMessageReceivedException(getTest(), null, myMessage.getTestMessage(), theMessage, "Messages did not match", messageCompare);
 		}
 	}
+
+    /**
+     * Returns the message being expected
+     */
+    public Hl7V2MessageImpl getMessage() {
+        return myMessage;
+    }
+
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public LinkedHashMap<String, AbstractMessage<?>> getAllMessages() {
+        LinkedHashMap<String, AbstractMessage<?>> retVal = new LinkedHashMap<String, AbstractMessage<?>>();
+        retVal.put(Strings.getMessage("eventeditor.message"), getMessage());
+        retVal.putAll(super.getAllMessages());
+        return retVal;
+    }
+
 }

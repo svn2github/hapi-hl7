@@ -24,6 +24,7 @@ package ca.uhn.hunit.event;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.AbstractInterface;
+import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.run.ExecutionContext;
 import ca.uhn.hunit.run.IExecutionContext;
 import ca.uhn.hunit.test.TestBatteryImpl;
@@ -34,6 +35,7 @@ import ca.uhn.hunit.xsd.Event;
 import org.apache.commons.lang.StringUtils;
 
 import java.beans.PropertyVetoException;
+import java.util.LinkedHashMap;
 
 /**
  * An event is a single action taken within a test. A single test therefore is
@@ -42,6 +44,7 @@ import java.beans.PropertyVetoException;
 public abstract class AbstractEvent extends AbstractModelClass {
     //~ Static fields/initializers -------------------------------------------------------------------------------------
 
+    public static final String INTERFACE_MESSAGES_PROPERTY = "INTERFACE_MESSAGES_PROPERTY";
     public static final String INTERFACE_ID_PROPERTY = "INTERFACE_ID_PROPERTY";
 
     //~ Instance fields ------------------------------------------------------------------------------------------------
@@ -102,10 +105,17 @@ public abstract class AbstractEvent extends AbstractModelClass {
     }
 
     /**
-     * Returns the ResourceBundle key to be used to retrieve the description of this event
+     * Returns the ResourceBundle key to be used to retrieve the summary title of this event
      */
     public String getResourceBundleSummaryKey() {
         return "event.summary." + getClass().getName();
+    }
+
+    /**
+     * Returns the ResourceBundle key to be used to retrieve the description of this event
+     */
+    public String getResourceBundleDescriptionKey() {
+        return "event.description." + getClass().getName();
     }
 
     public TestImpl getTest() {
@@ -133,4 +143,21 @@ public abstract class AbstractEvent extends AbstractModelClass {
         this.myInterface = newInterface;
         firePropertyChange(INTERFACE_ID_PROPERTY, oldValue, theInterfaceId);
     }
+
+    /**
+     * <p>
+     * Subclasses should implement this method to provide a collection
+     * of all messages used by this event, in a natural order if one makes sense.
+     * </p><p>
+     * Keys should be a description of the use of the message,
+     * e.g. "reply", or just "message". Values should be the message itself.
+     * </p>
+     * <p>
+     * Events are expected to fire a property change with key {@link #INTERFACE_MESSAGES_PROPERTY}
+     * if this method's return value changes
+     * </p>
+     */
+    public abstract LinkedHashMap<String, AbstractMessage<?>> getAllMessages();
+
+
 }

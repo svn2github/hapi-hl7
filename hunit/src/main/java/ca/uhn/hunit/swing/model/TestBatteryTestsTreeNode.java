@@ -75,13 +75,13 @@ public class TestBatteryTestsTreeNode extends DefaultMutableTreeNode implements 
             next.addPropertyChangeListener(TestImpl.NAME_PROPERTY, this);
 
             if (getChildCount() <= index) {
-                TestTreeNode newChild = new TestTreeNode(next);
+                TestTreeNode newChild = new TestTreeNode(myModel, next);
                 add(newChild);
             } else {
                 TestTreeNode nextNode = (TestTreeNode) getChildAt(index);
 
                 if (! nextNode.getUserObject().equals(next)) {
-                    TestTreeNode newChild = new TestTreeNode(next);
+                    TestTreeNode newChild = new TestTreeNode(myModel, next);
                     insert(newChild, index);
                 }
             }

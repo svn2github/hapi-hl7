@@ -56,13 +56,13 @@ public class EventFactory {
     private final Event myDefaultEventConfig;
     private final List<Class<?extends AbstractEvent>> myEventClasses;
     private final Map<Class<?extends AbstractEvent>, Class<?extends Event>> myEventClasses2ConfigTypes;
-    private final Map<Class<?extends AbstractEvent>, Class<?extends AbstractEventEditorForm<?>>> myEventClasses2EditorForm;
+    private final Map<Class<?extends AbstractEvent>, Class<?extends AbstractEventEditorForm>> myEventClasses2EditorForm;
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
     public EventFactory() {
         myEventClasses2ConfigTypes = new HashMap<Class<?extends AbstractEvent>, Class<?extends Event>>();
-        myEventClasses2EditorForm = new HashMap<Class<?extends AbstractEvent>, Class<?extends AbstractEventEditorForm<?>>>();
+        myEventClasses2EditorForm = new HashMap<Class<?extends AbstractEvent>, Class<?extends AbstractEventEditorForm>>();
 
         myEventClasses2ConfigTypes.put(ExpectNoMessageImpl.class, ExpectNoMessage.class);
         myEventClasses2EditorForm.put(ExpectNoMessageImpl.class, ExpectNoMessageEditorForm.class);
@@ -123,7 +123,7 @@ public class EventFactory {
      *
      * @throws InstantiationException If the form can't be created for any reason
      */
-    public <T extends AbstractEvent, V extends AbstractEventEditorForm<T>> V createEditorForm(EventEditorContextController theController,
+    public <T extends AbstractEvent, V extends AbstractEventEditorForm> V createEditorForm(EventEditorContextController theController,
                                                                                               T event)
         throws ConfigurationException {
         Class<V> formClass = (Class<V>) myEventClasses2EditorForm.get(event.getClass());
@@ -135,7 +135,7 @@ public class EventFactory {
         try {
             Constructor<V> constructor = formClass.getConstructor();
             V instance = constructor.newInstance();
-            instance.setController(theController, event);
+            instance.setController(theController);
 
             return instance;
         } catch (InstantiationException ex) {

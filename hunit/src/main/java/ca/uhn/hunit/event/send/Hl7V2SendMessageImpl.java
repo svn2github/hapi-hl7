@@ -28,10 +28,10 @@ import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
 import ca.uhn.hl7v2.validation.impl.ValidationContextImpl;
 
-import ca.uhn.hunit.event.ISpecificMessageEvent;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.l10n.Strings;
 import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.test.*;
@@ -39,9 +39,9 @@ import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.Hl7V2MessageDefinition;
 import ca.uhn.hunit.xsd.Hl7V2SendMessage;
 import ca.uhn.hunit.xsd.SendMessageAny;
+import java.util.LinkedHashMap;
 
-public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message, Hl7V2MessageImpl>
-    implements ISpecificMessageEvent {
+public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message, Hl7V2MessageImpl> {
     //~ Instance fields ------------------------------------------------------------------------------------------------
 
     private Parser myParser;
@@ -64,7 +64,7 @@ public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message, Hl7V2Mess
         }
 
 		Hl7V2MessageDefinition configMessage = theConfig.getMessage();
-		if (myMessage != null) {
+		if (configMessage != null) {
 			myMessage = new Hl7V2MessageImpl(configMessage);
 		} else {
 			myMessage = (Hl7V2MessageImpl) getMessage();
@@ -128,4 +128,18 @@ public class Hl7V2SendMessageImpl extends AbstractSendMessage<Message, Hl7V2Mess
 	protected AbstractMessage<Message> provideMessage() {
 		return myMessage;
 	}
+
+
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public LinkedHashMap<String, AbstractMessage<?>> getAllMessages() {
+        LinkedHashMap<String, AbstractMessage<?>> retVal = new LinkedHashMap<String, AbstractMessage<?>>();
+        retVal.put(Strings.getMessage("eventeditor.message"), provideMessage());
+        return retVal;
+    }
+
+
 }

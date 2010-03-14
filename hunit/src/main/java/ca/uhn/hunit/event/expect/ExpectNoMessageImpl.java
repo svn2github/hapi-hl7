@@ -25,16 +25,18 @@ import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.ex.UnexpectedMessageException;
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.run.IExecutionContext;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.ExpectNoMessage;
+import java.util.LinkedHashMap;
 
 /**
  * TODO: add!
  *
  * @author <a href="mailto:james.agnew@uhn.on.ca">James Agnew</a>
- * @version $Revision: 1.6 $ updated on $Date: 2010-02-08 01:09:01 $ by $Author: jamesagnew $
+ * @version $Revision: 1.7 $ updated on $Date: 2010-03-14 14:59:15 $ by $Author: jamesagnew $
  */
 public class ExpectNoMessageImpl extends AbstractExpect {
     //~ Constructors ---------------------------------------------------------------------------------------------------
@@ -78,5 +80,14 @@ public class ExpectNoMessageImpl extends AbstractExpect {
     @Override
     public Object exportConfigToXmlAndEncapsulate() {
         return exportConfigToXml();
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public LinkedHashMap<String, AbstractMessage<?>> getAllMessages() {
+        LinkedHashMap<String, AbstractMessage<?>> retVal = new LinkedHashMap<String, AbstractMessage<?>>();
+        return retVal;
     }
 }

@@ -25,14 +25,19 @@ import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.l10n.Strings;
+import ca.uhn.hunit.msg.AbstractMessage;
 import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.run.IExecutionContext;
 import ca.uhn.hunit.test.TestImpl;
 import ca.uhn.hunit.xsd.Event;
 import ca.uhn.hunit.xsd.HL7V2ExpectAbstract;
 import java.beans.PropertyVetoException;
+import java.util.LinkedHashMap;
 
 public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage<Hl7V2MessageImpl> {
+
+    @Deprecated
     public static final String REPLY_MESSAGE_ID_PROPERTY = "AHEM_REPLY_MESSAGE_ID_PROPERTY";
 
 
@@ -71,7 +76,7 @@ public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage<H
      * {@inheritDoc }
      */
     @Override
-    protected Hl7V2MessageImpl getReplyMessage() {
+    public Hl7V2MessageImpl getReplyMessage() {
         if (myReplyMessage != null) {
             return myReplyMessage;
         }
@@ -96,6 +101,7 @@ public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage<H
     /**
      * Sets the ID for the message, if any, that will be used as a reply
      */
+    @Deprecated
     public void setReplyMessageId(String theMessageId) throws PropertyVetoException {
         String oldValue = (myReplyMessage != null) ? myReplyMessage.getId() : null;
         fireVetoableChange(REPLY_MESSAGE_ID_PROPERTY, oldValue, theMessageId);
@@ -111,6 +117,30 @@ public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage<H
         }
 
         firePropertyChange(REPLY_MESSAGE_ID_PROPERTY, oldValue, theMessageId);
+    }
+
+    /**
+     * Sets the reply message to be used by this event
+     */
+    public void setReplyMessage(Hl7V2MessageImpl theReplyMessage) {
+        Hl7V2MessageImpl oldValue = myReplyMessage;
+        myReplyMessage = theReplyMessage;
+        firePropertyChange(INTERFACE_MESSAGES_PROPERTY, oldValue, myReplyMessage);
+    }
+
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public LinkedHashMap<String, AbstractMessage<?>> getAllMessages() {
+        LinkedHashMap<String, AbstractMessage<?>> retVal = new LinkedHashMap<String, AbstractMessage<?>>();
+        
+        if (getReplyMessage() != null) {
+            retVal.put(Strings.getMessage("eventeditor.reply_message"), getReplyMessage());
+        }
+
+        return retVal;
     }
 
 }

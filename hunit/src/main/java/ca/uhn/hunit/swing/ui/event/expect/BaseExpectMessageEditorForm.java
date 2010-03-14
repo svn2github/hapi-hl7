@@ -46,7 +46,7 @@ import javax.swing.event.ChangeListener;
  *
  * @author James
  */
-public class BaseExpectMessageEditorForm extends AbstractEventEditorForm<AbstractExpect> {
+public class BaseExpectMessageEditorForm extends AbstractEventEditorForm {
 
     private static final long serialVersionUID = 1L;
     private TestBatteryImpl myBattery;
@@ -110,8 +110,7 @@ public class BaseExpectMessageEditorForm extends AbstractEventEditorForm<Abstrac
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
-                    .addComponent(myWaitForCompletionCheckbox))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(myWaitForCompletionCheckbox)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -132,10 +131,10 @@ public class BaseExpectMessageEditorForm extends AbstractEventEditorForm<Abstrac
      * {@inheritDoc }
      */
     @Override
-    public void setController(EventEditorContextController theController, AbstractExpect theEvent) {
+    public void setController(EventEditorContextController theController) {
         myController = theController;
         myBattery = theController.getTest().getBattery();
-        myEvent = theEvent;
+        myEvent = (AbstractExpect) theController.getEvent();
 
         final SpinnerNumberModel model = new SpinnerNumberModel();
         model.setValue(myEvent.getReceiveTimeout());
@@ -150,6 +149,11 @@ public class BaseExpectMessageEditorForm extends AbstractEventEditorForm<Abstrac
         myTimeoutSpinner.setModel(model);
 
         myWaitForCompletionCheckbox.setSelected(myEvent.isWaitForCompletion());
+    }
+
+    @Override
+    public void tearDown() {
+        // nothing
     }
 
 }
