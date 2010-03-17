@@ -115,7 +115,8 @@ public class BaseExpectMessageEditorForm extends AbstractEventEditorForm {
     }// </editor-fold>//GEN-END:initComponents
 
     private void myWaitForCompletionCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myWaitForCompletionCheckboxActionPerformed
-        myEvent.setWaitForCompletion(myWaitForCompletionCheckbox.isSelected());
+//        // FIXME: remove this attribute
+//        myEvent.setWaitForCompletion(myWaitForCompletionCheckbox.isSelected());
     }//GEN-LAST:event_myWaitForCompletionCheckboxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -11,7 +11,7 @@
 		<appender-ref ref="stdout" />
 	</logger>
 	<logger name="ca.uhn.hunit" additivity="false">
-		<level value="info" />
+		<level value="debug" />
 		<appender-ref ref="stdout" />
 	</logger>
 	<root>

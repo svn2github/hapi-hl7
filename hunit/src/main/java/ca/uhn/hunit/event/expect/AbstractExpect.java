@@ -31,7 +31,6 @@ import ca.uhn.hunit.xsd.ExpectEvent;
 public abstract class AbstractExpect extends AbstractEvent {
     //~ Instance fields ------------------------------------------------------------------------------------------------
 
-    private boolean myWaitForCompletion;
     private long myReceiveTimeout;
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
@@ -43,8 +42,6 @@ public abstract class AbstractExpect extends AbstractEvent {
         Long receiveTimeout = theConfig.getReceiveTimeoutMillis();
         myReceiveTimeout = (receiveTimeout != null) ? receiveTimeout : 120000L;
 
-        Boolean isWaitForCompletion = theConfig.isWaitForCompletion();
-        myWaitForCompletion = (isWaitForCompletion != null) ? isWaitForCompletion : true;
     }
 
     //~ Methods --------------------------------------------------------------------------------------------------------
@@ -52,7 +49,6 @@ public abstract class AbstractExpect extends AbstractEvent {
     public Event exportConfig(ExpectEvent theConfig) {
         super.exportConfig(theConfig);
         theConfig.setReceiveTimeoutMillis(myReceiveTimeout);
-        theConfig.setWaitForCompletion(myWaitForCompletion);
 
         return theConfig;
     }
@@ -70,14 +66,11 @@ public abstract class AbstractExpect extends AbstractEvent {
     }
 
     public boolean isWaitForCompletion() {
-        return myWaitForCompletion;
+        return true;
     }
 
     public void setReceiveTimeout(long theLongValue) {
         myReceiveTimeout = theLongValue;
     }
 
-    public void setWaitForCompletion(boolean theWaitForCompletion) {
-        myWaitForCompletion = theWaitForCompletion;
-    }
 }

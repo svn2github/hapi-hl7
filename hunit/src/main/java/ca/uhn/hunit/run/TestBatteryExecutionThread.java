@@ -59,6 +59,8 @@ public class TestBatteryExecutionThread extends Thread {
     //~ Methods --------------------------------------------------------------------------------------------------------
 
     public void addEvent(AbstractEvent theEvent) {
+        LogFactory.INSTANCE.getSystem(getClass()).info("Adding event of type " + theEvent.getClass() + " for interface " + myInterface.getId());
+        
         if (myFailed != null) {
             myCtx.addFailure(theEvent.getTest(),
                              myFailed);

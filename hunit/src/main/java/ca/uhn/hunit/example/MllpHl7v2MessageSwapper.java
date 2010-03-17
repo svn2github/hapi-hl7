@@ -30,6 +30,8 @@ import ca.uhn.hl7v2.llp.MinLLPReader;
 import ca.uhn.hl7v2.llp.MinLLPWriter;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.Segment;
+import ca.uhn.hl7v2.model.v25.segment.MSH;
+import ca.uhn.hl7v2.parser.CanonicalModelClassFactory;
 import ca.uhn.hl7v2.parser.PipeParser;
 
 import java.util.logging.Level;
@@ -40,14 +42,17 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -55,11 +60,12 @@ public final class MllpHl7v2MessageSwapper extends Thread {
     //~ Instance fields ------------------------------------------------------------------------------------------------
 
     private Map<String, String> mySubstitutions;
-    private PipeParser myParser = new PipeParser();
+    private PipeParser myParser = new PipeParser(new CanonicalModelClassFactory("2.5"));
     private boolean myAlwaysCreateNewOutboundConnection;
     private boolean myPrintOutput;
     private int myIterations;
     private boolean myStopped;
+    private List<String> myControlIdsToIgnore;
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
@@ -89,6 +95,13 @@ public final class MllpHl7v2MessageSwapper extends Thread {
         }
     }
 
+    /**
+     * Any messages with control IDs listed here will be ignored by the swapper
+     */
+    public void setControlIdsToIgnore(String... theControlIds) {
+        myControlIdsToIgnore = Arrays.asList(theControlIds);
+    }
+    
     //~ Methods --------------------------------------------------------------------------------------------------------
 
     public static void main(String[] theArgs) {
@@ -161,9 +174,15 @@ public final class MllpHl7v2MessageSwapper extends Thread {
                     System.out.println("Received message:\r\n" + messageText + "\r\n");
                 }
 
-                Message replyAck = DefaultApplication.makeACK((Segment) myParser.parse(messageText).get("MSH"));
-                new MinLLPWriter(socket.getOutputStream()).writeMessage(myParser.encode(replyAck));
-
+                MSH inboundHeader = (MSH) myParser.parse(messageText).get("MSH");
+                String controlId = inboundHeader.getMessageControlID().encode();
+                if (StringUtils.isNotBlank(controlId) && myControlIdsToIgnore.indexOf(controlId) > -1) {
+                    Message replyAck = DefaultApplication.makeACK(inboundHeader);
+                    new MinLLPWriter(socket.getOutputStream()).writeMessage(myParser.encode(replyAck));
+                } else {
+                    System.out.println("Ignoring message with control ID " + controlId);
+                }
+                
                 for (Map.Entry<String, String> next : mySubstitutions.entrySet()) {
                     messageText =
                         messageText.replace(next.getKey(),

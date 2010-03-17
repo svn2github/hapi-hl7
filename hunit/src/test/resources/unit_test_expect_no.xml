@@ -52,6 +52,21 @@
                 <hu:hl7v2_specific interface_id="test_in_interface" message_id="InputMessage"/>
 			</hu:expect_message>
 		</hu:test>
+        <hu:test>
+            <hu:name>ExpectWithTestAfter1</hu:name>
+            <hu:expect_no_message receive_timeout_millis="5000" interface_id="test_in_interface" wait_for_completion="false">
+            </hu:expect_no_message>
+        </hu:test>
+        <hu:test>
+            <hu:name>ExpectWithTestAfter2</hu:name>
+            <hu:send_message>
+                <hu:hl7v2 interface_id="test_out_interface" message_id="InputMessage" />
+            </hu:send_message>
+            <hu:expect_message>
+                <hu:hl7v2_specific interface_id="test_in_interface" message_id="InputMessage"/>
+            </hu:expect_message>
+        </hu:test>
+
 	</hu:tests>
 	<hu:messages>
 		<hu:hl7v2 id="InputMessage">

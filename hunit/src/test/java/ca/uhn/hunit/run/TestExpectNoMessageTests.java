@@ -5,9 +5,13 @@ package ca.uhn.hunit.run;
 
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
+import ca.uhn.hunit.example.MllpHl7v2MessageSwapper;
+import ca.uhn.hunit.iface.Hl7V2Test;
 import ca.uhn.hunit.iface.StaticActiveMQConnectionFactory;
 import ca.uhn.hunit.test.TestBatteryImpl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,9 +27,11 @@ import javax.xml.bind.JAXBException;
  * TODO: add!
  *
  * @author <a href="mailto:james.agnew@uhn.on.ca">James Agnew</a>
- * @version $Revision: 1.5 $ updated on $Date: 2009-11-29 21:55:18 $ by $Author: jamesagnew $
+ * @version $Revision: 1.6 $ updated on $Date: 2010-03-17 18:54:32 $ by $Author: jamesagnew $
  */
 public class TestExpectNoMessageTests {
+    private static final Log ourLog = LogFactory.getLog(TestExpectNoMessageTests.class);
+
     //~ Methods --------------------------------------------------------------------------------------------------------
 
     @After
@@ -61,4 +67,20 @@ public class TestExpectNoMessageTests {
 
         Assert.assertTrue(ctx.getTestSuccesses().contains(battery.getTestByName("ExpectSuccess")));
     }
+    
+    @Test
+    public void testPassingTestWithOtherExpectAfter() throws ConfigurationException, JAXBException {
+        ClassPathResource defFile = new ClassPathResource("unit_test_expect_no.xml");
+        TestBatteryImpl battery = new TestBatteryImpl(defFile);
+        ExecutionContext ctx = new ExecutionContext(battery);
+        ctx.execute("ExpectWithTestAfter1", "ExpectWithTestAfter2");
+
+        Assert.assertFalse(ctx.getTestFailures().containsKey(battery.getTestByName("ExpectWithTestAfter1")));
+        Assert.assertFalse(ctx.getTestFailures().containsKey(battery.getTestByName("ExpectWithTestAfter2")));
+
+        Assert.assertTrue(ctx.getTestSuccesses().contains(battery.getTestByName("ExpectWithTestAfter1")));
+        Assert.assertTrue(ctx.getTestSuccesses().contains(battery.getTestByName("ExpectWithTestAfter2")));
+
+    }
+    
 }
