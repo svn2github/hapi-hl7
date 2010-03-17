@@ -415,7 +415,9 @@ BOTH:
     }
 
     public static String formatMsg(TestMessage theMessageReceived) {
-        return StringUtil.prependEachLine(theMessageReceived.getRawMessage(),
+        String rawMessage = theMessageReceived.getRawMessage();
+        rawMessage = rawMessage.replaceAll("(\\r|\\n)+", "\r\n");
+        return StringUtil.prependEachLine(rawMessage,
                                           "  ");
     }
 

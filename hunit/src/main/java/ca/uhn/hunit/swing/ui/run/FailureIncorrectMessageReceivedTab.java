@@ -33,6 +33,7 @@
 package ca.uhn.hunit.swing.ui.run;
 
 import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
+import ca.uhn.hunit.ex.UnexpectedMessageException;
 
 /**
  *
@@ -48,6 +49,13 @@ public class FailureIncorrectMessageReceivedTab extends javax.swing.JPanel {
 
     /** Creates new form FailureIncorrectMessageReceivedTab */
     public FailureIncorrectMessageReceivedTab(IncorrectMessageReceivedException ex) {
+        initComponents();
+
+        myDifferenceDescriptionArea.setText(ex.describeReason());
+    }
+
+    /** Creates new form FailureIncorrectMessageReceivedTab */
+    public FailureIncorrectMessageReceivedTab(UnexpectedMessageException ex) {
         initComponents();
 
         myDifferenceDescriptionArea.setText(ex.describeReason());

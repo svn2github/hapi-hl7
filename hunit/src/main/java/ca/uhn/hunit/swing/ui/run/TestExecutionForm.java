@@ -34,6 +34,7 @@ package ca.uhn.hunit.swing.ui.run;
 
 import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.ex.TestFailureException;
+import ca.uhn.hunit.ex.UnexpectedMessageException;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.swing.controller.ctx.BatteryExecutionContextController;
 import ca.uhn.hunit.swing.ui.AbstractContextForm;
@@ -233,11 +234,15 @@ public class TestExecutionForm extends AbstractContextForm<BatteryExecutionConte
             tab = new FailureUnexpectedTestFailureTab((UnexpectedTestFailureException) theEx);
         } else if (theEx instanceof IncorrectMessageReceivedException) {
             tab = new FailureIncorrectMessageReceivedTab((IncorrectMessageReceivedException) theEx);
+        } else if (theEx instanceof UnexpectedMessageException) {
+            tab = new FailureIncorrectMessageReceivedTab((UnexpectedMessageException) theEx);
         }
 
-        if (tab != null) {
-            myTabbedPane.addTab(theTest.getName(), ImageFactory.getTestFailed(), tab);
+        if (tab == null) {
+            tab = new FailureUnexpectedTestFailureTab(new UnexpectedTestFailureException(theEx));
         }
+
+        myTabbedPane.addTab(theTest.getName(), ImageFactory.getTestFailed(), tab);
     }
 
     @Override
