@@ -120,61 +120,61 @@ public class LogFactory {
         public void debug(Object message, Throwable t) {
             LogEvent event = new LogEvent(mySourceObject, LogLevel.DEBUG, message, t);
             broadcast(event);
-            myWrappedLog.trace(message);
+            myWrappedLog.trace(message,t);
         }
 
         public void error(Object message) {
             LogEvent event = new LogEvent(mySourceObject, LogLevel.ERROR, message, null);
             broadcast(event);
-            myWrappedLog.trace(message);
+            myWrappedLog.error(message);
         }
 
         public void error(Object message, Throwable t) {
             LogEvent event = new LogEvent(mySourceObject, LogLevel.ERROR, message, t);
             broadcast(event);
-            myWrappedLog.trace(message);
+            myWrappedLog.error(message,t);
         }
 
         public void error(Object message, Throwable t, EventCodeEnum theEventCode) {
             LogEvent event = new LogEvent(mySourceObject, LogLevel.ERROR, message, t, theEventCode);
             broadcast(event);
-            myWrappedLog.trace(message);
+            myWrappedLog.error(message,t);
         }
 
         public void error(Object message, EventCodeEnum theEventCode) {
             LogEvent event = new LogEvent(mySourceObject, LogLevel.ERROR, message, null, theEventCode);
             broadcast(event);
-            myWrappedLog.trace(message);
+            myWrappedLog.error(message);
         }
 
         public void fatal(Object message) {
             LogEvent event = new LogEvent(mySourceObject, LogLevel.FATAL, message, null);
             broadcast(event);
-            myWrappedLog.trace(message);
+            myWrappedLog.fatal(message);
         }
 
         public void fatal(Object message, Throwable t) {
             LogEvent event = new LogEvent(mySourceObject, LogLevel.FATAL, message, null);
             broadcast(event);
-            myWrappedLog.trace(message);
+            myWrappedLog.fatal(message,t);
         }
 
         public void info(Object message) {
             LogEvent event = new LogEvent(mySourceObject, LogLevel.INFO, message, null);
             broadcast(event);
-            myWrappedLog.trace(message);
+            myWrappedLog.info(message);
         }
 
         public void info(Object message, Throwable t) {
             LogEvent event = new LogEvent(mySourceObject, LogLevel.INFO, message, t);
             broadcast(event);
-            myWrappedLog.trace(message);
+            myWrappedLog.info(message, t);
         }
 
         public void info(Object message, EventCodeEnum theEventCode) {
             LogEvent event = new LogEvent(mySourceObject, LogLevel.INFO, message, null, theEventCode);
             broadcast(event);
-            myWrappedLog.trace(message);
+            myWrappedLog.info(message);
         }
 
         public boolean isDebugEnabled() {
@@ -210,19 +210,19 @@ public class LogFactory {
         public void trace(Object message, Throwable t) {
             LogEvent event = new LogEvent(mySourceObject, LogLevel.TRACE, message, t);
             broadcast(event);
-            myWrappedLog.trace(message);
+            myWrappedLog.trace(message, t);
         }
 
         public void warn(Object message) {
             LogEvent event = new LogEvent(mySourceObject, LogLevel.WARN, message, null);
             broadcast(event);
-            myWrappedLog.trace(message);
+            myWrappedLog.warn(message);
         }
 
         public void warn(Object message, Throwable t) {
             LogEvent event = new LogEvent(mySourceObject, LogLevel.WARN, message, t);
             broadcast(event);
-            myWrappedLog.trace(message);
+            myWrappedLog.warn(message, t);
         }
     }
 }

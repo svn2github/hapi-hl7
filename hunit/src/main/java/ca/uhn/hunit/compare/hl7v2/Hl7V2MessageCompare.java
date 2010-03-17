@@ -22,6 +22,7 @@
 package ca.uhn.hunit.compare.hl7v2;
 
 import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.model.AbstractGroup;
 import ca.uhn.hl7v2.model.Composite;
 import ca.uhn.hl7v2.model.Group;
 import ca.uhn.hl7v2.model.Message;
@@ -100,7 +101,10 @@ public class Hl7V2MessageCompare implements ICompare<Message> {
     public void compare(Message theExpectMessage, Message theActualMessage)
                  throws UnexpectedTestFailureException {
         try {
-            myExpectedMessage = theExpectMessage;
+            stripEmptyStructures(theExpectMessage);
+            stripEmptyStructures(theActualMessage);
+        	
+        	myExpectedMessage = theExpectMessage;
             myActualMessage = theActualMessage;
 
             myComparison = compareGroups(myExpectedMessage, myActualMessage);
@@ -109,7 +113,52 @@ public class Hl7V2MessageCompare implements ICompare<Message> {
         }
     }
 
-    private FieldComparison compareFields(Segment theSegment1, Segment theSegment2, int theI)
+    
+    private void stripEmptyStructures(Group theMessage) throws HL7Exception {
+    	for (String nextName : theMessage.getNames()) {
+    		for (int i = 0; i < theMessage.getAll(nextName).length; i++) {
+    			Structure structure = theMessage.get(nextName, i);
+    			if (structure instanceof Group) {
+    				stripEmptyStructures((Group)structure);
+    			}
+    			
+    			if (!hasData(structure) && !theMessage.isRequired(nextName)) {
+    				((AbstractGroup)theMessage).removeRepetition(nextName, i);
+    			}
+    		}
+    	}
+    }
+
+	private boolean hasData(Structure theStructure) throws HL7Exception {
+		if (theStructure instanceof Group) {
+			Group g = (Group)theStructure;
+			for (int nameIndex = 0; nameIndex < g.getNames().length; nameIndex++) {
+				String nextName = g.getNames()[nameIndex];
+				Structure[] nextReps = g.getAll(nextName);
+				for (int repIndex = 0; repIndex < nextReps.length; repIndex++) {
+					Structure nextRep = nextReps[repIndex];
+					if (hasData(nextRep)) {
+						return true;
+					}
+				}
+			}
+		} else {
+			Segment s = (Segment)theStructure;
+			for (int nameIndex = 0; nameIndex < s.getNames().length; nameIndex++) {
+				Type[] nextReps = s.getField(nameIndex + 1);
+				for (int repIndex = 0; repIndex < nextReps.length; repIndex++) {
+					Type nextRep = nextReps[repIndex];
+					if (StringUtils.isNotEmpty(nextRep.encode())) {
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+
+	private FieldComparison compareFields(Segment theSegment1, Segment theSegment2, int theI)
                                    throws HL7Exception {
         Type[] reps1 = theSegment1.getField(theI + 1);
         Type[] reps2 = theSegment2.getField(theI + 1);

@@ -21,9 +21,15 @@
  */
 package ca.uhn.hunit.event.expect;
 
+import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
+import ca.uhn.hl7v2.parser.GenericParser;
+import ca.uhn.hl7v2.validation.impl.ValidationContextImpl;
 import ca.uhn.hunit.ex.ConfigurationException;
+import ca.uhn.hunit.ex.IncorrectMessageReceivedException;
 import ca.uhn.hunit.ex.TestFailureException;
+import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.l10n.Strings;
 import ca.uhn.hunit.msg.AbstractMessage;
@@ -43,6 +49,9 @@ public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage<H
 
     private Hl7V2MessageImpl myReplyMessage;
 
+
+	private GenericParser myParser;
+
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
     public AbstractHl7V2ExpectMessage(TestImpl theTest, HL7V2ExpectAbstract theConfig)
@@ -58,6 +67,11 @@ public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage<H
 	            throw new ConfigurationException("Setting reply message ID for expect event failed with message: " + ex.getMessage());
 	        }
         }
+        
+        myParser = new GenericParser();
+        myParser.setPipeParserAsPrimary();
+        myParser.setValidationContext(new ValidationContextImpl());
+        
     }
 
     //~ Methods --------------------------------------------------------------------------------------------------------
@@ -92,6 +106,24 @@ public abstract class AbstractHl7V2ExpectMessage extends AbstractExpectMessage<H
         // TODO: make sure this is sound
         TestMessage<Message> testMessage = (TestMessage<Message>) theMessage;
 
+        if (testMessage.getParsedMessage() == null && testMessage.getRawMessage() == null) {
+        	throw new UnexpectedTestFailureException("Message has neither parsed nor raw message");
+        }
+        if (testMessage.getParsedMessage() == null) {
+        	try {
+				testMessage.setParsedMessage(myParser.parse(testMessage.getRawMessage()));
+			} catch (HL7Exception e) {
+				throw new IncorrectMessageReceivedException(getTest(), theMessage, "Unable to parse response message. Error: " + e.getMessage());
+			}
+        }
+        if (testMessage.getRawMessage() == null) {
+        	try {
+				testMessage.setRawMessage(myParser.encode(testMessage.getParsedMessage()));
+			} catch (HL7Exception e) {
+				throw new IncorrectMessageReceivedException(getTest(), theMessage, "Unable to parse response message. Error: " + e.getMessage());
+			}
+        }
+        
         validateMessage(testMessage);
     }
 

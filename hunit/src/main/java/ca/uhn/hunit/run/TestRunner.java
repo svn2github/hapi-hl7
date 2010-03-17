@@ -122,7 +122,9 @@ public class TestRunner {
         option = new Option("g", "gui", false, "Start hUnit in GUI mode (default)");
         uiOptionGroup.addOption(option);
         option = new Option("x", "text", false, "Start hUnit in Text mode");
-
+        uiOptionGroup.addOption(option);
+        options.addOptionGroup(uiOptionGroup);
+        
         option = new Option("t", "tests", true, "A comma separated list of tests to execute (default is all)");
         option.setValueSeparator('=');
         option.setRequired(false);

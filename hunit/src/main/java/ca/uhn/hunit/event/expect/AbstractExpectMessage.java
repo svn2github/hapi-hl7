@@ -65,7 +65,7 @@ public abstract class AbstractExpectMessage<T extends AbstractMessage<?>> extend
         final T replyMessage = getReplyMessage();
         final TestMessage<?> testMessage = replyMessage != null ? replyMessage.getTestMessage() : null;
         
-        TestMessage<?> message = getInterface().receiveMessage(getReceiveTimeout(),testMessage);
+        TestMessage<T> message = getInterface().receiveMessage(getReceiveTimeout(),testMessage);
 
         if (! getInterface().isStarted()) {
             return;

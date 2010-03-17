@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Connection;
@@ -196,9 +197,9 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface<Message> {
     }
 
 
-    private class MyApplicationRouter extends ApplicationRouterImpl implements ReceivingApplication {
+    private class MyReceivingApplication extends ApplicationRouterImpl implements ReceivingApplication {
 
-        private MyApplicationRouter() {
+        private MyReceivingApplication() {
             super(myParser);
 
             bindApplication(new AppRoutingDataImpl("*", "*", "*", "*"), this);
@@ -310,7 +311,13 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface<Message> {
                         
                     }
 
-                    TestMessage<Message> messageToSend = myMessagesToSend.poll();
+                    TestMessage<Message> messageToSend;
+					try {
+						messageToSend = myMessagesToSend.poll(5, TimeUnit.SECONDS);
+					} catch (InterruptedException e) {
+						messageToSend = null;
+					}
+					
                     if (messageToSend != null) {
                         try {
                             Message response = myClientConnection.getInitiator().sendAndReceive(messageToSend.getParsedMessage());
@@ -423,7 +430,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface<Message> {
                 myServerSocket = new ServerSocket(myPort);
                 myServerSocket.setSoTimeout(250);
 
-                myServerConnection = new HL7Server(myServerSocket, new MyApplicationRouter(), new NullSafeStorage());
+                myServerConnection = new HL7Server(myServerSocket, new MyReceivingApplication(), new NullSafeStorage());
                 myServerConnection.start(null);
                 
             } catch (IOException e) {

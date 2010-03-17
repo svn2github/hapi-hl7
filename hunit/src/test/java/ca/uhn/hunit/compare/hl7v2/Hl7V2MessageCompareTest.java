@@ -119,4 +119,39 @@ public class Hl7V2MessageCompareTest {
         Assert.assertNotNull(firstField1.get(0));
         Assert.assertNotNull(firstField2.get(0));
     }
+    
+    
+    
+    @Test
+    public void testExtraSegmentWithEmptyFields()
+                             throws EncodingNotSupportedException, HL7Exception, UnexpectedTestFailureException {
+        String message1string =
+            "MSH|^~\\&|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3\r\n" +
+            "PID|||7005728^^^TML^MR||LEIGHTON^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR\r\n" +
+            "PV1|1||OLIS||||OLIST^BLAKE^DONALD^THOR^^^^^921379^^^^OLIST\r\n" +
+            "ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379\r\n" +
+            "OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R\r\n" +
+            "OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH\r\n";
+
+        String message2string =
+            "MSH|^~\\&|ULTRA|TML|OLIS|OLIS|200905011130||ORU^R01|20169838|T|2.3\r\n" +
+            "PID|||7005728^^^TML^MR||LEIGHTON^RACHEL^DIAMOND||19310313|F|||200 ANYWHERE ST^^TORONTO^ON^M6G 2T9||(416)888-8888||||||1014071185^KR\r\n" +
+            "PV1|1||OLIS||||OLIST^BLAKE^DONALD^THOR^^^^^921379^^^^OLIST\r\n" +
+            "ZZZ|||^^^^^|||\r\n" +
+            "ORC|RE||T09-100442-RET-0^^OLIS_Site_ID^ISO|||||||||OLIST^BLAKE^DONALD^THOR^^^^L^921379\r\n" +
+            "OBR|0||T09-100442-RET-0^^OLIS_Site_ID^ISO|RET^RETICULOCYTE COUNT^HL79901 literal|||200905011106|||||||200905011106||OLIST^BLAKE^DONALD^THOR^^^^L^921379||7870279|7870279|T09-100442|MOHLTC|200905011130||B7|F||1^^^200905011106^^R\r\n" +
+            "OBX|1|NM|Z114099^Erc^L||4.00|tril/L|3.90-5.60||||F|||200905011111|PMH\r\n";
+
+        PipeParser parser = new PipeParser();
+        Message message1 = parser.parse(message1string);
+        Message message2 = parser.parse(message2string);
+
+        Hl7V2MessageCompare hl7compare = new Hl7V2MessageCompare();
+        hl7compare.compare(message1, message2);
+
+        Assert.assertTrue(hl7compare.isSame());
+    }
+    
 }
+
+

@@ -399,7 +399,14 @@ public class SwingRunnerController {
 	 * @param theTest 
 	 */
 	public void selectEvent(TestImpl theTest, AbstractEvent theEvent) {
-		EventEditorContextController ctxController = new EventEditorContextController(theTest, theEvent);
+		EventEditorContextController ctxController;
+		try {
+			ctxController = new EventEditorContextController(theTest, theEvent);
+		} catch (ConfigurationException e) {
+			myLog.getSystem(getClass()).error(e.getMessage(), e);
+			DialogUtil.showErrorMessage(myView, e.getMessage());
+			return;
+		}
 		navigateTo(ctxController);
 	}
 }
