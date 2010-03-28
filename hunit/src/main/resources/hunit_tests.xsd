@@ -41,6 +41,7 @@
 		<choice>
 			<element name="mllpHl7V2Interface" type="tns:MllpHl7V2Interface"/>
 			<element name="jmsInterface" type="tns:JmsInterface"/>
+			<element name="javaCallableInterface" type="tns:JavaCallableInterface"/>
 		</choice>
 	</complexType>
 	
@@ -90,15 +91,35 @@
                             </restriction>
                         </simpleType>
                     </element>
-                    <element name="encoding" minOccurs="0" maxOccurs="1" default="ER7">
-                        <simpleType>
-                            <restriction base="string">
-                                <enumeration value="ER7"></enumeration>
-                                <enumeration value="XML"></enumeration>
-                            </restriction>
-                        </simpleType>
+                    <element name="encoding" type="tns:Hl7V2EncodingTypeEnum" minOccurs="0" maxOccurs="1" default="ER7">
                     </element>
                     <element name="autoAck" type="boolean" minOccurs="0" default="true"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<simpleType name="Hl7V2EncodingTypeEnum">
+		<restriction base="string">
+			<enumeration value="ER7"></enumeration>
+			<enumeration value="XML"></enumeration>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="MesssageTypeEnum">
+		<restriction base="string">
+			<enumeration value="HL7v2"></enumeration>
+			<enumeration value="XML"></enumeration>
+		</restriction>
+	</simpleType>
+
+	<complexType name="JavaCallableInterface">
+		<complexContent>
+			<extension base="tns:Interface">
+				<sequence>
+					<element name="class" type="string"/>
+					<element name="newInstanceForEachTest" type="boolean"/>
+					<element name="messageType" type="tns:MesssageTypeEnum"/>
 				</sequence>
 			</extension>
 		</complexContent>

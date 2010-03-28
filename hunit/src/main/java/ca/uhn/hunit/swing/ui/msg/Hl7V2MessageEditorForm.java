@@ -38,7 +38,7 @@ import ca.uhn.hunit.swing.controller.ctx.Hl7V2MessageEditorController;
 import ca.uhn.hunit.swing.ui.AbstractContextForm;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import javax.swing.JLabel;
+
 
 /**
  *
@@ -148,7 +148,6 @@ public class Hl7V2MessageEditorForm extends AbstractContextForm<Hl7V2MessageEdit
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            System.out.println("+++CHANGE");
             updateTreeMessage();
         }
     }
