@@ -108,6 +108,8 @@ public class XmlMessageImpl extends AbstractMessage<Document> {
 
     @Override
     public void setSourceMessage(final String text) throws PropertyVetoException {
+        String original = myText;
+
         try {
             myText = text.trim();
 
@@ -124,5 +126,7 @@ public class XmlMessageImpl extends AbstractMessage<Document> {
         } catch (ParserConfigurationException ex) {
             throw new PropertyVetoException("Failed to parse XML message: " + ex.getMessage(), null);
         }
+
+        firePropertyChange(SOURCE_MESSAGE_PROPERTY, original, myText);
     }
 }

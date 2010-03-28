@@ -29,11 +29,16 @@
  *
  * Created on 8-Oct-2009, 8:39:14 AM
  */
-
 package ca.uhn.hunit.swing.ui.msg;
 
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hunit.iface.TestMessage;
+import ca.uhn.hunit.msg.Hl7V2MessageImpl;
 import ca.uhn.hunit.swing.controller.ctx.Hl7V2MessageEditorController;
 import ca.uhn.hunit.swing.ui.AbstractContextForm;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import javax.swing.JLabel;
 
 /**
  *
@@ -42,7 +47,9 @@ import ca.uhn.hunit.swing.ui.AbstractContextForm;
 public class Hl7V2MessageEditorForm extends AbstractContextForm<Hl7V2MessageEditorController> {
 
     private static final long serialVersionUID = 1;
-
+    private Hl7V2TreePanel myTreePanel;
+    private MySourceMessagePropertyChangeListener mySourceMessagePropertyChangeListener;
+    private Hl7V2MessageEditorController myController;
 
     /** Creates new form Hl7V2MessageEditorForm */
     public Hl7V2MessageEditorForm() {
@@ -59,30 +66,37 @@ public class Hl7V2MessageEditorForm extends AbstractContextForm<Hl7V2MessageEdit
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
+        mySplitPane = new javax.swing.JSplitPane();
         myMessageForm = new ca.uhn.hunit.swing.ui.msg.MessageForm();
+        myTreeScrollPane = new javax.swing.JScrollPane();
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("ca/uhn/hunit/l10n/UiStrings"); // NOI18N
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("messageeditor.message"))); // NOI18N
+
+        mySplitPane.setDividerLocation(150);
+        mySplitPane.setResizeWeight(0.3);
+        mySplitPane.setLeftComponent(myMessageForm);
+        mySplitPane.setRightComponent(myTreeScrollPane);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 408, Short.MAX_VALUE)
+            .addGap(0, 506, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addGap(4, 4, 4)
-                    .addComponent(myMessageForm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGap(4, 4, 4)))
+                    .addContainerGap()
+                    .addComponent(mySplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGap(0, 318, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addGap(0, 0, 0)
-                    .addComponent(myMessageForm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGap(0, 0, 0)))
+                    .addGap(5, 5, 5)
+                    .addComponent(mySplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -96,21 +110,46 @@ public class Hl7V2MessageEditorForm extends AbstractContextForm<Hl7V2MessageEdit
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel1;
     private ca.uhn.hunit.swing.ui.msg.MessageForm myMessageForm;
+    private javax.swing.JSplitPane mySplitPane;
+    private javax.swing.JScrollPane myTreeScrollPane;
     // End of variables declaration//GEN-END:variables
 
     @Override
     public void setController(Hl7V2MessageEditorController theController) {
+        myController = theController;
+        myTreePanel = new Hl7V2TreePanel();
+        myTreeScrollPane.setViewportView(myTreePanel);
+
         myMessageForm.setController(theController);
+
+        mySourceMessagePropertyChangeListener = new MySourceMessagePropertyChangeListener();
+        myController.getMessage().addPropertyChangeListener(Hl7V2MessageImpl.SOURCE_MESSAGE_PROPERTY, mySourceMessagePropertyChangeListener);
+        updateTreeMessage();
     }
 
     @Override
     public void tearDown() {
         myMessageForm.tearDown();
+        myController.getMessage().removePropertyChangeListener(Hl7V2MessageImpl.SOURCE_MESSAGE_PROPERTY, mySourceMessagePropertyChangeListener);
     }
 
+    private void updateTreeMessage() {
+        final Hl7V2MessageImpl message = myController.getMessage();
+        final TestMessage<Message> testMessage = message.getTestMessage();
+        final Message parsedMessage = testMessage.getParsedMessage();
+        myTreePanel.setMessage(parsedMessage);
+        this.validate();
+    }
+
+    private class MySourceMessagePropertyChangeListener implements PropertyChangeListener {
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            System.out.println("+++CHANGE");
+            updateTreeMessage();
+        }
+    }
 }

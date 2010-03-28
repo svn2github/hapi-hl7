@@ -106,22 +106,30 @@ public class Hl7V2MessageImpl extends AbstractMessage<Message> {
 
     @Override
     public void setSourceMessage(String theMessage) throws PropertyVetoException {
-        mySourceMessage = theMessage.trim();
-        myText = mySourceMessage.replaceAll("(\\r|\\n)+", "\r");
+        String original = mySourceMessage;
+        
+        String sourceMessage = theMessage.trim();
+        String text = sourceMessage.replaceAll("(\\r|\\n)+", "\r");
 
         PipeParser parser = new PipeParser();
         parser.setValidationContext(new ValidationContextImpl());
 
+        Message parsedMessage;
         try {
             // Parse and re-encode to strip out any inconsistancies in the message (extra blank fields at the end of segments, etc)
-            myParsedMessage = parser.parse(myText);
-            myText = parser.encode(myParsedMessage);
+            parsedMessage = parser.parse(text);
+            text = parser.encode(parsedMessage);
         } catch (EncodingNotSupportedException e) {
             throw new PropertyVetoException(e.getMessage(), null);
         } catch (HL7Exception e) {
             throw new PropertyVetoException(e.getMessage(), null);
         }
 
-        mySourceMessage = myText.replaceAll("\\r", "\r\n");
+        sourceMessage = text.replaceAll("\\r", "\r\n");
+
+        myParsedMessage = parsedMessage;
+        myText = text;
+        mySourceMessage = sourceMessage;
+        firePropertyChange(SOURCE_MESSAGE_PROPERTY, original, text);
     }
 }

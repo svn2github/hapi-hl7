@@ -28,6 +28,9 @@ import ca.uhn.hunit.xsd.MessageDefinition;
 import java.beans.PropertyVetoException;
 
 public abstract class AbstractMessage<T> extends AbstractModelClass {
+    
+    public static final String SOURCE_MESSAGE_PROPERTY = "SOURCE_MESSAGE_PROPERTY";
+
     //~ Instance fields ------------------------------------------------------------------------------------------------
 
     protected String myId;
@@ -76,6 +79,9 @@ public abstract class AbstractMessage<T> extends AbstractModelClass {
 
     public abstract TestMessage<T> getTestMessage();
 
+    /**
+     * On successful completion, should fire {@link #SOURCE_MESSAGE_PROPERTY}
+     */
     public abstract void setSourceMessage(String theSourceMessage)
                                    throws PropertyVetoException;
 }
