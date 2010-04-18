@@ -59,7 +59,7 @@ public class TestBatteryExecutionThread extends Thread {
     //~ Methods --------------------------------------------------------------------------------------------------------
 
     public void addEvent(AbstractEvent theEvent) {
-        LogFactory.INSTANCE.getSystem(getClass()).info("Adding event of type " + theEvent.getClass() + " for interface " + myInterface.getId());
+        LogFactory.INSTANCE.getSystem(getClass()).debug("Adding event of type " + theEvent.getClass() + " for interface " + myInterface.getId());
         
         if (myFailed != null) {
             myCtx.addFailure(theEvent.getTest(),
@@ -124,9 +124,9 @@ public class TestBatteryExecutionThread extends Thread {
             	boolean sending = myCtx.getBattery().getInterfaceInteractionTypes(myInterface).contains(InterfaceInteractionEnum.SEND);
             	boolean receiving = myCtx.getBattery().getInterfaceInteractionTypes(myInterface).contains(InterfaceInteractionEnum.RECEIVE);
 
-            	if (sending && receiving) {
-            		myFailed = new ConfigurationException("Interface " + myInterface.getId() + " is configured to be used for both sending and receiving events");
-            	}
+//            	if (sending && receiving) {
+//            		myFailed = new ConfigurationException("Interface " + myInterface.getId() + " is configured to be used for both sending and receiving events");
+//            	}
             	
             	myInterface.start(sending, receiving);
             }

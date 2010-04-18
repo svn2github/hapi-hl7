@@ -118,7 +118,6 @@
 			<extension base="tns:Interface">
 				<sequence>
 					<element name="class" type="string"/>
-					<element name="newInstanceForEachTest" type="boolean"/>
 					<element name="messageType" type="tns:MesssageTypeEnum"/>
 				</sequence>
 			</extension>

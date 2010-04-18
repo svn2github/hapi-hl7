@@ -47,284 +47,294 @@ import ca.uhn.hunit.xsd.Interface;
  *            receive
  */
 public abstract class AbstractInterface<T> extends AbstractModelClass implements Comparable<AbstractInterface<?>> {
-	// ~ Static fields/initializers
-	// -------------------------------------------------------------------------------------
+    // ~ Static fields/initializers
+    // -------------------------------------------------------------------------------------
 
-	public static final String INTERFACE_STARTED_PROPERTY = "INTERFACE_STARTED_PROPERTY";
-	public static final String INTERFACE_ID_PROPERTY = "INTERFACE_ID_PROPERTY";
+    public static final String INTERFACE_STARTED_PROPERTY = "INTERFACE_STARTED_PROPERTY";
+    public static final String INTERFACE_ID_PROPERTY = "INTERFACE_ID_PROPERTY";
 
-	// ~ Instance fields
-	// ------------------------------------------------------------------------------------------------
+    // ~ Instance fields
+    // ------------------------------------------------------------------------------------------------
 
-	private Boolean myAutostart;
-	private Boolean myClear;
-	private Integer myClearMillis;
-	private String myId;
-	private final TestBatteryImpl myBattery;
-	private final LinkedBlockingQueue<TestMessage<T>> mySendMessage = new LinkedBlockingQueue<TestMessage<T>>();
-	private final LinkedBlockingQueue<TestMessage<T>> myReceiveMessage = new LinkedBlockingQueue<TestMessage<T>>();
-	private boolean myStartedForReceiving;
-	private boolean myStartedForSending;
+    private Boolean myAutostart;
+    private Boolean myClear;
+    private Integer myClearMillis;
+    private String myId;
+    private final TestBatteryImpl myBattery;
+    private final LinkedBlockingQueue<TestMessage<T>> mySendMessage = new LinkedBlockingQueue<TestMessage<T>>();
+    private final LinkedBlockingQueue<TestMessage<T>> myReceiveMessage = new LinkedBlockingQueue<TestMessage<T>>();
+    private final LinkedBlockingQueue<TestMessage<T>> myReplyMessage = new LinkedBlockingQueue<TestMessage<T>>();
+    private boolean myStartedForReceiving;
+    private boolean myStartedForSending;
 
-	// ~ Constructors
-	// ---------------------------------------------------------------------------------------------------
+    // ~ Constructors
+    // ---------------------------------------------------------------------------------------------------
 
-	/**
-	 * Constructor
-	 */
-	public AbstractInterface(TestBatteryImpl theBattery, Interface theConfig) {
-		myBattery = theBattery;
-		myId = theConfig.getId();
-		myAutostart = theConfig.isAutostart();
-		myClearMillis = theConfig.getClearMillis();
-		myClear = theConfig.isClear();
+    /**
+     * Constructor
+     */
+    public AbstractInterface(TestBatteryImpl theBattery, Interface theConfig) {
+        myBattery = theBattery;
+        myId = theConfig.getId();
+        myAutostart = theConfig.isAutostart();
+        myClearMillis = theConfig.getClearMillis();
+        myClear = theConfig.isClear();
 
-		init();
-	}
+        init();
+    }
 
-	/**
-	 * Constructor
-	 */
-	public AbstractInterface(TestBatteryImpl theBattery, String theId) {
-		myBattery = theBattery;
-		myId = theId;
+    /**
+     * Constructor
+     */
+    public AbstractInterface(TestBatteryImpl theBattery, String theId) {
+        myBattery = theBattery;
+        myId = theId;
 
-		init();
-	}
+        init();
+    }
 
-	// ~ Methods
-	// --------------------------------------------------------------------------------------------------------
+    // ~ Methods
+    // --------------------------------------------------------------------------------------------------------
 
-	public int compareTo(AbstractInterface<?> theO) {
-		return myId.compareTo(theO.myId);
-	}
+    public int compareTo(AbstractInterface<?> theO) {
+        return myId.compareTo(theO.myId);
+    }
 
-	/**
-	 * Subclasses should make use of this method to export AbstractInterface
-	 * properties into the return value for {@link #exportConfigToXml()}
-	 */
-	protected Interface exportConfig(Interface theConfig) {
-		theConfig.setAutostart(myAutostart);
-		theConfig.setId(myId);
-		theConfig.setClearMillis(myClearMillis);
-		theConfig.setClear(myClear);
+    /**
+     * Subclasses should make use of this method to export AbstractInterface
+     * properties into the return value for {@link #exportConfigToXml()}
+     */
+    protected Interface exportConfig(Interface theConfig) {
+        theConfig.setAutostart(myAutostart);
+        theConfig.setId(myId);
+        theConfig.setClearMillis(myClearMillis);
+        theConfig.setClear(myClear);
 
-		return theConfig;
-	}
+        return theConfig;
+    }
 
-	/**
-	 * Declare a concrete type for subclass implementations of this method
-	 */
-	@Override
-	public abstract AnyInterface exportConfigToXml();
+    /**
+     * Declare a concrete type for subclass implementations of this method
+     */
+    @Override
+    public abstract AnyInterface exportConfigToXml();
 
-	public int getClearMillis() {
-		return myClearMillis;
-	}
+    public int getClearMillis() {
+        return myClearMillis;
+    }
 
-	public String getId() {
-		return myId;
-	}
+    public String getId() {
+        return myId;
+    }
 
-	private void init() {
-		if (myAutostart == null) {
-			myAutostart = true;
-		}
-
-		if (myClearMillis == null) {
-			myClearMillis = 100;
-		}
-
-		if (myClear == null) {
-			myClear = true;
-		}
-	}
-
-	public boolean isAutostart() {
-		return myAutostart;
-	}
-
-	public boolean isClear() {
-		return myClear;
-	}
-
-	/**
-	 * Returns true if this interface is started for either sending or receiving
-	 */
-	public final boolean isStarted() {
-		return myStartedForSending || myStartedForReceiving;
-	}
-
-	public TestMessage<T> receiveMessage(long theTimeout, TestMessage<T> theReply) throws TestFailureException {
-		start(false, true);
-		
-		TestMessage<T> receivedMessage = null;
-		long waitUntil = System.currentTimeMillis() + theTimeout;
-		while (System.currentTimeMillis() < waitUntil && receivedMessage == null) {
-			try {
-				receivedMessage = myReceiveMessage.poll(waitUntil - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-			} catch (InterruptedException e) {
-				// ignore
-			}
-		}
-		
-		if (receivedMessage == null) {
-			return null;
-		}
-		
-		if (theReply == null) {
-			theReply = generateDefaultReply(receivedMessage);
-		}
-		
-		try {
-			mySendMessage.put(theReply);
-		} catch (InterruptedException e) {
-			throw new UnexpectedTestFailureException(e);
-		}
-		
-		return receivedMessage;
-	}
-	
-	public abstract TestMessage<T> generateDefaultReply(TestMessage<T> theTestMessage) throws TestFailureException;
-	
-	public void setAutostart(boolean theAutostart) {
-		myAutostart = theAutostart;
-	}
-
-	public void setClear(boolean theClear) {
-		myClear = theClear;
-	}
-
-	public void setClearMillis(int theClearMillis) {
-		myClearMillis = theClearMillis;
-	}
-
-	public void setId(String theId) throws PropertyVetoException {
-		if (StringUtils.equals(theId, myId)) {
-			return;
-		}
-
-		if (StringUtils.isEmpty(theId)) {
-			throw new PropertyVetoException(Strings.getInstance().getString("interface.id.empty"), null);
-		}
-
-		if (myBattery.getInterfaceIds().contains(theId)) {
-			throw new PropertyVetoException(Strings.getInstance().getString("interface.id.duplicate"), null);
-		}
-
-		String oldValue = myId;
-		firePropertyChange(INTERFACE_ID_PROPERTY, oldValue, theId);
-		myId = theId;
-	}
-
-	/**
-	 * {@inheritDoc }
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final AbstractInterface<?> other = (AbstractInterface<?>) obj;
-		if ((this.myId == null) ? (other.myId != null) : !this.myId.equals(other.myId)) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * {@inheritDoc }
-	 */
-	@Override
-	public int hashCode() {
-		int hash = 7;
-		hash = 41 * hash + (this.myId != null ? this.myId.hashCode() : 0);
-		return hash;
-	}
-
-	/**
-	 * Send a message to this interface, either without expecting or ignoring any response. The
-	 * appropriate behaviour (not expect / ignore) is determined by the specific type of
-	 * interface this is.
-	 */
-	public void sendMessageOnly(IExecutionContext theCtx, TestMessage<T> theMessage) throws TestFailureException {
-		start(true, false);
-		internalSendMessage(theMessage);
-	}
-
-	/**
-	 * Subclasses must override this method to send a message
-	 * 
-	 * @param theMessage
-	 *            The message to send
-	 * @throws TestFailureException 
-	 */
-	protected abstract TestMessage<T> internalSendMessage(TestMessage<T> theMessage) throws TestFailureException;
-
-	/**
-	 * Subclasses must invoke this method when receiving a message to provide
-	 * the message that was received. This method will provide the response, if
-	 * any
-	 * 
-	 * @param theMessage
-	 *            The message received
-	 * @return The response message
-	 */
-	protected TestMessage<T> internalReceiveMessage(TestMessage<T> theMessage) {
-		myReceiveMessage.add(theMessage);
-		while (isStarted()) {
-			try {
-				TestMessage<T> take = mySendMessage.take();
-				return take;
-			} catch (InterruptedException e) {
-				// nothing
-			}
-		}
-		
-		return null;
-	}
-
-	
-	public void stop() throws InterfaceWontStopException {
-        if (!isStarted()) {
-        	return;
+    private void init() {
+        if (myAutostart == null) {
+            myAutostart = true;
         }
-		
-		LogFactory.INSTANCE.get(this).info("Stopping interface");
+
+        if (myClearMillis == null) {
+            myClearMillis = 100;
+        }
+
+        if (myClear == null) {
+            myClear = true;
+        }
+    }
+
+    public boolean isAutostart() {
+        return myAutostart;
+    }
+
+    public boolean isClear() {
+        return myClear;
+    }
+
+    /**
+     * Returns true if this interface is started for either sending or receiving
+     */
+    public final boolean isStarted() {
+        return myStartedForSending || myStartedForReceiving;
+    }
+
+    public TestMessage<T> receiveMessage(long theTimeout, TestMessage<T> theReply) throws TestFailureException {
+        start(false, true);
+
+        TestMessage<T> receivedMessage = null;
+        long waitUntil = System.currentTimeMillis() + theTimeout;
+        while (System.currentTimeMillis() < waitUntil && receivedMessage == null) {
+            try {
+                receivedMessage = myReceiveMessage.poll(waitUntil - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+        }
+
+        if (receivedMessage == null) {
+            return null;
+        }
+
+        if (isProducesReply()) {
+            if (theReply == null) {
+                theReply = generateDefaultReply(receivedMessage);
+            }
+
+            try {
+                myReplyMessage.put(theReply);
+            } catch (InterruptedException e) {
+                throw new UnexpectedTestFailureException(e);
+            }
+        }
+
+        return receivedMessage;
+    }
+
+    public abstract TestMessage<T> generateDefaultReply(TestMessage<T> theTestMessage) throws TestFailureException;
+
+    public void setAutostart(boolean theAutostart) {
+        myAutostart = theAutostart;
+    }
+
+    public void setClear(boolean theClear) {
+        myClear = theClear;
+    }
+
+    public void setClearMillis(int theClearMillis) {
+        myClearMillis = theClearMillis;
+    }
+
+    public void setId(String theId) throws PropertyVetoException {
+        if (StringUtils.equals(theId, myId)) {
+            return;
+        }
+
+        if (StringUtils.isEmpty(theId)) {
+            throw new PropertyVetoException(Strings.getInstance().getString("interface.id.empty"), null);
+        }
+
+        if (myBattery.getInterfaceIds().contains(theId)) {
+            throw new PropertyVetoException(Strings.getInstance().getString("interface.id.duplicate"), null);
+        }
+
+        String oldValue = myId;
+        firePropertyChange(INTERFACE_ID_PROPERTY, oldValue, theId);
+        myId = theId;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AbstractInterface<?> other = (AbstractInterface<?>) obj;
+        if ((this.myId == null) ? (other.myId != null) : !this.myId.equals(other.myId)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 41 * hash + (this.myId != null ? this.myId.hashCode() : 0);
+        return hash;
+    }
+
+    /**
+     * Send a message to this interface, either without expecting or ignoring
+     * any response. The appropriate behaviour (not expect / ignore) is
+     * determined by the specific type of interface this is.
+     */
+    public void sendMessageOnly(IExecutionContext theCtx, TestMessage<T> theMessage) throws TestFailureException {
+        start(true, false);
+        internalSendMessage(theMessage);
+    }
+
+    /**
+     * Subclasses must override this method to send a message
+     * 
+     * @param theMessage
+     *            The message to send
+     * @throws TestFailureException
+     */
+    protected abstract TestMessage<T> internalSendMessage(TestMessage<T> theMessage) throws TestFailureException;
+
+    /**
+     * Subclasses must invoke this method when receiving a message to provide
+     * the message that was received. This method will provide the response, if
+     * any
+     * 
+     * @param theMessage
+     *            The message received
+     * @return The response message
+     */
+    protected TestMessage<T> internalReceiveMessage(TestMessage<T> theMessage) {
+        myReceiveMessage.add(theMessage);
+        while (isStarted() && isProducesReply()) {
+            try {
+                TestMessage<T> take = myReplyMessage.take();
+                return take;
+            } catch (InterruptedException e) {
+                // nothing
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Defaults to true, subclasses may override to indicate that they don't
+     * produce message replies
+     */
+    protected boolean isProducesReply() {
+        return true;
+    }
+
+    public void stop() throws InterfaceWontStopException {
+        if (!isStarted()) {
+            return;
+        }
+
+        LogFactory.INSTANCE.get(this).info("Stopping interface");
 
         if (myStartedForReceiving) {
-        	doStopReceiving();
-        	myStartedForReceiving = false;
+            doStopReceiving();
+            myStartedForReceiving = false;
         }
-        
+
         if (myStartedForSending) {
-        	doStopSending();
-        	myStartedForSending = false;
+            doStopSending();
+            myStartedForSending = false;
         }
 
         doStop();
-        
-        firePropertyChange(INTERFACE_STARTED_PROPERTY, true, false);
-	}
-	
-	public void start(boolean theForSending, boolean theForReceiving) throws InterfaceWontStartException {
-		// TODO: check if we're started for the right activity
-		if (isStarted()) {
-			return; 
-		}
-		
-		doStart();
 
-		if (theForSending) {
-			doStartSending();
-		}
-		if (theForReceiving) {
-			doStartReceiving();
-		}
-		
+        firePropertyChange(INTERFACE_STARTED_PROPERTY, true, false);
+    }
+
+    public void start(boolean theForSending, boolean theForReceiving) throws InterfaceWontStartException {
+        // TODO: check if we're started for the right activity
+        if (isStarted()) {
+            return;
+        }
+
+        doStart();
+
+        if (theForSending) {
+            doStartSending();
+        }
+        if (theForReceiving) {
+            doStartReceiving();
+        }
+
         myStartedForReceiving = theForReceiving;
         myStartedForSending = theForSending;
 
@@ -358,49 +368,49 @@ public abstract class AbstractInterface<T> extends AbstractModelClass implements
                     readUntil = System.currentTimeMillis() + getClearMillis();
                 } catch (TestFailureException e) {
                     LogFactory.INSTANCE.get(this).warn("Error while clearing queue: " + e.getMessage());
-				}
+                }
             }
 
             LogFactory.INSTANCE.get(this).info("Cleared " + cleared + " messages from interface before starting");
         }
-        
+
         firePropertyChange(INTERFACE_STARTED_PROPERTY, false, true);
         LogFactory.INSTANCE.get(this).info("Started interface successfully");
-	}
-	
-	/**
-	 * Starts the interface receiving messages
-	 */
-	protected abstract void doStartReceiving() throws InterfaceWontStartException;
-
-	/**
-	 * Starts the interface sending messages
-	 */
-	protected abstract void doStartSending() throws InterfaceWontStartException;
-
-	/**
-	 * Starts the interface sending messages
-	 */
-	protected abstract void doStart() throws InterfaceWontStartException;
-	
-	/**
-	 * Stops the interface
-	 */
-	protected abstract void doStop() throws InterfaceWontStopException;
-
-	/**
-	 * Stops the interface
-	 */
-	protected abstract void doStopReceiving() throws InterfaceWontStopException;
-
-	/**
-	 * Stops the interface
-	 */
-	protected abstract void doStopSending() throws InterfaceWontStopException;
+    }
 
     /**
-     * Does this interface support replying to an incoming message, or receiving a reply to
-     * an outgoing message?
+     * Starts the interface receiving messages
+     */
+    protected abstract void doStartReceiving() throws InterfaceWontStartException;
+
+    /**
+     * Starts the interface sending messages
+     */
+    protected abstract void doStartSending() throws InterfaceWontStartException;
+
+    /**
+     * Starts the interface sending messages
+     */
+    protected abstract void doStart() throws InterfaceWontStartException;
+
+    /**
+     * Stops the interface
+     */
+    protected abstract void doStop() throws InterfaceWontStopException;
+
+    /**
+     * Stops the interface
+     */
+    protected abstract void doStopReceiving() throws InterfaceWontStopException;
+
+    /**
+     * Stops the interface
+     */
+    protected abstract void doStopSending() throws InterfaceWontStopException;
+
+    /**
+     * Does this interface support replying to an incoming message, or receiving
+     * a reply to an outgoing message?
      */
     protected abstract boolean getCapabilitySupportsReply();
 }

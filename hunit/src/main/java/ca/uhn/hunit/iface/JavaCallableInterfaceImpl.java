@@ -5,6 +5,7 @@
 package ca.uhn.hunit.iface;
 
 import ca.uhn.hunit.api.IJavaCallableInterface;
+import ca.uhn.hunit.api.IJavaCallableInterfaceReceiver;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.ex.InterfaceWontStopException;
@@ -24,13 +25,12 @@ import java.util.logging.Logger;
  *
  * @author James
  */
-public class JavaCallableInterfaceImpl extends AbstractInterface {
+public class JavaCallableInterfaceImpl extends AbstractInterface<Object> {
 
     private Class<IJavaCallableInterface> myClazz;
-    private boolean myNewInstanceForEachTest;
     private MesssageTypeEnum myMessageType;
     private IJavaCallableInterface myInstance;
-
+    private IJavaCallableInterfaceReceiver myReceiver = new MyReceiver();
     /**
      * Constructor
      */
@@ -43,8 +43,6 @@ public class JavaCallableInterfaceImpl extends AbstractInterface {
             throw new ConfigurationException(ex.getMessage(), ex);
         }
 
-        setNewInstanceForEachTest(theInterface.isNewInstanceForEachTest());
-
         setMessageType(theInterface.getMessageType());
 
     }
@@ -53,69 +51,12 @@ public class JavaCallableInterfaceImpl extends AbstractInterface {
      * {@inheritDoc }
      */
     @Override
-    public AnyInterface exportConfigToXml() {
-        JavaCallableInterface iface = new JavaCallableInterface();
-        exportConfig(iface);
-
-        AnyInterface retVal = new AnyInterface();
-        retVal.setJavaCallableInterface(iface);
-        return retVal;
-    }
-
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    protected JavaCallableInterface exportConfig(Interface theConfig) {
-        JavaCallableInterface config = (JavaCallableInterface) theConfig;
-        super.exportConfig(config);
-
-        config.setClazz(myClazz.getName());
-        config.setNewInstanceForEachTest(myNewInstanceForEachTest);
-
-        return config;
-    }
-
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public TestMessage generateDefaultReply(TestMessage theTestMessage) throws TestFailureException {
-        throw new UnsupportedOperationException("Not supported");
-    }
-
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    protected TestMessage internalSendMessage(TestMessage theMessage) throws TestFailureException {
-
-        IJavaCallableInterface outboundReceiver = new IJavaCallableInterface() {
-
-            @Override
-            public void message(String theMessage, IJavaCallableInterface theOutboundAcceptor) {
-                TestMessage testMessage = new TestMessage(theMessage);
-                internalReceiveMessage(testMessage);
-            }
-        };
-
-        getClassInstance().message(theMessage.getRawMessage(), outboundReceiver);
-
-        return null;
-    }
-
-    private synchronized IJavaCallableInterface getClassInstance() throws UnexpectedTestFailureException {
-        if (myInstance == null || myNewInstanceForEachTest) {
+    protected void doStart() throws InterfaceWontStartException {
             try {
-                myInstance = myClazz.newInstance();
-            } catch (InstantiationException ex) {
-                throw new UnexpectedTestFailureException("Exception instantiating " + myClazz.getName() + " using no-arg constructor", ex);
-            } catch (IllegalAccessException ex) {
-                throw new UnexpectedTestFailureException("Exception instantiating " + myClazz.getName() + " using no-arg constructor", ex);
+                getClassInstance().start(myReceiver);
+            } catch (UnexpectedTestFailureException e) {
+                throw new InterfaceWontStartException(this, e.getMessage(), e);
             }
-        }
-
-        return myInstance;
     }
 
     /**
@@ -138,16 +79,13 @@ public class JavaCallableInterfaceImpl extends AbstractInterface {
      * {@inheritDoc }
      */
     @Override
-    protected void doStart() throws InterfaceWontStartException {
-        // ignore
-    }
-
-    /**
-     * {@inheritDoc }
-     */
-    @Override
     protected void doStop() throws InterfaceWontStopException {
         myInstance = null;
+            try {
+                getClassInstance().stop();
+            } catch (UnexpectedTestFailureException e) {
+                throw new InterfaceWontStopException(this, e.getMessage(), e);
+            }
     }
 
     /**
@@ -170,8 +108,83 @@ public class JavaCallableInterfaceImpl extends AbstractInterface {
      * {@inheritDoc }
      */
     @Override
+    protected JavaCallableInterface exportConfig(Interface theConfig) {
+        JavaCallableInterface config = (JavaCallableInterface) theConfig;
+        super.exportConfig(config);
+
+        config.setClazz(myClazz.getName());
+
+        return config;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public AnyInterface exportConfigToXml() {
+        JavaCallableInterface iface = new JavaCallableInterface();
+        exportConfig(iface);
+
+        AnyInterface retVal = new AnyInterface();
+        retVal.setJavaCallableInterface(iface);
+        return retVal;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public TestMessage<Object> generateDefaultReply(TestMessage<Object> theTestMessage) throws TestFailureException {
+            throw new UnsupportedOperationException("Not supported");
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
     protected boolean getCapabilitySupportsReply() {
         return false;
+    }
+
+    private synchronized IJavaCallableInterface getClassInstance() throws UnexpectedTestFailureException {
+        if (myInstance == null) {
+            try {
+                myInstance = myClazz.newInstance();
+            } catch (InstantiationException ex) {
+                throw new UnexpectedTestFailureException("Exception instantiating " + myClazz.getName() + " using no-arg constructor: " + ex.getMessage(), ex);
+            } catch (IllegalAccessException ex) {
+                throw new UnexpectedTestFailureException("Exception instantiating " + myClazz.getName() + " using no-arg constructor: " + ex.getMessage(), ex);
+            }
+        }
+
+        return myInstance;
+    }
+
+    /**
+     * Getter
+     */
+    public MesssageTypeEnum getMessageType() {
+        return myMessageType;
+    }
+
+    /**
+     * Getter
+     */
+    public Class<IJavaCallableInterface> getMyClazz() {
+        return myClazz;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    protected TestMessage<Object> internalSendMessage(TestMessage<Object> theMessage) throws TestFailureException {
+        String reply = getClassInstance().sendMessageToInterface(theMessage.getRawMessage());
+        if (reply == null) {
+            return null;
+        } else {
+            return new TestMessage<Object>(reply);
+        }
     }
 
     /**
@@ -185,7 +198,7 @@ public class JavaCallableInterfaceImpl extends AbstractInterface {
             throw new PropertyVetoException(ex.getMessage(), null);
         }
 
-        if (!Callable.class.isAssignableFrom(classInstance)) {
+        if (!IJavaCallableInterface.class.isAssignableFrom(classInstance)) {
             throw new PropertyVetoException("Class \"" + clazz + "\" does not implement " + IJavaCallableInterface.class.getName(), null);
         }
 
@@ -193,24 +206,11 @@ public class JavaCallableInterfaceImpl extends AbstractInterface {
     }
 
     /**
-     * Setter
+     * Overridden to return false
      */
-    public void setNewInstanceForEachTest(boolean theNewInstanceForEachTest) {
-        myNewInstanceForEachTest = theNewInstanceForEachTest;
-    }
-
-    /**
-     * Getter
-     */
-    public Class<IJavaCallableInterface> getMyClazz() {
-        return myClazz;
-    }
-
-    /**
-     * Getter
-     */
-    public boolean isMyNewInstanceForEachTest() {
-        return myNewInstanceForEachTest;
+    @Override
+    protected boolean isProducesReply() {
+        return false;
     }
 
     /**
@@ -220,10 +220,11 @@ public class JavaCallableInterfaceImpl extends AbstractInterface {
         myMessageType = theMesssageTypeEnum;
     }
 
-    /**
-     * Getter
-     */
-    public MesssageTypeEnum getMessageType() {
-        return myMessageType;
+    private final class MyReceiver implements IJavaCallableInterfaceReceiver {
+        @Override
+        public void receiveMessage(String theMessage) {
+            TestMessage testMessage = new TestMessage(theMessage);
+            JavaCallableInterfaceImpl.this.internalReceiveMessage(testMessage);
+        }
     }
 }

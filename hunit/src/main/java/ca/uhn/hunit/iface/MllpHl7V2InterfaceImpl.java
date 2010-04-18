@@ -26,7 +26,6 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -46,17 +45,16 @@ import ca.uhn.hl7v2.protocol.impl.ApplicationRouterImpl;
 import ca.uhn.hl7v2.protocol.impl.HL7Server;
 import ca.uhn.hl7v2.protocol.impl.NullSafeStorage;
 import ca.uhn.hl7v2.validation.impl.ValidationContextImpl;
-import ca.uhn.hunit.event.InterfaceInteractionEnum;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceWontSendException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.ex.InterfaceWontStopException;
 import ca.uhn.hunit.ex.TestFailureException;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
-import ca.uhn.hunit.run.IExecutionContext;
 import ca.uhn.hunit.test.TestBatteryImpl;
 import ca.uhn.hunit.util.log.LogFactory;
 import ca.uhn.hunit.xsd.AnyInterface;
+import ca.uhn.hunit.xsd.Hl7V2EncodingTypeEnum;
 import ca.uhn.hunit.xsd.MllpHl7V2Interface;
 
 public class MllpHl7V2InterfaceImpl extends AbstractInterface<Message> {
@@ -73,7 +71,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface<Message> {
     private Parser myParser;
     private ServerSocket myServerSocket;
     private Socket myClientSocket;
-    private String myEncoding;
+    private Hl7V2EncodingTypeEnum myEncoding;
     private String myIp;
     private boolean myClientMode;
     private int myPort;
@@ -134,7 +132,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface<Message> {
         return myConnectionTimeout;
     }
 
-    public String getEncoding() {
+    public Hl7V2EncodingTypeEnum getEncoding() {
         return myEncoding;
     }
 
@@ -184,7 +182,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface<Message> {
         this.myConnectionTimeout = myConnectionTimeout;
     }
 
-    public void setEncoding(String myEncoding) {
+    public void setEncoding(Hl7V2EncodingTypeEnum myEncoding) {
         this.myEncoding = myEncoding;
     }
 

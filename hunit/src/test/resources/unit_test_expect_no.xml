@@ -35,7 +35,7 @@
 			<hu:send_message>
 				<hu:hl7v2 interface_id="test_out_interface" message_id="InputMessage" />
 			</hu:send_message>
-			<hu:expect_no_message interface_id="test_in_interface" wait_for_completion="false">
+			<hu:expect_no_message interface_id="test_in_interface" receive_timeout_millis="2000">
 			</hu:expect_no_message>
 			<hu:expect_message>
                 <hu:hl7v2_specific interface_id="unused_test_in_interface" message_id="InputMessage"/>
@@ -46,7 +46,7 @@
 			<hu:send_message>
 				<hu:hl7v2 interface_id="test_out_interface" message_id="InputMessage" />
 			</hu:send_message>
-			<hu:expect_no_message interface_id="unused_test_in_interface" wait_for_completion="false">
+			<hu:expect_no_message interface_id="unused_test_in_interface" receive_timeout_millis="2000">
 			</hu:expect_no_message>
 			<hu:expect_message>
                 <hu:hl7v2_specific interface_id="test_in_interface" message_id="InputMessage"/>

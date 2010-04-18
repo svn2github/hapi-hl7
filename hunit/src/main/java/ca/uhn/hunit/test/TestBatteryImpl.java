@@ -46,6 +46,7 @@ import org.springframework.core.io.Resource;
 import ca.uhn.hunit.event.InterfaceInteractionEnum;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.iface.AbstractInterface;
+import ca.uhn.hunit.iface.JavaCallableInterfaceImpl;
 import ca.uhn.hunit.iface.JmsInterfaceImpl;
 import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
 import ca.uhn.hunit.l10n.Strings;
@@ -65,13 +66,15 @@ import ca.uhn.hunit.xsd.TestBattery;
 import ca.uhn.hunit.xsd.XmlMessageDefinition;
 
 public class TestBatteryImpl extends AbstractModelClass {
-    //~ Static fields/initializers -------------------------------------------------------------------------------------
+    // ~ Static fields/initializers
+    // -------------------------------------------------------------------------------------
 
     public static final String PROP_INTERFACES = "PROP_INTERFACES";
     public static final String PROP_FILE = "PROP_FILE";
     public static final String PROP_MESSAGES = "PROP_MESSAGES";
 
-    //~ Instance fields ------------------------------------------------------------------------------------------------
+    // ~ Instance fields
+    // ------------------------------------------------------------------------------------------------
     private final BatteryTestModel myTestModel = new BatteryTestModel(this);
     private File myFile;
     private final List<AbstractInterface<?>> myInterfaces = new ArrayList<AbstractInterface<?>>();
@@ -79,7 +82,8 @@ public class TestBatteryImpl extends AbstractModelClass {
     private Map<String, AbstractMessage<?>> myId2Message = new HashMap<String, AbstractMessage<?>>();
     private String myName;
 
-    //~ Constructors ---------------------------------------------------------------------------------------------------
+    // ~ Constructors
+    // ---------------------------------------------------------------------------------------------------
     public TestBatteryImpl(ILogProvider theLogProvider) {
         myName = "Untitled";
     }
@@ -88,8 +92,7 @@ public class TestBatteryImpl extends AbstractModelClass {
         this(new CommonsLoggingLog());
     }
 
-    public TestBatteryImpl(Resource theDefFile, ILogProvider theLogProvider)
-            throws ConfigurationException, JAXBException {
+    public TestBatteryImpl(Resource theDefFile, ILogProvider theLogProvider) throws ConfigurationException, JAXBException {
         load(theDefFile);
 
         try {
@@ -112,7 +115,15 @@ public class TestBatteryImpl extends AbstractModelClass {
         }
     }
 
-    //~ Methods --------------------------------------------------------------------------------------------------------
+    /**
+     * Constructor which accepts programmatic config
+     */
+    public TestBatteryImpl(TestBattery theBatteryConfig) throws ConfigurationException {
+        load(theBatteryConfig);
+    }
+
+    // ~ Methods
+    // --------------------------------------------------------------------------------------------------------
     public void addEmptyInterfaceJms() {
         String id = IdUtil.nextId(getInterfaceIds());
         addInterface(new JmsInterfaceImpl(this, id));
@@ -149,15 +160,14 @@ public class TestBatteryImpl extends AbstractModelClass {
     }
 
     private void addMessage(AbstractMessage<?> newMessage) {
-        myId2Message.put(newMessage.getId(),
-                newMessage);
+        myId2Message.put(newMessage.getId(), newMessage);
         myMessages.add(newMessage);
         firePropertyChange(PROP_MESSAGES, null, newMessage);
     }
 
     /**
-     * To be called when this battery is being closed or disposed, allowing
-     * it to clean up any held resources.
+     * To be called when this battery is being closed or disposed, allowing it
+     * to clean up any held resources.
      */
     public void dispose() {
     }
@@ -189,8 +199,7 @@ public class TestBatteryImpl extends AbstractModelClass {
         return myFile;
     }
 
-    public AbstractInterface<?> getInterface(String theId)
-            throws ConfigurationException {
+    public AbstractInterface<?> getInterface(String theId) throws ConfigurationException {
         for (AbstractInterface<?> next : myInterfaces) {
             if (theId.equals(next.getId())) {
                 return next;
@@ -229,11 +238,9 @@ public class TestBatteryImpl extends AbstractModelClass {
         return retVal;
     }
 
-    public AbstractMessage<?> getMessage(String theId)
-            throws ConfigurationException {
+    public AbstractMessage<?> getMessage(String theId) throws ConfigurationException {
         if (!myId2Message.containsKey(theId)) {
-            throw new ConfigurationException("Unknown message ID[" + theId + "] - Valid values are: " +
-                    myId2Message.keySet());
+            throw new ConfigurationException("Unknown message ID[" + theId + "] - Valid values are: " + myId2Message.keySet());
         }
 
         return myId2Message.get(theId);
@@ -267,23 +274,20 @@ public class TestBatteryImpl extends AbstractModelClass {
         return myTestModel.getTests();
     }
 
-    private void initInterfaces(TestBattery theConfig)
-            throws ConfigurationException {
+    private void initInterfaces(TestBattery theConfig) throws ConfigurationException {
         myInterfaces.clear();
 
         for (AnyInterface next : theConfig.getInterfaces().getInterface()) {
             AbstractInterface<?> nextIf;
 
             if (next.getMllpHl7V2Interface() != null) {
-                nextIf =
-                        new MllpHl7V2InterfaceImpl(this,
-                        next.getMllpHl7V2Interface());
+                nextIf = new MllpHl7V2InterfaceImpl(this, next.getMllpHl7V2Interface());
             } else if (next.getJmsInterface() != null) {
-                nextIf =
-                        new JmsInterfaceImpl(this,
-                        next.getJmsInterface());
+                nextIf = new JmsInterfaceImpl(this, next.getJmsInterface());
+            } else if (next.getJavaCallableInterface() != null) {
+                nextIf = new JavaCallableInterfaceImpl(this, next.getJavaCallableInterface());
             } else {
-                throw new ConfigurationException("Unknown interface type in battery " + myName);
+                throw new ConfigurationException("Unknown interface type \"" + next.getClass().getName() + "\" in battery " + myName);
             }
 
             myInterfaces.add(nextIf);
@@ -310,8 +314,7 @@ public class TestBatteryImpl extends AbstractModelClass {
                     throw new ConfigurationException("Unknown message type: " + next.getClass().getName());
                 }
 
-                myId2Message.put(nextMessage.getId(),
-                        nextMessage);
+                myId2Message.put(nextMessage.getId(), nextMessage);
                 myMessages.add(nextMessage);
             }
         }
@@ -345,6 +348,10 @@ public class TestBatteryImpl extends AbstractModelClass {
 
         TestBattery config = unmarshal(source);
 
+        load(config);
+    }
+
+    private void load(TestBattery config) throws ConfigurationException {
         myName = config.getName();
         initInterfaces(config);
         initMessages(config);
@@ -355,9 +362,11 @@ public class TestBatteryImpl extends AbstractModelClass {
 
     /**
      * Saves the battery config to the file provided by {@link #getFile() }.
-     *
-     * @throws JAXBException If a save error occurs
-     * @throws IllegalStateException If no file is defined for this battery
+     * 
+     * @throws JAXBException
+     *             If a save error occurs
+     * @throws IllegalStateException
+     *             If no file is defined for this battery
      */
     public void save() throws JAXBException, IOException {
         if (myFile == null) {
@@ -378,9 +387,7 @@ public class TestBatteryImpl extends AbstractModelClass {
 
         if (declarationIndex != -1) {
             String prolog = Strings.getMessage("xml.prolog");
-            prolog =
-                    prolog.replaceAll("\\\\n",
-                    Strings.getLineSeparator());
+            prolog = prolog.replaceAll("\\\\n", Strings.getLineSeparator());
             xmlString.insert(declarationIndex + 2, prolog);
         }
 
@@ -403,14 +410,14 @@ public class TestBatteryImpl extends AbstractModelClass {
     }
 
     /**
-     * @param theName Sets the name for this battery
+     * @param theName
+     *            Sets the name for this battery
      */
     public void setName(String theName) {
         myName = theName;
     }
 
-    private static TestBattery unmarshal(final Source source)
-            throws JAXBException {
+    private static TestBattery unmarshal(final Source source) throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance("ca.uhn.hunit.xsd");
         Unmarshaller u = jaxbContext.createUnmarshaller();
         JAXBElement<TestBattery> root = u.unmarshal(source, TestBattery.class);

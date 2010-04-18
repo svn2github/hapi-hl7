@@ -33,6 +33,8 @@ import ca.uhn.hunit.xsd.Hl7V2MessageDefinition;
 
 import java.beans.PropertyVetoException;
 
+import org.apache.commons.lang.StringUtils;
+
 public class Hl7V2MessageImpl extends AbstractMessage<Message> {
     //~ Static fields/initializers -------------------------------------------------------------------------------------
 
@@ -106,6 +108,8 @@ public class Hl7V2MessageImpl extends AbstractMessage<Message> {
 
     @Override
     public void setSourceMessage(String theMessage) throws PropertyVetoException {
+        theMessage = StringUtils.defaultString(theMessage);
+        
         String original = mySourceMessage;
         
         String sourceMessage = theMessage.trim();

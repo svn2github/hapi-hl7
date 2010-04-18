@@ -93,7 +93,7 @@ public class ExecutionContext implements IExecutionContext, Runnable {
     }
 
     /**
-     * Convenience method which sets the test names to execute and then calls {@link #run()}
+     * Convenience method which sets the test names to execute (executes all if none are passed in) and then calls {@link #run()}
      */
     public void execute(String... theTestNamesToExecute) {
         if ((theTestNamesToExecute == null) || (theTestNamesToExecute.length == 0)) {
