@@ -94,9 +94,7 @@ public class SwingRunner extends javax.swing.JFrame {
         myAddInterfaceMenu = new javax.swing.JMenu();
         myAddMllpHl7v2InterfaceMenu = new javax.swing.JMenuItem();
         myAddJmsInterfaceMenu = new javax.swing.JMenuItem();
-        myAddMessageMenu = new javax.swing.JMenu();
-        myAddMessageHl7V2 = new javax.swing.JMenuItem();
-        myAddMessageXml = new javax.swing.JMenuItem();
+        myAddJavaInterfaceMenuItem = new javax.swing.JMenuItem();
         jToolBar1 = new javax.swing.JToolBar();
         myFileNewButton = new javax.swing.JButton();
         myButtonOpen = new javax.swing.JButton();
@@ -146,27 +144,15 @@ public class SwingRunner extends javax.swing.JFrame {
         myAddJmsInterfaceMenu.setText(bundle.getString("batterylist.buttons.add.interface.jms")); // NOI18N
         myAddInterfaceMenu.add(myAddJmsInterfaceMenu);
 
+        myAddJavaInterfaceMenuItem.setText(bundle.getString("batterylist.buttons.add.interface.java")); // NOI18N
+        myAddJavaInterfaceMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myAddJavaInterfaceMenuItemActionPerformed(evt);
+            }
+        });
+        myAddInterfaceMenu.add(myAddJavaInterfaceMenuItem);
+
         myAddPopupMenu.add(myAddInterfaceMenu);
-
-        myAddMessageMenu.setText(bundle.getString("batterylist.buttons.add.message")); // NOI18N
-
-        myAddMessageHl7V2.setText(bundle.getString("batterylist.buttons.add.message.hl7v2")); // NOI18N
-        myAddMessageHl7V2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                myAddMessageHl7V2ActionPerformed(evt);
-            }
-        });
-        myAddMessageMenu.add(myAddMessageHl7V2);
-
-        myAddMessageXml.setText(bundle.getString("batterylist.buttons.add.message.xml")); // NOI18N
-        myAddMessageXml.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                myAddMessageXmlActionPerformed(evt);
-            }
-        });
-        myAddMessageMenu.add(myAddMessageXml);
-
-        myAddPopupMenu.add(myAddMessageMenu);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("hUnit");
@@ -389,14 +375,6 @@ public class SwingRunner extends javax.swing.JFrame {
         myAddPopupMenu.show(myAddButton, 0, myAddButton.getHeight());
     }//GEN-LAST:event_myAddButtonActionPerformed
 
-    private void myAddMessageHl7V2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myAddMessageHl7V2ActionPerformed
-        myController.addMessageHl7V2();
-    }//GEN-LAST:event_myAddMessageHl7V2ActionPerformed
-
-    private void myAddMessageXmlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myAddMessageXmlActionPerformed
-        myController.addMessageXml();
-    }//GEN-LAST:event_myAddMessageXmlActionPerformed
-
     private void myAddMllpHl7v2InterfaceMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myAddMllpHl7v2InterfaceMenuActionPerformed
         myController.addInterfaceMllpHl7v2();
     }//GEN-LAST:event_myAddMllpHl7v2InterfaceMenuActionPerformed
@@ -437,6 +415,10 @@ public class SwingRunner extends javax.swing.JFrame {
         myController.newTemplateHl7InAndOut();
     }//GEN-LAST:event_newTemplateHl7InAndOut
 
+    private void myAddJavaInterfaceMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myAddJavaInterfaceMenuItemActionPerformed
+        myController.addInterfaceJavaCallable();
+    }//GEN-LAST:event_myAddJavaInterfaceMenuItemActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
@@ -449,10 +431,8 @@ public class SwingRunner extends javax.swing.JFrame {
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JButton myAddButton;
     private javax.swing.JMenu myAddInterfaceMenu;
+    private javax.swing.JMenuItem myAddJavaInterfaceMenuItem;
     private javax.swing.JMenuItem myAddJmsInterfaceMenu;
-    private javax.swing.JMenuItem myAddMessageHl7V2;
-    private javax.swing.JMenu myAddMessageMenu;
-    private javax.swing.JMenuItem myAddMessageXml;
     private javax.swing.JMenuItem myAddMllpHl7v2InterfaceMenu;
     private javax.swing.JPopupMenu myAddPopupMenu;
     private javax.swing.JMenuItem myAddTestEmptyMenuItem;

@@ -7,6 +7,7 @@ package ca.uhn.hunit.event;
 import ca.uhn.hunit.event.expect.ExpectNoMessageImpl;
 import ca.uhn.hunit.event.expect.Hl7V2ExpectSpecificMessageImpl;
 import ca.uhn.hunit.ex.ConfigurationException;
+import ca.uhn.hunit.iface.AbstractInterface;
 import ca.uhn.hunit.swing.controller.ctx.EventEditorContextController;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
 import ca.uhn.hunit.swing.ui.event.AbstractEventEditorForm;
@@ -112,8 +113,16 @@ public class EventFactory {
      * "add event" button. The user could then modify the type of event to
      * suit their purposes.
      */
-    public AbstractEvent createDefaultEvent(TestImpl theTest)
+    public AbstractEvent createDefaultEvent(TestBatteryImpl theBattery, TestImpl theTest)
                                      throws ConfigurationException {
+
+        if (theBattery.getInterfaces().isEmpty()) {
+            throw new ConfigurationException("Can't create event because no interfaces have been defined");
+        }
+
+        AbstractInterface iface = theBattery.getInterfaces().get(0);
+        myDefaultEventConfig.setInterfaceId(iface.getId());
+
         // TODO: create blank event type for use here
         return createEvent(myDefaultEventClass, theTest, myDefaultEventConfig);
     }

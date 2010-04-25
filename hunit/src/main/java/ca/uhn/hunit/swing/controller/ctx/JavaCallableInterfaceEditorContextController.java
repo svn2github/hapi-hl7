@@ -26,68 +26,38 @@
  */
 package ca.uhn.hunit.swing.controller.ctx;
 
-import ca.uhn.hunit.event.AbstractEvent;
-import ca.uhn.hunit.event.EventFactory;
 import ca.uhn.hunit.ex.ConfigurationException;
-import ca.uhn.hunit.swing.ui.DialogUtil;
-import ca.uhn.hunit.swing.ui.tests.TestEditorForm;
-import ca.uhn.hunit.test.TestBatteryImpl;
-import ca.uhn.hunit.test.TestImpl;
+import ca.uhn.hunit.iface.JavaCallableInterfaceImpl;
+import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
+import ca.uhn.hunit.swing.ui.iface.JavaCallableInterfaceEditorForm;
+import ca.uhn.hunit.swing.ui.iface.MllpHl7v2InterfaceEditorForm;
 import ca.uhn.hunit.util.log.ILogProvider;
-import ca.uhn.hunit.util.log.LogFactory;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author James
  */
-public class TestEditorController extends AbstractContextController<TestEditorForm> {
+public class JavaCallableInterfaceEditorContextController extends AbstractInterfaceEditorContextController<JavaCallableInterfaceImpl, JavaCallableInterfaceEditorForm> {
     //~ Instance fields ------------------------------------------------------------------------------------------------
 
-    private final TestEditorForm myTestEditorForm;
-    private final TestImpl myTest;
-    private final TestBatteryImpl myBattery;
+    private final JavaCallableInterfaceEditorForm myView;
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
-    public TestEditorController(TestBatteryImpl theBattery, TestImpl theTest) {
-        myTest = theTest;
-        myBattery = theBattery;
+    /**
+     * Constructor
+     */
+    public JavaCallableInterfaceEditorContextController(JavaCallableInterfaceImpl theModel) {
+        super(theModel);
 
-        myTestEditorForm = new TestEditorForm();
-        myTestEditorForm.setController(this);
+        myView = new JavaCallableInterfaceEditorForm();
+        myView.setController(this);
     }
 
     //~ Methods --------------------------------------------------------------------------------------------------------
 
-    /**
-     * Add a new blank event
-     */
-    public void addEvent() {
-        AbstractEvent event;
-
-        try {
-            event = EventFactory.INSTANCE.createDefaultEvent(myBattery, myTest);
-        } catch (ConfigurationException ex) {
-        	LogFactory.INSTANCE.getSystem(getClass()).error(ex.describeReason(),
-                                                 ex);
-            DialogUtil.showErrorMessage(getView(),
-                                        ex.getMessage());
-
-            return;
-        }
-
-        myTest.getEventsModel().addEvent(event);
-    }
-
-    public TestImpl getTest() {
-        return myTest;
-    }
-
     @Override
-    public TestEditorForm getView() {
-        return myTestEditorForm;
+    public JavaCallableInterfaceEditorForm getView() {
+        return myView;
     }
 }

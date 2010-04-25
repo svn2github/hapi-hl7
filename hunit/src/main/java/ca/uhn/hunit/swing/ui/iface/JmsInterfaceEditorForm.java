@@ -57,21 +57,21 @@ public class JmsInterfaceEditorForm extends AbstractContextForm<JmsInterfaceCont
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel2 = new javax.swing.JPanel();
+        myInterfacePropertiesBorder = new javax.swing.JPanel();
         myInterfaceForm = new ca.uhn.hunit.swing.ui.iface.InterfaceForm();
         myJmsInterfaceForm = new ca.uhn.hunit.swing.ui.iface.JmsInterfaceForm();
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Interface Properties"));
+        myInterfacePropertiesBorder.setBorder(javax.swing.BorderFactory.createTitledBorder("Interface Properties"));
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout myInterfacePropertiesBorderLayout = new javax.swing.GroupLayout(myInterfacePropertiesBorder);
+        myInterfacePropertiesBorder.setLayout(myInterfacePropertiesBorderLayout);
+        myInterfacePropertiesBorderLayout.setHorizontalGroup(
+            myInterfacePropertiesBorderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(myInterfaceForm, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE)
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        myInterfacePropertiesBorderLayout.setVerticalGroup(
+            myInterfacePropertiesBorderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(myInterfacePropertiesBorderLayout.createSequentialGroup()
                 .addComponent(myInterfaceForm, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -80,13 +80,13 @@ public class JmsInterfaceEditorForm extends AbstractContextForm<JmsInterfaceCont
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(myInterfacePropertiesBorder, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(myJmsInterfaceForm, javax.swing.GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(myInterfacePropertiesBorder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(myJmsInterfaceForm, javax.swing.GroupLayout.PREFERRED_SIZE, 277, Short.MAX_VALUE))
         );
@@ -94,8 +94,8 @@ public class JmsInterfaceEditorForm extends AbstractContextForm<JmsInterfaceCont
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel jPanel2;
     private ca.uhn.hunit.swing.ui.iface.InterfaceForm myInterfaceForm;
+    private javax.swing.JPanel myInterfacePropertiesBorder;
     private ca.uhn.hunit.swing.ui.iface.JmsInterfaceForm myJmsInterfaceForm;
     // End of variables declaration//GEN-END:variables
 

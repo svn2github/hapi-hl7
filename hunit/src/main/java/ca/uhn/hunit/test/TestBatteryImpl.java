@@ -425,4 +425,9 @@ public class TestBatteryImpl extends AbstractModelClass {
 
         return battery;
     }
+
+    public void addEmptyInterfaceJavaCallable() {
+        String id = IdUtil.nextId(getInterfaceIds());
+        addInterface(new JavaCallableInterfaceImpl(this, id));
+    }
 }

@@ -31,6 +31,31 @@ public class JavaCallableInterfaceImpl extends AbstractInterface<Object> {
     private MesssageTypeEnum myMessageType;
     private IJavaCallableInterface myInstance;
     private IJavaCallableInterfaceReceiver myReceiver = new MyReceiver();
+    private boolean myNewInstanceForEachTest;
+
+    /**
+     * Should a new instance of the test class be instantiated for each test invocation?
+     */
+    public boolean isNewInstanceForEachTest() {
+        return myNewInstanceForEachTest;
+    }
+
+    /**
+     * {@inheritDoc }
+     * @return Returns false
+     */
+    @Override
+    public boolean isSupportsClear() {
+        return false;
+    }
+
+    /**
+     * Should a new instance of the test class be instantiated for each test invocation?
+     */
+    public void setNewInstanceForEachTest(boolean myNewInstanceForEachTest) {
+        this.myNewInstanceForEachTest = myNewInstanceForEachTest;
+    }
+
     /**
      * Constructor
      */
@@ -48,15 +73,22 @@ public class JavaCallableInterfaceImpl extends AbstractInterface<Object> {
     }
 
     /**
+     * Constructor
+     */
+    public JavaCallableInterfaceImpl(TestBatteryImpl theBattery, String theId) {
+        super(theBattery, theId);
+    }
+
+    /**
      * {@inheritDoc }
      */
     @Override
     protected void doStart() throws InterfaceWontStartException {
-            try {
-                getClassInstance().start(myReceiver);
-            } catch (UnexpectedTestFailureException e) {
-                throw new InterfaceWontStartException(this, e.getMessage(), e);
-            }
+        try {
+            getClassInstance().start(myReceiver);
+        } catch (UnexpectedTestFailureException e) {
+            throw new InterfaceWontStartException(this, e.getMessage(), e);
+        }
     }
 
     /**
@@ -81,11 +113,11 @@ public class JavaCallableInterfaceImpl extends AbstractInterface<Object> {
     @Override
     protected void doStop() throws InterfaceWontStopException {
         myInstance = null;
-            try {
-                getClassInstance().stop();
-            } catch (UnexpectedTestFailureException e) {
-                throw new InterfaceWontStopException(this, e.getMessage(), e);
-            }
+        try {
+            getClassInstance().stop();
+        } catch (UnexpectedTestFailureException e) {
+            throw new InterfaceWontStopException(this, e.getMessage(), e);
+        }
     }
 
     /**
@@ -135,7 +167,7 @@ public class JavaCallableInterfaceImpl extends AbstractInterface<Object> {
      */
     @Override
     public TestMessage<Object> generateDefaultReply(TestMessage<Object> theTestMessage) throws TestFailureException {
-            throw new UnsupportedOperationException("Not supported");
+        throw new UnsupportedOperationException("Not supported");
     }
 
     /**
@@ -170,7 +202,7 @@ public class JavaCallableInterfaceImpl extends AbstractInterface<Object> {
     /**
      * Getter
      */
-    public Class<IJavaCallableInterface> getMyClazz() {
+    public Class<IJavaCallableInterface> getClazz() {
         return myClazz;
     }
 
@@ -221,6 +253,7 @@ public class JavaCallableInterfaceImpl extends AbstractInterface<Object> {
     }
 
     private final class MyReceiver implements IJavaCallableInterfaceReceiver {
+
         @Override
         public void receiveMessage(String theMessage) {
             TestMessage testMessage = new TestMessage(theMessage);

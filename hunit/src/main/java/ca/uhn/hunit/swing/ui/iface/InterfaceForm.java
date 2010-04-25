@@ -152,6 +152,11 @@ public class InterfaceForm extends AbstractContextForm<AbstractInterfaceEditorCo
         myIdTextBox.setText(model.getId());
         myClearForMillisSpinner.setValue(model.getClearMillis());
         myClearOnStartupCheckbox.setSelected(model.isClear());
+
+        if (model.isSupportsClear() == false) {
+            myClearForMillisSpinner.setEnabled(false);
+            myClearOnStartupCheckbox.setEnabled(false);
+        }
     }
 
     @Override

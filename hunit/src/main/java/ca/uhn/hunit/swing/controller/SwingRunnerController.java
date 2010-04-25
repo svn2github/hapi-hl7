@@ -30,6 +30,7 @@ import ca.uhn.hunit.event.AbstractEvent;
 import ca.uhn.hunit.ex.ConfigurationException;
 import ca.uhn.hunit.ex.InterfaceWontStartException;
 import ca.uhn.hunit.iface.AbstractInterface;
+import ca.uhn.hunit.iface.JavaCallableInterfaceImpl;
 import ca.uhn.hunit.iface.JmsInterfaceImpl;
 import ca.uhn.hunit.iface.MllpHl7V2InterfaceImpl;
 import ca.uhn.hunit.l10n.Strings;
@@ -41,6 +42,7 @@ import ca.uhn.hunit.swing.controller.ctx.BatteryEditorContextController;
 import ca.uhn.hunit.swing.controller.ctx.BatteryExecutionContextController;
 import ca.uhn.hunit.swing.controller.ctx.EventEditorContextController;
 import ca.uhn.hunit.swing.controller.ctx.Hl7V2MessageEditorController;
+import ca.uhn.hunit.swing.controller.ctx.JavaCallableInterfaceEditorContextController;
 import ca.uhn.hunit.swing.controller.ctx.JmsInterfaceContextController;
 import ca.uhn.hunit.swing.controller.ctx.MllpHl7v2InterfaceEditorContextController;
 import ca.uhn.hunit.swing.controller.ctx.TestEditorController;
@@ -116,14 +118,6 @@ public class SwingRunnerController {
 
 	public void addInterfaceMllpHl7v2() {
 		myBattery.addEmptyInterfaceMllpHl7V2();
-	}
-
-	public void addMessageHl7V2() {
-		myBattery.addEmptyMessageHl7V2();
-	}
-
-	public void addMessageXml() {
-		myBattery.addEmptyMessageXml();
 	}
 
 	/**
@@ -341,6 +335,8 @@ public class SwingRunnerController {
 			ctxController = new MllpHl7v2InterfaceEditorContextController((MllpHl7V2InterfaceImpl) userObject);
 		} else if (userObject instanceof JmsInterfaceImpl) {
 			ctxController = new JmsInterfaceContextController((JmsInterfaceImpl) userObject);
+		} else if (userObject instanceof JavaCallableInterfaceImpl) {
+			ctxController = new JavaCallableInterfaceEditorContextController((JavaCallableInterfaceImpl) userObject);
 		} else {
 			System.out.println("Unknown interface: " + userObject);
 
@@ -367,7 +363,7 @@ public class SwingRunnerController {
 	}
 
 	public void selectTest(TestImpl test) {
-		TestEditorController ctxController = new TestEditorController(test);
+		TestEditorController ctxController = new TestEditorController(myBattery, test);
 		navigateTo(ctxController);
 	}
 
@@ -409,4 +405,8 @@ public class SwingRunnerController {
 		}
 		navigateTo(ctxController);
 	}
+
+    public void addInterfaceJavaCallable() {
+		myBattery.addEmptyInterfaceJavaCallable();
+    }
 }

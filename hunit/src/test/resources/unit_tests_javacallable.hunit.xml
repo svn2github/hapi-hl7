@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+hUnit Test Battery File
+http://hl7api.sourceforge.net/hunit/
+-->
+
+<battery xmlns="http://hl7api.sourceforge.net/hunit/hunit_tests.xsd">
+    <name>Untitled</name>
+    <interfaces>
+        <interface>
+            <javaCallableInterface id="Untitled1" autostart="true">
+                <clear>true</clear>
+                <clearMillis>100</clearMillis>
+                <class>ca.uhn.hunit.api.IJavaCallableInterface</class>
+                <newInstanceForEachTest>true</newInstanceForEachTest>
+            </javaCallableInterface>
+        </interface>
+    </interfaces>
+    <tests/>
+    <messages/>
+</battery>

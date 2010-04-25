@@ -413,4 +413,14 @@ public abstract class AbstractInterface<T> extends AbstractModelClass implements
      * a reply to an outgoing message?
      */
     protected abstract boolean getCapabilitySupportsReply();
+
+    /**
+     * @return Returns true. Specific interface implementations may override if they
+     * want to specify they they do not support "clear" (waiting for stale messages to
+     * drain from the interface before starting)
+     */
+    public boolean isSupportsClear() {
+        return true;
+    }
+
 }

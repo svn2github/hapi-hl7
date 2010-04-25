@@ -15,6 +15,20 @@ import org.apache.commons.lang.StringUtils;
 public abstract class UiUtil {
 
     /**
+     * @return Returns the background to be used in text fields containing invalid data
+     */
+    public static java.awt.Color getErrorBackgroundColor() {
+        return Color.red;
+    }
+
+    /**
+     * @return Returns the background to be used in text fields containing valid data
+     */
+    public static java.awt.Color getOkBackgroundColor() {
+        return Color.white;
+    }
+
+    /**
      * Retrieves a positive integer value from a text field and returns it. If
      * the value of the text field can not be parsed into a positive integer (0-maxint), the
      * background of the text field is turned red, and an exception is thrown
