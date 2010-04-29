@@ -65,7 +65,7 @@ public final class MllpHl7v2MessageSwapper extends Thread {
     private boolean myPrintOutput;
     private int myIterations;
     private boolean myStopped;
-    private List<String> myControlIdsToIgnore;
+    private List<String> myControlIdsToIgnore = Collections.emptyList();
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
