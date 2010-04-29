@@ -62,6 +62,7 @@ public class MllpHl7V2InterfaceImpl extends AbstractInterface<Message> {
 
     private static final String CLIENT = "client";
     private static final String SERVER = "server";
+
     
     //~ Instance fields ------------------------------------------------------------------------------------------------
     private Boolean myAutoAck;

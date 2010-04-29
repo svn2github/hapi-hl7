@@ -50,6 +50,7 @@ public abstract class AbstractInterface<T> extends AbstractModelClass implements
     // ~ Static fields/initializers
     // -------------------------------------------------------------------------------------
 
+    
     public static final String INTERFACE_STARTED_PROPERTY = "INTERFACE_STARTED_PROPERTY";
     public static final String INTERFACE_ID_PROPERTY = "INTERFACE_ID_PROPERTY";
 
