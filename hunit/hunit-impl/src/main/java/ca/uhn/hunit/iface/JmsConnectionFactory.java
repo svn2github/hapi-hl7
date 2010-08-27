@@ -33,7 +33,7 @@ import javax.jms.JMSException;
  * Wraps a JMS connection factory to provide usernames and passwords
  *
  * @author <a href="mailto:james.agnew@uhn.on.ca">James Agnew</a>
- * @version $Revision: 1.3 $ updated on $Date: 2009-11-29 21:55:18 $ by $Author: jamesagnew $
+ * @version $Revision: 1.1 $ updated on $Date: 2010-08-27 15:12:00 $ by $Author: jamesagnew $
  */
 public class JmsConnectionFactory implements ConnectionFactory {
     //~ Instance fields ------------------------------------------------------------------------------------------------

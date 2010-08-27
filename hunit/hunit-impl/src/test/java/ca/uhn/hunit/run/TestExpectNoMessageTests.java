@@ -27,7 +27,7 @@ import javax.xml.bind.JAXBException;
  * TODO: add!
  *
  * @author <a href="mailto:james.agnew@uhn.on.ca">James Agnew</a>
- * @version $Revision: 1.6 $ updated on $Date: 2010-03-17 18:54:32 $ by $Author: jamesagnew $
+ * @version $Revision: 1.1 $ updated on $Date: 2010-08-27 15:12:02 $ by $Author: jamesagnew $
  */
 public class TestExpectNoMessageTests {
     private static final Log ourLog = LogFactory.getLog(TestExpectNoMessageTests.class);
