@@ -21,6 +21,13 @@
  */
 package ca.uhn.hunit.compare.hl7v2;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.AbstractGroup;
 import ca.uhn.hl7v2.model.Composite;
@@ -33,32 +40,29 @@ import ca.uhn.hl7v2.model.Type;
 import ca.uhn.hl7v2.model.Varies;
 import ca.uhn.hl7v2.parser.EncodingCharacters;
 import ca.uhn.hl7v2.parser.PipeParser;
+import ca.uhn.hl7v2.util.Terser;
 import ca.uhn.hl7v2.validation.impl.ValidationContextImpl;
-
 import ca.uhn.hunit.compare.ICompare;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.iface.TestMessage;
 import ca.uhn.hunit.util.Pair;
 import ca.uhn.hunit.util.StringUtil;
 
-import org.apache.commons.lang.StringUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 public class Hl7V2MessageCompare implements ICompare<Message> {
     //~ Instance fields ------------------------------------------------------------------------------------------------
 
-    private EncodingCharacters myEncodingCharacters = new EncodingCharacters('|', null);
-    private GroupComparison myComparison;
-    private PipeParser myEncodingParser;
     private Message myActualMessage;
+    private GroupComparison myComparison;
+    private EncodingCharacters myEncodingCharacters = new EncodingCharacters('|', null);
+    private PipeParser myEncodingParser;
     private Message myExpectedMessage;
+	private Set<String> myTerserPathsToIgnore;
 
     //~ Constructors ---------------------------------------------------------------------------------------------------
 
+    /**
+     * Constructor
+     */
     public Hl7V2MessageCompare() {
         myEncodingParser = new PipeParser();
         myEncodingParser.setValidationContext(new ValidationContextImpl());
@@ -66,7 +70,14 @@ public class Hl7V2MessageCompare implements ICompare<Message> {
 
     //~ Methods --------------------------------------------------------------------------------------------------------
 
-    private void addRemainingStructures(Group theStructure, int theStartingNameIndex, int theAfterEndingIndex,
+    /**
+     * Constructor
+     */
+    public Hl7V2MessageCompare(PipeParser theParser) {
+		myEncodingParser = theParser;
+	}
+
+	private void addRemainingStructures(Group theStructure, int theStartingNameIndex, int theAfterEndingIndex,
                                         List<StructureComparison> theStructureComparisons, boolean theIsMessage1)
                                  throws HL7Exception {
         String[] names = theStructure.getNames();
@@ -101,61 +112,37 @@ public class Hl7V2MessageCompare implements ICompare<Message> {
     public void compare(Message theExpectMessage, Message theActualMessage)
                  throws UnexpectedTestFailureException {
         try {
+            myExpectedMessage = theExpectMessage;
+            myActualMessage = theActualMessage;
+        	
+            myExpectedMessage = myEncodingParser.parse(theExpectMessage.encode());
+            myActualMessage = myEncodingParser.parse(theActualMessage.encode());
+        	
             stripEmptyStructures(theExpectMessage);
             stripEmptyStructures(theActualMessage);
-        	
-        	myExpectedMessage = theExpectMessage;
-            myActualMessage = theActualMessage;
 
-            myComparison = compareGroups(myExpectedMessage, myActualMessage);
+            stripIgnoredTerserPaths(theExpectMessage);
+            stripIgnoredTerserPaths(theActualMessage);
+            
+            myComparison = compareGroups(theExpectMessage, theActualMessage);
         } catch (HL7Exception ex) {
             throw new UnexpectedTestFailureException(ex);
         }
     }
 
     
-    private void stripEmptyStructures(Group theMessage) throws HL7Exception {
-    	for (String nextName : theMessage.getNames()) {
-    		for (int i = 0; i < theMessage.getAll(nextName).length; i++) {
-    			Structure structure = theMessage.get(nextName, i);
-    			if (structure instanceof Group) {
-    				stripEmptyStructures((Group)structure);
-    			}
-    			
-    			if (!hasData(structure) && !theMessage.isRequired(nextName)) {
-    				((AbstractGroup)theMessage).removeRepetition(nextName, i);
-    			}
-    		}
+    private void stripIgnoredTerserPaths(Message theMessage) throws HL7Exception {
+    	if (myTerserPathsToIgnore == null) {
+    		return;
     	}
-    }
-
-	private boolean hasData(Structure theStructure) throws HL7Exception {
-		if (theStructure instanceof Group) {
-			Group g = (Group)theStructure;
-			for (int nameIndex = 0; nameIndex < g.getNames().length; nameIndex++) {
-				String nextName = g.getNames()[nameIndex];
-				Structure[] nextReps = g.getAll(nextName);
-				for (int repIndex = 0; repIndex < nextReps.length; repIndex++) {
-					Structure nextRep = nextReps[repIndex];
-					if (hasData(nextRep)) {
-						return true;
-					}
-				}
-			}
-		} else {
-			Segment s = (Segment)theStructure;
-			for (int nameIndex = 0; nameIndex < s.getNames().length; nameIndex++) {
-				Type[] nextReps = s.getField(nameIndex + 1);
-				for (int repIndex = 0; repIndex < nextReps.length; repIndex++) {
-					Type nextRep = nextReps[repIndex];
-					if (StringUtils.isNotEmpty(nextRep.encode())) {
-						return true;
-					}
-				}
-			}
-		}
-		
-		return false;
+    	
+		Terser terser = new Terser(theMessage);
+    	for (String next : myTerserPathsToIgnore) {
+			terser.set(next, "");
+    	}
+    	
+//    	System.out.println("Message is now: " + theMessage.encode());
+    	
 	}
 
 	private FieldComparison compareFields(Segment theSegment1, Segment theSegment2, int theI)
@@ -193,7 +180,7 @@ public class Hl7V2MessageCompare implements ICompare<Message> {
         return new FieldComparison(theSegment1.getNames()[theI], sameFields, diffFields1, diffFields2);
     }
 
-    private GroupComparison compareGroups(Group theStructure1, Group theStructure2)
+	private GroupComparison compareGroups(Group theStructure1, Group theStructure2)
                                    throws HL7Exception {
         String[] names1 = theStructure1.getNames();
         String[] names2 = theStructure2.getNames();
@@ -269,7 +256,7 @@ public class Hl7V2MessageCompare implements ICompare<Message> {
         return new GroupComparison(structureComparisons);
     }
 
-    private SegmentComparison compareSegments(Segment theSegment1, Segment theSegment2)
+	private SegmentComparison compareSegments(Segment theSegment1, Segment theSegment2)
                                        throws HL7Exception {
         assert theSegment1.getName().equals(theSegment2.getName());
 
@@ -377,6 +364,65 @@ public class Hl7V2MessageCompare implements ICompare<Message> {
         return PipeParser.encode(theType, myEncodingCharacters);
     }
 
+    public GroupComparison getMessageComparison() {
+        return myComparison;
+    }
+
+    private boolean hasData(Structure theStructure) throws HL7Exception {
+		if (theStructure instanceof Group) {
+			Group g = (Group)theStructure;
+			for (int nameIndex = 0; nameIndex < g.getNames().length; nameIndex++) {
+				String nextName = g.getNames()[nameIndex];
+				Structure[] nextReps = g.getAll(nextName);
+				for (int repIndex = 0; repIndex < nextReps.length; repIndex++) {
+					Structure nextRep = nextReps[repIndex];
+					if (hasData(nextRep)) {
+						return true;
+					}
+				}
+			}
+		} else {
+			Segment s = (Segment)theStructure;
+			for (int nameIndex = 0; nameIndex < s.getNames().length; nameIndex++) {
+				Type[] nextReps = s.getField(nameIndex + 1);
+				for (int repIndex = 0; repIndex < nextReps.length; repIndex++) {
+					Type nextRep = nextReps[repIndex];
+					if (StringUtils.isNotEmpty(nextRep.encode())) {
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+
+    /**
+     * {@inheritDoc }
+     */
+    public boolean isSame() {
+        return myComparison.isSame();
+    }
+
+    public void setTerserPathsToIgnore(Set<String> theTerserPathsToIgnore) {
+		myTerserPathsToIgnore = theTerserPathsToIgnore;
+	}
+
+    private void stripEmptyStructures(Group theMessage) throws HL7Exception {
+    	for (String nextName : theMessage.getNames()) {
+    		for (int i = 0; i < theMessage.getAll(nextName).length; i++) {
+    			Structure structure = theMessage.get(nextName, i);
+    			if (structure instanceof Group) {
+    				stripEmptyStructures((Group)structure);
+    			}
+    			
+    			if (!hasData(structure) && !theMessage.isRequired(nextName)) {
+    				((AbstractGroup)theMessage).removeRepetition(nextName, i);
+    			}
+    		}
+    	}
+    }
+
     public static Pair<Integer> findNextSameIndex(String[] theStrings1, String[] theStrings2, int theStartingIndex1,
                                                   int theStartingIndex2) {
         Pair<Integer> found1 = null;
@@ -414,21 +460,10 @@ BOTH:
         }
     }
 
-    public static String formatMsg(TestMessage theMessageReceived) {
+	public static String formatMsg(TestMessage theMessageReceived) {
         String rawMessage = theMessageReceived.getRawMessage();
         rawMessage = rawMessage.replaceAll("(\\r|\\n)+", "\r\n");
         return StringUtil.prependEachLine(rawMessage,
                                           "  ");
-    }
-
-    public GroupComparison getMessageComparison() {
-        return myComparison;
-    }
-
-    /**
-     * {@inheritDoc }
-     */
-    public boolean isSame() {
-        return myComparison.isSame();
     }
 }

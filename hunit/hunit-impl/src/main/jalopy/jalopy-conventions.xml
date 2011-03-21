@@ -182,14 +182,14 @@
                     <standard />
                 </tags>
                 <templates>
-                    <class>/**| * DOCUMENT ME!| *| * @author $author$| * @version $Revision: 1.1 $| */</class>
+                    <class>/**| * DOCUMENT ME!| *| * @author $author$| * @version $Revision: 1.2 $| */</class>
                     <constructor>
                         <bottom> */</bottom>
                         <exception> * @throws $exceptionType$ DOCUMENT ME!</exception>
                         <param> * @param $paramType$ DOCUMENT ME!</param>
                         <top>/**| * Creates a new $objectType$ object.</top>
                     </constructor>
-                    <interface>/**| * DOCUMENT ME!| *| * @author $author$| * @version $Revision: 1.1 $| */</interface>
+                    <interface>/**| * DOCUMENT ME!| *| * @author $author$| * @version $Revision: 1.2 $| */</interface>
                     <method>
                         <bottom> */</bottom>
                         <exception> * @throws $exceptionType$ DOCUMENT ME!</exception>

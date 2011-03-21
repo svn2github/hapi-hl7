@@ -36,7 +36,7 @@ import java.util.LinkedHashMap;
  * TODO: add!
  *
  * @author <a href="mailto:james.agnew@uhn.on.ca">James Agnew</a>
- * @version $Revision: 1.1 $ updated on $Date: 2010-08-27 15:11:59 $ by $Author: jamesagnew $
+ * @version $Revision: 1.2 $ updated on $Date: 2011-03-21 12:51:59 $ by $Author: jamesagnew $
  */
 public class ExpectNoMessageImpl extends AbstractExpect {
     //~ Constructors ---------------------------------------------------------------------------------------------------
