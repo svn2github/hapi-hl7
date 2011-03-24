@@ -133,7 +133,7 @@ public class TestBulkHl7V2Comparison {
 		cmp = new BulkHl7V2Comparison();
 		cmp.setActualMessages(actual);
 		cmp.setExpectedMessages(expected);
-		cmp.addTerserPathToIgnore("MSH-10");
+		cmp.addFieldToIgnore("MSH-10");
 		cmp.compare();
 		System.out.println("Difference was: " + cmp.describeDifferences());
 		Assert.assertEquals(0, cmp.getFailedComparisons().size());

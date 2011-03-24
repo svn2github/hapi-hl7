@@ -1,15 +1,19 @@
 package ca.uhn.hunit.compare.hl7v2.bulk;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
 import ca.uhn.hl7v2.parser.PipeParser;
 import ca.uhn.hunit.compare.hl7v2.Hl7V2MessageCompare;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
+import ca.uhn.hunit.util.Hl7FileUtil;
 
 public class BulkHl7V2Comparison {
 
@@ -19,7 +23,7 @@ public class BulkHl7V2Comparison {
 	private List<Message> myExpectedMessages;
 	private List<Hl7V2MessageCompare> myFailedComparisons = new ArrayList<Hl7V2MessageCompare>();
 	private boolean myStopOnFirstFailure;
-	private Set<String> myTerserPathsToIgnore = new HashSet<String>();
+	private Set<String> myFieldsToIgnore = new HashSet<String>();
 	private PipeParser myParser;
 
 	public BulkHl7V2Comparison() {
@@ -40,7 +44,7 @@ public class BulkHl7V2Comparison {
 			Message expectedMessage = myExpectedMessages.get(expectedIndex);
 			
 			Hl7V2MessageCompare comparison = new Hl7V2MessageCompare(myParser);
-			comparison.setTerserPathsToIgnore(myTerserPathsToIgnore);
+			comparison.setFieldsToIgnore(myFieldsToIgnore);
 			comparison.compare(expectedMessage, actualMessage);
 			
 			if (!comparison.isSame()) {
@@ -112,11 +116,11 @@ public class BulkHl7V2Comparison {
 	}
 
 	/**
-	 * @param theTerserPathToIgnore
+	 * @param theFieldToIgnore
 	 *            the terserPathsToIgnore to set
 	 */
-	public void addTerserPathToIgnore(String theTerserPathToIgnore) {
-		myTerserPathsToIgnore.add(theTerserPathToIgnore);
+	public void addFieldToIgnore(String theFieldToIgnore) {
+		myFieldsToIgnore.add(theFieldToIgnore);
 	}
 
 
@@ -130,6 +134,27 @@ public class BulkHl7V2Comparison {
 		}
 		
 		return retVal.toString();
+	}
+	
+	
+	public static void main(String[] theArgs) throws EncodingNotSupportedException, IOException, HL7Exception, UnexpectedTestFailureException {
+		String expectedFile = "../../prj_Map_ADT_SIMS_EPR_ADT_UHN_RxTFC_Pojo/test/expected.txt";
+		String actualFile = "../../prj_Map_ADT_SIMS_EPR_ADT_UHN_RxTFC_Pojo/test/actual.txt";
+		
+		BulkHl7V2Comparison tester = new BulkHl7V2Comparison();
+		tester.setExpectedMessages(Hl7FileUtil.loadFileAndParseIntoMessages(expectedFile));
+		tester.setActualMessages(Hl7FileUtil.loadFileAndParseIntoMessages(actualFile));
+		tester.setStopOnFirstFailure(true);
+		tester.addFieldToIgnore("MSH-2");
+		tester.addFieldToIgnore("MSH-10");
+		
+		tester.compare();
+		
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println(tester.describeDifferences());
+		
 	}
 
 }
