@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.AbstractGroup;
 import ca.uhn.hl7v2.model.Composite;
+import ca.uhn.hl7v2.model.DataTypeException;
 import ca.uhn.hl7v2.model.Group;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.Primitive;
@@ -124,10 +125,25 @@ public class Hl7V2MessageCompare implements ICompare<Message> {
 	private FieldComparison compareFields(Segment theSegment1, Segment theSegment2, int theI) throws HL7Exception {
 
 		String fieldDescriptor = theSegment1.getName() + "-" + (theI + 1);
+
+		// Check for fields
 		boolean ignore = (myFieldsToIgnore != null) && (myFieldsToIgnore.contains(fieldDescriptor));
 
 		Type[] reps1 = theSegment1.getField(theI + 1);
 		Type[] reps2 = theSegment2.getField(theI + 1);
+
+		// Check for components (e.g. PID-3-2)
+		for (String fieldsToIgnore : myFieldsToIgnore) {
+			if (fieldsToIgnore.length() > fieldDescriptor.length() + 1) {
+				if (fieldsToIgnore.startsWith(fieldDescriptor)) {
+					String componentIndexStr = fieldsToIgnore.substring(fieldDescriptor.length() + 1);
+					int componentIndex = Integer.parseInt(componentIndexStr);
+					clearComponentIndex(reps1, componentIndex);
+					clearComponentIndex(reps2, componentIndex);
+				}
+			}
+		}
+
 		int maxReps = (reps1.length > reps2.length) ? reps1.length : reps2.length;
 
 		List<Type> sameFields = new ArrayList<Type>();
@@ -172,6 +188,38 @@ public class Hl7V2MessageCompare implements ICompare<Message> {
 		}
 
 		return new FieldComparison(theSegment1.getNames()[theI], sameFields, diffFields1, diffFields2);
+	}
+
+	private void clearComponentIndex(Type[] theFieldReps, int theComponentIndex) throws HL7Exception {
+
+		for (Type type : theFieldReps) {
+
+			int extraComponentIndex = -1;
+
+			if (type instanceof Primitive) {
+				Primitive p = (Primitive) type;
+				if (theComponentIndex < 2) {
+					p.setValue("");
+				} else {
+					extraComponentIndex = theComponentIndex - 1;
+				}
+			} else {
+				Composite c = (Composite) type;
+				if (theComponentIndex <= c.getComponents().length) {
+					c.getComponents()[theComponentIndex - 1].parse("");
+				} else {
+					extraComponentIndex = theComponentIndex - c.getComponents().length;
+				}
+			}
+
+			if (extraComponentIndex != -1) {
+				if (type.getExtraComponents().numComponents() >= (theComponentIndex)) {
+					type.getExtraComponents().getComponent(extraComponentIndex).parse("");
+				}
+			}
+
+		}
+
 	}
 
 	private GroupComparison compareGroups(Group theStructure1, Group theStructure2) throws HL7Exception {
