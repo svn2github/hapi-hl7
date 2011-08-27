@@ -12,14 +12,14 @@
         <relativePath>../pom.xml</relativePath>
         <groupId>ca.uhn.hunit</groupId>
         <artifactId>hunit</artifactId>
-        <version>0.4</version>
+        <version>0.4.2</version>
     </parent>
 
 	<dependencies>
         <dependency>
             <groupId>ca.uhn.hunit</groupId>
             <artifactId>hunit-api</artifactId>
-            <version>0.4</version>
+            <version>0.4.2</version>
         </dependency>
 
 		<dependency>

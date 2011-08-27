@@ -3,6 +3,7 @@ package ca.uhn.hunit.compare.hl7v2.bulk;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -11,6 +12,8 @@ import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
 import ca.uhn.hl7v2.parser.PipeParser;
+import ca.uhn.hl7v2.util.Terser;
+import ca.uhn.hunit.api.IMessageTransformer;
 import ca.uhn.hunit.compare.hl7v2.Hl7V2MessageCompare;
 import ca.uhn.hunit.ex.UnexpectedTestFailureException;
 import ca.uhn.hunit.util.Hl7FileUtil;
@@ -19,15 +22,35 @@ public class BulkHl7V2Comparison {
 
 	private static final Logger ourLog = Logger.getLogger(BulkHl7V2Comparison.class.getName());
 	
-	private List<Message> myActualMessages;
-	private List<Message> myExpectedMessages;
+	private Iterator<Message> myActualMessages;
+	private List<IMessageTransformer<Message>> myActualMessageTransformers = new ArrayList<IMessageTransformer<Message>>();
+	private Iterator<Message> myExpectedMessages;
+	private List<IMessageTransformer<Message>> myExpectedMessageTransformers = new ArrayList<IMessageTransformer<Message>>();
 	private List<Hl7V2MessageCompare> myFailedComparisons = new ArrayList<Hl7V2MessageCompare>();
-	private boolean myStopOnFirstFailure;
 	private Set<String> myFieldsToIgnore = new HashSet<String>();
 	private PipeParser myParser;
+	private boolean myStopOnFirstFailure;
+	private int myTotalMessages = -1;
 
 	public BulkHl7V2Comparison() {
 		myParser = PipeParser.getInstanceWithNoValidation();
+	}
+	
+	
+	public void addActualMessageTransformer(IMessageTransformer<Message> theTransformer) {
+		myActualMessageTransformers.add(theTransformer);
+	}
+	
+	public void addExpectedMessageTransformer(IMessageTransformer<Message> theTransformer) {
+		myExpectedMessageTransformers.add(theTransformer);
+	}
+
+	/**
+	 * @param theFieldToIgnore
+	 *            the terserPathsToIgnore to set
+	 */
+	public void addFieldToIgnore(String theFieldToIgnore) {
+		myFieldsToIgnore.add(theFieldToIgnore);
 	}
 	
 	
@@ -36,13 +59,33 @@ public class BulkHl7V2Comparison {
 		int actualIndex = 0;
 		int expectedIndex = 0;
 		
-		while (actualIndex < myActualMessages.size() && expectedIndex < myExpectedMessages.size()) {
+		while (myActualMessages.hasNext() && myExpectedMessages.hasNext()) {
+						
+			Message actualMessage = myActualMessages.next();
+			Message expectedMessage = myExpectedMessages.next();
+
+			for (IMessageTransformer<Message> next : myExpectedMessageTransformers) {
+				expectedMessage = next.transform(expectedMessage);
+			}
+			for (IMessageTransformer<Message> next : myActualMessageTransformers) {
+				actualMessage = next.transform(actualMessage);
+			}
 			
-			ourLog.info("Comparing message " + (actualIndex + 1) + " / " + myActualMessages.size());
+			Terser aTerser = new Terser(actualMessage);
+			Terser eTerser = new Terser(expectedMessage);
 			
-			Message actualMessage = myActualMessages.get(actualIndex);
-			Message expectedMessage = myExpectedMessages.get(expectedIndex);
-			
+			StringBuilder msg = new StringBuilder();
+			msg.append("Comparing message " + (actualIndex + 1));
+			if (myTotalMessages != -1) {
+				msg.append((actualIndex + 1) + "/" + myTotalMessages);
+			}
+			try {
+	            msg.append(" - MSH-10 Expected[" + eTerser.get("/.MSH-10") + "] Actual[" + aTerser.get("/.MSH-10") + "]");
+            } catch (HL7Exception e) {
+            	// ignore, just for logging
+            }
+            ourLog.info(msg.toString());
+            
 			Hl7V2MessageCompare comparison = new Hl7V2MessageCompare(myParser);
 			comparison.setFieldsToIgnore(myFieldsToIgnore);
 			comparison.compare(expectedMessage, actualMessage);
@@ -61,20 +104,17 @@ public class BulkHl7V2Comparison {
 		}
 		
 	}
-	
-	
-	/**
-	 * @return the actualMessages
-	 */
-	public List<Message> getActualMessages() {
-		return myActualMessages;
-	}
 
-	/**
-	 * @return the expectedMessages
-	 */
-	public List<Message> getExpectedMessages() {
-		return myExpectedMessages;
+	public String describeDifferences() {
+		StringBuilder retVal = new StringBuilder();
+		
+		for (Hl7V2MessageCompare next : myFailedComparisons) {
+			
+			retVal.append(next.describeDifference());
+			retVal.append("\n\n");
+		}
+		
+		return retVal.toString();
 	}
 
 	/**
@@ -95,8 +135,26 @@ public class BulkHl7V2Comparison {
 	 * @param theActualMessages
 	 *            the actualMessages to set
 	 */
-	public void setActualMessages(List<Message> theActualMessages) {
+	public void setActualMessages(Iterator<Message> theActualMessages) {
+		myTotalMessages = -1;
 		myActualMessages = theActualMessages;
+	}
+
+	/**
+	 * @param theActualMessages
+	 *            the actualMessages to set
+	 */
+	public void setActualMessages(List<Message> theActualMessages) {
+		myTotalMessages = theActualMessages.size();
+		myActualMessages = theActualMessages.iterator();
+	}
+	
+	/**
+	 * @param theExpectedMessages
+	 *            the expectedMessages to set
+	 */
+	public void setExpectedMessages(Iterator<Message> theExpectedMessages) {
+		myExpectedMessages = theExpectedMessages;
 	}
 
 	/**
@@ -104,8 +162,9 @@ public class BulkHl7V2Comparison {
 	 *            the expectedMessages to set
 	 */
 	public void setExpectedMessages(List<Message> theExpectedMessages) {
-		myExpectedMessages = theExpectedMessages;
+		myExpectedMessages = theExpectedMessages.iterator();
 	}
+
 
 	/**
 	 * @param theStopOnFirstFailure
@@ -113,27 +172,6 @@ public class BulkHl7V2Comparison {
 	 */
 	public void setStopOnFirstFailure(boolean theStopOnFirstFailure) {
 		myStopOnFirstFailure = theStopOnFirstFailure;
-	}
-
-	/**
-	 * @param theFieldToIgnore
-	 *            the terserPathsToIgnore to set
-	 */
-	public void addFieldToIgnore(String theFieldToIgnore) {
-		myFieldsToIgnore.add(theFieldToIgnore);
-	}
-
-
-	public String describeDifferences() {
-		StringBuilder retVal = new StringBuilder();
-		
-		for (Hl7V2MessageCompare next : myFailedComparisons) {
-			
-			retVal.append(next.describeDifference());
-			retVal.append("\n\n");
-		}
-		
-		return retVal.toString();
 	}
 	
 	
