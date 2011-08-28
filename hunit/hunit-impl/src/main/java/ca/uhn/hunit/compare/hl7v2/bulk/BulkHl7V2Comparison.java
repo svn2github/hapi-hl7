@@ -105,11 +105,17 @@ public class BulkHl7V2Comparison {
 		
 	}
 
-	public String describeDifferences() {
+	public String describeDifferences() throws HL7Exception {
 		StringBuilder retVal = new StringBuilder();
 		
 		for (Hl7V2MessageCompare next : myFailedComparisons) {
-			
+		
+			retVal.append("Expected Message:\n");
+			retVal.append(next.getExpectedMessage().encode().replace("\r", "\n"));
+			retVal.append("\n\nActual Message:\n");
+			retVal.append(next.getActualMessage().encode().replace("\r", "\n"));
+
+			retVal.append("\n\nDifferences:\n");
 			retVal.append(next.describeDifference());
 			retVal.append("\n\n");
 		}

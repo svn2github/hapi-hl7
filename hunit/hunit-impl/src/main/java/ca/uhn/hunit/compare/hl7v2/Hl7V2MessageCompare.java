@@ -55,14 +55,12 @@ public class Hl7V2MessageCompare implements ICompare<Message> {
 
 	private Message myActualMessage;
 	private GroupComparison myComparison;
+
 	private EncodingCharacters myEncodingCharacters = new EncodingCharacters('|', null);
+
 	private PipeParser myEncodingParser;
 	private Message myExpectedMessage;
 	private Set<String> myFieldsToIgnore;
-
-	// ~ Constructors
-	// ---------------------------------------------------------------------------------------------------
-
 	/**
 	 * Constructor
 	 */
@@ -70,16 +68,15 @@ public class Hl7V2MessageCompare implements ICompare<Message> {
 		myEncodingParser = new PipeParser();
 		myEncodingParser.setValidationContext(new ValidationContextImpl());
 	}
-
-	// ~ Methods
-	// --------------------------------------------------------------------------------------------------------
-
 	/**
 	 * Constructor
 	 */
 	public Hl7V2MessageCompare(PipeParser theParser) {
 		myEncodingParser = theParser;
 	}
+
+	// ~ Constructors
+	// ---------------------------------------------------------------------------------------------------
 
 	private void addRemainingStructures(Group theStructure, int theStartingNameIndex, int theAfterEndingIndex, List<StructureComparison> theStructureComparisons, boolean theIsMessage1) throws HL7Exception {
 		String[] names = theStructure.getNames();
@@ -99,6 +96,41 @@ public class Hl7V2MessageCompare implements ICompare<Message> {
 				}
 			}
 		}
+	}
+
+	// ~ Methods
+	// --------------------------------------------------------------------------------------------------------
+
+	private void clearComponentIndex(Type[] theFieldReps, int theComponentIndex) throws HL7Exception {
+
+		for (Type type : theFieldReps) {
+
+			int extraComponentIndex = -1;
+
+			if (type instanceof Primitive) {
+				Primitive p = (Primitive) type;
+				if (theComponentIndex < 2) {
+					p.setValue("");
+				} else {
+					extraComponentIndex = theComponentIndex - 1;
+				}
+			} else {
+				Composite c = (Composite) type;
+				if (theComponentIndex <= c.getComponents().length) {
+					c.getComponents()[theComponentIndex - 1].parse("");
+				} else {
+					extraComponentIndex = theComponentIndex - c.getComponents().length;
+				}
+			}
+
+			if (extraComponentIndex != -1) {
+				if (type.getExtraComponents().numComponents() >= (theComponentIndex)) {
+					type.getExtraComponents().getComponent(extraComponentIndex).parse("");
+				}
+			}
+
+		}
+
 	}
 
 	/**
@@ -188,38 +220,6 @@ public class Hl7V2MessageCompare implements ICompare<Message> {
 		}
 
 		return new FieldComparison(theSegment1.getNames()[theI], sameFields, diffFields1, diffFields2);
-	}
-
-	private void clearComponentIndex(Type[] theFieldReps, int theComponentIndex) throws HL7Exception {
-
-		for (Type type : theFieldReps) {
-
-			int extraComponentIndex = -1;
-
-			if (type instanceof Primitive) {
-				Primitive p = (Primitive) type;
-				if (theComponentIndex < 2) {
-					p.setValue("");
-				} else {
-					extraComponentIndex = theComponentIndex - 1;
-				}
-			} else {
-				Composite c = (Composite) type;
-				if (theComponentIndex <= c.getComponents().length) {
-					c.getComponents()[theComponentIndex - 1].parse("");
-				} else {
-					extraComponentIndex = theComponentIndex - c.getComponents().length;
-				}
-			}
-
-			if (extraComponentIndex != -1) {
-				if (type.getExtraComponents().numComponents() >= (theComponentIndex)) {
-					type.getExtraComponents().getComponent(extraComponentIndex).parse("");
-				}
-			}
-
-		}
-
 	}
 
 	private GroupComparison compareGroups(Group theStructure1, Group theStructure2) throws HL7Exception {
@@ -382,6 +382,20 @@ public class Hl7V2MessageCompare implements ICompare<Message> {
 		}
 
 		return PipeParser.encode(theType, myEncodingCharacters);
+	}
+
+	/**
+	 * @return the actualMessage
+	 */
+	public Message getActualMessage() {
+		return myActualMessage;
+	}
+
+	/**
+	 * @return the expectedMessage
+	 */
+	public Message getExpectedMessage() {
+		return myExpectedMessage;
 	}
 
 	public GroupComparison getMessageComparison() {
